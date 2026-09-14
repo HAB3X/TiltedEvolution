@@ -1,5 +1,7 @@
 #include <Services/InventoryService.h>
 
+#include "NakedNpcInventoryRepairPolicy.h"
+
 #include <Messages/RequestObjectInventoryChanges.h>
 #include <Messages/NotifyObjectInventoryChanges.h>
 #include <Messages/RequestInventoryChanges.h>
@@ -26,6 +28,9 @@
 #include <Games/ActorExtension.h>
 #include <Forms/TESNPC.h>
 #include <DefaultObjectManager.h>
+
+static_assert(!NakedNpcInventoryRepairPolicy::CanCreateOrReloadInventory({false, true}),
+    "Appearance-only NPC state must not authorize item-creating inventory repair.");
 
 InventoryService::InventoryService(World& aWorld, entt::dispatcher& aDispatcher, TransportService& aTransport) noexcept
     : m_world(aWorld)
