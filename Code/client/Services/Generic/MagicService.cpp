@@ -28,6 +28,7 @@
 
 #include <Forms/SpellItem.h>
 #include <PlayerCharacter.h>
+#include <Games/TES.h>
 
 #include <Games/TES.h>
 
