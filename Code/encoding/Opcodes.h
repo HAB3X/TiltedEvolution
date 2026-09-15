@@ -61,6 +61,7 @@ enum ClientOpcode : unsigned char
     kRequestHostWorld,
     kHostWorldStateRequest,
     kRequestModeratePlayer,
+    kRequestTimeSkip,
     kClientOpcodeMax
 };
 

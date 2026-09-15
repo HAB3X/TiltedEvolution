@@ -15,7 +15,12 @@ uint32_t DateTime::GetNumberOfDaysByMonthIndex(int aIndex)
 
 void DateTime::Update(uint64_t aDeltaTick)
 {
-    m_timeModel.Time += GetDeltaTime(aDeltaTick);
+    AddHours(GetDeltaTime(aDeltaTick));
+}
+
+void DateTime::AddHours(float aHours)
+{
+    m_timeModel.Time += aHours;
     Normalize();
 }
 
