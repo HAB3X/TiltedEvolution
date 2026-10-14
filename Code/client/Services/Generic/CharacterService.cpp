@@ -329,7 +329,7 @@ void CharacterService::OnConnected(const ConnectedEvent& acConnectedEvent) const
     }
 }
 
-void CharacterService::OnDisconnected(const DisconnectedEvent& acDisconnectedEvent) const noexcept
+void CharacterService::OnDisconnected(const DisconnectedEvent& acDisconnectedEvent) noexcept
 {
     auto remoteView = m_world.view<FormIdComponent, RemoteComponent>();
     for (auto entity : remoteView)
@@ -362,6 +362,8 @@ void CharacterService::OnDisconnected(const DisconnectedEvent& acDisconnectedEve
     }
 
     m_pendingLeveledConforms.clear();
+    m_weaponDrawUpdates.clear();
+    m_cachedExperience = 0.f;
 }
 
 void CharacterService::OnAssignCharacter(const AssignCharacterResponse& acMessage) noexcept
