@@ -24,6 +24,8 @@ MagicService::MagicService(World& aWorld, entt::dispatcher& aDispatcher) noexcep
 void MagicService::OnSpellCastRequest(const PacketEvent<SpellCastRequest>& acMessage) const noexcept
 {
     auto& message = acMessage.Packet;
+    if (message.CastingSource < 0 || message.CastingSource >= 4)
+        return;
 
     NotifySpellCast notify;
     notify.CasterId = message.CasterId;
@@ -40,6 +42,8 @@ void MagicService::OnSpellCastRequest(const PacketEvent<SpellCastRequest>& acMes
 void MagicService::OnInterruptCastRequest(const PacketEvent<InterruptCastRequest>& acMessage) const noexcept
 {
     auto& message = acMessage.Packet;
+    if (message.CastingSource < 0 || message.CastingSource >= 4)
+        return;
 
     NotifyInterruptCast notify;
     notify.CasterId = message.CasterId;
