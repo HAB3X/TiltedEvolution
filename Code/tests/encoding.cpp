@@ -493,6 +493,8 @@ TEST_CASE("Packets", "[encoding.packets]")
         RequestActionEvents sendMessage, recvMessage;
         sendMessage.Actions[1] = {firstAction, secondAction};
         sendMessage.Actions[7] = {secondAction};
+        sendMessage.OwnershipEpochs[1] = 271;
+        sendMessage.OwnershipEpochs[7] = 272;
 
         Buffer buff(1000);
         Buffer::Writer writer(&buff);
@@ -517,6 +519,7 @@ TEST_CASE("Packets", "[encoding.packets]")
 
         NotifyActionEvents sendMessage;
         sendMessage.Actions[3] = {action, action};
+        sendMessage.OwnershipEpochs[3] = 314;
 
         Buffer buff(1000);
         Buffer::Writer writer(&buff);
