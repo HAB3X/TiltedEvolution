@@ -1385,7 +1385,7 @@ void CharacterService::RequestServerAssignment(const entt::entity aEntity) const
         return;
     }
 
-    TESObjectCELL* pCell = pActor->parentCell;
+    TESObjectCELL* pCell = pActor->GetParentCellEx();
     if (!pCell)
     {
         m_pendingCellAssignments.insert(aEntity);
