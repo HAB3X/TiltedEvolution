@@ -38,6 +38,8 @@ struct BGSSceneAction
         return IsInPhase(aPhaseIndex) && !IsInPhase(aPhaseIndex + 1) && IsRunning() && !IsComplete() && !Loops();
     }
 
+    void Start() { status |= 1u; }
+
     uint32_t actorId; // 0x08 ALID, quest alias ID
     uint16_t startPhase;
     uint16_t endPhase;
