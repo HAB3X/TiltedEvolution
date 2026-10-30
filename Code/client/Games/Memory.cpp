@@ -100,14 +100,22 @@ static void RehookFormAllocate(TFormAllocate* apEngineFixesAllocate) noexcept
     TP_HOOK_IMMEDIATE(&RealFormAllocate, HookFormAllocate);
 }
 
+static size_t (*Real_msize)(void*) = nullptr;
+static void (*Realfree)(void*) = nullptr;
+static void* (*Realrealloc)(void*, size_t) = nullptr;
+
+// Next-gen also gets blocks from CRT helpers we don't hook, those have to go back to the CRT
 size_t Hook_msize(void* apData)
 {
-    return mi_malloc_size(apData);
+    return mi_is_in_heap_region(apData) ? mi_malloc_size(apData) : Real_msize(apData);
 }
 
 void Hookfree(void* apData)
 {
-    mi_free(apData);
+    if (!apData || mi_is_in_heap_region(apData))
+        mi_free(apData);
+    else
+        Realfree(apData);
 }
 
 void* Hookcalloc(size_t aCount, size_t aSize)
@@ -122,6 +130,15 @@ void* Hookmalloc(size_t aSize)
 
 void* Hookrealloc(void* apData, size_t aSize)
 {
+    if (apData && !mi_is_in_heap_region(apData))
+        return Realrealloc(apData, aSize);
+
+    if (aSize == 0)
+    {
+        mi_free(apData);
+        return nullptr;
+    }
+
     return mi_realloc(apData, aSize);
 }
 
@@ -152,11 +169,8 @@ static TiltedPhoques::Initializer s_memoryHooks(
         using Trealloc = decltype(&Hookrealloc);
         using T_aligned_malloc = decltype(&Hook_aligned_malloc);
         using T_aligned_free = decltype(&Hook_aligned_free);
-        T_msize Real_msize = nullptr;
-        Tfree Realfree = nullptr;
         Tcalloc Realcalloc = nullptr;
         Tmalloc Realmalloc = nullptr;
-        Trealloc Realrealloc = nullptr;
         T_aligned_malloc Real_aligned_malloc = nullptr;
         T_aligned_free Real_aligned_free = nullptr;
 
