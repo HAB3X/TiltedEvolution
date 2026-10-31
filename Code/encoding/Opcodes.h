@@ -127,5 +127,6 @@ enum ServerOpcode : unsigned char
     kNotifyVoiceData,
     kNotifyHostWorldRequested,
     kNotifyHostWorldState,
+    kNotifyTimeSkip,
     kServerOpcodeMax
 };
