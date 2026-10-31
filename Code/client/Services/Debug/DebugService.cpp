@@ -149,6 +149,11 @@ void DebugService::OnMoveActor(const MoveActorEvent& acEvent) noexcept
 
 void DebugService::OnUpdate(const UpdateEvent& acUpdateEvent) noexcept
 {
+#if (!IS_MASTER)
+    // Runs before the focus check: the follower is usually the window you're not looking at.
+    UpdateFollowLeader(acUpdateEvent.Delta);
+#endif
+
     if (!BSGraphics::GetMainWindow()->IsForeground())
         return;
 
@@ -199,13 +204,13 @@ void DebugService::OnUpdate(const UpdateEvent& acUpdateEvent) noexcept
     else
         s_f7Pressed = false;
 
-    if (GetAsyncKeyState(VK_F8) & 0x01)
+    if (GetAsyncKeyState(VK_F8))
     {
         if (!s_f8Pressed)
         {
             s_f8Pressed = true;
 
-            //PlaceActorInWorld();
+            ToggleFollowLeader();
         }
     }
     else
