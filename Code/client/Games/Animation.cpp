@@ -20,6 +20,8 @@ static TPerformAction* RealPerformAction;
 // TODO: make scoped override
 thread_local bool g_forceAnimation = false;
 
+constexpr uint32_t kSheatheAction = 0x46BAF;
+
 uint8_t TP_MAKE_THISCALL(HookPerformAction, ActorMediator, TESActionData* apAction)
 {
     auto pActor = apAction->actor;
@@ -45,6 +47,16 @@ uint8_t TP_MAKE_THISCALL(HookPerformAction, ActorMediator, TESActionData* apActi
         // This is a weird case where it gets spammed and doesn't do much, not sure if it still needs to be sent over the network
         if (apAction->someFlag == 1 || g_forceAnimation)
             return res;
+
+        // An actor that can't sheathe retries a few times a frame for as long as it stays stuck. Each try would queue
+        // an action on every other client, which plays them one per frame and falls further behind for good.
+        if (action.ActionId == kSheatheAction)
+        {
+            if (!res && pExtension->SentFailedSheathe)
+                return res;
+
+            pExtension->SentFailedSheathe = !res;
+        }
 
         action.EventName = apAction->eventName.AsAscii();
         action.TargetEventName = apAction->targetEventName.AsAscii();
