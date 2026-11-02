@@ -10,6 +10,8 @@ target("TPTests")
     add_files("../client/Systems/PlaybackClock.cpp")
     -- Pure date maths, no game dependencies
     add_files("../common/DateTime.cpp")
+    -- Voice chat's noise gate, falloff and jitter buffer, also game independent
+    add_files("../client/Systems/VoiceDsp.cpp")
     add_deps("SkyrimEncoding")
     add_packages(
         "tiltedcore",
