@@ -18,4 +18,6 @@ struct ServerSettings
     bool SyncPlayerCalendar{};
     bool AutoPartyJoin{};
     bool ConsoleCommandsAllowed{true};
+    // Built-in proximity voice chat, players also need Connect to voip on
+    bool VoipEnabled{};
 };

@@ -56,6 +56,8 @@ enum ClientOpcode : unsigned char
     kSetTimeCommandRequest,
     kRequestActionEvents,
     kPartyCheckpointRequest,
+    kVoiceDataRequest,
+    kVoiceStateRequest,
     kClientOpcodeMax
 };
 
@@ -118,5 +120,6 @@ enum ServerOpcode : unsigned char
     kNotifySetTimeResult,
     kNotifyActionEvents,
     kNotifyPartyCheckpoint,
+    kNotifyVoiceData,
     kServerOpcodeMax
 };
