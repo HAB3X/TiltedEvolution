@@ -104,6 +104,7 @@
       "SERVER_COUNT": "{{filteredCount}} von {{count}} Servern",
       "TABLE_HEADERS": {
         "NAME": "Servername",
+        "ADDRESS": "Adresse",
         "PLAYERS": "Spieler",
         "COUNTRY": "Land",
         "FAVORITE": "Favoriten"
