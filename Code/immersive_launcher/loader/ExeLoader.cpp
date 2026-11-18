@@ -231,6 +231,36 @@ void ExeLoader::LoadExceptionTable(IMAGE_NT_HEADERS* apNtHeader)
     }
 }
 
+// Wine looks up unwind data by reading the main module's exception directory from its in-memory headers on every
+// exception, while Windows uses the table it cached when the launcher was loaded. Once the game's headers replace
+// ours, Wine only sees the game's .pdata: exceptions raised in launcher code (e.g. the thread-naming exception every
+// networking thread raises) cannot be unwound and Wine kills the process. Both images share one base address, so one
+// table can hold both: the game's entries (RVAs below the game's SizeOfImage) followed by the launcher's (RVAs above
+// the reserved game segment), which keeps it sorted. It is placed in the reserved segment right after the game image.
+void ExeLoader::MergeExceptionTablesForWine(const IMAGE_NT_HEADERS* apGameNt, IMAGE_NT_HEADERS* apModuleNt, const IMAGE_DATA_DIRECTORY& acLauncherDir)
+{
+    if (!GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "wine_get_version"))
+        return;
+
+    const IMAGE_DATA_DIRECTORY& gameDir = apGameNt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXCEPTION];
+    if (!gameDir.VirtualAddress || !acLauncherDir.VirtualAddress)
+        return;
+
+    const uint32_t tableRva = (apGameNt->OptionalHeader.SizeOfImage + 0xFFF) & ~0xFFFu;
+    const uint32_t tableSize = gameDir.Size + acLauncherDir.Size;
+    if (static_cast<uint64_t>(tableRva) + tableSize > m_loadLimit)
+        return;
+
+    auto* pTable = GetTargetRVA<uint8_t>(tableRva);
+    DWORD oldProtect;
+    VirtualProtect(pTable, tableSize, PAGE_READWRITE, &oldProtect);
+    std::memcpy(pTable, GetTargetRVA<uint8_t>(gameDir.VirtualAddress), gameDir.Size);
+    std::memcpy(pTable + gameDir.Size, GetTargetRVA<uint8_t>(acLauncherDir.VirtualAddress), acLauncherDir.Size);
+    VirtualProtect(pTable, tableSize, PAGE_READONLY, &oldProtect);
+
+    apModuleNt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXCEPTION] = {tableRva, tableSize};
+}
+
 uint32_t ExeLoader::Rva2Offset(uint32_t aRva) noexcept
 {
     const auto* dos = GetRVA<const IMAGE_DOS_HEADER>(0);
@@ -300,6 +330,7 @@ bool ExeLoader::Load(const uint8_t* apProgramBuffer)
     auto sourceChecksum = sourceNtHeader->OptionalHeader.CheckSum;
     auto sourceTimestamp = sourceNtHeader->FileHeader.TimeDateStamp;
     auto sourceDebugDir = sourceNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_DEBUG];
+    auto sourceExceptionDir = sourceNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXCEPTION];
 
     LoadSections(ntHeader);
 
@@ -327,6 +358,9 @@ bool ExeLoader::Load(const uint8_t* apProgramBuffer)
     sourceNtHeader->OptionalHeader.CheckSum = sourceChecksum;
     sourceNtHeader->FileHeader.TimeDateStamp = sourceTimestamp;
     sourceNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_DEBUG] = sourceDebugDir;
+#if defined(_M_AMD64)
+    MergeExceptionTablesForWine(ntHeader, sourceNtHeader, sourceExceptionDir);
+#endif
     m_pBinary = nullptr;
 
     // Set a hook to check if anything loaded messes with critical hooks.
