@@ -7,7 +7,10 @@
 #include <console/Setting.h>
 #include <future>
 
+// TP_NO_HTTPS: builds without OpenSSL (Mac cross builds); the public-list announcement then has no HTTPS.
+#ifndef TP_NO_HTTPS
 #define CPPHTTPLIB_OPENSSL_SUPPORT
+#endif
 #include <httplib.h>
 
 extern Console::Setting<uint32_t> uMaxPlayerCount;
@@ -92,7 +95,9 @@ void ServerListService::PostAnnouncement(String acName, String acDesc, String ac
     };
 
     httplib::Client client(kMasterServerEndpoint);
+#ifndef TP_NO_HTTPS
     client.enable_server_certificate_verification(false);
+#endif
     client.set_read_timeout(std::chrono::milliseconds(30000));
     const auto response = client.Post("/announce", params);
 

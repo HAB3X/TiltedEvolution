@@ -71,7 +71,11 @@ if is_plat("linux") then
     add_requireconfs("*.libcurl", { version = "8.7.1", override = true })
 end
 
-add_requireconfs("cpp-httplib", {configs = {ssl = true}})
+-- HTTPS only serves the server's public-list announcement. Mac cross builds skip it: OpenSSL's Windows build
+-- needs nmake and NASM, which don't run on macOS.
+if not is_host("macosx") then
+    add_requireconfs("cpp-httplib", {configs = {ssl = true}})
+end
 
 before_build(function (target)
     import("modules.version")
@@ -105,6 +109,13 @@ end
 
 if is_plat("windows") then
     add_defines("NOMINMAX")
+end
+
+-- Mac cross builds use a newer clang than fmt 9.1 (bundled in spdlog 1.13) handles in its compile-time format checks:
+-- check format strings at run time instead (same output).
+if is_host("macosx") then
+    add_defines("FMT_CONSTEVAL=")
+    add_defines("TP_NO_HTTPS") -- see the cpp-httplib note above
 end
 
 -- add projects
