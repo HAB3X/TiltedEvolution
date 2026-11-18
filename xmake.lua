@@ -77,6 +77,13 @@ if not is_host("macosx") then
     add_requireconfs("cpp-httplib", {configs = {ssl = true}})
 end
 
+-- Builds a release (IS_MASTER: no console window, no debug views) from any branch, e.g. a packaged Mac build.
+option("release_build")
+    set_default(false)
+    set_showmenu(true)
+    set_description("Build as a release whatever the branch")
+option_end()
+
 before_build(function (target)
     import("modules.version")
     local branch, commitHash = version()
@@ -87,7 +94,7 @@ before_build(function (target)
     #define IS_BRANCH_BETA %d
     #define IS_BRANCH_PREREL %d
     ]], 
-    bool_to_number[branch == "master"], 
+    bool_to_number[branch == "master" or has_config("release_build")], 
     bool_to_number[branch == "bluedove"], 
     bool_to_number[branch == "prerel"])
 
