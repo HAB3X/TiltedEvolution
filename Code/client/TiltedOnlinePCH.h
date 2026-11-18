@@ -9,6 +9,7 @@
 #include <windows.h>
 #include <intrin.h>
 #include <cstdint>
+#include <new> // std::launder: keeps calls into game objects virtual (see Actor.cpp)
 
 // TiltedCore
 #include <TiltedCore/StackAllocator.hpp>

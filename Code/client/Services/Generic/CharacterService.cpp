@@ -1001,14 +1001,14 @@ void CharacterService::OnBeastFormChange(const BeastFormChangeEvent& acEvent) co
     Actor* pActor = Utils::GetByServerId<Actor>(serverId);
     if (!pActor)
     {
-        spdlog::warn(__FUNCTION__ ": could not find actor for server id {:X}", serverId);
+        spdlog::warn("{}" ": could not find actor for server id {:X}", __FUNCTION__, serverId);
         return;
     }
 
     TESNPC* pNpc = Cast<TESNPC>(pActor->baseForm);
     if (!pNpc)
     {
-        spdlog::warn(__FUNCTION__ ": could not find actor baseform for server id {:X}", serverId);
+        spdlog::warn("{}" ": could not find actor baseform for server id {:X}", __FUNCTION__, serverId);
         return;
     }
 
@@ -1315,7 +1315,7 @@ void CharacterService::OnNotifyActorTeleport(const NotifyActorTeleport& acMessag
     Actor* pActor = Cast<Actor>(TESForm::GetById(cActorId));
     if (!pActor)
     {
-        spdlog::error(__FUNCTION__ ": failed to retrieve actor to teleport.");
+        spdlog::error("{}" ": failed to retrieve actor to teleport.", __FUNCTION__);
         return;
     }
 
@@ -1359,7 +1359,7 @@ void CharacterService::MoveActor(const Actor* apActor, const GameId& acWorldSpac
 
     if (!pCell)
     {
-        spdlog::error(__FUNCTION__ ": failed to fetch cell to teleport, actor: {:X}, worldspace: {:X}, cell: {:X}, position: {}, {}, {}", apActor->formID, acWorldSpaceId.BaseId, acCellId.BaseId, acPosition.x, acPosition.y, acPosition.z);
+        spdlog::error("{}" ": failed to fetch cell to teleport, actor: {:X}, worldspace: {:X}, cell: {:X}, position: {}, {}, {}", __FUNCTION__, apActor->formID, acWorldSpaceId.BaseId, acCellId.BaseId, acPosition.x, acPosition.y, acPosition.z);
         return;
     }
 
@@ -1376,7 +1376,7 @@ void CharacterService::ProcessNewEntity(entt::entity aEntity) const noexcept
     Actor* const pActor = Cast<Actor>(TESForm::GetById(formIdComponent.Id));
     if (!pActor)
     {
-        spdlog::warn(__FUNCTION__ ": actor for new entity not found, form id: {:X}", formIdComponent.Id);
+        spdlog::warn("{}" ": actor for new entity not found, form id: {:X}", __FUNCTION__, formIdComponent.Id);
         return;
     }
 
@@ -1641,7 +1641,7 @@ Actor* CharacterService::CreateCharacterForEntity(entt::entity aEntity) const no
 
     if (!pWaitingFor3D || !pInterpolationComponent)
     {
-        spdlog::error(__FUNCTION__ ": could not find WaitingFor3D or InterpolationComponent");
+        spdlog::error("{}" ": could not find WaitingFor3D or InterpolationComponent", __FUNCTION__);
         return nullptr;
     }
 
@@ -1684,7 +1684,7 @@ Actor* CharacterService::CreateCharacterForEntity(entt::entity aEntity) const no
 
     if (!pActor)
     {
-        spdlog::error(__FUNCTION__ ": could not spawn actor for remote server id {:X}.", remoteComponent.Id);
+        spdlog::error("{}" ": could not spawn actor for remote server id {:X}.", __FUNCTION__, remoteComponent.Id);
         return nullptr;
     }
 

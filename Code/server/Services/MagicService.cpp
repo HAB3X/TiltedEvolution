@@ -77,7 +77,7 @@ void MagicService::OnRemoveSpellRequest(const PacketEvent<RemoveSpellRequest>& a
     notify.TargetId = message.TargetId;
     notify.SpellId = message.SpellId;
 
-    //spdlog::info(__FUNCTION__ ": TargetId: {}, Spell baseId: {}", notify.TargetId, notify.SpellId.BaseId);
+    //spdlog::info("{}" ": TargetId: {}, Spell baseId: {}", __FUNCTION__, notify.TargetId, notify.SpellId.BaseId);
 
     const auto entity = static_cast<entt::entity>(message.TargetId);
     if (!GameServer::Get()->SendToPlayersInRange(notify, entity, acMessage.GetSender()))
