@@ -29,6 +29,10 @@ ServerListService::ServerListService(World& aWorld, entt::dispatcher& aDispatche
     if (!bAnnounceServer)
         spdlog::warn("bAnnounceServer is set to false. The server will not show up as a public server. "
                      "If you are just playing with friends, this is probably what you want.");
+#ifdef TP_NO_HTTPS
+    if (bAnnounceServer)
+        spdlog::warn("This server was built without HTTPS, so it can't be listed on the public server list.");
+#endif
 }
 
 void ServerListService::OnUpdate(const UpdateEvent& acEvent) noexcept
@@ -57,6 +61,10 @@ void ServerListService::OnPlayerLeave(const PlayerLeaveEvent& acEvent) noexcept
 
 void ServerListService::Announce() noexcept
 {
+#ifdef TP_NO_HTTPS
+    // The list only takes HTTPS, and httplib::Client throws std::invalid_argument for an https URL without OpenSSL
+    return;
+#endif
     std::thread([&]() {
         auto* pServer = GameServer::Get();
         auto pc = static_cast<uint16_t>(m_world.GetPlayerManager().Count());
