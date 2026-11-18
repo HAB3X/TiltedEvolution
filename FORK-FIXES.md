@@ -139,6 +139,17 @@ Client-side commits from community forks of Skyrim Together Reborn, applied onto
 | 2026-11-16 | Claude | Log why a remote actor could not be spawned |
 | 2026-11-17 | Zeus Hernández | Fix a crash on loading a save with a reference left in a freed cell |
 
+## Fixes in the bundled libraries (submodules)
+
+| Library | Author | Change |
+|---|---|---|
+| TiltedConnect | obesecatlord | fix: enforce client owner and safe resolver teardown |
+| TiltedReverse | obesecatlord | fix: report and own hook install failures |
+| TiltedReverse | obesecatlord | fix: make hook teardown transactional |
+| TiltedUI | jotagalindo | Draw the UI on the CPU so it keeps up when the game loads the GPU (ultrawide fix; the submodule pointer comes from his commit above) |
+
+TiltedConnect and TiltedReverse point at `HAB3X/TiltedConnect` and `HAB3X/TiltedReverse`, branch `mac`.
+
 ## Left out because they did not build together with the rest
 
 - 2026-10-29 Fallout Together Reborn Contributors: Add headless FalloutBot, client auto-connect and build fixes
