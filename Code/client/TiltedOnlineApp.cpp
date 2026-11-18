@@ -1,5 +1,7 @@
 #include <TiltedOnlinePCH.h>
 #include <Systems/FrameProfiler.h>
+#include <Components/FormIdComponent.h>
+#include <Components/RemoteComponent.h>
 
 #include <TiltedOnlineApp.h>
 
@@ -127,10 +129,15 @@ void TiltedOnlineApp::Update()
     *bAlwaysActive = 1;
 
     // The game otherwise skips actors the camera can't see, and other clients replay what the owner of an actor sends:
-    // an NPC would stop animating for everyone whenever its owner looked away.
+    // an NPC would stop animating for everyone whenever its owner looked away. Updating every actor in the loaded
+    // cells costs a lot of frame time, so the game culls as usual while nobody else is near: the server only spawns
+    // another player's characters (and the NPCs they own) here while they are in range.
     POINTER_SKYRIMSE(uint32_t, bPreCullActors, 380927);
 
-    *bPreCullActors = 0;
+    static const uint32_t s_gamePreCullActors = *bPreCullActors;
+    auto remoteView = World::Get().view<RemoteComponent, FormIdComponent>();
+    const bool someoneNear = remoteView.begin() != remoteView.end();
+    *bPreCullActors = someoneNear ? 0 : s_gamePreCullActors;
 
     FrameProfiler::OnFrame();
     TP_PROFILE_SCOPE("World::Update");
