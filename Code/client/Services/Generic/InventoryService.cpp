@@ -1,3 +1,4 @@
+#include <Systems/FrameProfiler.h>
 #include <Services/InventoryService.h>
 
 #include "NakedNpcInventoryRepairPolicy.h"
@@ -49,6 +50,7 @@ InventoryService::InventoryService(World& aWorld, entt::dispatcher& aDispatcher,
 
 void InventoryService::OnUpdate(const UpdateEvent& acUpdateEvent) noexcept
 {
+    TP_PROFILE_SCOPE("InventoryService::OnUpdate");
     RunWeaponStateUpdates();
 }
 

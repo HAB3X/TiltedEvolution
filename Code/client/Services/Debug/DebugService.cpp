@@ -1,3 +1,4 @@
+#include <Systems/FrameProfiler.h>
 #include <BranchInfo.h>
 
 #include <Havok/hkbStateMachine.h>
@@ -151,6 +152,7 @@ void DebugService::OnMoveActor(const MoveActorEvent& acEvent) noexcept
 
 void DebugService::OnUpdate(const UpdateEvent& acUpdateEvent) noexcept
 {
+    TP_PROFILE_SCOPE("DebugService::OnUpdate");
 #if (!IS_MASTER)
     // Runs before the focus check: the follower is usually the window you're not looking at.
     UpdateFollowLeader(acUpdateEvent.Delta);

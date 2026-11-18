@@ -1,4 +1,5 @@
 #include <TiltedOnlinePCH.h>
+#include <Systems/FrameProfiler.h>
 
 #include <Services/RunnerService.h>
 
@@ -16,5 +17,6 @@ void RunnerService::Queue(std::function<void()> aFunctor) noexcept
 
 void RunnerService::OnUpdate(const UpdateEvent& acUpdateEvent) noexcept
 {
+    TP_PROFILE_SCOPE("RunnerService::OnUpdate");
     m_runner.Drain();
 }

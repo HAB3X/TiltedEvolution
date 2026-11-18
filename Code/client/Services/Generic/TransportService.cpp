@@ -16,6 +16,7 @@
 
 #include <Forms/TESNPC.h>
 #include <TiltedOnlinePCH.h>
+#include <Systems/FrameProfiler.h>
 #include <World.h>
 
 #include <Messages/AuthenticationRequest.h>
@@ -251,6 +252,7 @@ double TransportService::GetMessageReceiveTime() const noexcept
 
 void TransportService::HandleUpdate(const UpdateEvent& acEvent) noexcept
 {
+    TP_PROFILE_SCOPE("TransportService::HandleUpdate");
     // Taken before polling, so that every message that arrived before this time gets handled by this update
     m_lastPollTime = static_cast<double>(SteamNetworkingUtils()->GetLocalTimestamp()) / 1000.0;
 

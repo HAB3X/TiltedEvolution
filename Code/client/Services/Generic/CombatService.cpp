@@ -1,3 +1,4 @@
+#include <Systems/FrameProfiler.h>
 #include <Services/CombatService.h>
 #include <Services/TransportService.h>
 
@@ -29,6 +30,7 @@ CombatService::CombatService(World& aWorld, TransportService& aTransport, entt::
 
 void CombatService::OnUpdate(const UpdateEvent& acEvent) const noexcept
 {
+    TP_PROFILE_SCOPE("CombatService::OnUpdate");
     RunTargetUpdates(static_cast<float>(acEvent.Delta));
 }
 

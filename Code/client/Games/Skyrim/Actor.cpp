@@ -1,3 +1,4 @@
+#include <Systems/FrameProfiler.h>
 #include <Games/References.h>
 #include <Games/Skyrim/EquipManager.h>
 #include <AI/AIProcess.h>
@@ -1159,6 +1160,7 @@ static TUpdateDetectionState* RealUpdateDetectionState = nullptr;
 
 void TP_MAKE_THISCALL(HookUpdateDetectionState, ActorKnowledge, void* apState)
 {
+    TP_PROFILE_SCOPE("Game: detection updates");
     auto pOwner = TESObjectREFR::GetByHandle(apThis->hOwner);
     auto pTarget = TESObjectREFR::GetByHandle(apThis->hTarget);
 
@@ -1250,6 +1252,7 @@ void Actor::SpeakSound(const char* pFile)
 
 char TP_MAKE_THISCALL(HookActorProcess, Actor, float aDeltaTime)
 {
+    TP_PROFILE_SCOPE("Game: actor updates");
     // Suppress local movement for remote actors, but preserve controller timing. A dead NPC still needs its update,
     // that's where the game takes it from its dying pose into its ragdoll. Without it, the body stays kneeling or on
     // its feet.
@@ -1271,6 +1274,7 @@ static TProcessTracking* RealProcessTracking = nullptr;
 
 void TP_MAKE_THISCALL(HookProcessTracking, Actor, float aDelta)
 {
+    TP_PROFILE_SCOPE("Game: look-at tracking");
     // See InterpolationSystem's `lookAt` logic
     if (apThis->GetExtension()->IsRemotePlayer())
         return;

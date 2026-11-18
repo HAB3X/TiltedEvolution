@@ -1,4 +1,5 @@
 #include <TiltedOnlinePCH.h>
+#include <Systems/FrameProfiler.h>
 
 #include <Systems/RenderSystemD3D11.h>
 
@@ -52,8 +53,14 @@ void RenderSystemD3D11::OnRender()
     if (s_skipRender)
         return;
 
-    m_imguiService.Render();
-    m_overlay.Render();
+    {
+        TP_PROFILE_SCOPE("Render: ImGui");
+        m_imguiService.Render();
+    }
+    {
+        TP_PROFILE_SCOPE("Render: overlay");
+        m_overlay.Render();
+    }
 }
 
 void RenderSystemD3D11::OnReset(IDXGISwapChain* apSwapChain)

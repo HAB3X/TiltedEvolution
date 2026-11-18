@@ -1,4 +1,5 @@
 #include <TiltedOnlinePCH.h>
+#include <Systems/FrameProfiler.h>
 
 #include <Services/NameTagService.h>
 
@@ -43,6 +44,7 @@ NameTagService::NameTagService(World& aWorld, entt::dispatcher& aDispatcher) noe
 
 void NameTagService::OnUpdate(const UpdateEvent&) noexcept
 {
+    TP_PROFILE_SCOPE("NameTagService::OnUpdate");
     auto* pLocalPlayer = PlayerCharacter::Get();
     if (!pLocalPlayer)
     {

@@ -1,3 +1,4 @@
+#include <Systems/FrameProfiler.h>
 #include <Services/MagicService.h>
 
 #include <World.h>
@@ -53,6 +54,7 @@ MagicService::MagicService(World& aWorld, entt::dispatcher& aDispatcher, Transpo
 
 void MagicService::OnUpdate(const UpdateEvent& acEvent) noexcept
 {
+    TP_PROFILE_SCOPE("MagicService::OnUpdate");
     if (!m_transport.IsConnected())
         return;
 

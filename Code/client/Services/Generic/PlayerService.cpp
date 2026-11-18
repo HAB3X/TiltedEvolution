@@ -1,3 +1,4 @@
+#include <Systems/FrameProfiler.h>
 #include <Services/PlayerService.h>
 
 #include <World.h>
@@ -52,6 +53,7 @@ PlayerService::PlayerService(World& aWorld, entt::dispatcher& aDispatcher, Trans
 
 void PlayerService::OnUpdate(const UpdateEvent&) noexcept
 {
+    TP_PROFILE_SCOPE("PlayerService::OnUpdate");
     if (!PlayerCharacter::Get())
         return;
 

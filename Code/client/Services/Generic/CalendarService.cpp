@@ -1,3 +1,4 @@
+#include <Systems/FrameProfiler.h>
 #include <Services/CalendarService.h>
 
 #include <Events/DisconnectedEvent.h>
@@ -83,6 +84,7 @@ void CalendarService::ToggleGameClock(bool aEnable)
 
 void CalendarService::HandleUpdate(const UpdateEvent& aEvent) noexcept
 {
+    TP_PROFILE_SCOPE("CalendarService::HandleUpdate");
     if (s_gameClockLocked)
     {
         const auto updateDelta = static_cast<float>(aEvent.Delta);

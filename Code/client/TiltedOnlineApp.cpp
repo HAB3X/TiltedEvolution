@@ -1,4 +1,5 @@
 #include <TiltedOnlinePCH.h>
+#include <Systems/FrameProfiler.h>
 
 #include <TiltedOnlineApp.h>
 
@@ -131,6 +132,8 @@ void TiltedOnlineApp::Update()
 
     *bPreCullActors = 0;
 
+    FrameProfiler::OnFrame();
+    TP_PROFILE_SCOPE("World::Update");
     World::Get().Update();
 }
 

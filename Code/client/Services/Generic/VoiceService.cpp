@@ -1,4 +1,5 @@
 #include <TiltedOnlinePCH.h>
+#include <Systems/FrameProfiler.h>
 
 #include <Services/VoiceService.h>
 #include <Systems/VoiceDsp.h>
@@ -203,6 +204,7 @@ void VoiceService::SetMeterEnabled(bool aEnabled) noexcept
 
 void VoiceService::OnUpdate(const UpdateEvent& acEvent) noexcept
 {
+    TP_PROFILE_SCOPE("VoiceService::OnUpdate");
     UpdateAudioState();
 
     if (m_audio.IsRunning())

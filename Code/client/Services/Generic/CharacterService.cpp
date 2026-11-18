@@ -1,3 +1,4 @@
+#include <Systems/FrameProfiler.h>
 #include "Forms/TESObjectCELL.h"
 #include "Forms/TESWorldSpace.h"
 #include "Services/PapyrusService.h"
@@ -306,6 +307,7 @@ void CharacterService::OnActorRemoved(const ActorRemovedEvent& acEvent) noexcept
 
 void CharacterService::OnUpdate(const UpdateEvent& acUpdateEvent) noexcept
 {
+    TP_PROFILE_SCOPE("CharacterService::OnUpdate");
     RunSpawnUpdates();
     RunLocalUpdates();
     RunFactionsUpdates();

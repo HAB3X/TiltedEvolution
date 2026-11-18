@@ -1,4 +1,5 @@
 #include <TiltedOnlinePCH.h>
+#include <Systems/FrameProfiler.h>
 
 #include <Services/OverlayService.h>
 
@@ -299,6 +300,7 @@ void OverlayService::SetPlayerHealthPercentage(uint32_t aFormId) const noexcept
 
 void OverlayService::OnUpdate(const UpdateEvent&) noexcept
 {
+    TP_PROFILE_SCOPE("OverlayService::OnUpdate");
     RunDebugDataUpdates();
     RunPlayerHealthUpdates();
 }

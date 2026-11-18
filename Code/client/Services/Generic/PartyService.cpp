@@ -1,3 +1,4 @@
+#include <Systems/FrameProfiler.h>
 #include <Services/PartyService.h>
 
 #include <Services/TransportService.h>
@@ -82,6 +83,7 @@ void PartyService::ChangePartyLeader(const uint32_t aPlayerId) const noexcept
 
 void PartyService::OnUpdate(const UpdateEvent& acEvent) noexcept
 {
+    TP_PROFILE_SCOPE("PartyService::OnUpdate");
     const auto cCurrentTick = m_transport.GetClock().GetCurrentTick();
     if (m_nextUpdate > cCurrentTick)
         return;

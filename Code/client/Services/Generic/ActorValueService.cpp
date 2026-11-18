@@ -1,4 +1,5 @@
 #include <TiltedOnlinePCH.h>
+#include <Systems/FrameProfiler.h>
 
 #include <Services/ActorValueService.h>
 #include <World.h>
@@ -96,6 +97,7 @@ void ActorValueService::OnActorRemoved(const ActorRemovedEvent& acEvent) noexcep
 
 void ActorValueService::OnUpdate(const UpdateEvent& acEvent) noexcept
 {
+    TP_PROFILE_SCOPE("ActorValueService::OnUpdate");
     RunSmallHealthUpdates();
     RunDeathStateUpdates();
     RunActorValuesUpdates();

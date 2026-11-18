@@ -1,3 +1,4 @@
+#include <Systems/FrameProfiler.h>
 #include "MagicTarget.h"
 
 #include <Actor.h>
@@ -232,6 +233,7 @@ void TP_MAKE_THISCALL(HookAdjustForPerks, ActiveEffect, Actor* apCaster, MagicTa
 
 bool TP_MAKE_THISCALL(HookHasPerk, Actor, TESForm* apPerk, void* apUnk1, double* afReturnValue)
 {
+    TP_PROFILE_SCOPE("Game: perk checks");
     ActorExtension* pExtension = apThis ? apThis->GetExtension() : nullptr;
 
     if (pExtension && pExtension->IsRemotePlayer())

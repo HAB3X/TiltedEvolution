@@ -1,4 +1,5 @@
 #include <TiltedOnlinePCH.h>
+#include <Systems/FrameProfiler.h>
 
 #include <Events/ConnectedEvent.h>
 #include <Events/DisconnectedEvent.h>
@@ -78,6 +79,7 @@ void QuestService::OnConnected(const ConnectedEvent&) noexcept
 
 void QuestService::OnUpdate(const UpdateEvent&) noexcept
 {
+    TP_PROFILE_SCOPE("QuestService::OnUpdate");
     if (m_heldStages.empty())
         return;
 

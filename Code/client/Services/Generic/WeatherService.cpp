@@ -1,3 +1,4 @@
+#include <Systems/FrameProfiler.h>
 #include <Services/WeatherService.h>
 
 #include <Events/UpdateEvent.h>
@@ -27,6 +28,7 @@ WeatherService::WeatherService(World& aWorld, TransportService& aTransport, entt
 
 void WeatherService::OnUpdate(const UpdateEvent& acEvent) noexcept
 {
+    TP_PROFILE_SCOPE("WeatherService::OnUpdate");
     RunWeatherUpdates(acEvent.Delta);
 }
 

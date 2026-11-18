@@ -1,4 +1,5 @@
 #include <TiltedOnlinePCH.h>
+#include <Systems/FrameProfiler.h>
 
 #include <Services/DiscoveryService.h>
 #include <Games/TES.h>
@@ -283,6 +284,7 @@ void DiscoveryService::VisitForms() noexcept
 
 void DiscoveryService::OnUpdate(const PreUpdateEvent& acUpdateEvent) noexcept
 {
+    TP_PROFILE_SCOPE("DiscoveryService::OnUpdate");
     TP_UNUSED(acUpdateEvent);
 
     VisitCell();
