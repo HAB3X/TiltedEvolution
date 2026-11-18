@@ -46,7 +46,7 @@ constexpr float kMaxPan = 0.7f;
 constexpr size_t kNiAVObjectWorldRotateOffset = 0x7C;
 constexpr size_t kNiAVObjectWorldTranslateOffset = 0xA0;
 static_assert(kNiAVObjectWorldTranslateOffset + sizeof(float) * 3 <= sizeof(NiAVObject));
-static_assert(offsetof(TESCamera, cameraNode) == 0x20);
+static_assert(offsetof(TESCamera, cameraRoot) == 0x20);
 
 struct Listener
 {
@@ -70,7 +70,7 @@ bool GetListener(Listener& aOutListener) noexcept
 
     PlayerCamera* pCamera = PlayerCamera::Get();
     // PlayerCamera redeclares the TESCamera members at the wrong offsets, go through the base on purpose
-    const NiNode* pCameraRoot = pCamera ? static_cast<TESCamera*>(pCamera)->cameraNode : nullptr;
+    const NiNode* pCameraRoot = pCamera ? static_cast<TESCamera*>(pCamera)->cameraRoot.object : nullptr;
     if (!pCameraRoot)
         return true;
 
