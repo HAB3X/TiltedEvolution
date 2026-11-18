@@ -21,11 +21,13 @@ void TESNPC::Serialize(String* apSaveBuffer) const noexcept
 {
     ScopedSaveLoadOverride saveLoadOverride;
 
-    char buffer[1 << 15];
+    // On the heap and 8x the old 32 KB stack array: an NPC's save data must never run out of room (see WriteId).
+    constexpr uint32_t kCapacity = 1 << 18;
+    auto buffer = std::make_unique<char[]>(kCapacity);
 
     BGSSaveFormBuffer saveBuffer;
-    saveBuffer.buffer = buffer;
-    saveBuffer.capacity = 1 << 15;
+    saveBuffer.buffer = buffer.get();
+    saveBuffer.capacity = kCapacity;
     saveBuffer.changeFlags = GetChangeFlags();
 
     Save(&saveBuffer);
