@@ -171,6 +171,6 @@ struct IMenu : FxDelegateHandler
     void* fxDelegate{nullptr};
 };
 
-constexpr auto x = offsetof(IMenu, IMenu::uiMenuFlags);
+constexpr auto x = offsetof(IMenu, uiMenuFlags);
 
-static_assert(offsetof(IMenu, IMenu::uiMenuFlags) == 0x1C);
+static_assert(offsetof(IMenu, uiMenuFlags) == 0x1C);

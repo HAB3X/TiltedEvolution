@@ -150,7 +150,7 @@ float Actor::GetSpeed() noexcept
 {
     static BSFixedString speedSampledStr("SpeedSampled");
     float speed = 0.f;
-    animationGraphHolder.GetVariableFloat(&speedSampledStr, &speed);
+    std::launder(&animationGraphHolder)->GetVariableFloat(&speedSampledStr, &speed);
 
     return speed;
 }
@@ -399,10 +399,10 @@ bool Actor::RemoveSpell(MagicItem* apSpell) noexcept
 {
     if (!apSpell)
     {
-        spdlog::error(__FUNCTION__ ": apSpell is null");
+        spdlog::error("{}" ": apSpell is null", __FUNCTION__);
         return false;
     }
-    // spdlog::info(__FUNCTION__ ": removing: {} from actor: {}", apSpell->formID, formID);
+    // spdlog::info("{}" ": removing: {} from actor: {}", __FUNCTION__, apSpell->formID, formID);
     return TiltedPhoques::ThisCall(RealRemoveSpell, this, apSpell);
 }
 
@@ -428,7 +428,7 @@ bool TP_MAKE_THISCALL(HookRemoveSpell, Actor, MagicItem* apSpell)
     bool result = TiltedPhoques::ThisCall(RealRemoveSpell, apThis, apSpell);
     if (apThis->GetExtension()->IsLocalPlayer() && result)
     {
-        //spdlog::info(__FUNCTION__ ": spell: {}, ID: {} from local player", apSpell->GetName() , apSpell->formID);
+        //spdlog::info("{}" ": spell: {}, ID: {} from local player", __FUNCTION__, apSpell->GetName() , apSpell->formID);
        RemoveSpellEvent removalEvent;
 
         removalEvent.TargetId = apThis->formID;
@@ -600,9 +600,9 @@ ActorValues Actor::GetEssentialActorValues() const noexcept
     int essentialValues[] = {ActorValueInfo::kHealth, ActorValueInfo::kStamina, ActorValueInfo::kMagicka};
     for (auto i : essentialValues)
     {
-        float value = actorValueOwner.GetValue(i);
+        float value = std::launder(&actorValueOwner)->GetValue(i);
         actorValues.ActorValuesList.insert({i, value});
-        float maxValue = actorValueOwner.GetPermanentValue(i);
+        float maxValue = std::launder(&actorValueOwner)->GetPermanentValue(i);
         actorValues.ActorMaxValuesList.insert({i, maxValue});
     }
 
@@ -611,17 +611,17 @@ ActorValues Actor::GetEssentialActorValues() const noexcept
 
 float Actor::GetActorValue(uint32_t aId) const noexcept
 {
-    return actorValueOwner.GetValue(aId);
+    return std::launder(&actorValueOwner)->GetValue(aId);
 }
 
 float Actor::GetActorPermanentValue(uint32_t aId) const noexcept
 {
-    return actorValueOwner.GetPermanentValue(aId);
+    return std::launder(&actorValueOwner)->GetPermanentValue(aId);
 }
 
 void Actor::SetActorValue(uint32_t aId, float aValue) noexcept
 {
-    actorValueOwner.SetValue(aId, aValue);
+    std::launder(&actorValueOwner)->SetValue(aId, aValue);
 }
 
 void Actor::ForceActorValue(ActorValueOwner::ForceMode aMode, uint32_t aId, float aValue) noexcept
@@ -633,7 +633,7 @@ void Actor::ForceActorValue(ActorValueOwner::ForceMode aMode, uint32_t aId, floa
     if (aValue == initialValue)
         return;
 
-    actorValueOwner.ForceCurrent(aMode, aId, aValue - initialValue);
+    std::launder(&actorValueOwner)->ForceCurrent(aMode, aId, aValue - initialValue);
 }
 
 Inventory Actor::GetActorInventory() const noexcept

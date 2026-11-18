@@ -89,4 +89,4 @@ public:
 
 // intellisense is too dumb but the compiler knows.
 static_assert(sizeof(UI) == 0x1C8);
-static_assert(offsetof(UI, UI::numPausesGame) == 0x160);
+static_assert(offsetof(UI, numPausesGame) == 0x160);

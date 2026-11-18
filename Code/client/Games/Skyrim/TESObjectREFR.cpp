@@ -1013,7 +1013,7 @@ bool TESObjectREFR::PlayAnimation(BSFixedString* apEventName) noexcept
 
 bool TESObjectREFR::SendAnimationEvent(BSFixedString* apEventName) noexcept
 {
-    return animationGraphHolder.SendAnimationEvent(apEventName);
+    return std::launder(&animationGraphHolder)->SendAnimationEvent(apEventName);
 }
 
 bool TP_MAKE_THISCALL(HookPlayAnimation, void, uint32_t auiStackID, TESObjectREFR* apSelf, BSFixedString* apEventName)
