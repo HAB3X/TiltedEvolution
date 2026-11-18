@@ -31,15 +31,25 @@ void BGSSaveFormBuffer::WriteId(uint32_t aId) noexcept
 
     World::Get().GetModSystem().GetServerModId(aId, modId, baseId);
 
-    auto pWriteLocation = reinterpret_cast<uint8_t*>(buffer + position);
-
-    ViewBuffer view(pWriteLocation, capacity - position);
+    // Encode into a local buffer first: the game only reserved room for its own 3-byte id, and two varints can need
+    // up to 10. Writing straight into a view of the game's buffer let Buffer::Writer "grow" it with mimalloc, freeing
+    // memory mimalloc never owned (the stack buffer of TESNPC::Serialize) and crashing in _mi_page_ptr_unalign.
+    uint8_t encoded[16];
+    ViewBuffer view(encoded, sizeof(encoded));
     Buffer::Writer writer(&view);
 
     Serialization::WriteVarInt(writer, modId);
     Serialization::WriteVarInt(writer, baseId);
 
-    position += writer.Size() & 0xFFFFFFFF;
+    const uint32_t size = writer.Size() & 0xFFFFFFFF;
+    if (position > capacity || capacity - position < size)
+    {
+        spdlog::error("BGSSaveFormBuffer::WriteId: no room for form {:X} (position {}, capacity {}, needs {} bytes)", aId, position, capacity, size);
+        return;
+    }
+
+    std::memcpy(buffer + position, encoded, size);
+    position += size;
 }
 
 BGSLoadFormBuffer::BGSLoadFormBuffer(const uint32_t aChangeFlags)
