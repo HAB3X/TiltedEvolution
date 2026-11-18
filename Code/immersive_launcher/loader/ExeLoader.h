@@ -30,6 +30,7 @@ private:
     void LoadImports(const IMAGE_NT_HEADERS* apNtHeader);
     void LoadTLS(const IMAGE_NT_HEADERS* apNtHeader, const IMAGE_NT_HEADERS* apSourceNt);
     void LoadExceptionTable(IMAGE_NT_HEADERS* apNtHeader);
+    void MergeExceptionTablesForWine(const IMAGE_NT_HEADERS* apGameNt, IMAGE_NT_HEADERS* apModuleNt, const IMAGE_DATA_DIRECTORY& acLauncherDir);
     void DecryptCeg(IMAGE_NT_HEADERS* apSourceNt);
 
     template <typename T> inline T* GetRVA(uint32_t aRva) { return (T*)(m_pBinary + aRva); }
