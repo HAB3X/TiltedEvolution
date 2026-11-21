@@ -59,6 +59,7 @@ Console::Setting bSyncPlayerCalendar{"Gameplay:bSyncPlayerCalendar", "Syncs up a
 Console::Setting bAutoPartyJoin{"Gameplay:bAutoPartyJoin", "Join parties automatically, as long as there is only one party in the server", true};
 Console::Setting bHostWorld{"Gameplay:bHostWorld", "Host world: the first player to join hosts, and everyone who joins takes over the host's quests, cleared locations and dead unique NPCs and starts next to the host. Private servers only, and it puts everyone in the host's party", false};
 Console::Setting bAllowConsoleCommands{"Gameplay:bAllowConsoleCommands", "Lets players run console commands they type while connected. Turn it off to stop console trolling such as spawning enemies or killing NPCs. The console still opens for reading ids, and mods can still run commands", true};
+Console::Setting bPauseWhenAllInMenus{"Gameplay:bPauseWhenAllInMenus", "Pauses the world while every player is in a menu that pauses the game in single player, such as the inventory or the pause menu", false};
 // ModPolicy Stuff
 Console::Setting bEnableModCheck{"ModPolicy:bEnableModCheck", "Refuse clients whose mods do not match Data/loadorder.txt", false, Console::SettingsFlags::kLocked};
 Console::Setting bRequireMods{"ModPolicy:bRequireMods", "Refuse players who are missing any mod listed in config/required-mods.txt (Host a game writes the host's mods there). Bethesda's own plugins and Creation Club content never count", false};

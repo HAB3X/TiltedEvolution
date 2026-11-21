@@ -8,7 +8,9 @@ struct World;
 struct UpdateEvent;
 struct PlayerJoinEvent;
 struct PlayerLeaveEvent;
+struct PlayerEnterWorldEvent;
 struct RequestTimeSkip;
+struct RequestPause;
 struct Player;
 
 /**
@@ -49,12 +51,17 @@ private:
     void OnPlayerLeave(const PlayerLeaveEvent&) noexcept;
     void OnTimeSkipRequest(const PacketEvent<RequestTimeSkip>&) noexcept;
     void UpdateTimeSkip() noexcept;
+    void OnPlayerEnterWorld(const PlayerEnterWorldEvent&) noexcept;
+    void OnPauseRequest(const PacketEvent<RequestPause>&) noexcept;
+    void UpdatePause() noexcept;
     void SendTimeResync() noexcept;
 
     DateTime m_dateTime;
     uint64_t m_lastTick = 0;
     bool m_timeSetFromFirstPlayer = false;
+    bool m_paused = false;
     TiltedPhoques::Map<Player*, float> m_timeSkipRequests;
+    TiltedPhoques::Set<const Player*> m_pausedPlayers;
 
     World& m_world;
 
@@ -62,4 +69,6 @@ private:
     entt::scoped_connection m_joinConnection;
     entt::scoped_connection m_leaveConnection;
     entt::scoped_connection m_timeSkipConnection;
+    entt::scoped_connection m_enterWorldConnection;
+    entt::scoped_connection m_pauseConnection;
 };
