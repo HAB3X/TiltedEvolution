@@ -24,7 +24,7 @@ struct AssignCharacterResponse final : ServerMessage
     {
         return GetOpcode() == achRhs.GetOpcode() && Cookie == achRhs.Cookie && ServerId == achRhs.ServerId && PlayerId == achRhs.PlayerId && Position == achRhs.Position && CellId == achRhs.CellId && WorldSpaceId == achRhs.WorldSpaceId && AllActorValues == achRhs.AllActorValues &&
                CurrentInventory == achRhs.CurrentInventory && ActionsToReplay == achRhs.ActionsToReplay && OwnershipEpoch == achRhs.OwnershipEpoch && Owner == achRhs.Owner && IsDead == achRhs.IsDead && IsWeaponDrawn == achRhs.IsWeaponDrawn && LeveledNpcPickId == achRhs.LeveledNpcPickId &&
-               Suppressed == achRhs.Suppressed;
+               Suppressed == achRhs.Suppressed && ForceDead == achRhs.ForceDead;
     }
 
     uint32_t Cookie{};
@@ -44,4 +44,6 @@ struct AssignCharacterResponse final : ServerMessage
     // The server refused to track this actor because another player is the encounter spawn authority.
     // Only Cookie is meaningful; the client should remove its local copy.
     bool Suppressed{};
+    // The server kept this actor's death after nobody had it loaded: unlike IsDead, apply it even when we own the actor.
+    bool ForceDead{};
 };

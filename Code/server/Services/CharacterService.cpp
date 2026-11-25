@@ -54,6 +54,14 @@ enum EncounterSpawnAuthority : uint32_t
     kEveryPlayer = 0,
     kPartyLeader = 1,
 };
+
+Console::Setting bPersistDeadActors{"Gameplay:bPersistDeadActors", "(Experimental) Keeps NPCs dead after every player leaves their cell; always on in a host world", false};
+
+// A host world is the host's world: what anyone killed there stays dead
+bool PersistsDeadActors()
+{
+    return bPersistDeadActors || GameServer::Get()->IsHostWorld();
+}
 }
 
 CharacterService::CharacterService(World& aWorld, entt::dispatcher& aDispatcher) noexcept
@@ -409,6 +417,19 @@ void CharacterService::OnCharacterRemoveEvent(const CharacterRemoveEvent& acEven
         return;
 
     GameServer::Get()->GetWorld().GetScriptService().HandleCharacterDestoy(*it);
+
+    if (PersistsDeadActors())
+    {
+        const auto* pCharacter = m_world.try_get<CharacterComponent>(*it);
+        const auto* pFormId = m_world.try_get<FormIdComponent>(*it);
+        const auto* pInventory = m_world.try_get<InventoryComponent>(*it);
+        // Only actors from plugins have a FormIdComponent; players and temporaries never get one.
+        if (pCharacter && pFormId && pInventory && pCharacter->IsDead() && !pCharacter->IsPlayerSummon())
+        {
+            m_deadActors[pFormId->Id] = pInventory->Content;
+            spdlog::debug("Kept death of {:x}:{:x} after removing actor {:X}", pFormId->Id.ModId, pFormId->Id.BaseId, acEvent.ServerId);
+        }
+    }
 
     NotifyRemoveCharacter response;
     response.ServerId = acEvent.ServerId;
@@ -803,10 +824,24 @@ void CharacterService::CreateCharacter(const PacketEvent<AssignCharacterRequest>
         dispatcher.trigger(PlayerEnterWorldEvent(pPlayer));
     }
 
+    bool forceDead = false;
+    if (!isCustom && PersistsDeadActors())
+    {
+        if (const auto deadIt = m_deadActors.find(gameId); deadIt != m_deadActors.end())
+        {
+            characterComponent.SetDead(true);
+            inventoryComponent.Content = std::move(deadIt->second);
+            m_deadActors.erase(deadIt);
+            forceDead = true;
+            spdlog::debug("FormId: {:x}:{:x} was killed while nobody had it loaded, assigning it dead", gameId.ModId, gameId.BaseId);
+        }
+    }
+
     AssignCharacterResponse response{};
     response.Cookie = message.Cookie;
     response.Owner = true;
     PopulateAssignmentResponse(cEntity, response);
+    response.ForceDead = forceDead;
 
     pServer->Send(acMessage.pPlayer->GetConnectionId(), response);
 

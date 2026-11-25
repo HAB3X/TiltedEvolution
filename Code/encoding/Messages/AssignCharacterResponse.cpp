@@ -19,6 +19,8 @@ void AssignCharacterResponse::SerializeRaw(TiltedPhoques::Buffer::Writer& aWrite
     LeveledNpcPickId.Serialize(aWriter);
     if (!Wire::IsOfficial184())
         Serialization::WriteBool(aWriter, Suppressed);
+    if (!Wire::IsOfficial184())
+        Serialization::WriteBool(aWriter, ForceDead);
 }
 
 void AssignCharacterResponse::DeserializeRaw(TiltedPhoques::Buffer::Reader& aReader) noexcept
@@ -39,4 +41,6 @@ void AssignCharacterResponse::DeserializeRaw(TiltedPhoques::Buffer::Reader& aRea
     LeveledNpcPickId.Deserialize(aReader);
     // Official v1.8.4 never suppresses an actor
     Suppressed = !Wire::IsOfficial184() && Serialization::ReadBool(aReader);
+    // Official v1.8.4 servers forget dead actors
+    ForceDead = !Wire::IsOfficial184() && Serialization::ReadBool(aReader);
 }
