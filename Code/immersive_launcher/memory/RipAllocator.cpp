@@ -1,6 +1,8 @@
 
 // Deliberately in no namespace...
 
+#include <Windows.h>
+
 #include <cstdint>
 #include <cstring>
 
@@ -32,6 +34,11 @@ void* RipAllocateN(size_t blockLength)
         size_t endPaddingSize = alignedBlockLength - blockLength;
         memset(reinterpret_cast<void*>(alignedPtr + blockLength), 0xCC, endPaddingSize);
     }
+
+    // Blocks hold generated code (JIT hook stubs), but highrip lives in the .game section, which is read-write only:
+    // without execute permission the first stub the game runs (the spell projectile hook) faults under Wine's DEP
+    DWORD oldProtect;
+    VirtualProtect(reinterpret_cast<void*>(alignedPtr), alignedBlockLength, PAGE_EXECUTE_READWRITE, &oldProtect);
 
     // Return the aligned pointer
     return reinterpret_cast<void*>(alignedPtr);
