@@ -108,6 +108,8 @@ void WorldSaveService::Save() noexcept
         container.Object.CurrentInventory = m_world.get<InventoryComponent>(entity).Content;
         container.Object.IsContainer = true;
         container.MergedPlayers.assign(cObject.MergedPlayers.begin(), cObject.MergedPlayers.end());
+        for (const auto& [cName, cCopy] : m_world.get<InventoryComponent>(entity).PlayerCopies)
+            container.PlayerCopies.push_back({cName, cCopy});
         save.Containers.push_back(std::move(container));
     }
 
@@ -188,7 +190,10 @@ void WorldSaveService::Load() noexcept
         object.IsContainer = true;
         object.MergedPlayers.insert(cContainer.MergedPlayers.begin(), cContainer.MergedPlayers.end());
         m_world.emplace<CellIdComponent>(cEntity, cObject.CellId, cObject.WorldSpaceId, cObject.CurrentCoords);
-        m_world.emplace<InventoryComponent>(cEntity).Content = cObject.CurrentInventory;
+        auto& inventory = m_world.emplace<InventoryComponent>(cEntity);
+        inventory.Content = cObject.CurrentInventory;
+        for (const WorldSave::PlayerCopy& cCopy : cContainer.PlayerCopies)
+            inventory.PlayerCopies[cCopy.Name] = cCopy.Content;
     }
 
     spdlog::info("Loaded the world from {}: {} containers, {} dead NPCs, {} plugins", File().string(), cSave->Containers.size(), cSave->DeadActors.size(),

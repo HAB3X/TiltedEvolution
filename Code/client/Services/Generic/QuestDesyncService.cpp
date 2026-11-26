@@ -29,6 +29,20 @@ std::string QuestName(const GameId& acId) noexcept
         return fmt::format("{:X}:{:X}", acId.ModId, acId.BaseId);
     return QuestService::GetName(pQuest);
 }
+
+// The leader's stages this game can take: the quests completed here stay completed, taking an earlier stage would
+// restart them
+QuestLog StagesToTake(const QuestLog& acLeaderStages) noexcept
+{
+    QuestLog stages;
+    for (const QuestLog::Entry& cEntry : acLeaderStages.Entries)
+    {
+        TESQuest* pQuest = Cast<TESQuest>(TESForm::GetById(World::Get().GetModSystem().GetGameId(cEntry.Id)));
+        if (pQuest && !pQuest->IsCompleted())
+            stages.Entries.push_back(cEntry);
+    }
+    return stages;
+}
 } // namespace
 
 QuestDesyncService::QuestDesyncService(World& aWorld, entt::dispatcher& aDispatcher, TransportService& aTransport) noexcept
@@ -63,7 +77,7 @@ void QuestDesyncService::OnUpdate(const UpdateEvent&) noexcept
     m_transport.Send(request);
 }
 
-void QuestDesyncService::OnQuestDesync(const NotifyQuestDesync& acMessage) const noexcept
+void QuestDesyncService::OnQuestDesync(const NotifyQuestDesync& acMessage) noexcept
 {
     std::string names;
     for (size_t i = 0; i < acMessage.Quests.size() && i < kNamedQuests; ++i)
@@ -77,19 +91,19 @@ void QuestDesyncService::OnQuestDesync(const NotifyQuestDesync& acMessage) const
     pArguments->SetBool(1, acMessage.OtherIsLeader);
     pArguments->SetString(2, names);
     pArguments->SetInt(3, static_cast<int>(cMore));
+
+    // Only the member repairs, with the leader's stages; a later notice replaces what an earlier one offered
+    m_repair = acMessage.OtherIsLeader ? StagesToTake(acMessage.LeaderStages) : QuestLog{};
+    const uint32_t cRepairable = m_repair.Entries.empty() ? 0 : m_world.ctx().at<QuestService>().TakeStages(m_repair, false, false);
+    if (cRepairable == 0)
+        m_repair.Entries.clear();
+    pArguments->SetInt(4, static_cast<int>(cRepairable));
     m_world.GetOverlayService().GetOverlayApp()->ExecuteAsync("questDesync", pArguments);
 }
 
 void QuestDesyncService::OnQuestCatchUp(const NotifyQuestCatchUp& acMessage) noexcept
 {
-    // The quests completed here stay completed: taking an earlier stage would restart them
-    m_catchUp.Entries.clear();
-    for (const QuestLog::Entry& cEntry : acMessage.Quests.Entries)
-    {
-        TESQuest* pQuest = Cast<TESQuest>(TESForm::GetById(m_world.GetModSystem().GetGameId(cEntry.Id)));
-        if (pQuest && !pQuest->IsCompleted())
-            m_catchUp.Entries.push_back(cEntry);
-    }
+    m_catchUp = StagesToTake(acMessage.Quests);
 
     const uint32_t cChanged = m_world.ctx().at<QuestService>().TakeStages(m_catchUp, false, false);
     spdlog::info("[QuestDesync]: {} offers their stages of {} quests, {} would change here", acMessage.LeaderName.c_str(), acMessage.Quests.Entries.size(), cChanged);
@@ -103,6 +117,20 @@ void QuestDesyncService::OnQuestCatchUp(const NotifyQuestCatchUp& acMessage) noe
     pArguments->SetString(0, acMessage.LeaderName.c_str());
     pArguments->SetInt(1, static_cast<int>(cChanged));
     m_world.GetOverlayService().GetOverlayApp()->ExecuteAsync("questCatchUp", pArguments);
+}
+
+void QuestDesyncService::Repair() noexcept
+{
+    const QuestLog cStages = std::move(m_repair);
+    m_repair.Entries.clear();
+    if (cStages.Entries.empty())
+    {
+        spdlog::warn("[QuestDesync]: asked to repair, but no desync notice offered the leader's stages");
+        return;
+    }
+
+    const uint32_t cChanged = m_world.ctx().at<QuestService>().TakeStages(cStages, false, true);
+    spdlog::info("[QuestDesync]: repaired with the leader's stages, {} quests changed", cChanged);
 }
 
 void QuestDesyncService::AnswerCatchUp(bool aTake) noexcept

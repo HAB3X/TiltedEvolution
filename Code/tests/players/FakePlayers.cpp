@@ -37,6 +37,8 @@
 #include <Messages/NotifyPartyInfo.h>
 #include <Messages/NotifyPartyInvite.h>
 #include <Messages/NotifyLootRefused.h>
+#include <Messages/CharacterSpawnRequest.h>
+#include <Messages/NotifyInventoryChanges.h>
 #include <Messages/NotifyPartyJoined.h>
 #include <Messages/PartyAcceptInviteRequest.h>
 #include <Messages/PartyCreateRequest.h>
@@ -208,9 +210,17 @@ struct FakePlayer final : Client
         {
             const auto* pResponse = static_cast<AssignCharacterResponse*>(pMessage.get());
             AssignedIds[pResponse->Cookie] = pResponse->ServerId;
+            AssignedEpochs[pResponse->Cookie] = pResponse->OwnershipEpoch;
             break;
         }
         case kNotifyLootRefused: LootRefusals.push_back(*static_cast<NotifyLootRefused*>(pMessage.get())); break;
+        case kCharacterSpawnRequest:
+        {
+            const auto* pSpawn = static_cast<CharacterSpawnRequest*>(pMessage.get());
+            Spawns[pSpawn->ServerId] = *pSpawn;
+            break;
+        }
+        case kNotifyInventoryChanges: InventoryChanges.push_back(*static_cast<NotifyInventoryChanges*>(pMessage.get())); break;
         case kServerReferencesMoveRequest:
             MovementBytes += aSize;
             for (const auto& [cId, cMovement] : static_cast<ServerReferencesMoveRequest*>(pMessage.get())->Updates)
@@ -278,10 +288,14 @@ struct FakePlayer final : Client
     }
     // Server ids of the characters this player assigned, by cookie
     std::map<uint32_t, uint32_t> AssignedIds;
+    std::map<uint32_t, uint32_t> AssignedEpochs;
     // Movement relayed to this player, and the bytes it took
     std::vector<Movement> RelayedMovements;
     size_t MovementBytes = 0;
     std::vector<NotifyLootRefused> LootRefusals;
+    // Characters the server spawned for this player, by server id
+    std::map<uint32_t, CharacterSpawnRequest> Spawns;
+    std::vector<NotifyInventoryChanges> InventoryChanges;
     std::vector<NotifyPartyQuestSharing> QuestSharing;
     std::vector<NotifyQuestShareOffer> ShareOffers;
     std::vector<NotifyQuestCatchUp> CatchUps;
@@ -930,6 +944,7 @@ int RunDesyncLeader(const std::string& acEndpoint, const std::string& acPassword
           leader.Desyncs.size() == 1 && leader.Desyncs[0].OtherPlayer == "FakeDesyncMember" && !leader.Desyncs[0].OtherIsLeader &&
               leader.Desyncs[0].Quests == Vector<GameId>{kDesyncExtra, kDesyncStage},
           std::to_string(leader.Desyncs.size()) + " notices");
+    Check("the leader has nothing to repair with", !leader.Desyncs.empty() && leader.Desyncs[0].LeaderStages.Entries.empty());
     return s_failures ? 1 : 0;
 }
 
@@ -966,6 +981,11 @@ int RunDesyncMember(const std::string& acEndpoint, const std::string& acPassword
           member.Desyncs.size() == 1 && member.Desyncs[0].OtherPlayer == "FakeDesyncLeader" && member.Desyncs[0].OtherIsLeader &&
               member.Desyncs[0].Quests == Vector<GameId>{kDesyncExtra, kDesyncStage},
           detail);
+    // Only the quest the leader has a stage of can be repaired: the one only the member has isn't there
+    QuestLog repairWith;
+    repairWith.Entries = {{kDesyncStage, 20}};
+    Check("with the leader's stage to repair with", !member.Desyncs.empty() && member.Desyncs[0].LeaderStages == repairWith,
+          member.Desyncs.empty() ? "" : std::to_string(member.Desyncs[0].LeaderStages.Entries.size()) + " stages");
     std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
     return s_failures ? 1 : 0;
 }
@@ -1623,6 +1643,140 @@ int RunLootSecond(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Per player loot (Gameplay:bPerPlayerLoot=true): both players take the chest's one sword, neither gives it back or
+// hears of the other's take, and the chest stays empty for the one who took it
+bool ChestHasSword(const FakePlayer& acPlayer)
+{
+    if (!acPlayer.Objects || acPlayer.Objects->Objects.size() != 1)
+        return false;
+    for (const Inventory::Entry& cEntry : acPlayer.Objects->Objects[0].CurrentInventory.Entries)
+    {
+        if (cEntry.BaseId == kLootSword && cEntry.Count > 0)
+            return true;
+    }
+    return false;
+}
+
+int RunOwnLootFirst(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer first("FakeOwnLootFirst", acPassword);
+    first.Connect(acEndpoint);
+    Check("first looter logs in", RunUntil(first, [&] { return first.LoggedIn; }));
+    const auto cChest = SeeLootChest(first);
+    Check("first looter sees the chest", cChest.has_value());
+    Check("sees the second looter join", RunUntil(first, [&] { return !first.JoinedNames.empty(); }, 30s));
+    if (cChest)
+        TakeSword(first, *cChest);
+    RunUntil(first, [] { return false; }, 10s);
+    Check("the first keeps their sword", first.LootRefusals.empty(), std::to_string(first.LootRefusals.size()) + " refusals");
+    Check("isn't told of the other's take", first.InventoryChanges.empty(), std::to_string(first.InventoryChanges.size()) + " changes");
+
+    first.Objects.reset();
+    SeeLootChest(first);
+    Check("their chest is empty when they look again", first.Objects && !ChestHasSword(first));
+    return s_failures ? 1 : 0;
+}
+
+int RunOwnLootSecond(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer second("FakeOwnLootSecond", acPassword);
+    second.Connect(acEndpoint);
+    Check("second looter logs in", RunUntil(second, [&] { return second.LoggedIn; }));
+    RunUntil(second, [] { return false; }, 2s);
+    const auto cChest = SeeLootChest(second);
+    Check("second looter sees the chest", cChest.has_value());
+    Check("with a sword of their own in it", ChestHasSword(second));
+    if (cChest)
+        TakeSword(second, *cChest);
+    RunUntil(second, [] { return false; }, 5s);
+    Check("the second keeps their sword too", second.LootRefusals.empty(), std::to_string(second.LootRefusals.size()) + " refusals");
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+// Loot race over a body: the owner of a dead bandit with one sword takes it, a player next to it takes it as soon as
+// the owner's take reaches them, and is told to give it back
+constexpr uint32_t kBodyCookie = 0x3000;
+constexpr float kBodyX = 700.f;
+
+int RunCorpseOwner(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer owner("FakeCorpseOwner", acPassword);
+    owner.Connect(acEndpoint);
+    Check("body owner logs in", RunUntil(owner, [&] { return owner.LoggedIn; }));
+    Check("body owner gets its character", AssignAt(owner, 1, GameId(0, 0x14), kBodyX).has_value());
+    EnterRelayCell(owner, kBodyX);
+    Check("sees the looter join", RunUntil(owner, [&] { return !owner.JoinedNames.empty(); }, 30s));
+    // The looter enters the cell and is sent the body
+    RunUntil(owner, [] { return false; }, 3s);
+
+    AssignCharacterRequest body;
+    body.Cookie = kBodyCookie;
+    body.ReferenceId = GameId(0, kBodyCookie);
+    body.CellId = kRelayCell;
+    body.WorldSpaceId = kRelayWorld;
+    body.Position = glm::vec3(kBodyX, 0.f, 0.f);
+    body.CurrentActorData.IsDead = true;
+    Inventory::Entry sword{};
+    sword.BaseId = kLootSword;
+    sword.Count = 1;
+    body.CurrentActorData.InitialInventory.Entries.push_back(sword);
+    owner.Send(body);
+    Check("the body is assigned", RunUntil(owner, [&] { return owner.AssignedIds.count(kBodyCookie) != 0; }));
+    // The looter's game shows the body before the owner loots it
+    RunUntil(owner, [] { return false; }, 2s);
+
+    if (owner.AssignedIds.count(kBodyCookie))
+    {
+        RequestInventoryChanges take;
+        take.ServerId = owner.AssignedIds[kBodyCookie];
+        take.OwnershipEpoch = owner.AssignedEpochs[kBodyCookie];
+        take.Item = sword;
+        take.Item.Count = -1;
+        take.UpdateClients = true;
+        owner.Send(take);
+    }
+    RunUntil(owner, [] { return false; }, 10s);
+    Check("the owner keeps the sword", owner.LootRefusals.empty(), std::to_string(owner.LootRefusals.size()) + " refusals");
+    return s_failures ? 1 : 0;
+}
+
+int RunCorpseLooter(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer looter("FakeCorpseLooter", acPassword);
+    looter.Connect(acEndpoint);
+    Check("looter logs in", RunUntil(looter, [&] { return looter.LoggedIn; }));
+    Check("looter gets its character", AssignAt(looter, 1, GameId(0, 0x14), kBodyX + 50.f).has_value());
+    EnterRelayCell(looter, kBodyX + 50.f);
+    const CharacterSpawnRequest* pBody = nullptr;
+    auto findBody = [&]
+    {
+        for (const auto& [cId, cSpawn] : looter.Spawns)
+        {
+            if (cSpawn.IsDead && !cSpawn.IsPlayer)
+                pBody = &cSpawn;
+        }
+        return pBody != nullptr;
+    };
+    Check("is sent the dead bandit", RunUntil(looter, findBody, 20s));
+    Check("its sword is in the owner's take", RunUntil(looter, [&] { return !looter.InventoryChanges.empty(); }, 10s));
+    if (pBody)
+    {
+        RequestInventoryChanges take;
+        take.ServerId = pBody->ServerId;
+        take.OwnershipEpoch = pBody->OwnershipEpoch;
+        take.Item.BaseId = kLootSword;
+        take.Item.Count = -1;
+        take.UpdateClients = true;
+        looter.Send(take);
+    }
+    Check("the looter gives the sword back", RunUntil(looter, [&] { return !looter.LootRefusals.empty(); }, 5s));
+    Check("one sword, from that body", looter.LootRefusals.size() == 1 && looter.LootRefusals[0].Item.BaseId == kLootSword && looter.LootRefusals[0].Item.Count == 1 &&
+                                           pBody && looter.LootRefusals[0].ServerId == pBody->ServerId);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -1647,6 +1801,8 @@ int RunLootSecond(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe crowdowner|crowdwatcher [address:port] [password]: start the owner first
 // FakePlayers.exe doorfirst|doorlater [address:port] [password]: start the first one first
 // FakePlayers.exe lootfirst|lootsecond [address:port] [password]: start the first one first
+// FakePlayers.exe corpseowner|corpselooter [address:port] [password]: start the owner first
+// FakePlayers.exe ownlootfirst|ownlootsecond [address:port] [password]: start the first one first (bPerPlayerLoot=true)
 // FakePlayers.exe shareleader|sharemember [address:port] [password]: start the leader first (sSharedQuestTypes=Main)
 // FakePlayers.exe catchupleader|catchupmember [address:port] [password]: start the leader first
 int main(int argc, char** argv)
@@ -1744,6 +1900,14 @@ int main(int argc, char** argv)
         return RunLootFirst(cEndpoint, cPassword);
     if (cRole == "lootsecond")
         return RunLootSecond(cEndpoint, cPassword);
+    if (cRole == "corpseowner")
+        return RunCorpseOwner(cEndpoint, cPassword);
+    if (cRole == "corpselooter")
+        return RunCorpseLooter(cEndpoint, cPassword);
+    if (cRole == "ownlootfirst")
+        return RunOwnLootFirst(cEndpoint, cPassword);
+    if (cRole == "ownlootsecond")
+        return RunOwnLootSecond(cEndpoint, cPassword);
     if (cRole == "shareleader")
         return RunShareLeader(cEndpoint, cPassword);
     if (cRole == "sharemember")
@@ -1752,6 +1916,6 @@ int main(int argc, char** argv)
         return RunCatchUpLeader(cEndpoint, cPassword);
     if (cRole == "catchupmember")
         return RunCatchUpMember(cEndpoint, cPassword);
-    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
     return 2;
 }

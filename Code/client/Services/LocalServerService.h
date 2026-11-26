@@ -25,6 +25,9 @@ struct HostSettings
     // sRelayPassword); empty for none. Plus servers only
     std::string Relay;
     std::string RelayPassword;
+    // Each player gets their own copy of what is in containers instead of first come first served
+    // (Gameplay:bPerPlayerLoot). Plus servers only
+    bool PerPlayerLoot{};
 };
 
 /**

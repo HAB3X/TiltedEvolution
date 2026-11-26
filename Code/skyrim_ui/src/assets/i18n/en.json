@@ -119,6 +119,8 @@
         "KIND_CLASSIC_HINT": "Friends with the regular Skyrim Together 1.8.4 can join. Plus-only options are off.",
         "PAUSE_TITLE": "Pause in menus",
         "PAUSE": "The world pauses while every player is in a menu, like the inventory or the map.",
+        "LOOT_TITLE": "Loot for each player",
+        "LOOT": "Each player finds their own copy of what is in chests, barrels and other containers. Bodies stay first come, first served.",
         "REQUIRE_MODS_TITLE": "Friends need my mods",
         "MODS_REQUIRED": "Mods friends need: {{count}}",
         "MODS_REQUIRED_NONE": "You have no mods besides the game's own, so friends need none.",
@@ -405,7 +407,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Your quest progress differs from your party leader {{name}}'s: {{quests}}.",
       "WITH_MEMBER": "{{name}}'s quest progress differs from yours: {{quests}}.",
-      "MORE": "{{quests}} and {{count}} more"
+      "MORE": "{{quests}} and {{count}} more",
+      "REPAIR_OFFER": "Your quests still differ from your party leader {{name}}'s in {{count}} shared quests. Take the leader's stages of them?",
+      "REPAIR": "Repair"
     },
     "LOOT": {
       "TAKEN_FIRST": "Another player was quicker: {{item}} ({{count}}) went to them."

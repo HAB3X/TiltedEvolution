@@ -1,4 +1,5 @@
 #include <Services/ObjectService.h>
+#include <Services/InventoryService.h>
 
 #include <GameServer.h>
 #include <World.h>
@@ -115,7 +116,8 @@ void ObjectService::OnAssignObjectsRequest(const PacketEvent<AssignObjectsReques
                     spdlog::info("Merged {} entries from player {} into container {:X}", addedEntries.size(), acMessage.pPlayer->GetUsername().c_str(), object.Id.BaseId);
             }
 
-            objectData.CurrentInventory = inventoryComponent.Content;
+            objectData.CurrentInventory = InventoryService::IsPerPlayerLoot() && objectComponent.IsLoot() ? inventoryComponent.ContentFor(acMessage.pPlayer->GetUsername())
+                                                                                                         : inventoryComponent.Content;
 
             objectData.IsSenderFirst = false;
 

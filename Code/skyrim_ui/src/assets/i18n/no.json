@@ -108,6 +108,8 @@
         "KIND_CLASSIC_HINT": "Venner med vanlig Skyrim Together 1.8.4 kan bli med. Valg som bare finnes i Plus er av.",
         "PAUSE_TITLE": "Pause i menyer",
         "PAUSE": "Verden pauses mens alle spillerne er i en meny, som inventaret eller kartet.",
+        "LOOT_TITLE": "Bytte for hver spiller",
+        "LOOT": "Hver spiller finner sin egen kopi av det som ligger i kister, tønner og andre beholdere. For lik gjelder fortsatt førstemann til mølla.",
         "REQUIRE_MODS_TITLE": "Venner trenger modene mine",
         "MODS_REQUIRED": "Spillendringer vennene trenger: {{count}}",
         "MODS_REQUIRED_NONE": "Du har ingen spillendringer utover spillets egne, så vennene trenger ingen.",
@@ -397,7 +399,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Oppdragsfremgangen din er ulik den til gruppelederen {{name}}: {{quests}}.",
       "WITH_MEMBER": "Oppdragsfremgangen til {{name}} er ulik din: {{quests}}.",
-      "MORE": "{{quests}} og {{count}} til"
+      "MORE": "{{quests}} og {{count}} til",
+      "REPAIR_OFFER": "Oppdragene dine skiller seg fortsatt fra gruppelederen {{name}} sine i {{count}} delte oppdrag. Ta over lederens trinn?",
+      "REPAIR": "Reparer"
     },
     "LOOT": {
       "TAKEN_FIRST": "En annen spiller var raskere: {{item}} ({{count}}) gikk til dem."

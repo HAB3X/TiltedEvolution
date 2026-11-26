@@ -109,6 +109,8 @@
         "KIND_CLASSIC_HINT": "Vrienden met de gewone Skyrim Together 1.8.4 kunnen meedoen. Opties die alleen in Plus zitten staan uit.",
         "PAUSE_TITLE": "Pauze in menu's",
         "PAUSE": "De wereld pauzeert zolang alle spelers in een menu zitten, zoals de inventaris of de kaart.",
+        "LOOT_TITLE": "Buit per speler",
+        "LOOT": "Elke speler vindt zijn eigen kopie van wat er in kisten, tonnen en andere containers zit. Lichamen blijven voor wie het eerst komt.",
         "REQUIRE_MODS_TITLE": "Vrienden hebben mijn mods nodig",
         "MODS_REQUIRED": "Mods die vrienden nodig hebben: {{count}}",
         "MODS_REQUIRED_NONE": "Je hebt geen mods naast die van het spel zelf, dus vrienden hebben er geen nodig.",
@@ -375,7 +377,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Je questvoortgang verschilt van die van je groepsleider {{name}}: {{quests}}.",
       "WITH_MEMBER": "De questvoortgang van {{name}} verschilt van die van jou: {{quests}}.",
-      "MORE": "{{quests}} en nog {{count}}"
+      "MORE": "{{quests}} en nog {{count}}",
+      "REPAIR_OFFER": "Je quests verschillen nog steeds van die van je groepsleider {{name}} in {{count}} gedeelde quests. Zijn fases overnemen?",
+      "REPAIR": "Herstellen"
     },
     "LOOT": {
       "TAKEN_FIRST": "Een andere speler was sneller: {{item}} ({{count}}) ging naar hem."

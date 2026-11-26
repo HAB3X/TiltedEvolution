@@ -108,6 +108,8 @@
         "KIND_CLASSIC_HINT": "Připojit se mohou přátelé s běžným Skyrim Together 1.8.4. Možnosti jen pro Plus jsou vypnuté.",
         "PAUSE_TITLE": "Pauza v nabídkách",
         "PAUSE": "Svět se pozastaví, dokud jsou všichni hráči v nabídce, třeba v inventáři nebo na mapě.",
+        "LOOT_TITLE": "Kořist pro každého hráče",
+        "LOOT": "Každý hráč najde v truhlách, sudech a dalších schránkách vlastní kopii obsahu. Těla zůstávají tomu, kdo přijde první.",
         "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody",
         "MODS_REQUIRED": "Módy, které přátelé potřebují: {{count}}",
         "MODS_REQUIRED_NONE": "Kromě vlastních souborů hry nemáte žádné módy, přátelé tedy žádné nepotřebují.",
@@ -397,7 +399,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Tvůj postup v úkolech se liší od vůdce družiny {{name}}: {{quests}}.",
       "WITH_MEMBER": "Postup hráče {{name}} v úkolech se liší od tvého: {{quests}}.",
-      "MORE": "{{quests}} a {{count}} dalších"
+      "MORE": "{{quests}} a {{count}} dalších",
+      "REPAIR_OFFER": "Tvé úkoly se stále liší od úkolů vůdce družiny {{name}} v {{count}} sdílených úkolech. Převzít v nich jeho fáze?",
+      "REPAIR": "Opravit"
     },
     "LOOT": {
       "TAKEN_FIRST": "Jiný hráč byl rychlejší: {{item}} ({{count}}) připadlo jemu."

@@ -3,6 +3,7 @@
 #include <World.h>
 #include <Events/EventDispatcher.h>
 #include <Games/Events.h>
+#include <Structs/Inventory.h>
 
 struct NotifyQuestUpdate;
 struct DisconnectedEvent;
@@ -47,6 +48,9 @@ public:
     static bool IsNonSyncableQuest(TESQuest* apQuest);
     // A quest of a category the party shares (QuestSharingService::GetSharedQuestTypes) that can be synced
     static bool IsSharedQuest(TESQuest* apQuest) noexcept;
+    // Whether a quest item belongs to a shared quest, so party members get a copy. An item that doesn't say which quest
+    // came from an official v1.8.4 server, which copied every quest item, and still does.
+    static bool IsSharedQuestItem(const Inventory::Entry& acItem) noexcept;
     // The shared quests this game has started and not stopped, and those it completed, at their current stage
     static void CollectSharedQuests(QuestLog& aRunning, QuestLog& aCompleted) noexcept;
     // The quest's name in this game's language, else its editor id

@@ -8,6 +8,10 @@
 #include <Services/TravelTogetherService.h>
 #include <World.h>
 #include <Services/PartyService.h>
+#include <Services/QuestService.h>
+#include <ExtraData/ExtraAliasInstanceArray.h>
+#include <ExtraData/ExtraReferenceHandle.h>
+#include <Forms/TESQuest.h>
 #include <Services/PapyrusService.h>
 #include <Events/ActivateEvent.h>
 #include <Events/InventoryChangeEvent.h>
@@ -548,6 +552,21 @@ void TESObjectREFR::GetItemFromExtraData(Inventory::Entry& arEntry, ExtraDataLis
     arEntry.ExtraWornLeft = apExtraDataList->Contains(ExtraDataType::WornLeft);
 
     arEntry.IsQuestItem = apExtraDataList->HasQuestObjectAlias();
+    if (arEntry.IsQuestItem)
+    {
+        // Where HasQuestObjectAlias looks (decompiled 1.6.1179 at 0x14016d5d0, ID 12052): the aliases of the reference
+        // the entry stands for when that reference is flagged deleted (picked up), else the entry's own
+        ExtraDataList* pAliasList = apExtraDataList;
+        if (auto* pLink = Cast<ExtraReferenceHandle>(apExtraDataList->GetByType(ExtraDataType::ReferenceHandle)))
+        {
+            TESObjectREFR* pReference = TESObjectREFR::GetByHandle(pLink->handle);
+            if (pReference && pReference->IsDeleted())
+                pAliasList = pReference->GetExtraDataList();
+        }
+        auto* pAliases = Cast<ExtraAliasInstanceArray>(pAliasList->GetByType(ExtraDataType::AliasInstanceArray));
+        if (TESQuest* pQuest = pAliases ? pAliases->GetQuestObjectQuest() : nullptr)
+            modSystem.GetServerModId(pQuest->formID, arEntry.QuestId);
+    }
 }
 
 ExtraDataList* TESObjectREFR::GetExtraDataFromItem(const Inventory::Entry& arEntry) noexcept
@@ -920,7 +939,7 @@ void TESObjectREFR::AddOrRemoveItem(const Inventory::Entry& arEntry, bool aIsSet
     // Quest-item share: when a remote party member gains a quest item, also give the BaseId to the
     // local player so inventory/count checks can progress. Alias-bound ObjectReferences still cannot
     // be transferred cleanly — leader loot (or ESP patches) remains required for those cases.
-    if (arEntry.IsQuestItem && arEntry.Count > 0 && !aIsSettingInventory && World::Get().GetPartyService().IsInParty())
+    if (arEntry.IsQuestItem && arEntry.Count > 0 && !aIsSettingInventory && World::Get().GetPartyService().IsInParty() && QuestService::IsSharedQuestItem(arEntry))
     {
         PlayerCharacter* pPlayer = PlayerCharacter::Get();
 

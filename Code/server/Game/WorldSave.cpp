@@ -11,7 +11,7 @@ using TiltedPhoques::Serialization;
 namespace
 {
 constexpr char kMagic[] = "STWORLD";
-constexpr uint8_t kVersion = 1;
+constexpr uint8_t kVersion = 2;
 constexpr char kEnd[] = "END";
 
 void WriteRaw(Buffer::Writer& aWriter, const char* apText, size_t aSize)
@@ -58,6 +58,12 @@ std::string WorldSave::Serialize() const noexcept
             Serialization::WriteVarInt(writer, cContainer.MergedPlayers.size());
             for (const String& cName : cContainer.MergedPlayers)
                 Serialization::WriteString(writer, cName);
+            Serialization::WriteVarInt(writer, cContainer.PlayerCopies.size());
+            for (const PlayerCopy& cCopy : cContainer.PlayerCopies)
+            {
+                Serialization::WriteString(writer, cCopy.Name);
+                cCopy.Content.Serialize(writer);
+            }
         }
 
         if (writer.WriteBytes(reinterpret_cast<const uint8_t*>(kEnd), sizeof(kEnd)))
@@ -114,6 +120,16 @@ std::optional<WorldSave> WorldSave::Parse(const std::string& acBytes) noexcept
             return std::nullopt;
         for (size_t j = 0; j < names; ++j)
             container.MergedPlayers.push_back(Serialization::ReadString(reader));
+        size_t copies = 0;
+        if (!readCount(copies))
+            return std::nullopt;
+        for (size_t j = 0; j < copies; ++j)
+        {
+            PlayerCopy copy;
+            copy.Name = Serialization::ReadString(reader);
+            copy.Content.Deserialize(reader);
+            container.PlayerCopies.push_back(std::move(copy));
+        }
         save.Containers.push_back(std::move(container));
     }
 

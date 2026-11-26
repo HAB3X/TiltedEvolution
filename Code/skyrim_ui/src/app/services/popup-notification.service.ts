@@ -112,6 +112,20 @@ export class PopupNotificationService {
     });
   }
 
+  /** The member's shared quests keep differing from the leader's: take the leader's stages of them? */
+  public addQuestRepair(leader: string, quests: number, repair: () => void) {
+    this.addMessage({
+      messageKey: 'SERVICE.QUEST_DESYNC.REPAIR_OFFER',
+      messageParams: { name: leader, count: quests },
+      icon: faScroll,
+      duration: 60000,
+      actions: [
+        { nameKey: 'SERVICE.QUEST_DESYNC.REPAIR', callback: repair },
+        { nameKey: 'COMPONENT.NOTIFICATIONS.DISMISS', callback: () => {} },
+      ],
+    });
+  }
+
   public addPartyHint(onOpenGuide: () => void, onDontShow: () => void) {
     this.addMessage({
       messageKey: 'SERVICE.PARTY_HINT.MESSAGE',

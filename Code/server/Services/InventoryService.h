@@ -19,6 +19,9 @@ class InventoryService
 public:
     InventoryService(World& aWorld, entt::dispatcher& aDispatcher);
 
+    // Gameplay:bPerPlayerLoot: each player gets their own copy of every loot container instead of first come first served
+    [[nodiscard]] static bool IsPerPlayerLoot() noexcept;
+
     /**
      * @brief Relays inventory changes to other clients and updates server side inventories.
      */

@@ -89,6 +89,8 @@ export interface HostOptions {
   /** A relay (SkyrimTogetherRelay) friends join through when the router can't be opened, address:port; empty for none */
   relay: string;
   relayPassword: string;
+  /** Each player gets their own copy of what is in containers (Gameplay:bPerPlayerLoot) */
+  perPlayerLoot: boolean;
 }
 
 /** A server on the local network, as it answered a search. */
@@ -189,7 +191,7 @@ export class ClientService implements OnDestroy {
   public questCatchUpChange = new Subject<{ leader: string; quests: number }>();
 
   /** Shared quests differ from another party member's (the leader's, or a member's for the leader). */
-  public questDesyncChange = new Subject<{ otherPlayer: string; otherIsLeader: boolean; quests: string; more: number }>();
+  public questDesyncChange = new Subject<{ otherPlayer: string; otherIsLeader: boolean; quests: string; more: number; repairable: number }>();
 
   /** Another player took the same items out of a container first, so this player's were given back. */
   public lootRefusedChange = new Subject<{ item: string; count: number }>();
@@ -279,6 +281,11 @@ export class ClientService implements OnDestroy {
   /** Whether to take the leader's quest progress, after questCatchUpChange. */
   public answerQuestCatchUp(take: boolean): void {
     skyrimtogether.answerQuestCatchUp(take);
+  }
+
+  /** Takes the leader's stages of the quests the last questDesyncChange named. */
+  public repairQuestDesync(): void {
+    skyrimtogether.repairQuestDesync();
   }
 
   /** The joiner's answer to the host world offer. */
@@ -580,6 +587,7 @@ export class ClientService implements OnDestroy {
       sharedQuestTypes: this.storeService.get('host_quest_types', DEFAULT_SHARED_QUEST_TYPES.join(',')),
       relay: this.storeService.get('host_relay', ''),
       relayPassword: this.storeService.get('host_relay_password', ''),
+      perPlayerLoot: this.storeService.getBool('host_per_player_loot', false),
     };
   }
 
@@ -594,6 +602,7 @@ export class ClientService implements OnDestroy {
     this.storeService.set('host_quest_types', options.sharedQuestTypes);
     this.storeService.set('host_relay', options.relay);
     this.storeService.set('host_relay_password', options.relayPassword);
+    this.storeService.set('host_per_player_loot', String(options.perPlayerLoot));
     skyrimtogether.hostServer(
       password,
       options.hostWorld,
@@ -604,6 +613,7 @@ export class ClientService implements OnDestroy {
       options.sharedQuestTypes,
       options.relay,
       options.relayPassword,
+      options.perPlayerLoot,
     );
     this.hostingChange.next(true);
     this.isConnectionInProgressChange.next(true);
@@ -1318,9 +1328,9 @@ export class ClientService implements OnDestroy {
     });
   }
 
-  private onQuestDesync(otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) {
+  private onQuestDesync(otherPlayer: string, otherIsLeader: boolean, quests: string, more: number, repairable: number) {
     this.zone.run(() => {
-      this.questDesyncChange.next({ otherPlayer, otherIsLeader, quests, more });
+      this.questDesyncChange.next({ otherPlayer, otherIsLeader, quests, more, repairable });
     });
   }
 

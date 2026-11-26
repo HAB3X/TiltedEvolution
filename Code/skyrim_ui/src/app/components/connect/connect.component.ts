@@ -44,6 +44,8 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
   public requireMods = true;
   public pvp = false;
   public pauseInMenus = false;
+  /** Each player gets their own copy of what is in containers (Gameplay:bPerPlayerLoot) */
+  public perPlayerLoot = false;
   /** Hosting for the regular Skyrim Together: the Plus-only options are off */
   public classic = false;
   /** The quest categories the party shares, names the server knows (Gameplay:sSharedQuestTypes) */
@@ -238,6 +240,7 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
       sharedQuestTypes: QUEST_TYPES.filter(type => this.sharedQuestTypes.has(type)).join(','),
       relay: this.classic ? '' : this.relay.trim(),
       relayPassword: this.relayPassword,
+      perPlayerLoot: this.perPlayerLoot,
     });
   }
 

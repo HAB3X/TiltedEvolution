@@ -14,6 +14,7 @@
 
 #include <World.h>
 #include <Services/PartyService.h>
+#include <Services/QuestService.h>
 
 #include <Games/Skyrim/Forms/ActorValueInfo.h>
 #include <Games/ActorExtension.h>
@@ -189,7 +190,7 @@ char TP_MAKE_THISCALL(HookPickUpObject, PlayerCharacter, TESObjectREFR* apObject
     // Quest items must UpdateClients even when persistent: otherwise peers never see the pickup and the
     // TESObjectREFR quest-item inject (copy onto local PC) never runs for the party.
     bool shouldUpdateClients = apObject->IsTemporary() && !ScopedActivateOverride::IsOverriden();
-    if (item.IsQuestItem && World::Get().GetPartyService().IsInParty())
+    if (item.IsQuestItem && World::Get().GetPartyService().IsInParty() && QuestService::IsSharedQuestItem(item))
         shouldUpdateClients = true;
 
     World::Get().GetRunner().Trigger(InventoryChangeEvent(apThis->formID, std::move(item), false, shouldUpdateClients));

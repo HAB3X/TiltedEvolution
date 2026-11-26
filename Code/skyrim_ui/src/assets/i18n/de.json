@@ -108,6 +108,8 @@
         "KIND_CLASSIC_HINT": "Freunde mit dem normalen Skyrim Together 1.8.4 können beitreten. Nur-Plus-Optionen sind aus.",
         "PAUSE_TITLE": "Pause in Menüs",
         "PAUSE": "Die Welt pausiert, solange alle Spieler in einem Menü sind, etwa Inventar oder Karte.",
+        "LOOT_TITLE": "Beute für jeden Spieler",
+        "LOOT": "Jeder Spieler findet in Truhen, Fässern und anderen Behältern seine eigene Kopie des Inhalts. Leichen plündert weiterhin, wer zuerst kommt.",
         "REQUIRE_MODS_TITLE": "Freunde brauchen meine Mods",
         "MODS_REQUIRED": "Mods, die Freunde brauchen: {{count}}",
         "MODS_REQUIRED_NONE": "Du hast keine Mods außer den Dateien des Spiels, also brauchen Freunde keine.",
@@ -401,7 +403,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Dein Questfortschritt weicht von dem deines Gruppenleiters {{name}} ab: {{quests}}.",
       "WITH_MEMBER": "Der Questfortschritt von {{name}} weicht von deinem ab: {{quests}}.",
-      "MORE": "{{quests}} und {{count}} weitere"
+      "MORE": "{{quests}} und {{count}} weitere",
+      "REPAIR_OFFER": "Deine Quests weichen in {{count}} geteilten Quests immer noch von denen deines Gruppenanführers {{name}} ab. Seine Stufen übernehmen?",
+      "REPAIR": "Reparieren"
     },
     "LOOT": {
       "TAKEN_FIRST": "Ein anderer Spieler war schneller: {{item}} ({{count}}) ging an ihn."

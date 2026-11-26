@@ -55,6 +55,9 @@ struct Inventory
         bool ExtraWorn{};
         bool ExtraWornLeft{};
         bool IsQuestItem{};
+        // The quest whose alias makes it a quest item, so only parties sharing that quest copy it. Plus only on the
+        // wire, and only sent for quest items; empty when the sender didn't say (official v1.8.4).
+        GameId QuestId{};
 
         bool operator==(const Entry& acRhs) const noexcept;
         bool operator!=(const Entry& acRhs) const noexcept;
@@ -72,7 +75,7 @@ struct Inventory
             // since many of these things can and will change, like poison id or charge
             // or the fact that the enchant id can be temp
             return ExtraCharge == acRhs.ExtraCharge && ExtraEnchantId == acRhs.ExtraEnchantId && ExtraEnchantCharge == acRhs.ExtraEnchantCharge && EnchantData == acRhs.EnchantData && ExtraEnchantRemoveUnequip == acRhs.ExtraEnchantRemoveUnequip && ExtraHealth == acRhs.ExtraHealth && ExtraPoisonId == acRhs.ExtraPoisonId &&
-                   ExtraPoisonCount == acRhs.ExtraPoisonCount && ExtraSoulLevel == acRhs.ExtraSoulLevel && ExtraWorn == acRhs.ExtraWorn && ExtraWornLeft == acRhs.ExtraWornLeft && IsQuestItem == acRhs.IsQuestItem;
+                   ExtraPoisonCount == acRhs.ExtraPoisonCount && ExtraSoulLevel == acRhs.ExtraSoulLevel && ExtraWorn == acRhs.ExtraWorn && ExtraWornLeft == acRhs.ExtraWornLeft && IsQuestItem == acRhs.IsQuestItem && QuestId == acRhs.QuestId;
         }
 
         bool IsWorn() const noexcept { return ExtraWorn || ExtraWornLeft; }

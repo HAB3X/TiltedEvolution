@@ -143,6 +143,7 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     sharedQuestTypes: string,
     relay: string,
     relayPassword: string,
+    perPlayerLoot: boolean,
   ): void {
     console.log(`host${relay ? ` through the relay ${relay}` : ''}`);
     this.connect('127.0.0.1', 10578, password);
@@ -496,7 +497,7 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
   }
 
   mockQuestDesync() {
-    this.emit('questDesync', 'Lydia', true, 'Bleak Falls Barrow, The Golden Claw, Dragon Rising, The Way of the Voice, Diplomatic Immunity', 3);
+    this.emit('questDesync', 'Lydia', true, 'Bleak Falls Barrow, The Golden Claw, Dragon Rising, The Way of the Voice, Diplomatic Immunity', 3, 6);
   }
 
   summonPlayer(playerId: number): void {
@@ -536,6 +537,10 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
 
   answerQuestCatchUp(take: boolean): void {
     console.log(`leader's quest progress: ${take ? 'taken' : 'kept mine'}`);
+  }
+
+  repairQuestDesync(): void {
+    console.log("quests repaired with the leader's stages");
   }
 
   mockQuestShareOffer() {

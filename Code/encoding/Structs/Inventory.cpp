@@ -1,4 +1,5 @@
 #include <Structs/Inventory.h>
+#include <WireProtocol.h>
 #include <TiltedCore/Serialization.hpp>
 
 #include <algorithm>
@@ -50,6 +51,8 @@ void Inventory::Entry::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const n
     Serialization::WriteBool(aWriter, ExtraWorn);
     Serialization::WriteBool(aWriter, ExtraWornLeft);
     Serialization::WriteBool(aWriter, IsQuestItem);
+    if (IsQuestItem && !Wire::IsOfficial184())
+        QuestId.Serialize(aWriter);
 }
 
 void Inventory::Entry::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcept
@@ -81,6 +84,8 @@ void Inventory::Entry::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexc
     ExtraWorn = Serialization::ReadBool(aReader);
     ExtraWornLeft = Serialization::ReadBool(aReader);
     IsQuestItem = Serialization::ReadBool(aReader);
+    if (IsQuestItem && !Wire::IsOfficial184())
+        QuestId.Deserialize(aReader);
 }
 
 bool Inventory::operator==(const Inventory& acRhs) const noexcept
