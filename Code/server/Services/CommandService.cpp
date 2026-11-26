@@ -74,22 +74,21 @@ void CommandService::OnTeleportCommandRequest(const PacketEvent<TeleportCommandR
             pTargetPlayer = pPlayer;
     }
 
+    acMessage.pPlayer->Send(pTargetPlayer ? WhereIs(m_world, *pTargetPlayer) : TeleportCommandResponse{});
+}
+
+TeleportCommandResponse CommandService::WhereIs(World& aWorld, const Player& acPlayer) noexcept
+{
     TeleportCommandResponse response{};
-    if (pTargetPlayer)
+    if (auto character = acPlayer.GetCharacter())
     {
-        auto character = pTargetPlayer->GetCharacter();
-        if (character)
+        if (const auto* pMovementComponent = aWorld.try_get<MovementComponent>(*character))
         {
-            const auto* pMovementComponent = m_world.try_get<MovementComponent>(*character);
-            if (pMovementComponent)
-            {
-                const auto& cellComponent = pTargetPlayer->GetCellComponent();
-                response.CellId = cellComponent.Cell;
-                response.Position = pMovementComponent->Position;
-                response.WorldSpaceId = cellComponent.WorldSpaceId;
-            }
+            const auto& cellComponent = acPlayer.GetCellComponent();
+            response.CellId = cellComponent.Cell;
+            response.Position = pMovementComponent->Position;
+            response.WorldSpaceId = cellComponent.WorldSpaceId;
         }
     }
-
-    acMessage.pPlayer->Send(response);
+    return response;
 }

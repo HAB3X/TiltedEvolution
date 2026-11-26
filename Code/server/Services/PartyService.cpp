@@ -104,10 +104,13 @@ void PartyService::OnUpdate(const UpdateEvent& acEvent) noexcept
 
 void PartyService::OnPartyCreate(const PacketEvent<PartyCreateRequest>& acPacket) noexcept
 {
-    Player* const player = acPacket.pPlayer;
-    auto& inviterPartyComponent = player->GetParty();
-
     spdlog::debug("[PartyService]: Received request to create party");
+    CreateParty(acPacket.pPlayer);
+}
+
+void PartyService::CreateParty(Player* const player) noexcept
+{
+    auto& inviterPartyComponent = player->GetParty();
 
     if (!inviterPartyComponent.JoinedPartyId) // Ensure not in party
     {

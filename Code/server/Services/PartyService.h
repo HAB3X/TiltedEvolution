@@ -46,6 +46,7 @@ protected:
     void OnPartyAcceptInvite(const PacketEvent<PartyAcceptInviteRequest>& acPacket) noexcept;
     void OnPartyLeave(const PacketEvent<PartyLeaveRequest>& acPacket) noexcept;
     void OnPartyCreate(const PacketEvent<PartyCreateRequest>& acPacket) noexcept;
+    void CreateParty(Player* apPlayer) noexcept;
     void OnPartyChangeLeader(const PacketEvent<PartyChangeLeaderRequest>& acPacket) noexcept;
     void OnPartyKick(const PacketEvent<PartyKickRequest>& acPacket) noexcept;
     void RemovePlayerFromParty(Player* apPlayer) noexcept;

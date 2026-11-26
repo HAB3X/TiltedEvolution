@@ -5,6 +5,7 @@
 struct World;
 struct TeleportCommandRequest;
 struct SetTimeCommandRequest;
+struct TeleportCommandResponse;
 
 /**
  * @brief Processes incoming commands.
@@ -15,6 +16,9 @@ struct CommandService
     ~CommandService() noexcept = default;
 
     TP_NOCOPYMOVE(CommandService);
+
+    // A teleport to the player's location, empty while they have no character
+    static TeleportCommandResponse WhereIs(World& aWorld, const Player& acPlayer) noexcept;
 
 protected:
     void OnSetTimeCommand(const PacketEvent<SetTimeCommandRequest>& acMessage) const noexcept;
