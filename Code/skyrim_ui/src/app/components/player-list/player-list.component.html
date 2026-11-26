@@ -30,6 +30,14 @@
               >
                 {{ 'COMPONENT.PARTY_LIST.INVITE' | transloco }}
               </button>
+              @if (hosting$ | async) {
+                <button class="user-action-button" (click)="moderate(player.id, false)">
+                  {{ 'COMPONENT.PARTY_LIST.KICK' | transloco }}
+                </button>
+                <button class="user-action-button" (click)="moderate(player.id, true)">
+                  {{ 'COMPONENT.PARTY_LIST.BAN' | transloco }}
+                </button>
+              }
             </td>
           </tr>
         }

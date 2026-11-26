@@ -99,7 +99,9 @@
         "NAME": "Naam",
         "LOCATION": "Locatie"
       },
-      "INVITE": "Uitnodigen"
+      "INVITE": "Uitnodigen",
+      "KICK": "Verwijderen",
+      "BAN": "Verbannen"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spelerslijst",
@@ -173,7 +175,8 @@
         "MODS_MISMATCH_INSTALL": "Installeer de volgende mods om deel te nemen:\n{{mods}}.",
         "CLIENT_MODS_DISALLOWED": "Deze server staat de volgende mods niet toe {{mods}}. Verwijder ze om deel te nemen.",
         "WRONG_PASSWORD": "Het ingevoerde wachtwoord is incorrect.",
-        "NO_REASON": "De server heeft de verbinding zonder reden geweigerd."
+        "NO_REASON": "De server heeft de verbinding zonder reden geweigerd.",
+        "BANNED": "Je bent verbannen van deze server."
       }
     },
     "PLAYER_LIST": {

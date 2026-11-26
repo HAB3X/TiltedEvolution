@@ -102,7 +102,9 @@
         "NAME": "Ім'я",
         "LOCATION": "Локація"
       },
-      "INVITE": "Запросити"
+      "INVITE": "Запросити",
+      "KICK": "Вигнати",
+      "BAN": "Забанити"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Список гравців",
@@ -205,7 +207,8 @@
         "NO_REASON": "Сервер відмовив у з'єднанні без причини.",
         "SERVER_FULL": "Цей сервер переповнений.",
         "BAD_UGRIDSTOLOAD": "Здається, що у вашому файлі Skyrim.ini встановлено нестандартне значення для 'uGridsToLoad'. ЦЕ ДУЖЕ ПОГАНА ІДЕЯ і скоріше за все зламає мод. Будь ласка, встановіть це значення на стандартне (5) або видаліть файл Skyrim.ini і запустіть звичайний Skyrim один раз, щоб створити новий файл. Параметри 'uExterior Cell Buffer' та 'uInterior Cell Buffer' також повинні залишатися зі стандартними значеннями. Якщо ви не знаєте, як це зробити, будь ласка, зверніться до нашої вікі або попросіть про допомогу на наших спільнотах Discord/Reddit.",
-        "NON_DEFAULT_INSTALL": "Здається, що ваша установка не є чистою (ванільною), тобто вона містить контент Creation Club (Anniversary Update або інше) або інші моди.\nМи НЕ рекомендуємо грати з модами.\nМи рекомендуємо вам видалити та вимкнути ці моди (інструкції можна знайти на вікі).\n\nДля найкращого досвіду у вас повинен бути наступний список модів:<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>"
+        "NON_DEFAULT_INSTALL": "Здається, що ваша установка не є чистою (ванільною), тобто вона містить контент Creation Club (Anniversary Update або інше) або інші моди.\nМи НЕ рекомендуємо грати з модами.\nМи рекомендуємо вам видалити та вимкнути ці моди (інструкції можна знайти на вікі).\n\nДля найкращого досвіду у вас повинен бути наступний список модів:<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>",
+        "BANNED": "Вас забанено на цьому сервері."
       }
     },
     "PLAYER_LIST": {

@@ -11,6 +11,7 @@
 
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/TeleportRequest.h>
+#include <Messages/RequestModeratePlayer.h>
 
 #include <Events/SetTimeCommandEvent.h>
 #include <Events/WaveCommandEvent.h>
@@ -47,6 +48,13 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
 
         if (eventName == "connect")
             ProcessConnectMessage(eventArgs);
+        else if (eventName == "moderatePlayer")
+        {
+            RequestModeratePlayer request;
+            request.PlayerId = static_cast<uint32_t>(eventArgs->GetInt(0));
+            request.Ban = eventArgs->GetBool(1);
+            World::Get().GetRunner().Queue([request]() { World::Get().GetTransport().Send(request); });
+        }
         else if (eventName == "searchLanServers")
             LanSearch::Start();
         else if (eventName == "hostServer")

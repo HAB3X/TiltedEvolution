@@ -100,7 +100,9 @@
         "NAME": "Name",
         "LOCATION": "Standort"
       },
-      "INVITE": "Einladen"
+      "INVITE": "Einladen",
+      "KICK": "Rauswerfen",
+      "BAN": "Bannen"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spielerliste",
@@ -200,7 +202,8 @@
         "CLIENT_MODS_DISALLOWED": "Dieser Server verbietet folgende Mods {{mods}}. Bitte entferne diese, um beitreten zu können.",
         "WRONG_PASSWORD": "Das eingegebene Passwort ist falsch.",
         "NO_REASON": "Der Server hat die Verbindung ohne Angabe von Gründen verweigert.",
-        "SERVER_FULL": "Dieser Server ist voll."
+        "SERVER_FULL": "Dieser Server ist voll.",
+        "BANNED": "Du bist von diesem Server gebannt."
       }
     },
     "PLAYER_LIST": {

@@ -15,7 +15,7 @@ struct HostSettings
 /**
  * @brief Hosting from inside the game: runs the Skyrim Together server that sits next to the client and connects to it.
  *
- * The server runs without a window and is tied to the game: it stops when the game exits. Its output goes to the
+ * The server runs without a window and stops when the game exits (it watches the game). Its output goes to the
  * client log.
  */
 struct LocalServerService
@@ -40,8 +40,6 @@ private:
     void Fail(const std::string& acReason) const noexcept;
 
     World& m_world;
-    // Kills the server when the game exits, however it exits
-    HANDLE m_job{};
     HANDLE m_process{};
     uint16_t m_port{};
 };

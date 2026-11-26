@@ -27,6 +27,7 @@
 #include <Messages/NotifyPartyJoined.h>
 #include <Messages/NotifyPlayerJoined.h>
 #include <Messages/RequestHostWorld.h>
+#include <Messages/RequestModeratePlayer.h>
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/ServerMessageFactory.h>
 #include <Messages/TeleportCommandResponse.h>
@@ -121,7 +122,10 @@ struct FakePlayer final : Client
             ServerVersion = pResponse->Version.c_str();
             break;
         }
-        case kNotifyPlayerJoined: JoinedNames.push_back(static_cast<NotifyPlayerJoined*>(pMessage.get())->Username.c_str()); break;
+        case kNotifyPlayerJoined:
+            JoinedNames.push_back(static_cast<NotifyPlayerJoined*>(pMessage.get())->Username.c_str());
+            JoinedIds.push_back(static_cast<NotifyPlayerJoined*>(pMessage.get())->PlayerId);
+            break;
         case kNotifyChatMessageBroadcast: Chat = *static_cast<NotifyChatMessageBroadcast*>(pMessage.get()); break;
         case kNotifyPartyJoined: Party = *static_cast<NotifyPartyJoined*>(pMessage.get()); break;
         case kNotifyHostWorldRequested: WorldRequest = *static_cast<NotifyHostWorldRequested*>(pMessage.get()); break;
@@ -140,6 +144,7 @@ struct FakePlayer final : Client
     ServerSettings Settings{};
     std::string ServerVersion;
     std::vector<std::string> JoinedNames;
+    std::vector<uint32_t> JoinedIds;
     std::optional<NotifyChatMessageBroadcast> Chat;
     std::optional<NotifyPartyJoined> Party;
     std::optional<NotifyHostWorldRequested> WorldRequest;
@@ -299,7 +304,57 @@ int RunRequiredMods(const std::string& acEndpoint, const std::string& acPassword
     return s_failures ? 1 : 0;
 }
 
+// Like the game hosting: starts the server in a folder as a child that should stop with this process
+// (GameServer:uStopWithProcess), lets it run for a while, then exits. The caller checks the server stopped by itself.
+int RunParent(const std::string& acServerFolder)
+{
+    SetEnvironmentVariableA("USTOPWITHPROCESS", std::to_string(GetCurrentProcessId()).c_str());
+
+    SECURITY_ATTRIBUTES inherit{sizeof(inherit), nullptr, TRUE};
+    const std::string cLog = acServerFolder + "\\server.log";
+    HANDLE log = CreateFileA(cLog.c_str(), GENERIC_WRITE, FILE_SHARE_READ, &inherit, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    STARTUPINFOA startup{sizeof(startup)};
+    startup.dwFlags = STARTF_USESTDHANDLES;
+    startup.hStdOutput = startup.hStdError = log;
+    std::string commandLine = "\"" + acServerFolder + "\\SkyrimTogetherServer.exe\"";
+    PROCESS_INFORMATION process{};
+    Check("starts the server", CreateProcessA(nullptr, commandLine.data(), nullptr, nullptr, TRUE, CREATE_NO_WINDOW, nullptr, acServerFolder.c_str(), &startup, &process));
+    std::this_thread::sleep_for(15s);
+    std::printf("parent exits\n");
+    return s_failures ? 1 : 0;
+}
+
+// The host kicking from the player list (RequestModeratePlayer): the host waits for a player and kicks them, the player
+// checks the server disconnects them. Both play on the server's computer, which is what lets the host kick.
+int RunKicker(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer host("FakeKicker", acPassword);
+    host.Connect(acEndpoint);
+    Check("kicker logs in", RunUntil(host, [&] { return host.LoggedIn; }));
+    Check("sees a player join", RunUntil(host, [&] { return !host.JoinedIds.empty(); }, 30s));
+    if (!host.JoinedIds.empty())
+    {
+        RequestModeratePlayer kick;
+        kick.PlayerId = host.JoinedIds.back();
+        host.Send(kick);
+    }
+    RunUntil(host, [] { return false; }, 5s);
+    return s_failures ? 1 : 0;
+}
+
+int RunKicked(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer player("FakeKicked", acPassword);
+    player.Connect(acEndpoint);
+    Check("player logs in", RunUntil(player, [&] { return player.LoggedIn; }));
+    Check("the host's kick disconnects them", RunUntil(player, [&] { return player.Disconnected; }, 15s));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
+// FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
+// FakePlayers.exe parent <server folder>: starts the server as the game would, and exits after 15 seconds
 // FakePlayers.exe mods [address:port] [password]: against a server requiring SomeMod.esp
 // FakePlayers.exe listen184|talk184 [address:port] [password]: the same against an official v1.8.4 server
 int main(int argc, char** argv)
@@ -315,6 +370,12 @@ int main(int argc, char** argv)
         return RunHost(cEndpoint, cPassword);
     if (cRole == "join")
         return RunJoiner(cEndpoint, cPassword);
+    if (cRole == "kicker")
+        return RunKicker(cEndpoint, cPassword);
+    if (cRole == "kicked")
+        return RunKicked(cEndpoint, cPassword);
+    if (cRole == "parent")
+        return RunParent(cEndpoint);
     if (cRole == "mods")
         return RunRequiredMods(cEndpoint, cPassword);
     if (cRole == "listen184")

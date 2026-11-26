@@ -604,6 +604,26 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    GIVEN("RequestModeratePlayer")
+    {
+        RequestModeratePlayer sendMessage, recvMessage;
+        sendMessage.PlayerId = 77777;
+        sendMessage.Ban = true;
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
     GIVEN("NotifyPartyCheckpoint")
     {
         NotifyPartyCheckpoint sendMessage, recvMessage;

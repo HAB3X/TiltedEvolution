@@ -97,7 +97,9 @@
         "NAME": "이름",
         "LOCATION": "위치"
       },
-      "INVITE": "초대"
+      "INVITE": "초대",
+      "KICK": "추방",
+      "BAN": "차단"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "플레이어 목록",
@@ -196,7 +198,8 @@
         "CLIENT_MODS_DISALLOWED": "이 서버는 {{mods}}를 허용하지 않습니다. 가입하려면 해당 항목을 삭제하세요.",
         "WRONG_PASSWORD": "입력한 암호가 올바르지 않습니다.",
         "NO_REASON": "서버가 이유 없이 연결을 거부했습니다.",
-        "SERVER_FULL": "이 서버는 만석입니다."
+        "SERVER_FULL": "이 서버는 만석입니다.",
+        "BANNED": "이 서버에서 차단되었습니다."
       }
     },
     "PLAYER_LIST": {

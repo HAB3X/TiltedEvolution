@@ -5,6 +5,7 @@
 struct World;
 struct TeleportCommandRequest;
 struct SetTimeCommandRequest;
+struct RequestModeratePlayer;
 struct TeleportCommandResponse;
 
 /**
@@ -26,10 +27,13 @@ protected:
      * @brief Returns the location of the target player of the teleport command.
      */
     void OnTeleportCommandRequest(const PacketEvent<TeleportCommandRequest>& acMessage) const noexcept;
+    // Kick or ban, for the host (on the server's computer) or an admin
+    void OnModeratePlayer(const PacketEvent<RequestModeratePlayer>& acMessage) const noexcept;
 
 private:
     World& m_world;
 
     entt::scoped_connection m_setTimeConnection;
     entt::scoped_connection m_teleportConnection;
+    entt::scoped_connection m_moderateConnection;
 };

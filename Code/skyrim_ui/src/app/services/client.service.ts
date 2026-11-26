@@ -249,6 +249,11 @@ export class ClientService implements OnDestroy {
    * @param port Port.
    * @param password Password or admin password
    */
+  /** Kick a player from the game this player hosts, or ban them. */
+  public moderatePlayer(playerId: number, ban: boolean): void {
+    skyrimtogether.moderatePlayer(playerId, ban);
+  }
+
   /** Look for servers on the local network, see lanServersChange. */
   public searchLanServers(): void {
     this.lanServersChange.next(null);

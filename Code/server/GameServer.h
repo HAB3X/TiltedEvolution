@@ -48,6 +48,10 @@ struct GameServer final : Server
     void Kill();
 
     void LoadRequiredMods();
+    void LoadBans();
+    // GameServer:uStopWithProcess: the game that hosts this server, whose exit stops it cleanly (closing the router port)
+    void WatchParentProcess();
+    bool HasParentExited() noexcept;
 
     bool CheckMoPo();
     void BindMessageHandlers();
@@ -73,6 +77,8 @@ struct GameServer final : Server
     [[nodiscard]] bool AllowsAutoPartyJoin() const noexcept;
     // Gameplay:bHostWorld on a private server: the party leader's world is everyone's
     [[nodiscard]] bool IsHostWorld() const noexcept;
+    // Kicks the player and refuses their address from now on (config/bans.txt)
+    void Ban(const Player& acPlayer);
 
     struct Uptime
     {
@@ -127,6 +133,10 @@ private:
     UniquePtr<PortMapper> m_pPortMapper;
     // ModPolicy:bRequireMods: the mods every player needs, from RequiredMods::kFileName
     Vector<String> m_requiredMods;
+    // Addresses refused at login, from config/bans.txt
+    TiltedPhoques::Set<String> m_bannedAddresses;
+    void* m_parentProcess{};
+    std::chrono::steady_clock::time_point m_nextParentCheck{};
 
     bool m_requestStop;
 

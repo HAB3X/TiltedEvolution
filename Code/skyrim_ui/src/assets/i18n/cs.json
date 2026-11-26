@@ -97,7 +97,9 @@
         "NAME": "Jméno",
         "LOCATION": "Lokace"
       },
-      "INVITE": "Pozvat"
+      "INVITE": "Pozvat",
+      "KICK": "Vyhodit",
+      "BAN": "Zabanovat"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Seznam hráčů",
@@ -196,7 +198,8 @@
         "CLIENT_MODS_DISALLOWED": "Tento server zakazuje {{mods}}. Chcete-li se připojit, odstraňte je prosím.",
         "WRONG_PASSWORD": "Zadané heslo je chybné.",
         "NO_REASON": "Server odmítl připojení bez udání důvodu.",
-        "SERVER_FULL": "Tento server je plný."
+        "SERVER_FULL": "Tento server je plný.",
+        "BANNED": "Na tomto serveru máš ban."
       }
     },
     "PLAYER_LIST": {

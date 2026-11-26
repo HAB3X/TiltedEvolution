@@ -397,6 +397,11 @@ interface SkyrimTogether {
   searchLanServers(): void;
 
   /**
+   * Kick a player, or ban them (the host and admins only).
+   */
+  moderatePlayer(playerId: number, ban: boolean): void;
+
+  /**
    * Disconnect from server or cancel connection.
    */
   disconnect(): void;

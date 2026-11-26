@@ -10,6 +10,7 @@ export interface ErrorEvent {
     | 'client_mods_disallowed'
     | 'wrong_password'
     | 'server_full'
+    | 'banned'
     | 'no_reason'
     | 'bad_uGridsToLoad'
     | 'non_default_install'

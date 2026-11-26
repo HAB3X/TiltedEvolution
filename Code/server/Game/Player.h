@@ -30,6 +30,8 @@ struct Player
 
     void SetDiscordId(uint64_t aDiscordId) noexcept;
     void SetEndpoint(String aEndpoint) noexcept;
+    // The address the player connects from, without the port
+    [[nodiscard]] const String& GetEndpoint() const noexcept { return m_endpoint; }
     void SetUsername(String aUsername) noexcept;
     void SetMods(Vector<String> aMods) noexcept;
     void SetModIds(Vector<uint16_t> aModIds) noexcept;

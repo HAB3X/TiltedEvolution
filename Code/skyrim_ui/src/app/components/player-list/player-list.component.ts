@@ -56,6 +56,13 @@ export class PlayerListComponent {
     );
   }
 
+  /** The host's own game: it may kick and ban */
+  public readonly hosting$ = this.clientService.hostingChange;
+
+  public moderate(playerId: number, ban: boolean) {
+    this.clientService.moderatePlayer(playerId, ban);
+  }
+
   public sendPartyInvite(inviteeId: number) {
     this.playerListService.sendPartyInvite(inviteeId);
   }

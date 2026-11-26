@@ -150,11 +150,12 @@ void ShowRefusal(const AuthenticationResponse::ResponseType aType)
     const wchar_t* pText = nullptr;
     switch (aType)
     {
-    case AR::kWrongVersion: pText = L"Der Server hat die Verbindung abgelehnt:\nHost und Mitspieler nutzen verschiedene Versionen von Fallout Together Reborn."; break;
-    case AR::kModsMismatch: pText = L"Der Server hat die Verbindung abgelehnt:\nDie Mods passen nicht zu denen des Hosts."; break;
-    case AR::kClientModsDisallowed: pText = L"Der Server hat die Verbindung abgelehnt:\nDer Host erlaubt keine Client-Mods."; break;
-    case AR::kWrongPassword: pText = L"Der Server hat die Verbindung abgelehnt:\nDas Passwort ist falsch."; break;
-    case AR::kServerFull: pText = L"Der Server hat die Verbindung abgelehnt:\nDer Server ist voll."; break;
+    case AR::kWrongVersion: pText = L"The server refused the connection:\nthe host and you use different versions of Skyrim Together."; break;
+    case AR::kModsMismatch: pText = L"The server refused the connection:\nyour mods don't match the host's."; break;
+    case AR::kClientModsDisallowed: pText = L"The server refused the connection:\nthe host doesn't allow client mods (SKSE or Mod Organizer)."; break;
+    case AR::kWrongPassword: pText = L"The server refused the connection:\nthe password is wrong."; break;
+    case AR::kServerFull: pText = L"The server refused the connection:\nthe server is full."; break;
+    case AR::kBanned: pText = L"The server refused the connection:\nyou're banned from it."; break;
     default: return;
     }
 
@@ -163,7 +164,7 @@ void ShowRefusal(const AuthenticationResponse::ResponseType aType)
         return;
 
     HWND window = reinterpret_cast<HWND>(BSGraphics::GetMainWindow()->hWnd);
-    MessageBoxW(window, pText, L"Fallout Together Reborn", MB_OK | MB_ICONWARNING | MB_TOPMOST);
+    MessageBoxW(window, pText, L"Skyrim Together", MB_OK | MB_ICONWARNING | MB_TOPMOST);
     PostMessageW(window, WM_CLOSE, 0, 0);
 }
 } // namespace
@@ -382,6 +383,7 @@ void TransportService::HandleAuthenticationResponse(const AuthenticationResponse
         ErrorInfo += "\"error\": \"server_full\"";
         break;
     }
+    case AR::kBanned: ErrorInfo += "\"error\": \"banned\""; break;
     default: ErrorInfo += "\"error\": \"no_reason\""; break;
     }
 

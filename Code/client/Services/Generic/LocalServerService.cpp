@@ -43,21 +43,16 @@ std::wstring Widen(const std::string& acText)
 LocalServerService::LocalServerService(World& aWorld) noexcept
     : m_world(aWorld)
 {
-    // Killed rather than told to quit: the game exits without running this service's cleanup. The server opens its
-    // router port for a day at a time for that reason (server PortMapper).
-    m_job = CreateJobObjectW(nullptr, nullptr);
-    JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits{};
-    limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-    if (!m_job || !SetInformationJobObject(m_job, JobObjectExtendedLimitInformation, &limits, sizeof(limits)))
-        spdlog::error("[LocalServer]: couldn't create the job that stops the server with the game ({})", GetLastError());
+    // The server stops by itself, cleanly, when this game exits (GameServer:uStopWithProcess through its environment
+    // variable): the game exits without running this service's cleanup, and killing the server would leave its router
+    // port open until the router drops it a day later
+    SetEnvironmentVariableW(L"USTOPWITHPROCESS", std::to_wstring(GetCurrentProcessId()).c_str());
 }
 
 LocalServerService::~LocalServerService() noexcept
 {
     if (m_process)
         CloseHandle(m_process);
-    if (m_job)
-        CloseHandle(m_job);
 }
 
 bool LocalServerService::IsRunning() const noexcept
@@ -155,8 +150,6 @@ bool LocalServerService::Start(const HostSettings& acSettings) noexcept
         return false;
     }
 
-    if (!m_job || !AssignProcessToJobObject(m_job, process.hProcess))
-        spdlog::warn("[LocalServer]: the server won't stop by itself when the game exits ({})", GetLastError());
     ResumeThread(process.hThread);
     CloseHandle(process.hThread);
     m_process = process.hProcess;

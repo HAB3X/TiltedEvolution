@@ -98,7 +98,9 @@
         "NAME": "名字",
         "LOCATION": "地点"
       },
-      "INVITE": "邀请"
+      "INVITE": "邀请",
+      "KICK": "踢出",
+      "BAN": "封禁"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "玩家列表",
@@ -191,7 +193,8 @@
         "CLIENT_MODS_DISALLOWED": "该服务器禁止以下模组：{{mods}}。将其移除以加入服务器。",
         "WRONG_PASSWORD": "您输入的密码不正确。",
         "NO_REASON": "服务器无故拒绝了连接。",
-        "SERVER_FULL": "服务器已满。"
+        "SERVER_FULL": "服务器已满。",
+        "BANNED": "你已被此服务器封禁。"
       }
     },
     "PLAYER_LIST": {

@@ -8,6 +8,7 @@
 #include <Messages/NotifySetTimeResult.h>
 #include <Messages/TeleportCommandRequest.h>
 #include <Messages/TeleportCommandResponse.h>
+#include <Messages/RequestModeratePlayer.h>
 
 #include <Setting.h>
 
@@ -21,6 +22,7 @@ CommandService::CommandService(World& aWorld, entt::dispatcher& aDispatcher) noe
 {
     m_setTimeConnection = aDispatcher.sink<PacketEvent<SetTimeCommandRequest>>().connect<&CommandService::OnSetTimeCommand>(this);
     m_teleportConnection = aDispatcher.sink<PacketEvent<TeleportCommandRequest>>().connect<&CommandService::OnTeleportCommandRequest>(this);
+    m_moderateConnection = aDispatcher.sink<PacketEvent<RequestModeratePlayer>>().connect<&CommandService::OnModeratePlayer>(this);
 }
 
 void CommandService::OnSetTimeCommand(const PacketEvent<SetTimeCommandRequest>& acMessage) const noexcept
@@ -91,4 +93,32 @@ TeleportCommandResponse CommandService::WhereIs(World& aWorld, const Player& acP
         }
     }
     return response;
+}
+
+void CommandService::OnModeratePlayer(const PacketEvent<RequestModeratePlayer>& acMessage) const noexcept
+{
+    const Player* pSender = acMessage.pPlayer;
+
+    // Whoever plays on the server's own computer hosts it (Host a game); admins moderate anywhere
+    const String& cAddress = pSender->GetEndpoint();
+    const bool cIsHost = cAddress == "127.0.0.1" || cAddress == "::1";
+    const auto& cAdmins = GameServer::Get()->GetAdminSessions();
+    if (!cIsHost && !cAdmins.contains(pSender->GetConnectionId()))
+    {
+        spdlog::warn("{} tried to {} player {} without being the host or an admin", pSender->GetUsername().c_str(), acMessage.Packet.Ban ? "ban" : "kick",
+                     acMessage.Packet.PlayerId);
+        return;
+    }
+
+    Player* pTarget = m_world.GetPlayerManager().GetById(acMessage.Packet.PlayerId);
+    if (!pTarget || pTarget == pSender)
+        return;
+
+    if (acMessage.Packet.Ban)
+        GameServer::Get()->Ban(*pTarget);
+    else
+    {
+        spdlog::info("{} kicked {}", pSender->GetUsername().c_str(), pTarget->GetUsername().c_str());
+        GameServer::Get()->Kick(pTarget->GetConnectionId());
+    }
 }
