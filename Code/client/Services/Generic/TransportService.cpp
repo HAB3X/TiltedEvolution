@@ -4,6 +4,8 @@
 #include <Games/Skyrim/SaveLoad.h>
 #include <Services/OverlayService.h>
 #include <Services/SendBuffer.h>
+#include <Services/PluginChecksums.h>
+#include <RequiredMods.h>
 
 #include <Events/ConnectedEvent.h>
 #include <Events/ConnectionErrorEvent.h>
@@ -205,7 +207,9 @@ void ShowRefusal(const AuthenticationResponse& acResponse)
 
 void TransportService::OnConnected()
 {
-    if (PlayerCharacter::Get())
+    // The plugins' checksums go with the authentication; reading them the first time takes a few seconds
+    PluginChecksums::Start();
+    if (PlayerCharacter::Get() && PluginChecksums::IsReady())
     {
         SendAuthenticationRequest();
         return;
@@ -252,6 +256,7 @@ void TransportService::SendAuthenticationRequest()
         entry.IsLite = pMod->IsLite();
         entry.Filename = pMod->filename;
         entry.FileSize = pMod->GetFileSize();
+        entry.Checksum = RequiredMods::IsGamePlugin(pMod->filename) ? 0 : PluginChecksums::Get(pMod->filename);
     }
 
     auto& modSystem = m_world.GetModSystem();
@@ -310,7 +315,7 @@ void TransportService::OnUpdate()
     if (!m_authenticationPending)
         return;
 
-    if (!PlayerCharacter::Get())
+    if (!PlayerCharacter::Get() || !PluginChecksums::IsReady())
         return;
 
     m_authenticationPending = false;

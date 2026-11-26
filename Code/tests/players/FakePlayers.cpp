@@ -97,6 +97,7 @@ struct FakePlayer final : Client
             entry.Id = static_cast<uint16_t>(request.UserMods.ModList.size());
             entry.IsLite = false;
             entry.FileSize = cMod.FileSize;
+            entry.Checksum = cMod.Checksum;
             request.UserMods.ModList.push_back(entry);
         }
         Send(request);
@@ -162,6 +163,7 @@ struct FakePlayer final : Client
     {
         std::string Name;
         uint32_t FileSize = 0;
+        uint32_t Checksum = 0;
     };
     // The plugins this player says it has loaded
     std::vector<Plugin> Plugins;
@@ -380,6 +382,31 @@ int RunModVersions(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// A server requiring "Exact.esp|100|0000abcd" (ModPolicy:bRequireMods): the same size with other contents is refused as
+// a different version, the same contents get in, and a player whose game couldn't read the file (checksum 0) is
+// compared by size only. One player at a time, so one process works.
+int RunModChecksums(const std::string& acEndpoint, const std::string& acPassword)
+{
+    using RT = AuthenticationResponse::ResponseType;
+    auto login = [&](const char* apName, uint32_t aChecksum)
+    {
+        auto pPlayer = std::make_unique<FakePlayer>(apName, acPassword);
+        pPlayer->Plugins = {{"Exact.esp", 100, aChecksum}};
+        pPlayer->Connect(acEndpoint);
+        RunUntil(*pPlayer, [&] { return pPlayer->LoggedIn || pPlayer->Refusal.has_value(); });
+        return pPlayer;
+    };
+    {
+        const auto cpOther = login("FakeOtherContents", 0x1234);
+        Check("the same size with other contents is refused", cpOther->Refusal == RT::kModsMismatch);
+        Check("as a different version of that mod", cpOther->RefusedVersions == std::vector<std::string>{"Exact.esp"}, "versions: " + JoinNames(cpOther->RefusedVersions));
+    }
+    Check("the same contents get in", login("FakeSameContents", 0xABCD)->LoggedIn);
+    Check("a plugin the game couldn't read is compared by size", login("FakeUnreadable", 0)->LoggedIn);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // Like the game hosting: starts the server in a folder as a child that should stop with this process
 // (GameServer:uStopWithProcess), lets it run for a while, then exits. The caller checks the server stopped by itself.
 int RunParent(const std::string& acServerFolder)
@@ -553,6 +580,7 @@ int RunOldVersion(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe listen184|talk184 [address:port] [password]: the same against an official v1.8.4 server
 // FakePlayers.exe lostleader|lostmember|lostreturn [address:port] [password]: see RunLostLeader
 // FakePlayers.exe oldversion [address:port] [password]: see RunOldVersion
+// FakePlayers.exe modchecksums [address:port] [password]: against a server requiring Exact.esp|100|0000abcd
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -582,6 +610,8 @@ int main(int argc, char** argv)
         return RunOfficialListener(cEndpoint, cPassword);
     if (cRole == "talk184")
         return RunOfficialTalker(cEndpoint, cPassword);
+    if (cRole == "modchecksums")
+        return RunModChecksums(cEndpoint, cPassword);
     if (cRole == "oldversion")
         return RunOldVersion(cEndpoint, cPassword);
     if (cRole == "lostleader")

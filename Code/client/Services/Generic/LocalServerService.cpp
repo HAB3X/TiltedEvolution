@@ -9,6 +9,7 @@
 #include <World.h>
 #include <Games/TES.h>
 #include <RequiredMods.h>
+#include <Services/PluginChecksums.h>
 
 #include <fstream>
 
@@ -102,6 +103,9 @@ std::vector<RequiredMods::Listed> LocalServerService::HostMods() noexcept
 
 void LocalServerService::SendHostMods() const noexcept
 {
+    // The Host page is open: hosting will need the checksums soon
+    PluginChecksums::Start();
+
     std::string json = "[";
     for (const RequiredMods::Listed& cMod : HostMods())
         json += (json.size() > 1 ? "," : "") + OverlayService::ToJsonString(cMod.Name);
@@ -120,7 +124,7 @@ bool LocalServerService::WriteRequiredMods() const noexcept
 
     const auto cMods = HostMods();
     for (const RequiredMods::Listed& cMod : cMods)
-        file << RequiredMods::FormatLine(cMod.Name, cMod.FileSize) << '\n';
+        file << RequiredMods::FormatLine(cMod.Name, cMod.FileSize, PluginChecksums::Get(cMod.Name)) << '\n';
     spdlog::info("[LocalServer]: friends need the host's {} mods", cMods.size());
     return file.good();
 }

@@ -286,6 +286,7 @@ TEST_CASE("Differential structures", "[encoding.differential]")
         sendMods.ModList.push_back({"SomeMod.esp", 3, false, 12345});
         sendMods.ModList.push_back({"Big.esm", 4, false, 0xFFFFFFFF});
         sendMods.ModList.push_back({"Unknown.esl", 5, true, 0});
+        sendMods.ModList[0].Checksum = 0x89ABCDEF;
 
         Buffer buff(1000);
         Buffer::Writer writer(&buff);
@@ -297,6 +298,7 @@ TEST_CASE("Differential structures", "[encoding.differential]")
         REQUIRE(recvMods.ModList.size() == 3);
         REQUIRE(recvMods.ModList[0].FileSize == 12345);
         REQUIRE(recvMods.ModList[1].FileSize == 0xFFFFFFFF);
+        REQUIRE(recvMods.ModList[0].Checksum == 0x89ABCDEF);
         REQUIRE(sendMods == recvMods);
     }
 
@@ -973,6 +975,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
     {
         Mods sent;
         sent.ModList.push_back({"SomeMod.esp", 3, true, 12345});
+        sent.ModList.back().Checksum = 0xDEADBEEF;
 
         // Zeroed, so the comparison below doesn't see leftover bits after the last one written
         Buffer buffer(1000);
@@ -999,6 +1002,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE(received.ModList.size() == 1);
         REQUIRE(received.ModList[0].Filename == "SomeMod.esp");
         REQUIRE(received.ModList[0].FileSize == 0);
+        REQUIRE(received.ModList[0].Checksum == 0);
         REQUIRE(Serialization::ReadVarInt(reader) == 42);
     }
 
@@ -1082,6 +1086,16 @@ TEST_CASE("Required mods lists", "[encoding.required_mods]")
         REQUIRE(RequiredMods::FormatLine("SomeMod.esp", 12345) == "SomeMod.esp|12345");
         REQUIRE(RequiredMods::FormatLine("SomeMod.esp", 0) == "SomeMod.esp");
         REQUIRE(RequiredMods::ParseLine(RequiredMods::FormatLine("A B.esp", 7)) == Listed{"A B.esp", 7});
+
+        // The host's content checksum (CRC-32, hex) after the size
+        REQUIRE(RequiredMods::ParseLine("SomeMod.esp|12345|0a1b2c3d") == Listed{"SomeMod.esp", 12345, 0x0A1B2C3D});
+        REQUIRE(RequiredMods::ParseLine("SomeMod.esp|12345|0A1B2C3D\r") == Listed{"SomeMod.esp", 12345, 0x0A1B2C3D});
+        REQUIRE_FALSE(RequiredMods::ParseLine("SomeMod.esp|12345|xyz").has_value());
+        REQUIRE_FALSE(RequiredMods::ParseLine("SomeMod.esp|12345|").has_value());
+        REQUIRE_FALSE(RequiredMods::ParseLine("SomeMod.esp|12345|123456789").has_value());
+        REQUIRE(RequiredMods::FormatLine("SomeMod.esp", 12345, 0x0A1B2C3D) == "SomeMod.esp|12345|0a1b2c3d");
+        REQUIRE(RequiredMods::FormatLine("SomeMod.esp", 12345, 0) == "SomeMod.esp|12345");
+        REQUIRE(RequiredMods::ParseLine(RequiredMods::FormatLine("C.esp", 9, 0xFFFFFFFF)) == Listed{"C.esp", 9, 0xFFFFFFFF});
     }
 
     GIVEN("A player's mods compared with the listed ones")
@@ -1103,6 +1117,25 @@ TEST_CASE("Required mods lists", "[encoding.required_mods]")
         REQUIRE(RequiredMods::Compare(cListed, player({{"Sized.esp", 100}, {"Plain.esp", 1}, {"Gone.esp", 5}, {"Extra.esp", 9}})).Empty());
         // A size the player's game couldn't read isn't refused
         REQUIRE(RequiredMods::Compare(cListed, player({{"Sized.esp", 0}, {"Plain.esp", 1}, {"Gone.esp", 5}})).Empty());
+    }
+
+    GIVEN("Mods listed with their content checksum")
+    {
+        const std::vector<Listed> cListed{{"Exact.esp", 100, 0xABCD}};
+        auto player = [](uint32_t aSize, uint32_t aChecksum)
+        {
+            Vector<Mods::Entry> mods;
+            Mods::Entry entry{"Exact.esp", 0, false, aSize};
+            entry.Checksum = aChecksum;
+            mods.push_back(entry);
+            return mods;
+        };
+        // The same size with other contents is another version
+        REQUIRE(RequiredMods::Compare(cListed, player(100, 0x1234)).DifferentVersion == cListed);
+        REQUIRE(RequiredMods::Compare(cListed, player(100, 0xABCD)).Empty());
+        // A checksum the player's game couldn't compute falls back to the size
+        REQUIRE(RequiredMods::Compare(cListed, player(100, 0)).Empty());
+        REQUIRE_FALSE(RequiredMods::Compare(cListed, player(99, 0)).Empty());
     }
 }
 

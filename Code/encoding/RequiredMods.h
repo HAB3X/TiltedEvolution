@@ -13,6 +13,8 @@
 // to the server's settings, one per line, and the server refuses players missing any of them or having another
 // version. A line is a plugin's file name, optionally followed by kSizeSeparator and the host's file size in bytes
 // ("SomeMod.esp|12345"): mods often keep their file name across versions, so the size is what tells versions apart.
+// The size may be followed by another kSizeSeparator and the file's CRC-32 as 8 hex digits ("SomeMod.esp|12345|0a1b2c3d"),
+// which also tells apart versions of the same size.
 namespace RequiredMods
 {
 constexpr char kFileName[] = "config/required-mods.txt";
@@ -26,6 +28,8 @@ struct Listed
     std::string Name;
     // The host's plugin size in bytes; 0 accepts any version (a plain name, as hand-written lists have)
     uint32_t FileSize = 0;
+    // The host's plugin CRC-32; 0 when the line has none, then only the size is compared
+    uint32_t Checksum = 0;
 
     bool operator==(const Listed&) const = default;
 };
@@ -50,11 +54,19 @@ inline bool IsGamePlugin(std::string_view aFileName)
     return cName.rfind("cc", 0) == 0 && cName.size() > 4 && (cName.ends_with(".esl") || cName.ends_with(".esm"));
 }
 
-inline std::string FormatLine(std::string_view aName, uint32_t aFileSize)
+inline std::string FormatLine(std::string_view aName, uint32_t aFileSize, uint32_t aChecksum = 0)
 {
     std::string line(aName);
-    if (aFileSize != 0)
-        line += kSizeSeparator + std::to_string(aFileSize);
+    if (aFileSize == 0)
+        return line;
+    line += kSizeSeparator + std::to_string(aFileSize);
+    if (aChecksum != 0)
+    {
+        char hex[9]{};
+        std::to_chars(hex, hex + 8, aChecksum, 16);
+        const std::string cDigits(hex);
+        line += kSizeSeparator + std::string(8 - cDigits.size(), '0') + cDigits;
+    }
     return line;
 }
 
@@ -72,9 +84,18 @@ inline std::optional<Listed> ParseLine(std::string_view aLine)
     if (cSeparator == std::string_view::npos)
         return mod;
 
-    const std::string_view cSize = aLine.substr(cSeparator + 1);
+    const std::string_view cRest = aLine.substr(cSeparator + 1);
+    const size_t cChecksumSeparator = cRest.find(kSizeSeparator);
+    const std::string_view cSize = cRest.substr(0, cChecksumSeparator);
     const auto [pEnd, error] = std::from_chars(cSize.data(), cSize.data() + cSize.size(), mod.FileSize);
     if (error != std::errc{} || pEnd != cSize.data() + cSize.size())
+        return std::nullopt;
+    if (cChecksumSeparator == std::string_view::npos)
+        return mod;
+
+    const std::string_view cChecksum = cRest.substr(cChecksumSeparator + 1);
+    const auto [pChecksumEnd, checksumError] = std::from_chars(cChecksum.data(), cChecksum.data() + cChecksum.size(), mod.Checksum, 16);
+    if (checksumError != std::errc{} || pChecksumEnd != cChecksum.data() + cChecksum.size() || cChecksum.size() > 8)
         return std::nullopt;
     return mod;
 }
@@ -88,9 +109,9 @@ struct Mismatch
     bool Empty() const noexcept { return Missing.empty() && DifferentVersion.empty(); }
 };
 
-// Compares a player's plugins (anything with Filename and FileSize, like Mods::Entry) with the listed ones. A size of
-// 0 on either side matches any version: plain-name lists don't know it, and a player whose game couldn't read a
-// plugin's size (it logs that) isn't refused for something we can't tell.
+// Compares a player's plugins (anything with Filename, FileSize and Checksum, like Mods::Entry) with the listed ones. A
+// size or checksum of 0 on either side matches any: plain-name lists don't know them, and a player whose game couldn't
+// read a plugin (it logs that) isn't refused for something we can't tell.
 template <class TPlayerMods> Mismatch Compare(const std::vector<Listed>& acListed, const TPlayerMods& acPlayerMods)
 {
     Mismatch mismatch;
@@ -100,7 +121,8 @@ template <class TPlayerMods> Mismatch Compare(const std::vector<Listed>& acListe
         const auto cIt = std::find_if(acPlayerMods.begin(), acPlayerMods.end(), [&](const auto& acMod) { return Lower(acMod.Filename.c_str()) == cName; });
         if (cIt == acPlayerMods.end())
             mismatch.Missing.push_back(cListed);
-        else if (cListed.FileSize != 0 && cIt->FileSize != 0 && cIt->FileSize != cListed.FileSize)
+        else if ((cListed.FileSize != 0 && cIt->FileSize != 0 && cIt->FileSize != cListed.FileSize) ||
+                 (cListed.Checksum != 0 && cIt->Checksum != 0 && cIt->Checksum != cListed.Checksum))
             mismatch.DifferentVersion.push_back(cListed);
     }
     return mismatch;

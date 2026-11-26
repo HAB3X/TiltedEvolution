@@ -27,7 +27,10 @@ void Mods::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noexcept
         Serialization::WriteString(aWriter, entry.Filename);
         // Official v1.8.4 doesn't know mod versions
         if (!Wire::IsOfficial184())
+        {
             Serialization::WriteVarInt(aWriter, entry.FileSize);
+            Serialization::WriteVarInt(aWriter, entry.Checksum);
+        }
     }
 }
 
@@ -45,5 +48,6 @@ void Mods::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcept
         ModList[i].IsLite = Serialization::ReadBool(aReader);
         ModList[i].Filename = Serialization::ReadString(aReader);
         ModList[i].FileSize = Wire::IsOfficial184() ? 0 : Serialization::ReadVarInt(aReader) & 0xFFFFFFFF;
+        ModList[i].Checksum = Wire::IsOfficial184() ? 0 : Serialization::ReadVarInt(aReader) & 0xFFFFFFFF;
     }
 }

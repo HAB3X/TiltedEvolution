@@ -16,8 +16,14 @@ struct Mods
         // (official v1.8.4 doesn't send it). In a kModsMismatch refusal: the host's size when the player has another
         // version of the mod, 0 when they lack it.
         uint32_t FileSize = 0;
+        // CRC-32 of the plugin file, which tells apart versions of the same size; 0 when unknown (official v1.8.4
+        // doesn't send it)
+        uint32_t Checksum = 0;
 
-        bool operator==(const Entry& acRhs) const noexcept { return Filename == acRhs.Filename && Id == acRhs.Id && IsLite == acRhs.IsLite && FileSize == acRhs.FileSize; }
+        bool operator==(const Entry& acRhs) const noexcept
+        {
+            return Filename == acRhs.Filename && Id == acRhs.Id && IsLite == acRhs.IsLite && FileSize == acRhs.FileSize && Checksum == acRhs.Checksum;
+        }
 
         bool operator!=(const Entry& acRhs) const noexcept { return !this->operator==(acRhs); }
     };
