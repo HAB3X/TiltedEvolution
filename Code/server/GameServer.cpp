@@ -312,6 +312,22 @@ void GameServer::BindServerCommands()
             }
         });
 
+    m_commands.RegisterCommand<int64_t>(
+        "kick", "Disconnect a player, by the number /players shows",
+        [&](Console::ArgStack& aStack)
+        {
+            auto out = spdlog::get("ConOut");
+            const auto cId = aStack.Pop<int64_t>();
+            Player* pPlayer = m_pWorld->GetPlayerManager().GetById(static_cast<uint32_t>(cId));
+            if (!pPlayer)
+            {
+                out->warn("No player {} on here.", cId);
+                return;
+            }
+            out->info("Kicked {}: {}", cId, pPlayer->GetUsername().c_str());
+            Kick(pPlayer->GetConnectionId());
+        });
+
     m_commands.RegisterCommand<>(
         "mods", "List all installed mods on this server",
         [&](Console::ArgStack&)

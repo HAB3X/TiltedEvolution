@@ -100,12 +100,14 @@ void DediRunner::ReadStdin(uv_stream_t* apStream, ssize_t aRead, const uv_buf_t*
     if (aRead < 0)
     {
         if (aRead == UV_EOF)
-            uv_close(reinterpret_cast<uv_handle_t*>(&apStream), nullptr);
+            uv_close(reinterpret_cast<uv_handle_t*>(apStream), nullptr);
     }
     else if (aRead > 0)
     {
         for (auto i = 0; i < aRead; ++i)
         {
+            if (acpBuffer->base[i] == '\r')
+                continue;
             if (acpBuffer->base[i] == '\n')
             {
                 ctx->instance->HandleConsole(ctx->data);
@@ -154,15 +156,28 @@ void DediRunner::StartTerminalIO()
     spdlog::get("ConOut")->info("Server started, type /help for a list of commands.");
     PrintExecutorArrowHack();
 
-    uv_tty_init(&m_loop, &m_tty, 0, 1);
-    uv_tty_set_mode(&m_tty, UV_TTY_MODE_NORMAL);
+    // A console when started by hand; a pipe when a host app started the server and sends it commands
+    uv_stream_t* pInput = nullptr;
+    if (uv_guess_handle(0) == UV_TTY)
+    {
+        uv_tty_init(&m_loop, &m_tty, 0, 1);
+        uv_tty_set_mode(&m_tty, UV_TTY_MODE_NORMAL);
+        pInput = reinterpret_cast<uv_stream_t*>(&m_tty);
+    }
+    else
+    {
+        uv_pipe_init(&m_loop, &m_stdinPipe, 0);
+        if (uv_pipe_open(&m_stdinPipe, 0) != 0)
+            return;
+        pInput = reinterpret_cast<uv_stream_t*>(&m_stdinPipe);
+    }
 
     static Context ctx;
     ctx.instance = this;
 
-    m_tty.data = &ctx;
+    pInput->data = &ctx;
 
-    uv_read_start(reinterpret_cast<uv_stream_t*>(&m_tty), AllocateBuffer, ReadStdin);
+    uv_read_start(pInput, AllocateBuffer, ReadStdin);
 }
 
 void DediRunner::RequestKill()
