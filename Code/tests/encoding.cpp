@@ -184,6 +184,7 @@ TEST_CASE("Static structures", "[encoding.static]")
         ServerSettings sent;
         sent.HostWorld = true;
         sent.SharedQuestTypes = SharedQuests::Bit(SharedQuests::kMain) | SharedQuests::Bit(SharedQuests::kDawnguard);
+        sent.ReviveEnabled = true;
 
         Buffer buffer(1000);
         Buffer::Writer writer(&buffer);
@@ -195,6 +196,7 @@ TEST_CASE("Static structures", "[encoding.static]")
         received.Deserialize(reader);
         REQUIRE(received == sent);
         REQUIRE(received.SharedQuestTypes == sent.SharedQuestTypes);
+        REQUIRE(received.ReviveEnabled);
     }
 
     GIVEN("Shared quest categories")
@@ -1019,6 +1021,31 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    GIVEN("RequestRevive and NotifyRevive")
+    {
+        RequestRevive sendRequest, recvRequest;
+        sendRequest.PlayerId = 7;
+        NotifyRevive sendNotify, recvNotify;
+        sendNotify.Result = NotifyRevive::Outcome::kPartyDown;
+        sendNotify.ReviverId = 3;
+        sendNotify.ReviverName = "Lydia";
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendRequest.Serialize(writer);
+        sendNotify.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+        recvRequest.DeserializeRaw(reader);
+        reader.ReadBits(trash, 8);
+        recvNotify.DeserializeRaw(reader);
+
+        REQUIRE(sendRequest == recvRequest);
+        REQUIRE(sendNotify == recvNotify);
+    }
+
     GIVEN("RequestPartyPing")
     {
         RequestPartyPing sendMessage, recvMessage;
@@ -1509,6 +1536,8 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestQuestShare).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestQuestShareAnswer).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestCrimeAuthority).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestRevive).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kNotifyRevive).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyPartyQuestSharing).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyQuestShareOffer).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyQuestCatchUp).has_value());
@@ -1523,6 +1552,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         sent.VoipEnabled = true;
         sent.HostWorld = true;
         sent.SharedQuestTypes = SharedQuests::Bit(SharedQuests::kMain);
+        sent.ReviveEnabled = true;
 
         Buffer buffer(1000);
         Buffer::Writer writer(&buffer);
@@ -1537,6 +1567,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(received.VoipEnabled);
         REQUIRE_FALSE(received.HostWorld);
         REQUIRE(received.SharedQuestTypes == SharedQuests::kDefault);
+        REQUIRE_FALSE(received.ReviveEnabled);
         REQUIRE(Serialization::ReadVarInt(reader) == 1234567);
     }
 

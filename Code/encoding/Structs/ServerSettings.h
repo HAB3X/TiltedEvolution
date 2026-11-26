@@ -26,4 +26,6 @@ struct ServerSettings
     bool HostWorld{};
     // The quest categories the party shares, a SharedQuests mask (Gameplay:sSharedQuestTypes)
     uint32_t SharedQuestTypes{SharedQuests::kDefault};
+    // A downed party member waits for a partner to revive them instead of dying (Gameplay:bReviveInParty)
+    bool ReviveEnabled{};
 };

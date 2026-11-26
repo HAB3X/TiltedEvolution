@@ -28,6 +28,9 @@ struct HostSettings
     // Each player gets their own copy of what is in containers instead of first come first served
     // (Gameplay:bPerPlayerLoot). Plus servers only
     bool PerPlayerLoot{};
+    // A downed party member waits for a partner to revive them instead of dying (Gameplay:bReviveInParty). Plus
+    // servers only
+    bool Revive{true};
 };
 
 /**

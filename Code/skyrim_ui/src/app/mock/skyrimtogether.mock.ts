@@ -144,6 +144,7 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     relay: string,
     relayPassword: string,
     perPlayerLoot: boolean,
+    revive: boolean,
   ): void {
     console.log(`host${relay ? ` through the relay ${relay}` : ''}`);
     this.connect('127.0.0.1', 10578, password);

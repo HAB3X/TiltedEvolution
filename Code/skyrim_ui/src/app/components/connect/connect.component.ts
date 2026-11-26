@@ -46,6 +46,8 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
   public pauseInMenus = false;
   /** Each player gets their own copy of what is in containers (Gameplay:bPerPlayerLoot) */
   public perPlayerLoot = false;
+  /** A downed party member waits for a partner to revive them instead of dying (Gameplay:bReviveInParty) */
+  public revive = true;
   /** Hosting for the regular Skyrim Together: the Plus-only options are off */
   public classic = false;
   /** The quest categories the party shares, names the server knows (Gameplay:sSharedQuestTypes) */
@@ -241,6 +243,7 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
       relay: this.classic ? '' : this.relay.trim(),
       relayPassword: this.relayPassword,
       perPlayerLoot: this.perPlayerLoot,
+      revive: this.revive,
     });
   }
 

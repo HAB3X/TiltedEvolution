@@ -28,6 +28,9 @@ struct Player
     // The player's bounty with a crime faction, as their game last reported it (RequestCrimeAuthority)
     [[nodiscard]] uint32_t GetBounty(const GameId& acCrimeFaction) const noexcept;
     void SetBounty(const GameId& acCrimeFaction, uint32_t aBounty) noexcept;
+    // In bleedout, as the player's party bar last reported it, until a party member revives them (ReviveService)
+    [[nodiscard]] bool IsDowned() const noexcept { return m_downed; }
+    void SetDowned(bool aDowned) noexcept { m_downed = aDowned; }
 
     [[nodiscard]] CellIdComponent& GetCellComponent() noexcept;
     [[nodiscard]] const CellIdComponent& GetCellComponent() const noexcept;
@@ -67,5 +70,6 @@ private:
     uint32_t m_stringCacheId{0};
     uint16_t m_level{0};
     bool m_inCombat{false};
+    bool m_downed{false};
     Map<GameId, uint32_t> m_bounties;
 };

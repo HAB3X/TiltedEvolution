@@ -23,6 +23,7 @@
 #include <Events/UpdateEvent.h>
 #include <Services/ReturnService.h>
 #include <Services/WorldSaveService.h>
+#include <Services/ReviveService.h>
 #include <steam/isteamnetworkingutils.h>
 
 #include <Messages/AuthenticationResponse.h>
@@ -181,6 +182,7 @@ ServerSettings GetSettings()
     settings.VoipEnabled = bVoip;
     settings.HostWorld = bHostWorld && !bAnnounceServer;
     settings.SharedQuestTypes = QuestService::GetSharedQuestTypes();
+    settings.ReviveEnabled = ReviveService::IsEnabled();
     return settings;
 }
 

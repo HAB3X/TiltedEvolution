@@ -165,6 +165,7 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             settings.Relay = eventArgs->GetString(7).ToString();
             settings.RelayPassword = eventArgs->GetString(8).ToString();
             settings.PerPlayerLoot = eventArgs->GetBool(9);
+            settings.Revive = eventArgs->GetBool(10);
             World::Get().GetRunner().Queue([settings]() { World::Get().ctx().at<LocalServerService>().Host(settings); });
         }
         else if (eventName == "disconnect")

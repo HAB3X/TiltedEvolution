@@ -1,5 +1,6 @@
 #include <Systems/FrameProfiler.h>
 #include <Services/PlayerService.h>
+#include <Services/ReviveService.h>
 
 #include <World.h>
 
@@ -215,22 +216,62 @@ void PlayerService::RunRespawnUpdates() noexcept
         m_cachedSecondarySpellId = pPlayer->magicItems[1] ? pPlayer->magicItems[1]->formID : 0;
         m_cachedPowerId = pPlayer->equippedShout ? pPlayer->equippedShout->formID : 0;
 
+        // Back up after a revive: the next time they go down is unrecoverable again
+        if (m_revivedRecovering)
+        {
+            pPlayer->SetNoBleedoutRecovery(true);
+            m_revivedRecovering = false;
+        }
+
         s_startTimer = false;
+        m_waitingForRevive = false;
         return;
     }
 
     if (!s_startTimer)
     {
         s_startTimer = true;
-        m_respawnDeadline = std::chrono::steady_clock::now() + 5s;
-        FadeOutGame(true, true, 3.0f, true, 2.0f);
 
         // If a player dies not by its health reaching 0, getting it up from its bleedout state isn't possible
         // just by setting its health back to max. Therefore, put it to 0.
         if (pPlayer->GetActorValue(ActorValueInfo::kHealth) > 0.f)
             pPlayer->ForceActorValue(ActorValueOwner::ForceMode::DAMAGE, ActorValueInfo::kHealth, 0);
 
-        pPlayer->PayCrimeGoldToAllFactions();
+        m_waitingForRevive = m_world.ctx().at<ReviveService>().StartWaiting();
+        if (!m_waitingForRevive)
+            StartDying();
+    }
+
+    if (m_waitingForRevive)
+    {
+        switch (m_world.ctx().at<ReviveService>().Poll())
+        {
+        case ReviveService::Wait::kWaiting: return;
+        case ReviveService::Wait::kRevived:
+            m_waitingForRevive = false;
+            // Recoverable until they are up (above), with half their health
+            pPlayer->SetNoBleedoutRecovery(false);
+            pPlayer->ForceActorValue(ActorValueOwner::ForceMode::DAMAGE, ActorValueInfo::kHealth, pPlayer->GetActorPermanentValue(ActorValueInfo::kHealth) * 0.5f);
+            m_revivedRecovering = true;
+            m_reviveRecoveryDeadline = std::chrono::steady_clock::now() + 10s;
+            return;
+        case ReviveService::Wait::kGiveUp:
+            m_waitingForRevive = false;
+            StartDying();
+            break;
+        }
+    }
+
+    if (m_revivedRecovering)
+    {
+        // Containment, not a fix: should the engine keep a revived player in bleedout (not seen yet, unverified in a
+        // real game), they die as without a party rather than lie there for good
+        if (std::chrono::steady_clock::now() < m_reviveRecoveryDeadline)
+            return;
+        spdlog::error("The revived player is still in bleedout after 10 seconds, they die instead");
+        m_revivedRecovering = false;
+        pPlayer->SetNoBleedoutRecovery(true);
+        StartDying();
     }
 
     const auto cNow = std::chrono::steady_clock::now();
@@ -259,6 +300,13 @@ void PlayerService::RunRespawnUpdates() noexcept
         m_knockdownDeadline = std::chrono::steady_clock::now() + 1500ms;
         m_knockdownStart = true;
     }
+}
+
+void PlayerService::StartDying() noexcept
+{
+    m_respawnDeadline = std::chrono::steady_clock::now() + 5s;
+    FadeOutGame(true, true, 3.0f, true, 2.0f);
+    PlayerCharacter::Get()->PayCrimeGoldToAllFactions();
 }
 
 // Doesn't seem to respawn quite yet

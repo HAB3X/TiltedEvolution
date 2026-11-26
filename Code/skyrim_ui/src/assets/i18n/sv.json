@@ -112,6 +112,8 @@
         "PAUSE": "Världen pausas medan alla spelare är i en meny, som inventariet eller kartan.",
         "LOOT_TITLE": "Byte för varje spelare",
         "LOOT": "Varje spelare hittar sin egen kopia av det som finns i kistor, tunnor och andra behållare. För kroppar gäller fortfarande först till kvarn.",
+        "REVIVE_TITLE": "Återuppliva i stället för att ladda om",
+        "REVIVE": "I en grupp blir en spelare som faller liggande tills en partner återupplivar dem genom att aktivera dem. När hela gruppen ligger ner dör de som vanligt.",
         "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar",
         "MODS_REQUIRED": "Mods som vännerna behöver: {{count}}",
         "MODS_REQUIRED_NONE": "Du har inga mods utöver spelets egna, så vännerna behöver inga.",

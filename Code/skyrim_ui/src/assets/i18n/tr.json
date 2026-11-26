@@ -112,6 +112,8 @@
         "PAUSE": "Tüm oyuncular envanter ya da harita gibi bir menüdeyken dünya duraklar.",
         "LOOT_TITLE": "Her oyuncuya ayrı ganimet",
         "LOOT": "Her oyuncu sandıklarda, fıçılarda ve diğer kaplarda kendi kopyasını bulur. Cesetlerde ise ilk gelen alır.",
+        "REVIVE_TITLE": "Yeniden yükleme yerine canlandırma",
+        "REVIVE": "Grupta düşen oyuncu, bir arkadaşı onu etkinleştirerek canlandırana kadar yerde kalır. Tüm grup düşerse her zamanki gibi ölürler.",
         "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun",
         "MODS_REQUIRED": "Arkadaşlarının ihtiyaç duyduğu modlar: {{count}}",
         "MODS_REQUIRED_NONE": "Oyunun kendi dosyaları dışında modun yok, bu yüzden arkadaşlarının mod ihtiyacı yok.",

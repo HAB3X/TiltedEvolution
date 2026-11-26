@@ -91,6 +91,8 @@ export interface HostOptions {
   relayPassword: string;
   /** Each player gets their own copy of what is in containers (Gameplay:bPerPlayerLoot) */
   perPlayerLoot: boolean;
+  /** A downed party member waits for a partner to revive them instead of dying (Gameplay:bReviveInParty) */
+  revive: boolean;
 }
 
 /** A server on the local network, as it answered a search. */
@@ -588,6 +590,7 @@ export class ClientService implements OnDestroy {
       relay: this.storeService.get('host_relay', ''),
       relayPassword: this.storeService.get('host_relay_password', ''),
       perPlayerLoot: this.storeService.getBool('host_per_player_loot', false),
+      revive: this.storeService.getBool('host_revive', true),
     };
   }
 
@@ -603,6 +606,7 @@ export class ClientService implements OnDestroy {
     this.storeService.set('host_relay', options.relay);
     this.storeService.set('host_relay_password', options.relayPassword);
     this.storeService.set('host_per_player_loot', String(options.perPlayerLoot));
+    this.storeService.set('host_revive', String(options.revive));
     skyrimtogether.hostServer(
       password,
       options.hostWorld,
@@ -614,6 +618,7 @@ export class ClientService implements OnDestroy {
       options.relay,
       options.relayPassword,
       options.perPlayerLoot,
+      options.revive,
     );
     this.hostingChange.next(true);
     this.isConnectionInProgressChange.next(true);

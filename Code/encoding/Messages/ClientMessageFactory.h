@@ -78,6 +78,7 @@
 #include <Messages/RequestVote.h>
 #include <Messages/RequestVoteAnswer.h>
 #include <Messages/RequestCrimeAuthority.h>
+#include <Messages/RequestRevive.h>
 
 using TiltedPhoques::UniquePtr;
 
@@ -92,7 +93,7 @@ struct ClientMessageFactory
             PartyChangeLeaderRequest, PartyKickRequest, RequestActorValueChanges, RequestActorMaxValueChanges, EnterExteriorCellRequest, RequestHealthChangeBroadcast, ActivateRequest, LockChangeRequest, AssignObjectsRequest, RequestDeathStateChange, ShiftGridCellRequest,
             RequestOwnershipTransfer, RequestOwnershipClaim, RequestObjectInventoryChanges, SpellCastRequest, ProjectileLaunchRequest, InterruptCastRequest, AddTargetRequest, ScriptAnimationRequest, DrawWeaponRequest, MountRequest, NewPackageRequest, RequestRespawn, SyncExperienceRequest,
             RequestEquipmentChanges, SendChatMessageRequest, TeleportCommandRequest, PlayerRespawnRequest, DialogueRequest, SubtitleRequest, PlayerDialogueRequest, PlayerLevelRequest, TeleportRequest, RequestPlayerHealthUpdate, RequestWeatherChange, RequestCurrentWeather, RequestSetWaypoint,
-            RequestRemoveWaypoint, RemoveSpellRequest, SetTimeCommandRequest, RequestActionEvents, PartyCheckpointRequest, VoiceDataRequest, VoiceStateRequest, RequestHostWorld, HostWorldStateRequest, RequestModeratePlayer, RequestTimeSkip, RequestPause, RequestPartyTravel, RequestQuestStages, RequestPartyPing, RequestPartyDoor, RequestPartySummon, RequestPartySummonAnswer, RequestRespawnAtPartner, RequestVote, RequestVoteAnswer, RequestPartyQuestSharing, RequestQuestShare, RequestQuestShareAnswer, RequestCrimeAuthority>;
+            RequestRemoveWaypoint, RemoveSpellRequest, SetTimeCommandRequest, RequestActionEvents, PartyCheckpointRequest, VoiceDataRequest, VoiceStateRequest, RequestHostWorld, HostWorldStateRequest, RequestModeratePlayer, RequestTimeSkip, RequestPause, RequestPartyTravel, RequestQuestStages, RequestPartyPing, RequestPartyDoor, RequestPartySummon, RequestPartySummonAnswer, RequestRespawnAtPartner, RequestVote, RequestVoteAnswer, RequestPartyQuestSharing, RequestQuestShare, RequestQuestShareAnswer, RequestCrimeAuthority, RequestRevive>;
 
         return s_visitor(std::forward<T>(func));
     }

@@ -110,6 +110,8 @@
         "PAUSE": "Die Welt pausiert, solange alle Spieler in einem Menü sind, etwa Inventar oder Karte.",
         "LOOT_TITLE": "Beute für jeden Spieler",
         "LOOT": "Jeder Spieler findet in Truhen, Fässern und anderen Behältern seine eigene Kopie des Inhalts. Leichen plündert weiterhin, wer zuerst kommt.",
+        "REVIVE_TITLE": "Wiederbeleben statt Neuladen",
+        "REVIVE": "In einer Gruppe bleibt ein gefallener Spieler am Boden, bis ein Mitspieler ihn durch Aktivieren wiederbelebt. Liegt die ganze Gruppe am Boden, sterben alle wie gewohnt.",
         "REQUIRE_MODS_TITLE": "Freunde brauchen meine Mods",
         "MODS_REQUIRED": "Mods, die Freunde brauchen: {{count}}",
         "MODS_REQUIRED_NONE": "Du hast keine Mods außer den Dateien des Spiels, also brauchen Freunde keine.",

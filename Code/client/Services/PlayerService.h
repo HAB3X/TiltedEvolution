@@ -45,6 +45,8 @@ private:
      */
     void RunRespawnUpdates() noexcept;
     void RunPostDeathUpdates() noexcept;
+    // Nobody revives the player: fade out, pay their bounties, and respawn after m_respawnDeadline
+    void StartDying() noexcept;
     /**
      * @brief Make sure difficulty doesn't get changed while connected
      */
@@ -63,6 +65,11 @@ private:
     int32_t m_previousDifficulty = 6;
 
     bool m_isDeathSystemEnabled = true;
+    // Down and waiting for a party member (ReviveService)
+    bool m_waitingForRevive = false;
+    // Revived and not up yet: bleedout stays recoverable until they are
+    bool m_revivedRecovering = false;
+    std::chrono::steady_clock::time_point m_reviveRecoveryDeadline;
 
     bool m_knockdownStart = false;
     std::chrono::steady_clock::time_point m_knockdownDeadline;

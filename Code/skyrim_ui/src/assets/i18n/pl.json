@@ -111,6 +111,8 @@
         "PAUSE": "Świat zatrzymuje się, gdy wszyscy gracze są w menu, np. w ekwipunku lub na mapie.",
         "LOOT_TITLE": "Łup dla każdego gracza",
         "LOOT": "Każdy gracz znajduje własną kopię zawartości skrzyń, beczek i innych pojemników. Ciała nadal przeszukuje ten, kto pierwszy zdąży.",
+        "REVIVE_TITLE": "Wskrzeszanie zamiast wczytywania",
+        "REVIVE": "W drużynie powalony gracz leży, dopóki towarzysz go nie wskrzesi, aktywując go. Gdy padnie cała drużyna, giną jak zwykle.",
         "REQUIRE_MODS_TITLE": "Znajomi potrzebują moich modów",
         "MODS_REQUIRED": "Mody potrzebne znajomym: {{count}}",
         "MODS_REQUIRED_NONE": "Nie masz modów poza plikami samej gry, więc znajomi nie potrzebują żadnych.",

@@ -111,6 +111,8 @@
         "PAUSE": "De wereld pauzeert zolang alle spelers in een menu zitten, zoals de inventaris of de kaart.",
         "LOOT_TITLE": "Buit per speler",
         "LOOT": "Elke speler vindt zijn eigen kopie van wat er in kisten, tonnen en andere containers zit. Lichamen blijven voor wie het eerst komt.",
+        "REVIVE_TITLE": "Reanimeren in plaats van herladen",
+        "REVIVE": "In een groep blijft een gevallen speler liggen tot een partner hem reanimeert door hem te activeren. Ligt de hele groep neer, dan sterven ze zoals gewoonlijk.",
         "REQUIRE_MODS_TITLE": "Vrienden hebben mijn mods nodig",
         "MODS_REQUIRED": "Mods die vrienden nodig hebben: {{count}}",
         "MODS_REQUIRED_NONE": "Je hebt geen mods naast die van het spel zelf, dus vrienden hebben er geen nodig.",

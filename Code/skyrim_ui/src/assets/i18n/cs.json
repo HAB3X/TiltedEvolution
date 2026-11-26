@@ -110,6 +110,8 @@
         "PAUSE": "Svět se pozastaví, dokud jsou všichni hráči v nabídce, třeba v inventáři nebo na mapě.",
         "LOOT_TITLE": "Kořist pro každého hráče",
         "LOOT": "Každý hráč najde v truhlách, sudech a dalších schránkách vlastní kopii obsahu. Těla zůstávají tomu, kdo přijde první.",
+        "REVIVE_TITLE": "Oživení místo načítání",
+        "REVIVE": "V partě zůstane padlý hráč ležet, dokud ho spoluhráč neoživí aktivací. Když padne celá parta, zemřou jako obvykle.",
         "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody",
         "MODS_REQUIRED": "Módy, které přátelé potřebují: {{count}}",
         "MODS_REQUIRED_NONE": "Kromě vlastních souborů hry nemáte žádné módy, přátelé tedy žádné nepotřebují.",

@@ -96,6 +96,13 @@
         </span>
         <input type="checkbox" id="host-loot" [(ngModel)]="perPlayerLoot" />
       </label>
+      <label class="toggle-row" for="host-revive">
+        <span class="toggle-text">
+          <span class="toggle-title">{{ 'COMPONENT.CONNECT.HOST.REVIVE_TITLE' | transloco }}</span>
+          <span class="toggle-hint">{{ 'COMPONENT.CONNECT.HOST.REVIVE' | transloco }}</span>
+        </span>
+        <input type="checkbox" id="host-revive" [(ngModel)]="revive" />
+      </label>
       }
       <label class="toggle-row" for="host-pvp">
         <span class="toggle-text">

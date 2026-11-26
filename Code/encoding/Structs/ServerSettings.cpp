@@ -6,7 +6,7 @@ using TiltedPhoques::Serialization;
 
 bool ServerSettings::operator==(const ServerSettings& acRhs) const noexcept
 {
-    return Difficulty == acRhs.Difficulty && GreetingsEnabled == acRhs.GreetingsEnabled && PvpEnabled == acRhs.PvpEnabled && SyncPlayerHomes == acRhs.SyncPlayerHomes && DeathSystemEnabled == acRhs.DeathSystemEnabled && AutoPartyJoin == acRhs.AutoPartyJoin && ConsoleCommandsAllowed == acRhs.ConsoleCommandsAllowed && VoipEnabled == acRhs.VoipEnabled && HostWorld == acRhs.HostWorld && SharedQuestTypes == acRhs.SharedQuestTypes;
+    return Difficulty == acRhs.Difficulty && GreetingsEnabled == acRhs.GreetingsEnabled && PvpEnabled == acRhs.PvpEnabled && SyncPlayerHomes == acRhs.SyncPlayerHomes && DeathSystemEnabled == acRhs.DeathSystemEnabled && AutoPartyJoin == acRhs.AutoPartyJoin && ConsoleCommandsAllowed == acRhs.ConsoleCommandsAllowed && VoipEnabled == acRhs.VoipEnabled && HostWorld == acRhs.HostWorld && SharedQuestTypes == acRhs.SharedQuestTypes && ReviveEnabled == acRhs.ReviveEnabled;
 }
 
 bool ServerSettings::operator!=(const ServerSettings& acRhs) const noexcept
@@ -30,6 +30,7 @@ void ServerSettings::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noe
     Serialization::WriteBool(aWriter, VoipEnabled);
     Serialization::WriteBool(aWriter, HostWorld);
     Serialization::WriteVarInt(aWriter, SharedQuestTypes);
+    Serialization::WriteBool(aWriter, ReviveEnabled);
 }
 
 void ServerSettings::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcept
@@ -48,10 +49,12 @@ void ServerSettings::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcep
         VoipEnabled = false;
         HostWorld = false;
         SharedQuestTypes = SharedQuests::kDefault;
+        ReviveEnabled = false;
         return;
     }
     ConsoleCommandsAllowed = Serialization::ReadBool(aReader);
     VoipEnabled = Serialization::ReadBool(aReader);
     HostWorld = Serialization::ReadBool(aReader);
     SharedQuestTypes = Serialization::ReadVarInt(aReader) & 0xFFFFFFFF;
+    ReviveEnabled = Serialization::ReadBool(aReader);
 }

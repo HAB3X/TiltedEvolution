@@ -39,6 +39,8 @@
 #include <Messages/NotifyLootRefused.h>
 #include <Messages/NotifyOwnershipTransfer.h>
 #include <Messages/RequestCrimeAuthority.h>
+#include <Messages/RequestRevive.h>
+#include <Messages/NotifyRevive.h>
 #include <Messages/RequestOwnershipClaim.h>
 #include <Messages/CharacterSpawnRequest.h>
 #include <Messages/NotifyInventoryChanges.h>
@@ -218,6 +220,7 @@ struct FakePlayer final : Client
         }
         case kNotifyLootRefused: LootRefusals.push_back(*static_cast<NotifyLootRefused*>(pMessage.get())); break;
         case kNotifyOwnershipTransfer: OwnershipTransfers.push_back(*static_cast<NotifyOwnershipTransfer*>(pMessage.get())); break;
+        case kNotifyRevive: Revives.push_back(*static_cast<NotifyRevive*>(pMessage.get())); break;
         case kCharacterSpawnRequest:
         {
             const auto* pSpawn = static_cast<CharacterSpawnRequest*>(pMessage.get());
@@ -298,6 +301,7 @@ struct FakePlayer final : Client
     size_t MovementBytes = 0;
     std::vector<NotifyLootRefused> LootRefusals;
     std::vector<NotifyOwnershipTransfer> OwnershipTransfers;
+    std::vector<NotifyRevive> Revives;
 
     // The last transfer of this actor to this player, if any came since aFrom
     const NotifyOwnershipTransfer* FindTransfer(uint32_t aServerId, uint32_t aOwnerPlayerId, size_t aFrom = 0) const
@@ -1890,6 +1894,74 @@ int RunCrimeMember(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Reviving: the leader goes down and the member revives them; a revive of a player who is up does nothing; with both
+// down, the server tells both nobody is left to revive them
+RequestPlayerHealthUpdate DownedUpdate(bool aDowned)
+{
+    return BarUpdate(aDowned ? 0.f : 60.f, PartyVitals{.Magicka = 50, .Stamina = 50, .InCombat = true, .Downed = aDowned});
+}
+
+bool HasRevive(const FakePlayer& acPlayer, NotifyRevive::Outcome aOutcome, size_t aFrom = 0)
+{
+    return std::any_of(acPlayer.Revives.begin() + static_cast<ptrdiff_t>(std::min(aFrom, acPlayer.Revives.size())), acPlayer.Revives.end(),
+                       [aOutcome](const NotifyRevive& acRevive) { return acRevive.Result == aOutcome; });
+}
+
+int RunReviveLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeReviveLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("revive leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    Check("the server revives in parties by default", leader.Settings.ReviveEnabled);
+    leader.Send(PartyCreateRequest{});
+    Check("revive leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("revive leader gets its character", AssignAt(leader, 1, GameId(0, 0x14), kGuardX).has_value());
+    EnterRelayCell(leader, kGuardX);
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    RunUntil(leader, [] { return false; }, 3s);
+
+    leader.Send(DownedUpdate(true));
+    const bool cRevived = RunUntil(leader, [&] { return HasRevive(leader, NotifyRevive::Outcome::kRevived); }, 20s);
+    Check("goes down and the member revives them", cRevived && leader.Revives.front().ReviverName == "FakeReviveMember",
+          leader.Revives.empty() ? "nothing" : std::string("by ") + leader.Revives.front().ReviverName.c_str());
+
+    leader.Send(DownedUpdate(false));
+    const size_t cAfterUp = leader.Revives.size();
+    RunUntil(leader, [] { return false; }, 4s);
+    Check("a revive while they are up does nothing", leader.Revives.size() == cAfterUp, std::to_string(leader.Revives.size() - cAfterUp) + " notices");
+
+    leader.Send(DownedUpdate(true));
+    const bool cPartyDown = RunUntil(leader, [&] { return HasRevive(leader, NotifyRevive::Outcome::kPartyDown, cAfterUp); }, 20s);
+    Check("once the member is down too, nobody is left to revive them", cPartyDown);
+    RunUntil(leader, [] { return false; }, 2s);
+    return s_failures ? 1 : 0;
+}
+
+int RunReviveMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeReviveMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("revive member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    Check("revive member gets its character", AssignAt(member, 1, GameId(0, 0x14), kGuardX + 50.f).has_value());
+    EnterRelayCell(member, kGuardX + 50.f);
+    member.Send(DownedUpdate(false));
+
+    const auto leaderDowned = [&](bool aDowned) { return member.Party && member.Health && member.Health->PlayerId == member.Party->LeaderPlayerId && member.Health->Vitals.Downed == aDowned; };
+    Check("sees the leader go down", RunUntil(member, [&] { return leaderDowned(true); }, 30s));
+    RequestRevive revive;
+    revive.PlayerId = member.Party ? member.Party->LeaderPlayerId : 0;
+    member.Send(revive);
+
+    Check("sees the leader back up", RunUntil(member, [&] { return leaderDowned(false); }, 20s));
+    member.Send(revive);
+
+    Check("sees the leader go down again", RunUntil(member, [&] { return leaderDowned(true); }, 20s));
+    member.Send(DownedUpdate(true));
+    Check("goes down too: nobody is left to revive them", RunUntil(member, [&] { return HasRevive(member, NotifyRevive::Outcome::kPartyDown); }));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -1919,6 +1991,7 @@ int RunCrimeMember(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe shareleader|sharemember [address:port] [password]: start the leader first (sSharedQuestTypes=Main)
 // FakePlayers.exe catchupleader|catchupmember [address:port] [password]: start the leader first
 // FakePlayers.exe crimeleader|crimemember [address:port] [password]: start the leader first
+// FakePlayers.exe reviveleader|revivemember [address:port] [password]: start the leader first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -2028,12 +2101,16 @@ int main(int argc, char** argv)
         return RunShareMember(cEndpoint, cPassword);
     if (cRole == "catchupleader")
         return RunCatchUpLeader(cEndpoint, cPassword);
+    if (cRole == "reviveleader")
+        return RunReviveLeader(cEndpoint, cPassword);
+    if (cRole == "revivemember")
+        return RunReviveMember(cEndpoint, cPassword);
     if (cRole == "crimeleader")
         return RunCrimeLeader(cEndpoint, cPassword);
     if (cRole == "crimemember")
         return RunCrimeMember(cEndpoint, cPassword);
     if (cRole == "catchupmember")
         return RunCatchUpMember(cEndpoint, cPassword);
-    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|crimeleader|crimemember|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|crimeleader|crimemember|reviveleader|revivemember|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
     return 2;
 }

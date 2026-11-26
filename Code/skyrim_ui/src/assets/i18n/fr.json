@@ -111,6 +111,8 @@
         "PAUSE": "Le monde se met en pause tant que tous les joueurs sont dans un menu, comme l'inventaire ou la carte.",
         "LOOT_TITLE": "Butin pour chaque joueur",
         "LOOT": "Chaque joueur trouve sa propre copie du contenu des coffres, tonneaux et autres conteneurs. Les corps restent au premier arrivé.",
+        "REVIVE_TITLE": "Réanimer au lieu de recharger",
+        "REVIVE": "En groupe, un joueur à terre y reste jusqu'à ce qu'un partenaire le réanime en l'activant. Si tout le groupe est à terre, ils meurent comme d'habitude.",
         "REQUIRE_MODS_TITLE": "Mes amis ont besoin de mes mods",
         "MODS_REQUIRED": "Mods requis pour vos amis : {{count}}",
         "MODS_REQUIRED_NONE": "Vous n'avez aucun mod en dehors des fichiers du jeu, vos amis n'en ont donc besoin d'aucun.",

@@ -16,6 +16,7 @@
 #include <Services/WeatherService.h>
 #include <Services/ScriptService.h>
 #include <Services/MapService.h>
+#include <Services/ReviveService.h>
 #include <Services/PartyCheckpointService.h>
 #include <Services/VoiceService.h>
 #include <Services/HostWorldService.h>
@@ -45,6 +46,7 @@ World::World()
     ctx().emplace<CombatService>(*this, m_dispatcher);
     ctx().emplace<WeatherService>(*this, m_dispatcher);
     ctx().emplace<MapService>(*this, m_dispatcher);
+    ctx().emplace<ReviveService>(*this, m_dispatcher);
     ctx().emplace<PartyCheckpointService>(*this, m_dispatcher);
     ctx().emplace<VoiceService>(*this, m_dispatcher);
     ctx().emplace<HostWorldService>(*this, m_dispatcher);

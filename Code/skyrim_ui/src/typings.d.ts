@@ -507,6 +507,7 @@ interface SkyrimTogether {
    * @param relay A relay (SkyrimTogetherRelay) friends join through when the router can't be opened, address:port; empty for none.
    * @param relayPassword That relay's password.
    * @param perPlayerLoot Whether each player gets their own copy of what is in containers (Gameplay:bPerPlayerLoot).
+   * @param revive Whether a downed party member waits for a partner to revive them instead of dying (Gameplay:bReviveInParty).
    */
   hostServer(
     password: string,
@@ -519,6 +520,7 @@ interface SkyrimTogether {
     relay: string,
     relayPassword: string,
     perPlayerLoot: boolean,
+    revive: boolean,
   ): void;
 
   /**
