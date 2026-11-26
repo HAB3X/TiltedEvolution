@@ -60,7 +60,20 @@
         "PRESET_FREE_ROAM_HINT": "Herkes kendi dünyasında; modların gerekli",
         "PRESET_PVP_HINT": "Oyuncular dövüşebilir; her mod",
         "HOST_WORLD_TITLE": "Arkadaşlarım dünyama girsin",
-        "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun"
+        "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun",
+        "QUESTS_TITLE": "Paylaşılan görevler",
+        "QUESTS": "Seçilen türlerdeki görevlerin ilerlemesi gruptaki herkesle paylaşılır.",
+        "QUEST_TYPE_Main": "Ana görev",
+        "QUEST_TYPE_MagesGuild": "Winterhold Koleji",
+        "QUEST_TYPE_ThievesGuild": "Hırsızlar Loncası",
+        "QUEST_TYPE_DarkBrotherhood": "Karanlık Kardeşlik",
+        "QUEST_TYPE_Companions": "Yoldaşlar",
+        "QUEST_TYPE_Misc": "Çeşitli",
+        "QUEST_TYPE_Daedric": "Daedrik",
+        "QUEST_TYPE_Side": "Yan görevler",
+        "QUEST_TYPE_CivilWar": "İç Savaş",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Ağındaki oyunlar",

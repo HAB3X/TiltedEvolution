@@ -394,8 +394,9 @@ interface SkyrimTogether {
    * @param hostWorld Whether friends who join take over the host's world.
    * @param requireMods Whether friends need the host's mods to join.
    * @param pvp Whether players can hurt each other.
+   * @param sharedQuestTypes Comma separated quest categories shared with the party (Gameplay:sSharedQuestTypes).
    */
-  hostServer(password: string, hostWorld: boolean, requireMods: boolean, pvp: boolean): void;
+  hostServer(password: string, hostWorld: boolean, requireMods: boolean, pvp: boolean, sharedQuestTypes: string): void;
 
   /**
    * Look for servers on the local network; the answer comes as a lanServers event.

@@ -58,7 +58,20 @@
         "PRESET_FREE_ROAM_HINT": "Jeder behält seine Welt; deine Mods nötig",
         "PRESET_PVP_HINT": "Spieler können kämpfen; beliebige Mods",
         "HOST_WORLD_TITLE": "Freunde betreten meine Welt",
-        "REQUIRE_MODS_TITLE": "Freunde brauchen meine Mods"
+        "REQUIRE_MODS_TITLE": "Freunde brauchen meine Mods",
+        "QUESTS_TITLE": "Geteilte Quests",
+        "QUESTS": "Der Fortschritt in den gewählten Questarten wird mit allen in der Gruppe geteilt.",
+        "QUEST_TYPE_Main": "Hauptquest",
+        "QUEST_TYPE_MagesGuild": "Akademie von Winterfeste",
+        "QUEST_TYPE_ThievesGuild": "Diebesgilde",
+        "QUEST_TYPE_DarkBrotherhood": "Dunkle Bruderschaft",
+        "QUEST_TYPE_Companions": "Gefährten",
+        "QUEST_TYPE_Misc": "Verschiedenes",
+        "QUEST_TYPE_Daedric": "Daedra",
+        "QUEST_TYPE_Side": "Nebenquests",
+        "QUEST_TYPE_CivilWar": "Bürgerkrieg",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Spiele in deinem Netzwerk",

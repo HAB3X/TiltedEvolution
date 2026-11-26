@@ -12,6 +12,8 @@ struct HostSettings
     bool RequireMods{};
     // Players can hurt each other (Gameplay:bEnablePvp)
     bool Pvp{};
+    // The quest categories the party shares, SharedQuests names (Gameplay:sSharedQuestTypes)
+    std::string SharedQuestTypes;
 };
 
 /**

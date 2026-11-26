@@ -30,12 +30,16 @@ constexpr char kOwnWorldSave[] = "BeforeHostWorld";
 // How long to wait for the player to be free to save (not in combat or a menu)
 constexpr std::chrono::seconds kOwnWorldSaveTimeout{60};
 
-// The quests a joiner takes over: the ones the party syncs, without the background (None) and Miscellaneous ones,
-// which the server only relays with Gameplay:bEnableMiscQuestSync, and which run per player for things like radiant
-// favours and the game's own systems
+// The quests a joiner takes over: the categories the host shares (Gameplay:sSharedQuestTypes), never the background
+// (None) ones even when Miscellaneous is shared, as those include the game's own systems that run per player
+static_assert(SharedQuests::kMisc == static_cast<uint8_t>(TESQuest::Type::Miscellaneous) && SharedQuests::kDragonborn == static_cast<uint8_t>(TESQuest::Type::DLC02_Dragonborn),
+              "SharedQuests mirrors TESQuest::Type");
+
 bool IsHostWorldQuest(TESQuest* apQuest) noexcept
 {
-    return apQuest->type != TESQuest::Type::None && apQuest->type != TESQuest::Type::Miscellaneous && !QuestService::IsNonSyncableQuest(apQuest);
+    const uint8_t cType = static_cast<uint8_t>(apQuest->type);
+    return apQuest->type != TESQuest::Type::None && SharedQuests::IsShared(World::Get().GetServerSettings().SharedQuestTypes, cType) &&
+           !QuestService::IsNonSyncableQuest(apQuest);
 }
 
 bool IsCompleted(const TESQuest* apQuest) noexcept

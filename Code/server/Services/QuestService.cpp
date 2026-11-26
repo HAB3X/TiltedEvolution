@@ -8,10 +8,32 @@
 #include <Messages/NotifyQuestUpdate.h>
 
 #include <Setting.h>
+#include <SharedQuests.h>
 namespace
 {
-Console::Setting bEnableMiscQuestSync{"Gameplay:bEnableMiscQuestSync", "(Experimental) Syncs miscellaneous quests when possible", false};
+Console::StringSetting sSharedQuestTypes{"Gameplay:sSharedQuestTypes",
+                                         "Quest categories shared with the party, comma separated: Main, MagesGuild, ThievesGuild, DarkBrotherhood, Companions, Misc, "
+                                         "Daedric, Side, CivilWar, Dawnguard, Dragonborn (Misc also covers quests with no category)",
+                                         SharedQuests::kDefaultText};
+// The older switch for Misc, kept so servers that turned it on keep sharing them
+Console::Setting bEnableMiscQuestSync{"Gameplay:bEnableMiscQuestSync", "(Experimental) Syncs miscellaneous quests when possible, as if Misc were in sSharedQuestTypes", false};
 
+}
+
+uint32_t QuestService::GetSharedQuestTypes() noexcept
+{
+    // Parsed again only when the setting changes, so a bad name is reported once
+    static std::string s_parsedText;
+    static uint32_t s_mask = SharedQuests::kDefault;
+    if (s_parsedText != sSharedQuestTypes.value())
+    {
+        s_parsedText = sSharedQuestTypes.value();
+        std::vector<std::string> unknown;
+        s_mask = SharedQuests::Parse(s_parsedText, unknown);
+        for (const std::string& cName : unknown)
+            spdlog::warn("Gameplay:sSharedQuestTypes: unknown quest category '{}', ignored", cName);
+    }
+    return s_mask | (bEnableMiscQuestSync ? SharedQuests::Bit(SharedQuests::kMisc) : 0u);
 }
 
 QuestService::QuestService(World& aWorld, entt::dispatcher& aDispatcher)
@@ -37,12 +59,11 @@ void QuestService::OnQuestChanges(const PacketEvent<RequestQuestUpdate>& acMessa
     notify.Status = message.Status;
     notify.ClientQuestType = message.ClientQuestType;
 
-    if (notify.ClientQuestType == 0 ||  notify.ClientQuestType == 6) // Types None or Miscellaneous. Hard-coded to avoid client header file.
+    if (!SharedQuests::IsShared(GetSharedQuestTypes(), message.ClientQuestType))
     {
-        if (!bEnableMiscQuestSync)
-            return;
-        spdlog::debug("{}: syncing type none/misc quest to party, gameId {:X} questStage {} questStatus {} questType {}",
-                     __FUNCTION__, notify.Id.LogFormat(), notify.Stage, notify.Status, notify.ClientQuestType);
+        spdlog::debug("{}: quest category {} isn't shared, not relaying gameId {:X} questStage {} questStatus {}", __FUNCTION__, message.ClientQuestType,
+                      notify.Id.LogFormat(), notify.Stage, notify.Status);
+        return;
     }
 
     if (message.Status == RequestQuestUpdate::Started || message.Status == RequestQuestUpdate::StageUpdate)

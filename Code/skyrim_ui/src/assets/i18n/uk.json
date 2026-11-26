@@ -60,7 +60,20 @@
         "PRESET_FREE_ROAM_HINT": "У кожного свій світ; потрібні ваші моди",
         "PRESET_PVP_HINT": "Гравці можуть битися; будь-які моди",
         "HOST_WORLD_TITLE": "Друзі входять у мій світ",
-        "REQUIRE_MODS_TITLE": "Друзям потрібні мої моди"
+        "REQUIRE_MODS_TITLE": "Друзям потрібні мої моди",
+        "QUESTS_TITLE": "Спільні завдання",
+        "QUESTS": "Прогрес у вибраних видах завдань спільний для всієї групи.",
+        "QUEST_TYPE_Main": "Основний сюжет",
+        "QUEST_TYPE_MagesGuild": "Колегія Вінтергольда",
+        "QUEST_TYPE_ThievesGuild": "Гільдія злодіїв",
+        "QUEST_TYPE_DarkBrotherhood": "Темне Братство",
+        "QUEST_TYPE_Companions": "Соратники",
+        "QUEST_TYPE_Misc": "Різне",
+        "QUEST_TYPE_Daedric": "Даедричні",
+        "QUEST_TYPE_Side": "Побічні завдання",
+        "QUEST_TYPE_CivilWar": "Громадянська війна",
+        "QUEST_TYPE_Dawnguard": "Варта Світанку",
+        "QUEST_TYPE_Dragonborn": "Драконороджений"
       },
       "LAN": {
         "TITLE": "Ігри у вашій мережі",

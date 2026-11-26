@@ -76,6 +76,7 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             settings.HostWorld = eventArgs->GetBool(1);
             settings.RequireMods = eventArgs->GetBool(2);
             settings.Pvp = eventArgs->GetBool(3);
+            settings.SharedQuestTypes = eventArgs->GetString(4).ToString();
             World::Get().GetRunner().Queue([settings]() { World::Get().ctx().at<LocalServerService>().Host(settings); });
         }
         else if (eventName == "disconnect")

@@ -17,6 +17,9 @@ class QuestService
 public:
     QuestService(World& aWorld, entt::dispatcher& aDispatcher);
 
+    // The SharedQuests mask the server's settings choose
+    [[nodiscard]] static uint32_t GetSharedQuestTypes() noexcept;
+
 private:
     void OnQuestChanges(const PacketEvent<RequestQuestUpdate>& aChanges) noexcept;
 

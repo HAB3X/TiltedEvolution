@@ -59,7 +59,20 @@
         "PRESET_FREE_ROAM_HINT": "Każdy ma swój świat; twoje mody wymagane",
         "PRESET_PVP_HINT": "Gracze mogą walczyć; dowolne mody",
         "HOST_WORLD_TITLE": "Znajomi wchodzą do mojego świata",
-        "REQUIRE_MODS_TITLE": "Znajomi potrzebują moich modów"
+        "REQUIRE_MODS_TITLE": "Znajomi potrzebują moich modów",
+        "QUESTS_TITLE": "Wspólne zadania",
+        "QUESTS": "Postęp w wybranych rodzajach zadań jest wspólny dla całej drużyny.",
+        "QUEST_TYPE_Main": "Główny wątek",
+        "QUEST_TYPE_MagesGuild": "Kolegium Zimowej Twierdzy",
+        "QUEST_TYPE_ThievesGuild": "Gildia Złodziei",
+        "QUEST_TYPE_DarkBrotherhood": "Mroczne Bractwo",
+        "QUEST_TYPE_Companions": "Towarzysze",
+        "QUEST_TYPE_Misc": "Różne",
+        "QUEST_TYPE_Daedric": "Daedryczne",
+        "QUEST_TYPE_Side": "Zadania poboczne",
+        "QUEST_TYPE_CivilWar": "Wojna domowa",
+        "QUEST_TYPE_Dawnguard": "Straż Świtu",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Gry w twojej sieci",

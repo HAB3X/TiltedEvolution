@@ -69,7 +69,20 @@
         "PRESET_FREE_ROAM_HINT": "Everyone keeps their own world; your mods required",
         "PRESET_PVP_HINT": "Players can fight each other; any mods",
         "HOST_WORLD_TITLE": "Friends join my world",
-        "REQUIRE_MODS_TITLE": "Friends need my mods"
+        "REQUIRE_MODS_TITLE": "Friends need my mods",
+        "QUESTS_TITLE": "Shared quests",
+        "QUESTS": "Progress in the chosen kinds of quest is shared with everyone in the party.",
+        "QUEST_TYPE_Main": "Main quest",
+        "QUEST_TYPE_MagesGuild": "College of Winterhold",
+        "QUEST_TYPE_ThievesGuild": "Thieves Guild",
+        "QUEST_TYPE_DarkBrotherhood": "Dark Brotherhood",
+        "QUEST_TYPE_Companions": "Companions",
+        "QUEST_TYPE_Misc": "Miscellaneous",
+        "QUEST_TYPE_Daedric": "Daedric",
+        "QUEST_TYPE_Side": "Side quests",
+        "QUEST_TYPE_CivilWar": "Civil War",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "ERROR": {
         "CONNECTION": "Could not connect to the specified server. Please make sure you've entered the correct address and that you're not experiencing network issues",

@@ -58,7 +58,20 @@
         "PRESET_FREE_ROAM_HINT": "Alle beholder sin verden; dine moder kreves",
         "PRESET_PVP_HINT": "Spillere kan sloss; alle moder",
         "HOST_WORLD_TITLE": "Venner går inn i min verden",
-        "REQUIRE_MODS_TITLE": "Venner trenger modene mine"
+        "REQUIRE_MODS_TITLE": "Venner trenger modene mine",
+        "QUESTS_TITLE": "Delte oppdrag",
+        "QUESTS": "Fremgangen i de valgte typene oppdrag deles med alle i gruppen.",
+        "QUEST_TYPE_Main": "Hovedoppdrag",
+        "QUEST_TYPE_MagesGuild": "Akademiet i Winterhold",
+        "QUEST_TYPE_ThievesGuild": "Tyvelauget",
+        "QUEST_TYPE_DarkBrotherhood": "Det mørke brorskapet",
+        "QUEST_TYPE_Companions": "Følgesvennene",
+        "QUEST_TYPE_Misc": "Diverse",
+        "QUEST_TYPE_Daedric": "Daedriske",
+        "QUEST_TYPE_Side": "Sideoppdrag",
+        "QUEST_TYPE_CivilWar": "Borgerkrigen",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Spill på nettverket ditt",

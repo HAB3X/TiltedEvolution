@@ -60,7 +60,20 @@
         "PRESET_FREE_ROAM_HINT": "У каждого свой мир; нужны ваши моды",
         "PRESET_PVP_HINT": "Игроки могут сражаться; любые моды",
         "HOST_WORLD_TITLE": "Друзья входят в мой мир",
-        "REQUIRE_MODS_TITLE": "Друзьям нужны мои моды"
+        "REQUIRE_MODS_TITLE": "Друзьям нужны мои моды",
+        "QUESTS_TITLE": "Общие задания",
+        "QUESTS": "Прогресс в выбранных видах заданий общий для всей группы.",
+        "QUEST_TYPE_Main": "Основной сюжет",
+        "QUEST_TYPE_MagesGuild": "Коллегия Винтерхолда",
+        "QUEST_TYPE_ThievesGuild": "Гильдия воров",
+        "QUEST_TYPE_DarkBrotherhood": "Тёмное Братство",
+        "QUEST_TYPE_Companions": "Соратники",
+        "QUEST_TYPE_Misc": "Разное",
+        "QUEST_TYPE_Daedric": "Даэдрические",
+        "QUEST_TYPE_Side": "Побочные задания",
+        "QUEST_TYPE_CivilWar": "Гражданская война",
+        "QUEST_TYPE_Dawnguard": "Стража Рассвета",
+        "QUEST_TYPE_Dragonborn": "Драконорождённый"
       },
       "LAN": {
         "TITLE": "Игры в вашей сети",

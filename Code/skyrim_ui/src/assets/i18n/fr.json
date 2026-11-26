@@ -59,7 +59,20 @@
         "PRESET_FREE_ROAM_HINT": "Chacun garde son monde ; vos mods requis",
         "PRESET_PVP_HINT": "Les joueurs peuvent se battre ; tous mods",
         "HOST_WORLD_TITLE": "Mes amis rejoignent mon monde",
-        "REQUIRE_MODS_TITLE": "Mes amis ont besoin de mes mods"
+        "REQUIRE_MODS_TITLE": "Mes amis ont besoin de mes mods",
+        "QUESTS_TITLE": "Quêtes partagées",
+        "QUESTS": "La progression des types de quête choisis est partagée avec tout le groupe.",
+        "QUEST_TYPE_Main": "Quête principale",
+        "QUEST_TYPE_MagesGuild": "Collège de Fortdhiver",
+        "QUEST_TYPE_ThievesGuild": "Guilde des voleurs",
+        "QUEST_TYPE_DarkBrotherhood": "Confrérie noire",
+        "QUEST_TYPE_Companions": "Compagnons",
+        "QUEST_TYPE_Misc": "Divers",
+        "QUEST_TYPE_Daedric": "Daedra",
+        "QUEST_TYPE_Side": "Quêtes secondaires",
+        "QUEST_TYPE_CivilWar": "Guerre civile",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Parties sur votre réseau",

@@ -9,6 +9,7 @@ import { ChatService } from './chat.service';
 import { StoreService } from './store.service';
 import { ErrorEvents, ErrorService } from './error.service';
 import { LoadingService } from './loading.service';
+import { DEFAULT_SHARED_QUEST_TYPES } from '../models/shared-quests';
 
 /** Client game service. */
 /** What joining a host's world would change. */
@@ -291,6 +292,7 @@ export class ClientService implements OnDestroy {
         this.storeService.getBool('host_world', true),
         this.storeService.getBool('host_require_mods', true),
         this.storeService.getBool('host_pvp', false),
+        this.storeService.get('host_quest_types', DEFAULT_SHARED_QUEST_TYPES.join(',')),
       );
     } else {
       this.connect(
@@ -307,8 +309,9 @@ export class ClientService implements OnDestroy {
     hostWorld: boolean,
     requireMods: boolean,
     pvp = false,
+    sharedQuestTypes = DEFAULT_SHARED_QUEST_TYPES.join(','),
   ): void {
-    skyrimtogether.hostServer(password, hostWorld, requireMods, pvp);
+    skyrimtogether.hostServer(password, hostWorld, requireMods, pvp, sharedQuestTypes);
     this.hostingChange.next(true);
     this.isConnectionInProgressChange.next(true);
     this._host = '127.0.0.1';

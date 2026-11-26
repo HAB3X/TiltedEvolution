@@ -1,5 +1,5 @@
-// Fake players: logs two players in to a running server and checks what host world mode and local network discovery
-// do, without the game. Start a server with Gameplay:bHostWorld=true, then the two roles in their own processes (the
+// Fake players: logs players in to a running server and checks what the server does with their messages (host world
+// mode, local network discovery, kicking, required mods, quest sharing...), without the game. Start a server with Gameplay:bHostWorld=true, then the two roles in their own processes (the
 // network library hands every connection's events to the client that updates, so two clients can't share one):
 //   FakePlayers.exe host [address:port] [password]   (in the background)
 //   FakePlayers.exe join [address:port] [password]
@@ -26,6 +26,9 @@
 #include <Messages/NotifyChatMessageBroadcast.h>
 #include <Messages/NotifyPartyJoined.h>
 #include <Messages/NotifyPlayerJoined.h>
+#include <Messages/NotifyQuestUpdate.h>
+#include <Messages/PartyCreateRequest.h>
+#include <Messages/RequestQuestUpdate.h>
 #include <Messages/RequestHostWorld.h>
 #include <Messages/RequestModeratePlayer.h>
 #include <Messages/SendChatMessageRequest.h>
@@ -135,6 +138,7 @@ struct FakePlayer final : Client
         case kNotifyHostWorldRequested: WorldRequest = *static_cast<NotifyHostWorldRequested*>(pMessage.get()); break;
         case kNotifyHostWorldState: World = *static_cast<NotifyHostWorldState*>(pMessage.get()); break;
         case kTeleportCommandResponse: Teleport = *static_cast<TeleportCommandResponse*>(pMessage.get()); break;
+        case kNotifyQuestUpdate: QuestUpdates.push_back(*static_cast<NotifyQuestUpdate*>(pMessage.get())); break;
         default: break;
         }
     }
@@ -155,6 +159,7 @@ struct FakePlayer final : Client
     std::optional<NotifyHostWorldRequested> WorldRequest;
     std::optional<NotifyHostWorldState> World;
     std::optional<TeleportCommandResponse> Teleport;
+    std::vector<NotifyQuestUpdate> QuestUpdates;
 };
 
 // Runs the player until the condition holds or the time is up
@@ -392,12 +397,59 @@ int RunSoak(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Quest sharing on a server with Gameplay:sSharedQuestTypes=Main,Misc: the leader sends a stage of a Daedric quest
+// (not shared), of an untyped quest (shared with Misc) and of a main quest; the member gets the last two only.
+const GameId kDaedricQuest(0, 0x2A49A), kUntypedQuest(0, 0x3C3E9), kMainQuest(0, 0x2610C);
+
+int RunQuestLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeQuestLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("quest leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    // The member joins it on its own (Gameplay:bAutoPartyJoin)
+    leader.Send(PartyCreateRequest{});
+    Check("quest leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    // The member's party join follows its login
+    RunUntil(leader, [] { return false; }, 2s);
+
+    for (const auto& [cId, cType] : {std::pair{kDaedricQuest, SharedQuests::kDaedric}, {kUntypedQuest, SharedQuests::kNone}, {kMainQuest, SharedQuests::kMain}})
+    {
+        RequestQuestUpdate update;
+        update.Id = cId;
+        update.Stage = 10;
+        update.Status = RequestQuestUpdate::StageUpdate;
+        update.ClientQuestType = cType;
+        leader.Send(update);
+    }
+    RunUntil(leader, [] { return false; }, 10s);
+    return s_failures ? 1 : 0;
+}
+
+int RunQuestMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeQuestMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("quest member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    Check("the settings say Main and Misc are shared", member.Settings.SharedQuestTypes == (SharedQuests::Bit(SharedQuests::kMain) | SharedQuests::Bit(SharedQuests::kMisc)),
+          std::to_string(member.Settings.SharedQuestTypes));
+    Check("gets the main quest's stage", RunUntil(member, [&] { return !member.QuestUpdates.empty() && member.QuestUpdates.back().Id == kMainQuest; }, 20s));
+
+    std::string received;
+    for (const auto& cUpdate : member.QuestUpdates)
+        received += (received.empty() ? "" : ", ") + std::to_string(cUpdate.Id.BaseId);
+    Check("gets the untyped quest (shared with Misc) and not the Daedric one", member.QuestUpdates.size() == 2 && member.QuestUpdates[0].Id == kUntypedQuest, received);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
 // FakePlayers.exe parent <server folder>: starts the server as the game would, and exits after 15 seconds
 // FakePlayers.exe mods [address:port] [password]: against a server requiring SomeMod.esp
 // FakePlayers.exe listen184|talk184 [address:port] [password]: the same against an official v1.8.4 server
+// FakePlayers.exe questleader|questmember [address:port] [password]: start the leader first (sSharedQuestTypes=Main,Misc)
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -425,7 +477,11 @@ int main(int argc, char** argv)
         return RunOfficialListener(cEndpoint, cPassword);
     if (cRole == "talk184")
         return RunOfficialTalker(cEndpoint, cPassword);
+    if (cRole == "questleader")
+        return RunQuestLeader(cEndpoint, cPassword);
+    if (cRole == "questmember")
+        return RunQuestMember(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|mods|listen184|talk184 [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|listen184|talk184|questleader|questmember [address:port] [password]\n");
     return 2;
 }

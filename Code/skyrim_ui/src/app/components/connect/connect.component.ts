@@ -20,6 +20,7 @@ import { Sound, SoundService } from '../../services/sound.service';
 import { StoreService } from '../../services/store.service';
 import { UiRepository } from '../../store/ui.repository';
 import { decodeJoinCode } from '../../utils/join-code';
+import { DEFAULT_SHARED_QUEST_TYPES, parseSharedQuestTypes, QUEST_TYPES } from '../../models/shared-quests';
 
 @Component({
   selector: 'app-connect',
@@ -42,6 +43,9 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
   public hostWorld = true;
   public requireMods = true;
   public pvp = false;
+  /** The quest categories the party shares, names the server knows (Gameplay:sSharedQuestTypes) */
+  public sharedQuestTypes = new Set<string>(DEFAULT_SHARED_QUEST_TYPES);
+  public readonly questTypes = QUEST_TYPES;
 
   /** One click setups for the host form */
   public readonly presets = {
@@ -125,6 +129,14 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
     this.hostWorld = this.storeService.getBool('host_world', true);
     this.requireMods = this.storeService.getBool('host_require_mods', true);
     this.pvp = this.storeService.getBool('host_pvp', false);
+    this.sharedQuestTypes = new Set(parseSharedQuestTypes(this.storeService.get('host_quest_types', DEFAULT_SHARED_QUEST_TYPES.join(','))));
+  }
+
+  public toggleQuestType(type: string): void {
+    this.sound.play(Sound.Ok);
+    if (!this.sharedQuestTypes.delete(type)) {
+      this.sharedQuestTypes.add(type);
+    }
   }
 
   public searchLan(): void {
@@ -204,8 +216,11 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
     this.storeService.set('host_world', String(this.hostWorld));
     this.storeService.set('host_require_mods', String(this.requireMods));
     this.storeService.set('host_pvp', String(this.pvp));
+    // In the order the server lists them, so the setting reads the same every time
+    const questTypes = QUEST_TYPES.filter(type => this.sharedQuestTypes.has(type)).join(',');
+    this.storeService.set('host_quest_types', questTypes);
     this.sound.play(Sound.Ok);
-    this.client.hostServer(this.hostPassword, this.hostWorld, this.requireMods, this.pvp);
+    this.client.hostServer(this.hostPassword, this.hostWorld, this.requireMods, this.pvp, questTypes);
   }
 
   public openServerList(): void {

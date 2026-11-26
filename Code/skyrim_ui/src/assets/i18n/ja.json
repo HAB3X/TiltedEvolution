@@ -58,7 +58,20 @@
         "PRESET_FREE_ROAM_HINT": "各自の世界のまま。あなたのMODが必要",
         "PRESET_PVP_HINT": "プレイヤー同士で戦える。MOD自由",
         "HOST_WORLD_TITLE": "フレンドを自分の世界に招く",
-        "REQUIRE_MODS_TITLE": "フレンドに自分のMODを要求"
+        "REQUIRE_MODS_TITLE": "フレンドに自分のMODを要求",
+        "QUESTS_TITLE": "共有するクエスト",
+        "QUESTS": "選んだ種類のクエストの進行状況をパーティー全員で共有します。",
+        "QUEST_TYPE_Main": "メインクエスト",
+        "QUEST_TYPE_MagesGuild": "ウィンターホールド大学",
+        "QUEST_TYPE_ThievesGuild": "盗賊ギルド",
+        "QUEST_TYPE_DarkBrotherhood": "闇の一党",
+        "QUEST_TYPE_Companions": "同胞団",
+        "QUEST_TYPE_Misc": "その他",
+        "QUEST_TYPE_Daedric": "デイドラ",
+        "QUEST_TYPE_Side": "サイドクエスト",
+        "QUEST_TYPE_CivilWar": "内戦",
+        "QUEST_TYPE_Dawnguard": "ドーンガード",
+        "QUEST_TYPE_Dragonborn": "ドラゴンボーン"
       },
       "LAN": {
         "TITLE": "ネットワーク上のゲーム",

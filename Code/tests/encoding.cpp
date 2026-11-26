@@ -167,6 +167,45 @@ TEST_CASE("Static structures", "[encoding.static]")
             REQUIRE(sendObjects == recvObjects);
         }
     }
+
+    GIVEN("ServerSettings")
+    {
+        ServerSettings sent;
+        sent.HostWorld = true;
+        sent.SharedQuestTypes = SharedQuests::Bit(SharedQuests::kMain) | SharedQuests::Bit(SharedQuests::kDawnguard);
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+
+        Buffer::Reader reader(&buffer);
+        ServerSettings received;
+        received.SharedQuestTypes = 0;
+        received.Deserialize(reader);
+        REQUIRE(received == sent);
+        REQUIRE(received.SharedQuestTypes == sent.SharedQuestTypes);
+    }
+
+    GIVEN("Shared quest categories")
+    {
+        std::vector<std::string> unknown;
+        REQUIRE(SharedQuests::Parse(SharedQuests::kDefaultText, unknown) == SharedQuests::kDefault);
+        REQUIRE(unknown.empty());
+
+        // What servers shared before the choice existed: everything but untyped and Miscellaneous quests
+        REQUIRE_FALSE(SharedQuests::IsShared(SharedQuests::kDefault, SharedQuests::kNone));
+        REQUIRE_FALSE(SharedQuests::IsShared(SharedQuests::kDefault, SharedQuests::kMisc));
+        REQUIRE(SharedQuests::IsShared(SharedQuests::kDefault, SharedQuests::kMain));
+        REQUIRE(SharedQuests::IsShared(SharedQuests::kDefault, SharedQuests::kDragonborn));
+
+        const uint32_t cMask = SharedQuests::Parse(" main , MISC,,Nonsense", unknown);
+        REQUIRE(cMask == (SharedQuests::Bit(SharedQuests::kMain) | SharedQuests::Bit(SharedQuests::kMisc)));
+        REQUIRE(unknown == std::vector<std::string>{"nonsense"});
+        // Untyped quests go with Miscellaneous
+        REQUIRE(SharedQuests::IsShared(cMask, SharedQuests::kNone));
+        REQUIRE_FALSE(SharedQuests::IsShared(cMask, SharedQuests::kDaedric));
+        REQUIRE_FALSE(SharedQuests::IsShared(cMask, 200));
+    }
 }
 
 TEST_CASE("Differential structures", "[encoding.differential]")
@@ -860,6 +899,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         sent.ConsoleCommandsAllowed = false;
         sent.VoipEnabled = true;
         sent.HostWorld = true;
+        sent.SharedQuestTypes = SharedQuests::Bit(SharedQuests::kMain);
 
         Buffer buffer(1000);
         Buffer::Writer writer(&buffer);
@@ -873,6 +913,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE(received.ConsoleCommandsAllowed);
         REQUIRE_FALSE(received.VoipEnabled);
         REQUIRE_FALSE(received.HostWorld);
+        REQUIRE(received.SharedQuestTypes == SharedQuests::kDefault);
         REQUIRE(Serialization::ReadVarInt(reader) == 1234567);
     }
 

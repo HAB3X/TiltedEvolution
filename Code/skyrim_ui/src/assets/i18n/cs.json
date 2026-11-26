@@ -58,7 +58,20 @@
         "PRESET_FREE_ROAM_HINT": "Každý má svůj svět; tvé mody nutné",
         "PRESET_PVP_HINT": "Hráči mohou bojovat; libovolné mody",
         "HOST_WORLD_TITLE": "Přátelé vstoupí do mého světa",
-        "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody"
+        "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody",
+        "QUESTS_TITLE": "Sdílené úkoly",
+        "QUESTS": "Postup ve vybraných druzích úkolů se sdílí s celou družinou.",
+        "QUEST_TYPE_Main": "Hlavní úkol",
+        "QUEST_TYPE_MagesGuild": "Akademie ve Winterholdu",
+        "QUEST_TYPE_ThievesGuild": "Cech zlodějů",
+        "QUEST_TYPE_DarkBrotherhood": "Temné bratrstvo",
+        "QUEST_TYPE_Companions": "Společníci",
+        "QUEST_TYPE_Misc": "Různé",
+        "QUEST_TYPE_Daedric": "Daedrické",
+        "QUEST_TYPE_Side": "Vedlejší úkoly",
+        "QUEST_TYPE_CivilWar": "Občanská válka",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Hry ve tvé síti",

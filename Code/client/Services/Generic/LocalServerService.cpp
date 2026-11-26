@@ -108,7 +108,10 @@ bool LocalServerService::Start(const HostSettings& acSettings) noexcept
     if (!WritePrivateProfileStringW(L"GameServer", L"sPassword", Widen(acSettings.Password).c_str(), cIni.c_str()) ||
         !WritePrivateProfileStringW(L"Gameplay", L"bHostWorld", acSettings.HostWorld ? L"true" : L"false", cIni.c_str()) ||
         !WritePrivateProfileStringW(L"ModPolicy", L"bRequireMods", acSettings.RequireMods ? L"true" : L"false", cIni.c_str()) ||
-        !WritePrivateProfileStringW(L"Gameplay", L"bEnablePvp", acSettings.Pvp ? L"true" : L"false", cIni.c_str()))
+        !WritePrivateProfileStringW(L"Gameplay", L"bEnablePvp", acSettings.Pvp ? L"true" : L"false", cIni.c_str()) ||
+        !WritePrivateProfileStringW(L"Gameplay", L"sSharedQuestTypes", Widen(acSettings.SharedQuestTypes).c_str(), cIni.c_str()) ||
+        // The older Misc switch would share Misc quests even when the host leaves them out
+        !WritePrivateProfileStringW(L"Gameplay", L"bEnableMiscQuestSync", L"false", cIni.c_str()))
     {
         Fail("Couldn't write the server settings (" + std::to_string(GetLastError()) + ").");
         return false;
@@ -155,7 +158,7 @@ bool LocalServerService::Start(const HostSettings& acSettings) noexcept
     CloseHandle(process.hThread);
     m_process = process.hProcess;
 
-    spdlog::info("[LocalServer]: started the server on port {}, host world {}, require mods {}", m_port, acSettings.HostWorld, acSettings.RequireMods);
+    spdlog::info("[LocalServer]: started the server on port {}, host world {}, require mods {}, shared quests {}", m_port, acSettings.HostWorld, acSettings.RequireMods, acSettings.SharedQuestTypes);
 
     // Reads the server's output for as long as it runs: it would stop when the pipe fills up. Its stdin stays open
     // here (inWrite is never closed), so that it doesn't see the end of its input.

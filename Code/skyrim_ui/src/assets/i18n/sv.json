@@ -60,7 +60,20 @@
         "PRESET_FREE_ROAM_HINT": "Alla behåller sin värld; dina moddar krävs",
         "PRESET_PVP_HINT": "Spelare kan slåss; valfria moddar",
         "HOST_WORLD_TITLE": "Vänner går in i min värld",
-        "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar"
+        "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar",
+        "QUESTS_TITLE": "Delade uppdrag",
+        "QUESTS": "Framstegen i de valda typerna av uppdrag delas med alla i gruppen.",
+        "QUEST_TYPE_Main": "Huvuduppdrag",
+        "QUEST_TYPE_MagesGuild": "Akademin i Winterhold",
+        "QUEST_TYPE_ThievesGuild": "Tjuvgillet",
+        "QUEST_TYPE_DarkBrotherhood": "Mörka brödraskapet",
+        "QUEST_TYPE_Companions": "Följeslagarna",
+        "QUEST_TYPE_Misc": "Övrigt",
+        "QUEST_TYPE_Daedric": "Daedriska",
+        "QUEST_TYPE_Side": "Sidouppdrag",
+        "QUEST_TYPE_CivilWar": "Inbördeskriget",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Spel i ditt nätverk",
