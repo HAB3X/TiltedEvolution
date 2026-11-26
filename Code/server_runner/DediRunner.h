@@ -51,6 +51,7 @@ private:
     //  Order here matters for constructor calling order.
     uv_loop_t m_loop;
     uv_tty_t m_tty;
+    uv_pipe_t m_stdinPipe; // stdin when another program (a host app) runs the server
     fs::path m_SettingsPath;
     bool m_useIni{false};
     Console::ConsoleRegistry m_console;
