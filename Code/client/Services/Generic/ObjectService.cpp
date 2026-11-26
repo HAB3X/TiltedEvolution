@@ -289,6 +289,11 @@ void ObjectService::OnActivate(const ActivateEvent& acEvent) noexcept
     if (!m_transport.IsConnected())
         return;
 
+    // Temporary references (dropped items, spawned actors) have different ids on every client, so the id would
+    // activate an unrelated object there
+    if ((pObject->formID >> 24) == 0xFF)
+        return;
+
     if (Lock* pLock = pObject->GetLock())
     {
         if (pLock->flags & 0xFF)
