@@ -60,7 +60,9 @@
         "PRESET_FREE_ROAM_HINT": "Alla behåller sin värld; dina moddar krävs",
         "PRESET_PVP_HINT": "Spelare kan slåss; valfria moddar",
         "HOST_WORLD_TITLE": "Vänner går in i min värld",
-        "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar"
+        "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar",
+        "MODS_REQUIRED": "Mods som vännerna behöver: {{count}}",
+        "MODS_REQUIRED_NONE": "Du har inga mods utöver spelets egna, så vännerna behöver inga."
       },
       "LAN": {
         "TITLE": "Spel i ditt nätverk",
@@ -93,7 +95,11 @@
       "CANCEL": "Avbryt"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Skaffa mods",
+      "SEARCH_NEXUS": "Sök på Nexus",
+      "DIFFERENT_VERSION": "annan version",
+      "COPY_LIST": "Kopiera listan"
     },
     "INVITE": {
       "CODE_INFO": "Vänner skriver den här anslutningskoden under Anslut:",

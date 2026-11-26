@@ -36,6 +36,12 @@ export interface ClientModsDisallowedErrorEvent extends ErrorEvent {
   data: { mods: ('SKSE' | 'MO2')[] };
 }
 
+/** A mod a refused player can go and get: one the server needs, or the host's version of one they have. */
+export interface RefusedMod {
+  name: string;
+  differentVersion: boolean;
+}
+
 export type ErrorEvents =
   | WrongVersionErrorEvent
   | ModsMismatchErrorEvent
@@ -49,6 +55,10 @@ export class ErrorService {
   private error = new BehaviorSubject<string>('');
   public error$ = this.error.asObservable();
 
+  /** With a mods mismatch error: the mods to get, for the error box's search and copy actions */
+  private refusedMods = new BehaviorSubject<RefusedMod[]>([]);
+  public refusedMods$ = this.refusedMods.asObservable();
+
   constructor(
     private readonly sound: SoundService,
     private readonly translocoService: TranslocoService,
@@ -61,12 +71,16 @@ export class ErrorService {
   async setError(error: ErrorEvents | string) {
     this.sound.play(Sound.Fail);
     let message: string;
+    let refusedMods: RefusedMod[] = [];
     if (typeof error === 'string') {
       message = error;
     } else {
       let data: Record<string, any> = error.data;
       switch (error.error) {
         case 'mods_mismatch':
+          refusedMods = error.data.mods
+            .filter(mod => mod[1] === '0')
+            .map(mod => ({ name: mod[0], differentVersion: !!mod[2] }));
           let mods = '';
           const install = error.data.mods
             .filter(mod => mod[1] === '0' && !mod[2])
@@ -117,11 +131,13 @@ export class ErrorService {
         ),
       );
     }
+    this.refusedMods.next(refusedMods);
     this.error.next(message);
   }
 
   removeError() {
     this.sound.play(Sound.Ok);
+    this.refusedMods.next([]);
     this.error.next('');
   }
 }

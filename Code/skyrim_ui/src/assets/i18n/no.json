@@ -58,7 +58,9 @@
         "PRESET_FREE_ROAM_HINT": "Alle beholder sin verden; dine moder kreves",
         "PRESET_PVP_HINT": "Spillere kan sloss; alle moder",
         "HOST_WORLD_TITLE": "Venner går inn i min verden",
-        "REQUIRE_MODS_TITLE": "Venner trenger modene mine"
+        "REQUIRE_MODS_TITLE": "Venner trenger modene mine",
+        "MODS_REQUIRED": "Spillendringer vennene trenger: {{count}}",
+        "MODS_REQUIRED_NONE": "Du har ingen spillendringer utover spillets egne, så vennene trenger ingen."
       },
       "LAN": {
         "TITLE": "Spill på nettverket ditt",
@@ -91,7 +93,11 @@
       "CANCEL": "Avbryt"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Skaff spillendringene",
+      "SEARCH_NEXUS": "Søk på Nexus",
+      "DIFFERENT_VERSION": "annen versjon",
+      "COPY_LIST": "Kopier listen"
     },
     "INVITE": {
       "CODE_INFO": "Venner skriver denne tilkoblingskoden under Koble til:",

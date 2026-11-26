@@ -180,3 +180,29 @@
   border-top: 1px solid env.$color-line;
   background: env.$color-surface;
 }
+
+// The host's mods friends will need, folded away until asked for
+.host-mods {
+  padding: 0.5rem 0.8rem;
+  border-radius: env.$radius;
+  border: 1px solid env.$color-line;
+  font-size: 0.9rem;
+
+  summary {
+    color: env.$color-accent;
+    cursor: pointer;
+  }
+
+  ul {
+    max-height: 10rem;
+    margin: 0.5rem 0 0;
+    padding-left: 1.2rem;
+    overflow-y: auto;
+    color: env.$color-muted;
+  }
+}
+
+.host-mods-none {
+  margin: 0;
+  font-size: 0.9rem;
+}

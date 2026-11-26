@@ -59,7 +59,9 @@
         "PRESET_FREE_ROAM_HINT": "Chacun garde son monde ; vos mods requis",
         "PRESET_PVP_HINT": "Les joueurs peuvent se battre ; tous mods",
         "HOST_WORLD_TITLE": "Mes amis rejoignent mon monde",
-        "REQUIRE_MODS_TITLE": "Mes amis ont besoin de mes mods"
+        "REQUIRE_MODS_TITLE": "Mes amis ont besoin de mes mods",
+        "MODS_REQUIRED": "Mods requis pour vos amis : {{count}}",
+        "MODS_REQUIRED_NONE": "Vous n'avez aucun mod en dehors des fichiers du jeu, vos amis n'en ont donc besoin d'aucun."
       },
       "LAN": {
         "TITLE": "Parties sur votre réseau",
@@ -92,7 +94,11 @@
       "CANCEL": "Annuler"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Obtenir les mods",
+      "SEARCH_NEXUS": "Chercher sur Nexus",
+      "DIFFERENT_VERSION": "autre version",
+      "COPY_LIST": "Copier la liste"
     },
     "INVITE": {
       "CODE_INFO": "Vos amis tapent ce code de partie dans Connexion :",

@@ -59,7 +59,9 @@
         "PRESET_FREE_ROAM_HINT": "Każdy ma swój świat; twoje mody wymagane",
         "PRESET_PVP_HINT": "Gracze mogą walczyć; dowolne mody",
         "HOST_WORLD_TITLE": "Znajomi wchodzą do mojego świata",
-        "REQUIRE_MODS_TITLE": "Znajomi potrzebują moich modów"
+        "REQUIRE_MODS_TITLE": "Znajomi potrzebują moich modów",
+        "MODS_REQUIRED": "Mody potrzebne znajomym: {{count}}",
+        "MODS_REQUIRED_NONE": "Nie masz modów poza plikami samej gry, więc znajomi nie potrzebują żadnych."
       },
       "LAN": {
         "TITLE": "Gry w twojej sieci",
@@ -92,7 +94,11 @@
       "CANCEL": "Anuluj"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Zdobądź mody",
+      "SEARCH_NEXUS": "Szukaj na Nexusie",
+      "DIFFERENT_VERSION": "inna wersja",
+      "COPY_LIST": "Kopiuj listę"
     },
     "INVITE": {
       "CODE_INFO": "Znajomi wpisują ten kod w oknie Połącz:",

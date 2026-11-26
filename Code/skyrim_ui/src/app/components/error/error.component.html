@@ -2,6 +2,30 @@
   <app-popup>
     <div class="error-content">
       <p [innerHTML]="error"></p>
+      @let mods = refusedMods$ | async;
+      @if (mods?.length) {
+        <div class="refused-mods">
+          <h3 class="section-title">{{ 'COMPONENT.ERROR.FIND_MODS' | transloco }}</h3>
+          <ul class="mod-list">
+            @for (mod of mods; track mod.name) {
+              <li class="mod-row">
+                <span class="mod-name">
+                  {{ mod.name }}
+                  @if (mod.differentVersion) {
+                    <span class="muted">({{ 'COMPONENT.ERROR.DIFFERENT_VERSION' | transloco }})</span>
+                  }
+                </span>
+                <button class="btn btn-secondary btn-small" (click)="searchNexus(mod)">
+                  {{ 'COMPONENT.ERROR.SEARCH_NEXUS' | transloco }}
+                </button>
+              </li>
+            }
+          </ul>
+          <button class="btn btn-secondary btn-small copy-list" (click)="copyList(mods)">
+            {{ (copied ? 'COMPONENT.INVITE.COPIED' : 'COMPONENT.ERROR.COPY_LIST') | transloco }}
+          </button>
+        </div>
+      }
       <app-action-buttons>
         <button (click)="removeError()" data-style-ornament="simple">
           {{ 'COMPONENT.ERROR.OK' | transloco }}

@@ -60,7 +60,9 @@
         "PRESET_FREE_ROAM_HINT": "Herkes kendi dünyasında; modların gerekli",
         "PRESET_PVP_HINT": "Oyuncular dövüşebilir; her mod",
         "HOST_WORLD_TITLE": "Arkadaşlarım dünyama girsin",
-        "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun"
+        "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun",
+        "MODS_REQUIRED": "Arkadaşlarının ihtiyaç duyduğu modlar: {{count}}",
+        "MODS_REQUIRED_NONE": "Oyunun kendi dosyaları dışında modun yok, bu yüzden arkadaşlarının mod ihtiyacı yok."
       },
       "LAN": {
         "TITLE": "Ağındaki oyunlar",
@@ -93,7 +95,11 @@
       "CANCEL": "İptal"
     },
     "ERROR": {
-      "OK": "Tamam"
+      "OK": "Tamam",
+      "FIND_MODS": "Modları edinin",
+      "SEARCH_NEXUS": "Nexus'ta ara",
+      "DIFFERENT_VERSION": "farklı sürüm",
+      "COPY_LIST": "Listeyi kopyala"
     },
     "INVITE": {
       "CODE_INFO": "Arkadaşların bu katılma kodunu Bağlan ekranına yazar:",

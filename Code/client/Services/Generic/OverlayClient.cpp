@@ -119,6 +119,10 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             ProcessToggleDebugUI();
         else if (eventName == "openPlayGuide")
             ProcessOpenPlayGuide();
+        else if (eventName == "openUrl")
+            ProcessOpenUrl(eventArgs);
+        else if (eventName == "listHostMods")
+            World::Get().GetRunner().Queue([]() { World::Get().ctx().at<LocalServerService>().SendHostMods(); });
         else if (eventName == "voiceRefresh")
             World::Get().GetRunner().Queue([]() { World::Get().ctx().at<VoiceService>().RefreshUi(); });
         else if (eventName == "setVoiceSettings")
@@ -212,6 +216,21 @@ void OverlayClient::ProcessToggleDebugUI()
 void OverlayClient::ProcessOpenPlayGuide()
 {
     ShellExecuteW(nullptr, L"open", LR"(https://wiki.tiltedphoques.com/tilted-online/general-information/playguide)", nullptr, nullptr, SW_SHOWNORMAL);
+}
+
+// Only Nexus Mods pages (the refusal box's mod searches): the overlay shows text from servers, so a page in it must
+// not be able to open other addresses or programs through the shell
+void OverlayClient::ProcessOpenUrl(CefRefPtr<CefListValue> aEventArgs)
+{
+    constexpr char kAllowedPrefix[] = "https://www.nexusmods.com/";
+    const std::string cUrl = aEventArgs->GetString(0).ToString();
+    const bool cPlain = std::all_of(cUrl.begin(), cUrl.end(), [](unsigned char c) { return c > ' ' && c < 0x7F && c != '"'; });
+    if (cUrl.rfind(kAllowedPrefix, 0) != 0 || !cPlain)
+    {
+        spdlog::warn("Not opening {}: only {} addresses can be opened from the overlay", cUrl, kAllowedPrefix);
+        return;
+    }
+    ShellExecuteA(nullptr, "open", cUrl.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 // Numbers come as whole numbers from the UI: percentages for the volumes and units for the fade start

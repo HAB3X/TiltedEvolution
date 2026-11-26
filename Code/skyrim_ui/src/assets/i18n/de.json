@@ -58,7 +58,9 @@
         "PRESET_FREE_ROAM_HINT": "Jeder behält seine Welt; deine Mods nötig",
         "PRESET_PVP_HINT": "Spieler können kämpfen; beliebige Mods",
         "HOST_WORLD_TITLE": "Freunde betreten meine Welt",
-        "REQUIRE_MODS_TITLE": "Freunde brauchen meine Mods"
+        "REQUIRE_MODS_TITLE": "Freunde brauchen meine Mods",
+        "MODS_REQUIRED": "Mods, die Freunde brauchen: {{count}}",
+        "MODS_REQUIRED_NONE": "Du hast keine Mods außer den Dateien des Spiels, also brauchen Freunde keine."
       },
       "LAN": {
         "TITLE": "Spiele in deinem Netzwerk",
@@ -91,7 +93,11 @@
       "CANCEL": "Abbrechen"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Mods besorgen",
+      "SEARCH_NEXUS": "Auf Nexus suchen",
+      "DIFFERENT_VERSION": "andere Version",
+      "COPY_LIST": "Liste kopieren"
     },
     "INVITE": {
       "CODE_INFO": "Freunde geben diesen Beitrittscode unter Verbinden ein:",

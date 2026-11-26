@@ -1,5 +1,46 @@
+@use 'env';
+
 .error-content {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+// The mods a refused player needs, each with a way to find it
+.refused-mods {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  width: 100%;
+  margin-top: 0.8rem;
+}
+
+.mod-list {
+  width: 100%;
+  max-height: 14rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.mod-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: env.$radius;
+  background: env.$color-surface-raised;
+
+  & + & {
+    margin-top: 0.35rem;
+  }
+}
+
+.mod-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: env.$color-text;
 }

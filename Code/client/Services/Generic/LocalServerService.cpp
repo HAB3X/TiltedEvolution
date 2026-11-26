@@ -83,6 +83,18 @@ std::vector<RequiredMods::Listed> LocalServerService::HostMods() noexcept
     return mods;
 }
 
+void LocalServerService::SendHostMods() const noexcept
+{
+    std::string json = "[";
+    for (const RequiredMods::Listed& cMod : HostMods())
+        json += (json.size() > 1 ? "," : "") + OverlayService::ToJsonString(cMod.Name);
+    json += "]";
+
+    auto pArguments = CefListValue::Create();
+    pArguments->SetString(0, json);
+    m_world.GetOverlayService().GetOverlayApp()->ExecuteAsync("hostMods", pArguments);
+}
+
 bool LocalServerService::WriteRequiredMods() const noexcept
 {
     std::ofstream file(TiltedPhoques::GetPath() / RequiredMods::kFileName, std::ios::trunc);

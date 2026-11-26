@@ -213,6 +213,9 @@ interface SkyrimTogether {
   /** The public address:port of the game this player hosts. */
   on(event: 'hostAddress', callback: (address: string) => void): void;
 
+  /** JSON array of the file names of the mods friends need when this player hosts and requires them. */
+  on(event: 'hostMods', callback: (json: string) => void): void;
+
   /** A host world server's offer: the host's name and how many quests, places and people would change. */
   on(event: 'hostWorldOffer', callback: (host: string, quests: number, places: number, people: number) => void): void;
 
@@ -346,6 +349,8 @@ interface SkyrimTogether {
 
   off(event: 'hostAddress', callback?: (address: string) => void): void;
 
+  off(event: 'hostMods', callback?: (json: string) => void): void;
+
   off(event: 'hostWorldOffer', callback?: (host: string, quests: number, places: number, people: number) => void): void;
 
   off(
@@ -401,6 +406,11 @@ interface SkyrimTogether {
    * Look for servers on the local network; the answer comes as a lanServers event.
    */
   searchLanServers(): void;
+
+  /**
+   * List the mods friends need when this player hosts and requires them; the answer comes as a hostMods event.
+   */
+  listHostMods(): void;
 
   /**
    * Kick a player, or ban them (the host and admins only).
@@ -501,4 +511,10 @@ interface SkyrimTogether {
    * Open the play guide on the wiki in the default browser.
    */
   openPlayGuide(): void;
+
+  /**
+   * Open a Nexus Mods page in the default browser; other addresses are refused.
+   * @param url An https://www.nexusmods.com/ address.
+   */
+  openUrl(url: string): void;
 }

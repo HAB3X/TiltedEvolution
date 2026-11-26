@@ -119,6 +119,9 @@ export class ClientService implements OnDestroy {
   /** The public address:port of the game this player hosts, once the router has said it. */
   public hostAddressChange = new BehaviorSubject<string | null>(null);
 
+  /** The mods friends need when this player hosts and requires them, null until listed (see listHostMods). */
+  public hostModsChange = new BehaviorSubject<string[] | null>(null);
+
   /** The session the game crashed or quit in, which Rejoin returns to; null when there's none. */
   public lastSessionChange = new BehaviorSubject<LastSession | null>(null);
 
@@ -204,6 +207,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('triggerError', this.onTriggerError.bind(this));
     skyrimtogether.on('lanServers', this.onLanServers.bind(this));
     skyrimtogether.on('hostAddress', this.onHostAddress.bind(this));
+    skyrimtogether.on('hostMods', this.onHostMods.bind(this));
     skyrimtogether.on('hostWorldOffer', this.onHostWorldOffer.bind(this));
 
     try {
@@ -252,6 +256,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('triggerError');
     skyrimtogether.off('lanServers');
     skyrimtogether.off('hostAddress');
+    skyrimtogether.off('hostMods');
     skyrimtogether.off('hostWorldOffer');
     skyrimtogether.off('dummyData');
     skyrimtogether.off('partyInfo');
@@ -390,6 +395,19 @@ export class ClientService implements OnDestroy {
    */
   public openPlayGuide(): void {
     skyrimtogether.openPlayGuide();
+  }
+
+  /** Search Nexus Mods for a plugin, by its file name without the extension, in the default browser. */
+  public searchNexus(fileName: string): void {
+    const name = fileName.replace(/\.(esp|esm|esl)$/i, '');
+    skyrimtogether.openUrl(
+      `https://www.nexusmods.com/skyrimspecialedition/search/?gsearch=${encodeURIComponent(name)}`,
+    );
+  }
+
+  /** List the mods friends need when this player hosts and requires them, see hostModsChange. */
+  public listHostMods(): void {
+    skyrimtogether.listHostMods();
   }
 
   /**
@@ -703,6 +721,12 @@ export class ClientService implements OnDestroy {
   private onHostAddress(address: string) {
     this.zone.run(() => {
       this.hostAddressChange.next(address);
+    });
+  }
+
+  private onHostMods(json: string) {
+    this.zone.run(() => {
+      this.hostModsChange.next(JSON.parse(json) as string[]);
     });
   }
 

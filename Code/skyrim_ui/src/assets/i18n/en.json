@@ -69,7 +69,9 @@
         "PRESET_FREE_ROAM_HINT": "Everyone keeps their own world; your mods required",
         "PRESET_PVP_HINT": "Players can fight each other; any mods",
         "HOST_WORLD_TITLE": "Friends join my world",
-        "REQUIRE_MODS_TITLE": "Friends need my mods"
+        "REQUIRE_MODS_TITLE": "Friends need my mods",
+        "MODS_REQUIRED": "Mods friends need: {{count}}",
+        "MODS_REQUIRED_NONE": "You have no mods besides the game's own, so friends need none."
       },
       "ERROR": {
         "CONNECTION": "Could not connect to the specified server. Please make sure you've entered the correct address and that you're not experiencing network issues",
@@ -102,7 +104,11 @@
       "CANCEL": "Cancel"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Get the mods",
+      "SEARCH_NEXUS": "Search on Nexus",
+      "DIFFERENT_VERSION": "different version",
+      "COPY_LIST": "Copy list"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Message from",

@@ -59,7 +59,9 @@
         "PRESET_FREE_ROAM_HINT": "各自保留自己的世界；需要你的模组",
         "PRESET_PVP_HINT": "玩家可以互相战斗；模组随意",
         "HOST_WORLD_TITLE": "好友进入我的世界",
-        "REQUIRE_MODS_TITLE": "好友需要我的模组"
+        "REQUIRE_MODS_TITLE": "好友需要我的模组",
+        "MODS_REQUIRED": "好友需要的模组：{{count}}",
+        "MODS_REQUIRED_NONE": "除游戏自带文件外你没有其他模组，因此好友无需任何模组。"
       },
       "LAN": {
         "TITLE": "你网络中的游戏",
@@ -92,7 +94,11 @@
       "CANCEL": "取消"
     },
     "ERROR": {
-      "OK": "确定"
+      "OK": "确定",
+      "FIND_MODS": "获取模组",
+      "SEARCH_NEXUS": "在 Nexus 上搜索",
+      "DIFFERENT_VERSION": "版本不同",
+      "COPY_LIST": "复制列表"
     },
     "INVITE": {
       "CODE_INFO": "好友在「连接」中输入此加入码：",

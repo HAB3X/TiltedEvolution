@@ -58,7 +58,9 @@
         "PRESET_FREE_ROAM_HINT": "各自の世界のまま。あなたのMODが必要",
         "PRESET_PVP_HINT": "プレイヤー同士で戦える。MOD自由",
         "HOST_WORLD_TITLE": "フレンドを自分の世界に招く",
-        "REQUIRE_MODS_TITLE": "フレンドに自分のMODを要求"
+        "REQUIRE_MODS_TITLE": "フレンドに自分のMODを要求",
+        "MODS_REQUIRED": "フレンドに必要なMOD: {{count}}",
+        "MODS_REQUIRED_NONE": "ゲーム本体以外のMODがないため、フレンドに必要なMODはありません。"
       },
       "LAN": {
         "TITLE": "ネットワーク上のゲーム",
@@ -91,7 +93,11 @@
       "CANCEL": "いいえ"
     },
     "ERROR": {
-      "OK": "閉じる"
+      "OK": "閉じる",
+      "FIND_MODS": "MODを入手",
+      "SEARCH_NEXUS": "Nexusで検索",
+      "DIFFERENT_VERSION": "バージョン違い",
+      "COPY_LIST": "リストをコピー"
     },
     "INVITE": {
       "CODE_INFO": "フレンドは「接続」でこの参加コードを入力します：",

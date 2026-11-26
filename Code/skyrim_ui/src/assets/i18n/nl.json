@@ -59,7 +59,9 @@
         "PRESET_FREE_ROAM_HINT": "Iedereen houdt zijn wereld; jouw mods vereist",
         "PRESET_PVP_HINT": "Spelers kunnen vechten; elke mod",
         "HOST_WORLD_TITLE": "Vrienden betreden mijn wereld",
-        "REQUIRE_MODS_TITLE": "Vrienden hebben mijn mods nodig"
+        "REQUIRE_MODS_TITLE": "Vrienden hebben mijn mods nodig",
+        "MODS_REQUIRED": "Mods die vrienden nodig hebben: {{count}}",
+        "MODS_REQUIRED_NONE": "Je hebt geen mods naast die van het spel zelf, dus vrienden hebben er geen nodig."
       },
       "LAN": {
         "TITLE": "Spellen in je netwerk",
@@ -97,7 +99,11 @@
       }
     },
     "ERROR": {
-      "OK": "Oke"
+      "OK": "Oke",
+      "FIND_MODS": "Mods ophalen",
+      "SEARCH_NEXUS": "Zoeken op Nexus",
+      "DIFFERENT_VERSION": "andere versie",
+      "COPY_LIST": "Lijst kopiëren"
     },
     "INVITE": {
       "CODE_INFO": "Vrienden typen deze deelnamecode bij Verbinden:",

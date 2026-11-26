@@ -58,7 +58,9 @@
         "PRESET_FREE_ROAM_HINT": "Každý má svůj svět; tvé mody nutné",
         "PRESET_PVP_HINT": "Hráči mohou bojovat; libovolné mody",
         "HOST_WORLD_TITLE": "Přátelé vstoupí do mého světa",
-        "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody"
+        "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody",
+        "MODS_REQUIRED": "Módy, které přátelé potřebují: {{count}}",
+        "MODS_REQUIRED_NONE": "Kromě vlastních souborů hry nemáte žádné módy, přátelé tedy žádné nepotřebují."
       },
       "LAN": {
         "TITLE": "Hry ve tvé síti",
@@ -91,7 +93,11 @@
       "CANCEL": "Zrušit"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Získejte módy",
+      "SEARCH_NEXUS": "Hledat na Nexusu",
+      "DIFFERENT_VERSION": "jiná verze",
+      "COPY_LIST": "Kopírovat seznam"
     },
     "INVITE": {
       "CODE_INFO": "Přátelé zadají tento kód v okně Připojit:",

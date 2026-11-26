@@ -53,6 +53,17 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     }, 500);
   }
 
+  listHostMods(): void {
+    setTimeout(
+      () =>
+        this.emit(
+          'hostMods',
+          JSON.stringify(['SkyUI_SE.esp', 'Unofficial Skyrim Special Edition Patch.esp', 'RaceMenu.esp']),
+        ),
+      300,
+    );
+  }
+
   hostServer(password: string, hostWorld: boolean, requireMods: boolean, pvp: boolean): void {
     this.connect('127.0.0.1', 10578, password);
     setTimeout(() => this.emit('hostAddress', '203.0.113.7:10578'), 1000);
@@ -341,6 +352,10 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
         .map(p => p.id),
       this.localPlayerId,
     );
+  }
+
+  openUrl(url: string): void {
+    window.open(url, '_blank');
   }
 
   openPlayGuide(): void {
