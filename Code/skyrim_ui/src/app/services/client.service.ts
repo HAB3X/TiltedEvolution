@@ -271,6 +271,7 @@ export class ClientService implements OnDestroy {
         this.storeService.get('host_password', ''),
         this.storeService.getBool('host_world', true),
         this.storeService.getBool('host_require_mods', true),
+        this.storeService.getBool('host_pvp', false),
       );
     } else {
       this.connect(
@@ -286,8 +287,9 @@ export class ClientService implements OnDestroy {
     password: string,
     hostWorld: boolean,
     requireMods: boolean,
+    pvp = false,
   ): void {
-    skyrimtogether.hostServer(password, hostWorld, requireMods);
+    skyrimtogether.hostServer(password, hostWorld, requireMods, pvp);
     this.hostingChange.next(true);
     this.isConnectionInProgressChange.next(true);
     this._host = '127.0.0.1';

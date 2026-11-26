@@ -44,7 +44,11 @@
         "HOST_WORLD": "Friends join my world (my quests, cleared dungeons and dead NPCs)",
         "REQUIRE_MODS": "Friends need my mods to join (the game tells them which are missing)",
         "START": "Host",
-        "BACK": "Back"
+        "BACK": "Back",
+        "PRESET_STORY": "Story co-op",
+        "PRESET_FREE_ROAM": "Free roam",
+        "PRESET_PVP": "PvP",
+        "PVP": "Players can hurt each other (PvP)"
       },
       "ERROR": {
         "CONNECTION": "Could not connect to the specified server. Please make sure you've entered the correct address and that you're not experiencing network issues",

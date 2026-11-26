@@ -34,7 +34,11 @@
         "HOST_WORLD": "Mis amigos entran en mi mundo (mis misiones, mazmorras despejadas y PNJ muertos)",
         "REQUIRE_MODS": "Mis amigos necesitan mis mods para unirse (el juego les dice cuáles faltan)",
         "START": "Hospedar",
-        "BACK": "Volver"
+        "BACK": "Volver",
+        "PRESET_STORY": "Cooperativo de historia",
+        "PRESET_FREE_ROAM": "Libre",
+        "PRESET_PVP": "JcJ",
+        "PVP": "Los jugadores pueden herirse (JcJ)"
       },
       "LAN": {
         "TITLE": "Partidas en tu red",

@@ -34,7 +34,11 @@
         "HOST_WORLD": "好友进入我的世界（我的任务、已清理的地下城和已死亡的 NPC）",
         "REQUIRE_MODS": "好友需要我的模组才能加入（游戏会告诉他们缺少哪些）",
         "START": "主持",
-        "BACK": "返回"
+        "BACK": "返回",
+        "PRESET_STORY": "剧情合作",
+        "PRESET_FREE_ROAM": "自由探索",
+        "PRESET_PVP": "PvP",
+        "PVP": "玩家之间可以互相伤害（PvP）"
       },
       "LAN": {
         "TITLE": "你网络中的游戏",

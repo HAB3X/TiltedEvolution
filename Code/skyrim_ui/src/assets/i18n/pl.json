@@ -34,7 +34,11 @@
         "HOST_WORLD": "Znajomi wchodzą do mojego świata (moje zadania, oczyszczone lochy i martwe postacie)",
         "REQUIRE_MODS": "Znajomi potrzebują moich modów, aby dołączyć (gra powie im, których brakuje)",
         "START": "Hostuj",
-        "BACK": "Wróć"
+        "BACK": "Wróć",
+        "PRESET_STORY": "Fabuła w kooperacji",
+        "PRESET_FREE_ROAM": "Swobodna gra",
+        "PRESET_PVP": "PvP",
+        "PVP": "Gracze mogą się ranić (PvP)"
       },
       "LAN": {
         "TITLE": "Gry w twojej sieci",

@@ -39,6 +39,19 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
   public hostPassword = '';
   public hostWorld = true;
   public requireMods = true;
+  public pvp = false;
+
+  /** One click setups for the host form */
+  public readonly presets = {
+    STORY: { hostWorld: true, requireMods: true, pvp: false },
+    FREE_ROAM: { hostWorld: false, requireMods: true, pvp: false },
+    PVP: { hostWorld: false, requireMods: false, pvp: true },
+  } as const;
+
+  public applyPreset(name: keyof ConnectComponent['presets']): void {
+    this.sound.play(Sound.Ok);
+    Object.assign(this, this.presets[name]);
+  }
 
   /** Servers on the local network, null while searching. */
   public readonly lanServers$ = this.client.lanServersChange;
@@ -93,6 +106,7 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
     this.hostPassword = this.storeService.get('host_password', '');
     this.hostWorld = this.storeService.getBool('host_world', true);
     this.requireMods = this.storeService.getBool('host_require_mods', true);
+    this.pvp = this.storeService.getBool('host_pvp', false);
   }
 
   public searchLan(): void {
@@ -167,8 +181,9 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
     this.storeService.set('host_password', this.hostPassword);
     this.storeService.set('host_world', String(this.hostWorld));
     this.storeService.set('host_require_mods', String(this.requireMods));
+    this.storeService.set('host_pvp', String(this.pvp));
     this.sound.play(Sound.Ok);
-    this.client.hostServer(this.hostPassword, this.hostWorld, this.requireMods);
+    this.client.hostServer(this.hostPassword, this.hostWorld, this.requireMods, this.pvp);
   }
 
   public cancel(): void {

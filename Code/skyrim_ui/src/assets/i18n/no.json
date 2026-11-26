@@ -33,7 +33,11 @@
         "HOST_WORLD": "Venner kommer inn i min verden (mine oppdrag, ryddede grotter og døde NPC-er)",
         "REQUIRE_MODS": "Venner trenger modene mine for å bli med (spillet sier hvilke som mangler)",
         "START": "Start",
-        "BACK": "Tilbake"
+        "BACK": "Tilbake",
+        "PRESET_STORY": "Historie-coop",
+        "PRESET_FREE_ROAM": "Fritt",
+        "PRESET_PVP": "PvP",
+        "PVP": "Spillere kan skade hverandre (PvP)"
       },
       "LAN": {
         "TITLE": "Spill på nettverket ditt",

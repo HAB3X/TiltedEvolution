@@ -33,7 +33,11 @@
         "HOST_WORLD": "フレンドを自分の世界に招く（自分のクエスト、攻略済みダンジョン、死亡したNPC）",
         "REQUIRE_MODS": "参加するにはフレンドにも自分のMODが必要（足りないMODはゲームが知らせます）",
         "START": "ホスト",
-        "BACK": "戻る"
+        "BACK": "戻る",
+        "PRESET_STORY": "ストーリー協力",
+        "PRESET_FREE_ROAM": "自由探索",
+        "PRESET_PVP": "PvP",
+        "PVP": "プレイヤー同士でダメージあり（PvP）"
       },
       "LAN": {
         "TITLE": "ネットワーク上のゲーム",

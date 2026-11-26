@@ -107,7 +107,8 @@ bool LocalServerService::Start(const HostSettings& acSettings) noexcept
     const std::wstring cIni = IniPath().wstring();
     if (!WritePrivateProfileStringW(L"GameServer", L"sPassword", Widen(acSettings.Password).c_str(), cIni.c_str()) ||
         !WritePrivateProfileStringW(L"Gameplay", L"bHostWorld", acSettings.HostWorld ? L"true" : L"false", cIni.c_str()) ||
-        !WritePrivateProfileStringW(L"ModPolicy", L"bRequireMods", acSettings.RequireMods ? L"true" : L"false", cIni.c_str()))
+        !WritePrivateProfileStringW(L"ModPolicy", L"bRequireMods", acSettings.RequireMods ? L"true" : L"false", cIni.c_str()) ||
+        !WritePrivateProfileStringW(L"Gameplay", L"bEnablePvp", acSettings.Pvp ? L"true" : L"false", cIni.c_str()))
     {
         Fail("Couldn't write the server settings (" + std::to_string(GetLastError()) + ").");
         return false;

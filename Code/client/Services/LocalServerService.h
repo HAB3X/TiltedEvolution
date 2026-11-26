@@ -10,6 +10,8 @@ struct HostSettings
     bool HostWorld{};
     // Joiners need the host's mods (ModPolicy:bRequireMods)
     bool RequireMods{};
+    // Players can hurt each other (Gameplay:bEnablePvp)
+    bool Pvp{};
 };
 
 /**

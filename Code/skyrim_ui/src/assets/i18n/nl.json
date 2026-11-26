@@ -34,7 +34,11 @@
         "HOST_WORLD": "Vrienden komen in mijn wereld (mijn quests, leeggemaakte kerkers en dode NPC's)",
         "REQUIRE_MODS": "Vrienden hebben mijn mods nodig om mee te doen (het spel zegt welke ontbreken)",
         "START": "Hosten",
-        "BACK": "Terug"
+        "BACK": "Terug",
+        "PRESET_STORY": "Verhaal-coop",
+        "PRESET_FREE_ROAM": "Vrij spel",
+        "PRESET_PVP": "PvP",
+        "PVP": "Spelers kunnen elkaar verwonden (PvP)"
       },
       "LAN": {
         "TITLE": "Spellen in je netwerk",

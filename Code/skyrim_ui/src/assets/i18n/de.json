@@ -33,7 +33,11 @@
         "HOST_WORLD": "Freunde betreten meine Welt (meine Quests, geräumten Dungeons und toten NPCs)",
         "REQUIRE_MODS": "Freunde brauchen meine Mods zum Beitreten (das Spiel sagt ihnen, welche fehlen)",
         "START": "Hosten",
-        "BACK": "Zurück"
+        "BACK": "Zurück",
+        "PRESET_STORY": "Story-Koop",
+        "PRESET_FREE_ROAM": "Freies Spiel",
+        "PRESET_PVP": "PvP",
+        "PVP": "Spieler können sich gegenseitig verletzen (PvP)"
       },
       "LAN": {
         "TITLE": "Spiele in deinem Netzwerk",

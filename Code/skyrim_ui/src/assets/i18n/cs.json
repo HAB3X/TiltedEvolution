@@ -33,7 +33,11 @@
         "HOST_WORLD": "Přátelé vstoupí do mého světa (moje úkoly, vyčištěné kobky a mrtvé postavy)",
         "REQUIRE_MODS": "Přátelé potřebují mé mody, aby se připojili (hra jim řekne, které chybí)",
         "START": "Hostovat",
-        "BACK": "Zpět"
+        "BACK": "Zpět",
+        "PRESET_STORY": "Příběhový koop",
+        "PRESET_FREE_ROAM": "Volná hra",
+        "PRESET_PVP": "PvP",
+        "PVP": "Hráči si mohou ublížit (PvP)"
       },
       "LAN": {
         "TITLE": "Hry ve tvé síti",

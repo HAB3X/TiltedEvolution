@@ -3,6 +3,13 @@
     <div class="instructions">
       <p>{{ 'COMPONENT.CONNECT.HOST.INFO' | transloco }}</p>
     </div>
+    <div class="presets">
+      @for (preset of ['STORY', 'FREE_ROAM', 'PVP']; track preset) {
+        <button (click)="applyPreset($any(preset))" data-style-ornament="simple">
+          {{ 'COMPONENT.CONNECT.HOST.PRESET_' + preset | transloco }}
+        </button>
+      }
+    </div>
     <label class="field-label" for="host-password">{{
       'COMPONENT.CONNECT.HOST.PASSWORD' | transloco
     }}</label>
@@ -28,6 +35,12 @@
         <label for="require-mods">{{
           'COMPONENT.CONNECT.HOST.REQUIRE_MODS' | transloco
         }}</label>
+      </span>
+    </div>
+    <div class="password-options">
+      <span>
+        <input type="checkbox" id="host-pvp" [(ngModel)]="pvp" />
+        <label for="host-pvp">{{ 'COMPONENT.CONNECT.HOST.PVP' | transloco }}</label>
       </span>
     </div>
     <app-action-buttons>

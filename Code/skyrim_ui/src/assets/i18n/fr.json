@@ -34,7 +34,11 @@
         "HOST_WORLD": "Mes amis rejoignent mon monde (mes quêtes, donjons nettoyés et PNJ morts)",
         "REQUIRE_MODS": "Mes amis ont besoin de mes mods pour rejoindre (le jeu leur dit lesquels manquent)",
         "START": "Héberger",
-        "BACK": "Retour"
+        "BACK": "Retour",
+        "PRESET_STORY": "Coop histoire",
+        "PRESET_FREE_ROAM": "Exploration libre",
+        "PRESET_PVP": "JcJ",
+        "PVP": "Les joueurs peuvent se blesser (JcJ)"
       },
       "LAN": {
         "TITLE": "Parties sur votre réseau",

@@ -35,7 +35,11 @@
         "HOST_WORLD": "Vänner går in i min värld (mina uppdrag, rensade grottor och döda NPC:er)",
         "REQUIRE_MODS": "Vänner behöver mina moddar för att ansluta (spelet säger vilka som saknas)",
         "START": "Starta",
-        "BACK": "Tillbaka"
+        "BACK": "Tillbaka",
+        "PRESET_STORY": "Story-coop",
+        "PRESET_FREE_ROAM": "Fritt",
+        "PRESET_PVP": "PvP",
+        "PVP": "Spelare kan skada varandra (PvP)"
       },
       "LAN": {
         "TITLE": "Spel i ditt nätverk",
