@@ -18,7 +18,9 @@
       "REVEAL_HINT": "Pokaż graczy w pobliżu",
       "SAVES": "Zapisy",
       "SAVES_HINT": "Punkty kontrolne drużyny",
-      "CANCEL_CONNECT": "Anuluj"
+      "CANCEL_CONNECT": "Anuluj",
+      "READY_CHECK": "Sprawdź gotowość",
+      "READY_CHECK_HINT": "Zapytaj, czy wszyscy są gotowi"
     },
     "CHAT": {
       "SEND": "Wyślij",
@@ -180,7 +182,8 @@
       "INVITE": "Zaproś",
       "KICK": "Wyrzuć",
       "BAN": "Zbanuj",
-      "IN_PARTY": "W twojej drużynie"
+      "IN_PARTY": "W twojej drużynie",
+      "VOTE_KICK": "Głosuj za wyrzuceniem"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Lista Graczy",
@@ -265,6 +268,24 @@
       "STEP_APPLYING": "Dopasowywanie zadań, miejsc i postaci",
       "STEP_TRAVELLING": "Przenoszenie do hosta",
       "CHANGED": "Dopasowano {{quests}} zadań, {{places}} miejsc i {{people}} postaci."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} chce wyrzucić gracza {{target}}",
+      "KICK_YOU": "Pozostali głosują nad wyrzuceniem cię",
+      "READY_QUESTION": "{{starter}} pyta: wszyscy gotowi?",
+      "TALLY": "{{yes}} tak, {{no}} nie z {{eligible}}",
+      "READY_TALLY": "{{yes}} z {{eligible}} gotowych",
+      "SECONDS": "pozostało {{seconds}} s",
+      "YES": "Wyrzuć",
+      "NO": "Zostaw",
+      "READY": "Gotowy",
+      "NOT_READY": "Jeszcze nie",
+      "ANSWER_HINT": "Otwórz panel (F2), aby odpowiedzieć.",
+      "KICK_PASSED": "{{target}} został wyrzucony w głosowaniu",
+      "KICK_FAILED": "Głosowanie nad wyrzuceniem {{target}} nie przeszło",
+      "KICK_CANCELLED": "{{target}} wyszedł przed końcem głosowania",
+      "READY_PASSED": "Wszyscy gotowi!",
+      "READY_FAILED": "Nie wszyscy są gotowi"
     }
   },
   "SERVICE": {
@@ -307,6 +328,13 @@
     },
     "PARTY_HINT": {
       "MESSAGE": "Chcesz porobić wspólnie questy? Stwórz grupę i trzymaj się jej blisko, aby współdzielić postęp w questach! Przeczytaj nasz przewodnik, aby dowiedzieć się więcej."
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Inne głosowanie wciąż trwa.",
+      "REFUSED_COOLDOWN": "Odczekaj {{seconds}} s, zanim ponownie rozpoczniesz to głosowanie.",
+      "REFUSED_TOO_FEW": "Głosowanie nad wyrzuceniem wymaga co najmniej 3 graczy.",
+      "REFUSED_HOST": "Hosta nie można wyrzucić w głosowaniu.",
+      "REFUSED_TARGET": "Tego gracza tu nie ma."
     }
   }
 }

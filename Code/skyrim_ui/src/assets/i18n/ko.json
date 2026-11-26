@@ -16,7 +16,9 @@
       "REVEAL_HINT": "근처 플레이어 표시",
       "SAVES": "저장",
       "SAVES_HINT": "파티 체크포인트",
-      "CANCEL_CONNECT": "취소"
+      "CANCEL_CONNECT": "취소",
+      "READY_CHECK": "준비 확인",
+      "READY_CHECK_HINT": "모두 준비됐는지 묻기"
     },
     "CHAT": {
       "SEND": "보내기",
@@ -176,7 +178,8 @@
       "INVITE": "초대",
       "KICK": "추방",
       "BAN": "차단",
-      "IN_PARTY": "내 파티"
+      "IN_PARTY": "내 파티",
+      "VOTE_KICK": "추방 투표"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "플레이어 목록",
@@ -261,6 +264,24 @@
       "STEP_APPLYING": "퀘스트, 장소, 인물 맞추기",
       "STEP_TRAVELLING": "호스트에게 이동",
       "CHANGED": "퀘스트 {{quests}}개, 장소 {{places}}곳, 인물 {{people}}명을 맞췄습니다."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} 님이 {{target}} 님을 추방하려고 합니다",
+      "KICK_YOU": "다른 플레이어들이 당신의 추방을 투표 중입니다",
+      "READY_QUESTION": "{{starter}} 님의 질문: 모두 준비됐나요?",
+      "TALLY": "찬성 {{yes}}, 반대 {{no}} / {{eligible}}명",
+      "READY_TALLY": "{{eligible}}명 중 {{yes}}명 준비됨",
+      "SECONDS": "{{seconds}}초 남음",
+      "YES": "추방",
+      "NO": "유지",
+      "READY": "준비됨",
+      "NOT_READY": "아직",
+      "ANSWER_HINT": "패널(F2)을 열어 응답하세요.",
+      "KICK_PASSED": "{{target}} 님이 투표로 추방되었습니다",
+      "KICK_FAILED": "{{target}} 님 추방 투표가 부결되었습니다",
+      "KICK_CANCELLED": "{{target}} 님이 투표가 끝나기 전에 나갔습니다",
+      "READY_PASSED": "모두 준비됐습니다!",
+      "READY_FAILED": "모두 준비되지는 않았습니다"
     }
   },
   "SERVICE": {
@@ -300,6 +321,13 @@
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}}님이 귀하를 파티에 초대했습니다"
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "다른 투표가 아직 진행 중입니다.",
+      "REFUSED_COOLDOWN": "그 투표를 다시 시작하려면 {{seconds}}초 기다리세요.",
+      "REFUSED_TOO_FEW": "추방 투표에는 최소 3명이 필요합니다.",
+      "REFUSED_HOST": "호스트는 투표로 추방할 수 없습니다.",
+      "REFUSED_TARGET": "그 플레이어는 여기에 없습니다."
     }
   }
 }

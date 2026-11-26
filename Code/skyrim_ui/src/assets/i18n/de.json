@@ -16,7 +16,9 @@
       "REVEAL_HINT": "Spieler in der Nähe zeigen",
       "SAVES": "Spielstände",
       "SAVES_HINT": "Gruppen-Speicherpunkte",
-      "CANCEL_CONNECT": "Abbrechen"
+      "CANCEL_CONNECT": "Abbrechen",
+      "READY_CHECK": "Bereitschaftscheck",
+      "READY_CHECK_HINT": "Fragen, ob alle bereit sind"
     },
     "CHAT": {
       "SEND": "Senden",
@@ -179,7 +181,8 @@
       "INVITE": "Einladen",
       "KICK": "Rauswerfen",
       "BAN": "Bannen",
-      "IN_PARTY": "In deiner Gruppe"
+      "IN_PARTY": "In deiner Gruppe",
+      "VOTE_KICK": "Rauswurf abstimmen"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spielerliste",
@@ -265,6 +268,24 @@
       "STEP_APPLYING": "Quests, Orte und Personen angleichen",
       "STEP_TRAVELLING": "Dich zum Host bringen",
       "CHANGED": "{{quests}} Quests, {{places}} Orte und {{people}} Personen angeglichen."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} will {{target}} rauswerfen",
+      "KICK_YOU": "Die anderen stimmen darüber ab, dich rauszuwerfen",
+      "READY_QUESTION": "{{starter}} fragt: Sind alle bereit?",
+      "TALLY": "{{yes}} ja, {{no}} nein von {{eligible}}",
+      "READY_TALLY": "{{yes}} von {{eligible}} bereit",
+      "SECONDS": "noch {{seconds}} s",
+      "YES": "Rauswerfen",
+      "NO": "Behalten",
+      "READY": "Bereit",
+      "NOT_READY": "Noch nicht",
+      "ANSWER_HINT": "Öffne das Fenster (F2), um zu antworten.",
+      "KICK_PASSED": "{{target}} wurde per Abstimmung rausgeworfen",
+      "KICK_FAILED": "Die Abstimmung, {{target}} rauszuwerfen, ist gescheitert",
+      "KICK_CANCELLED": "{{target}} ist vor Ende der Abstimmung gegangen",
+      "READY_PASSED": "Alle sind bereit!",
+      "READY_FAILED": "Nicht alle sind bereit"
     }
   },
   "SERVICE": {
@@ -307,6 +328,13 @@
     },
     "PARTY_HINT": {
       "MESSAGE": "Willst du gemeinsam questen? Erstelle eine Gruppe und bleib in der Nähe, um euren Quest-Fortschritt zu teilen! Mehr dazu in unserem Spielleitfaden."
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Eine andere Abstimmung läuft noch.",
+      "REFUSED_COOLDOWN": "Warte {{seconds}} s, bevor du diese Abstimmung erneut startest.",
+      "REFUSED_TOO_FEW": "Eine Abstimmung zum Rauswerfen braucht mindestens 3 Spieler.",
+      "REFUSED_HOST": "Der Host kann nicht rausgewählt werden.",
+      "REFUSED_TARGET": "Dieser Spieler ist nicht hier."
     }
   }
 }

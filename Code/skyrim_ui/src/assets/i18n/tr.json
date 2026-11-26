@@ -16,7 +16,9 @@
       "REVEAL_HINT": "Yakındaki oyuncuları göster",
       "SAVES": "Kayıtlar",
       "SAVES_HINT": "Grup kayıt noktaları",
-      "CANCEL_CONNECT": "İptal"
+      "CANCEL_CONNECT": "İptal",
+      "READY_CHECK": "Hazır kontrolü",
+      "READY_CHECK_HINT": "Herkesin hazır olup olmadığını sor"
     },
     "CHAT": {
       "SEND": "Gönder",
@@ -178,7 +180,8 @@
       "INVITE": "Davet Et",
       "KICK": "At",
       "BAN": "Yasakla",
-      "IN_PARTY": "Grubunda"
+      "IN_PARTY": "Grubunda",
+      "VOTE_KICK": "Atma oylaması"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Oyuncu listesi",
@@ -264,6 +267,24 @@
       "STEP_APPLYING": "Görevler, yerler ve kişiler eşleştiriliyor",
       "STEP_TRAVELLING": "Sunucu sahibinin yanına taşınıyorsunuz",
       "CHANGED": "Eşleşmesi için {{quests}} görev, {{places}} yer ve {{people}} kişi değiştirildi."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}}, {{target}} adlı oyuncuyu atmak istiyor",
+      "KICK_YOU": "Diğerleri sizi atmak için oylama yapıyor",
+      "READY_QUESTION": "{{starter}} soruyor: herkes hazır mı?",
+      "TALLY": "{{eligible}} kişiden {{yes}} evet, {{no}} hayır",
+      "READY_TALLY": "{{eligible}} kişiden {{yes}} kişi hazır",
+      "SECONDS": "{{seconds}} sn kaldı",
+      "YES": "At",
+      "NO": "Kalsın",
+      "READY": "Hazır",
+      "NOT_READY": "Henüz değil",
+      "ANSWER_HINT": "Yanıtlamak için paneli (F2) açın.",
+      "KICK_PASSED": "{{target}} oylamayla atıldı",
+      "KICK_FAILED": "{{target}} adlı oyuncuyu atma oylaması başarısız oldu",
+      "KICK_CANCELLED": "{{target}} oylama bitmeden ayrıldı",
+      "READY_PASSED": "Herkes hazır!",
+      "READY_FAILED": "Herkes hazır değil"
     }
   },
   "SERVICE": {
@@ -306,6 +327,13 @@
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} parti daveti attı!"
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Başka bir oylama hâlâ açık.",
+      "REFUSED_COOLDOWN": "Bu oylamayı yeniden başlatmadan önce {{seconds}} sn bekleyin.",
+      "REFUSED_TOO_FEW": "Atma oylaması için en az 3 oyuncu gerekir.",
+      "REFUSED_HOST": "Sunucu sahibi oylamayla atılamaz.",
+      "REFUSED_TARGET": "O oyuncu burada değil."
     }
   }
 }

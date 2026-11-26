@@ -18,7 +18,9 @@
       "REVEAL_HINT": "Spelers in de buurt tonen",
       "SAVES": "Opgeslagen spellen",
       "SAVES_HINT": "Groepscheckpoints",
-      "CANCEL_CONNECT": "Annuleren"
+      "CANCEL_CONNECT": "Annuleren",
+      "READY_CHECK": "Gereedheidscheck",
+      "READY_CHECK_HINT": "Vragen of iedereen klaar is"
     },
     "CHAT": {
       "SEND": "Verzenden",
@@ -178,7 +180,8 @@
       "INVITE": "Uitnodigen",
       "KICK": "Verwijderen",
       "BAN": "Verbannen",
-      "IN_PARTY": "In je groep"
+      "IN_PARTY": "In je groep",
+      "VOTE_KICK": "Stemmen om eruit te zetten"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spelerslijst",
@@ -245,6 +248,24 @@
       "STEP_APPLYING": "Quests, plaatsen en personen gelijkzetten",
       "STEP_TRAVELLING": "Je naar de host brengen",
       "CHANGED": "{{quests}} quests, {{places}} plaatsen en {{people}} personen gelijkgezet."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} wil {{target}} eruit zetten",
+      "KICK_YOU": "De anderen stemmen over jouw verwijdering",
+      "READY_QUESTION": "{{starter}} vraagt: is iedereen klaar?",
+      "TALLY": "{{yes}} ja, {{no}} nee van {{eligible}}",
+      "READY_TALLY": "{{yes}} van {{eligible}} klaar",
+      "SECONDS": "nog {{seconds}} s",
+      "YES": "Eruit zetten",
+      "NO": "Houden",
+      "READY": "Klaar",
+      "NOT_READY": "Nog niet",
+      "ANSWER_HINT": "Open het paneel (F2) om te antwoorden.",
+      "KICK_PASSED": "{{target}} is weggestemd",
+      "KICK_FAILED": "De stemming om {{target}} eruit te zetten is mislukt",
+      "KICK_CANCELLED": "{{target}} vertrok voordat de stemming klaar was",
+      "READY_PASSED": "Iedereen is klaar!",
+      "READY_FAILED": "Niet iedereen is klaar"
     }
   },
   "SERVICE": {
@@ -277,6 +298,13 @@
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} heeft je uitgenodigd voor een groep"
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Er loopt nog een andere stemming.",
+      "REFUSED_COOLDOWN": "Wacht {{seconds}} s voordat je die stemming opnieuw start.",
+      "REFUSED_TOO_FEW": "Een stemming om iemand eruit te zetten heeft minstens 3 spelers nodig.",
+      "REFUSED_HOST": "De host kan niet worden weggestemd.",
+      "REFUSED_TARGET": "Die speler is er niet."
     }
   }
 }

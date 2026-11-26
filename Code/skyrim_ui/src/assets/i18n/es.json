@@ -18,7 +18,9 @@
       "REVEAL_HINT": "Mostrar jugadores cerca",
       "SAVES": "Partidas guardadas",
       "SAVES_HINT": "Puntos de control del grupo",
-      "CANCEL_CONNECT": "Cancelar"
+      "CANCEL_CONNECT": "Cancelar",
+      "READY_CHECK": "Comprobar si están listos",
+      "READY_CHECK_HINT": "Preguntar si todos están listos"
     },
     "CHAT": {
       "SEND": "Enviar",
@@ -177,7 +179,8 @@
       "INVITE": "Invitar",
       "KICK": "Expulsar",
       "BAN": "Vetar",
-      "IN_PARTY": "En tu grupo"
+      "IN_PARTY": "En tu grupo",
+      "VOTE_KICK": "Votar expulsión"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Lista de jugadores",
@@ -257,6 +260,24 @@
       "STEP_APPLYING": "Igualando misiones, lugares y personas",
       "STEP_TRAVELLING": "Llevándote junto al anfitrión",
       "CHANGED": "Se cambiaron {{quests}} misiones, {{places}} lugares y {{people}} personas para coincidir."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} quiere expulsar a {{target}}",
+      "KICK_YOU": "Los demás están votando para expulsarte",
+      "READY_QUESTION": "{{starter}} pregunta: ¿están todos listos?",
+      "TALLY": "{{yes}} sí, {{no}} no de {{eligible}}",
+      "READY_TALLY": "{{yes}} de {{eligible}} listos",
+      "SECONDS": "quedan {{seconds}} s",
+      "YES": "Expulsar",
+      "NO": "Mantener",
+      "READY": "Listo",
+      "NOT_READY": "Todavía no",
+      "ANSWER_HINT": "Abre el panel (F2) para responder.",
+      "KICK_PASSED": "{{target}} fue expulsado por votación",
+      "KICK_FAILED": "La votación para expulsar a {{target}} no salió adelante",
+      "KICK_CANCELLED": "{{target}} se fue antes de que terminara la votación",
+      "READY_PASSED": "¡Todos están listos!",
+      "READY_FAILED": "No todos están listos"
     }
   },
   "SERVICE": {
@@ -298,6 +319,13 @@
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} te invitó para unirte a un grupo"
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Todavía hay otra votación abierta.",
+      "REFUSED_COOLDOWN": "Espera {{seconds}} s antes de volver a iniciar esa votación.",
+      "REFUSED_TOO_FEW": "Una votación de expulsión necesita al menos 3 jugadores.",
+      "REFUSED_HOST": "No se puede expulsar al anfitrión por votación.",
+      "REFUSED_TARGET": "Ese jugador no está aquí."
     }
   }
 }

@@ -16,7 +16,9 @@
       "REVEAL_HINT": "Ukázat hráče poblíž",
       "SAVES": "Uložené hry",
       "SAVES_HINT": "Kontrolní body družiny",
-      "CANCEL_CONNECT": "Zrušit"
+      "CANCEL_CONNECT": "Zrušit",
+      "READY_CHECK": "Kontrola připravenosti",
+      "READY_CHECK_HINT": "Zeptat se, zda jsou všichni připraveni"
     },
     "CHAT": {
       "SEND": "Odeslat",
@@ -176,7 +178,8 @@
       "INVITE": "Pozvat",
       "KICK": "Vyhodit",
       "BAN": "Zabanovat",
-      "IN_PARTY": "Ve tvé družině"
+      "IN_PARTY": "Ve tvé družině",
+      "VOTE_KICK": "Hlasovat o vyhození"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Seznam hráčů",
@@ -261,6 +264,24 @@
       "STEP_APPLYING": "Sjednocení úkolů, míst a postav",
       "STEP_TRAVELLING": "Přesun k hostiteli",
       "CHANGED": "Změněno pro shodu: {{quests}} úkolů, {{places}} míst a {{people}} postav."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} chce vyhodit hráče {{target}}",
+      "KICK_YOU": "Ostatní hlasují o vašem vyhození",
+      "READY_QUESTION": "{{starter}} se ptá: jsou všichni připraveni?",
+      "TALLY": "{{yes}} ano, {{no}} ne z {{eligible}}",
+      "READY_TALLY": "{{yes}} z {{eligible}} připraveno",
+      "SECONDS": "zbývá {{seconds}} s",
+      "YES": "Vyhodit",
+      "NO": "Ponechat",
+      "READY": "Připraven",
+      "NOT_READY": "Ještě ne",
+      "ANSWER_HINT": "Odpovězte v panelu (F2).",
+      "KICK_PASSED": "{{target}} byl vyhozen hlasováním",
+      "KICK_FAILED": "Hlasování o vyhození hráče {{target}} neprošlo",
+      "KICK_CANCELLED": "{{target}} odešel před koncem hlasování",
+      "READY_PASSED": "Všichni jsou připraveni!",
+      "READY_FAILED": "Ne všichni jsou připraveni"
     }
   },
   "SERVICE": {
@@ -300,6 +321,13 @@
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} vás pozval do skupiny."
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Jiné hlasování ještě probíhá.",
+      "REFUSED_COOLDOWN": "Počkejte {{seconds}} s, než znovu zahájíte toto hlasování.",
+      "REFUSED_TOO_FEW": "Hlasování o vyhození vyžaduje alespoň 3 hráče.",
+      "REFUSED_HOST": "Hostitele nelze vyhodit hlasováním.",
+      "REFUSED_TARGET": "Tento hráč tu není."
     }
   }
 }

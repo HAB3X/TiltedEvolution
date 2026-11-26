@@ -18,7 +18,9 @@
       "REVEAL_HINT": "显示附近玩家",
       "SAVES": "存档",
       "SAVES_HINT": "队伍检查点",
-      "CANCEL_CONNECT": "取消"
+      "CANCEL_CONNECT": "取消",
+      "READY_CHECK": "准备确认",
+      "READY_CHECK_HINT": "询问大家是否准备好"
     },
     "CHAT": {
       "SEND": "发送",
@@ -177,7 +179,8 @@
       "INVITE": "邀请",
       "KICK": "踢出",
       "BAN": "封禁",
-      "IN_PARTY": "在你的队伍中"
+      "IN_PARTY": "在你的队伍中",
+      "VOTE_KICK": "投票踢出"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "玩家列表",
@@ -256,6 +259,24 @@
       "STEP_APPLYING": "同步任务、地点和人物",
       "STEP_TRAVELLING": "将你移动到主机身边",
       "CHANGED": "已同步 {{quests}} 个任务、{{places}} 个地点和 {{people}} 个人物。"
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} 想踢出 {{target}}",
+      "KICK_YOU": "其他人正在投票决定是否踢出你",
+      "READY_QUESTION": "{{starter}} 问：大家都准备好了吗？",
+      "TALLY": "{{eligible}} 人中 {{yes}} 人赞成，{{no}} 人反对",
+      "READY_TALLY": "{{eligible}} 人中 {{yes}} 人已准备",
+      "SECONDS": "剩余 {{seconds}} 秒",
+      "YES": "踢出",
+      "NO": "保留",
+      "READY": "准备好了",
+      "NOT_READY": "还没有",
+      "ANSWER_HINT": "打开面板（F2）进行回答。",
+      "KICK_PASSED": "{{target}} 已被投票踢出",
+      "KICK_FAILED": "踢出 {{target}} 的投票未通过",
+      "KICK_CANCELLED": "{{target}} 在投票结束前离开了",
+      "READY_PASSED": "大家都准备好了！",
+      "READY_FAILED": "还有人没准备好"
     }
   },
   "SERVICE": {
@@ -295,6 +316,13 @@
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}}邀请您加入其团队"
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "另一个投票仍在进行。",
+      "REFUSED_COOLDOWN": "请等待 {{seconds}} 秒后再发起该投票。",
+      "REFUSED_TOO_FEW": "踢人投票至少需要 3 名玩家。",
+      "REFUSED_HOST": "无法投票踢出主机。",
+      "REFUSED_TARGET": "该玩家不在这里。"
     }
   }
 }

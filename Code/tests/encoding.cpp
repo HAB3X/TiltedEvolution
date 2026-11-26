@@ -21,6 +21,9 @@
 #include <WireProtocol.h>
 #include <RequiredMods.h>
 #include <Relay.h>
+#include <Messages/NotifyVote.h>
+#include <Messages/RequestVote.h>
+#include <Messages/RequestVoteAnswer.h>
 #include <Messages/ServerMessageFactory.h>
 #include <Structs/Vector2_NetQuantize.h>
 
@@ -1193,4 +1196,47 @@ TEST_CASE("Relay messages", "[encoding.relay]")
         const std::string cHuge = huge.Serialize();
         REQUIRE_FALSE(Message::Parse(cHuge.data(), cHuge.size()));
     }
+}
+
+TEST_CASE("Vote messages", "[encoding.votes]")
+{
+    auto roundTrip = [](const auto& acSent, auto aReceived)
+    {
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        acSent.Serialize(writer);
+        Buffer::Reader reader(&buffer);
+        uint64_t opcode;
+        reader.ReadBits(opcode, 8);
+        aReceived.DeserializeRaw(reader);
+        return aReceived;
+    };
+
+    RequestVote start;
+    start.Kind = VoteKind::Kick;
+    start.TargetId = 300;
+    REQUIRE(roundTrip(start, RequestVote{}) == start);
+
+    RequestVoteAnswer answer;
+    answer.VoteId = 7;
+    answer.Yes = true;
+    REQUIRE(roundTrip(answer, RequestVoteAnswer{}) == answer);
+
+    NotifyVote vote;
+    vote.VoteId = 7;
+    vote.Kind = VoteKind::Ready;
+    vote.State = VoteState::RefusedCooldown;
+    vote.StarterId = 1;
+    vote.TargetId = 2;
+    vote.Yes = 3;
+    vote.No = 4;
+    vote.Eligible = 5;
+    vote.SecondsLeft = 6;
+    REQUIRE(roundTrip(vote, NotifyVote{}) == vote);
+
+    // Official v1.8.4 has no votes
+    Wire::Set(WireProtocol::Official184);
+    const bool cOfficialHasVotes = Wire::ToWire(kRequestVote).has_value() || Wire::ToWire(kNotifyVote).has_value();
+    Wire::Set(WireProtocol::Current);
+    REQUIRE_FALSE(cOfficialHasVotes);
 }

@@ -31,6 +31,28 @@ export interface HostWorldSync {
   people: number;
 }
 
+/** A kick vote or ready check, from the game's vote event (the server's VoteService). */
+export interface Vote {
+  id: number;
+  kind: 'kick' | 'ready';
+  state: 'open' | 'passed' | 'failed' | 'cancelled';
+  starterId: number;
+  targetId: number;
+  yes: number;
+  no: number;
+  eligible: number;
+  /** When it closes, as Date.now() */
+  endsAt: number;
+  /** This player has answered (or started it) */
+  answered: boolean;
+}
+
+/** The server's VoteState numbers from 4 on: why a vote didn't start */
+const VOTE_REFUSALS = ['BUSY', 'COOLDOWN', 'TOO_FEW', 'HOST', 'TARGET'];
+const VOTE_STATES: Vote['state'][] = ['open', 'passed', 'failed', 'cancelled'];
+/** How long a finished vote stays on screen */
+const VOTE_RESULT_SHOWN_MS = 6000;
+
 /** How long the finished sync stays on screen */
 const HOST_WORLD_SYNC_SHOWN_MS = 8000;
 
@@ -150,6 +172,11 @@ export class ClientService implements OnDestroy {
   /** A host world server's offer, waiting for the joiner's answer; null when there's none. */
   public hostWorldOfferChange = new BehaviorSubject<HostWorldOffer | null>(null);
 
+  /** The open vote, or the last one for a few seconds after it ended; else null. */
+  public voteChange = new BehaviorSubject<Vote | null>(null);
+
+  private _voteTimer: ReturnType<typeof setTimeout> | null = null;
+
   /** While joining a host world, and shortly after: how far it got; else null. */
   public hostWorldSyncChange = new BehaviorSubject<HostWorldSync | null>(null);
 
@@ -265,6 +292,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('partySaves', this.onPartySaves.bind(this));
     skyrimtogether.on('hostWorldOffer', this.onHostWorldOffer.bind(this));
     skyrimtogether.on('hostWorldSync', this.onHostWorldSync.bind(this));
+    skyrimtogether.on('vote', this.onVote.bind(this));
 
     try {
       this.lastSessionChange.next(
@@ -316,6 +344,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('partySaves');
     skyrimtogether.off('hostWorldOffer');
     skyrimtogether.off('hostWorldSync');
+    skyrimtogether.off('vote');
     skyrimtogether.off('dummyData');
     skyrimtogether.off('partyInfo');
     skyrimtogether.off('partyCreated');
@@ -334,6 +363,26 @@ export class ClientService implements OnDestroy {
   /** Kick a player from the game this player hosts, or ban them. */
   public moderatePlayer(playerId: number, ban: boolean): void {
     skyrimtogether.moderatePlayer(playerId, ban);
+  }
+
+  /** Ask the others to vote on kicking a player (see voteChange). */
+  public startKickVote(playerId: number): void {
+    skyrimtogether.startVote(0, playerId);
+  }
+
+  /** Ask everyone whether they're ready (see voteChange). */
+  public startReadyCheck(): void {
+    skyrimtogether.startVote(1, 0);
+  }
+
+  /** Answer the open vote. */
+  public answerVote(yes: boolean): void {
+    const vote = this.voteChange.getValue();
+    if (!vote || vote.state !== 'open' || vote.answered) {
+      return;
+    }
+    skyrimtogether.answerVote(vote.id, yes);
+    this.voteChange.next({ ...vote, answered: true });
   }
 
   /** Look for servers on the local network, see lanServersChange. */
@@ -626,6 +675,7 @@ export class ClientService implements OnDestroy {
         this.connectionStateChange.getValue() ||
         this.reconnectingChange.getValue() !== null;
       this.localPlayerId = undefined;
+      this.voteChange.next(null);
       // A sync in progress ends with the connection
       if (this.hostWorldSyncChange.getValue()?.step !== 'done') {
         this.hostWorldSyncChange.next(null);
@@ -880,6 +930,39 @@ export class ClientService implements OnDestroy {
           this._hostWorldSyncTimer = null;
           this.hostWorldSyncChange.next(null);
         }, HOST_WORLD_SYNC_SHOWN_MS);
+      }
+    });
+  }
+
+  private onVote(id: number, kind: number, state: number, starterId: number, targetId: number, yes: number, no: number, eligible: number, secondsLeft: number) {
+    this.zone.run(() => {
+      if (state >= VOTE_STATES.length) {
+        this.chatService.pushSystemMessage('SERVICE.VOTE.REFUSED_' + (VOTE_REFUSALS[state - VOTE_STATES.length] ?? 'TARGET'), { seconds: secondsLeft });
+        return;
+      }
+      if (this._voteTimer !== null) {
+        clearTimeout(this._voteTimer);
+        this._voteTimer = null;
+      }
+      const previous = this.voteChange.getValue();
+      const vote: Vote = {
+        id,
+        kind: kind === 0 ? 'kick' : 'ready',
+        state: VOTE_STATES[state],
+        starterId,
+        targetId,
+        yes,
+        no,
+        eligible,
+        endsAt: Date.now() + secondsLeft * 1000,
+        answered: (previous?.id === id && previous.answered) || starterId === this.localPlayerId,
+      };
+      this.voteChange.next(vote);
+      if (vote.state !== 'open') {
+        this._voteTimer = setTimeout(() => {
+          this._voteTimer = null;
+          this.voteChange.next(null);
+        }, VOTE_RESULT_SHOWN_MS);
       }
     });
   }

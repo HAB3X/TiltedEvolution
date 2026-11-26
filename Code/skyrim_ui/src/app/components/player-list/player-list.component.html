@@ -19,6 +19,11 @@
               {{ 'COMPONENT.PARTY_LIST.INVITE' | transloco }}
             </button>
           }
+          @if (!(hosting$ | async)) {
+            <button class="btn btn-secondary btn-small" (click)="voteKick(player.id)">
+              {{ 'COMPONENT.PARTY_LIST.VOTE_KICK' | transloco }}
+            </button>
+          }
           @if (hosting$ | async) {
             <button class="btn btn-danger btn-small" (click)="moderate(player.id, false)">
               {{ 'COMPONENT.PARTY_LIST.KICK' | transloco }}

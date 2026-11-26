@@ -84,6 +84,11 @@ export class RootComponent implements OnInit {
     this.client.rejoin();
   }
 
+  public startReadyCheck(): void {
+    this.sound.play(Sound.Ok);
+    this.client.startReadyCheck();
+  }
+
   /** Stops getting back to a lost server */
   public cancelReconnect(): void {
     this.client.disconnect();

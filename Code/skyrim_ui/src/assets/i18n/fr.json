@@ -18,7 +18,9 @@
       "REVEAL_HINT": "Montrer les joueurs proches",
       "SAVES": "Sauvegardes",
       "SAVES_HINT": "Points de sauvegarde du groupe",
-      "CANCEL_CONNECT": "Annuler"
+      "CANCEL_CONNECT": "Annuler",
+      "READY_CHECK": "Appel de préparation",
+      "READY_CHECK_HINT": "Demander si tout le monde est prêt"
     },
     "CHAT": {
       "SEND": "Envoyer",
@@ -180,7 +182,8 @@
       "INVITE": "Inviter",
       "KICK": "Expulser",
       "BAN": "Bannir",
-      "IN_PARTY": "Dans votre groupe"
+      "IN_PARTY": "Dans votre groupe",
+      "VOTE_KICK": "Voter l'expulsion"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Liste des joueurs",
@@ -260,6 +263,24 @@
       "STEP_APPLYING": "Alignement des quêtes, lieux et personnages",
       "STEP_TRAVELLING": "Déplacement vers l'hôte",
       "CHANGED": "{{quests}} quêtes, {{places}} lieux et {{people}} personnages alignés."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} veut expulser {{target}}",
+      "KICK_YOU": "Les autres votent pour vous expulser",
+      "READY_QUESTION": "{{starter}} demande : tout le monde est prêt ?",
+      "TALLY": "{{yes}} oui, {{no}} non sur {{eligible}}",
+      "READY_TALLY": "{{yes}} sur {{eligible}} prêts",
+      "SECONDS": "{{seconds}} s restantes",
+      "YES": "Expulser",
+      "NO": "Garder",
+      "READY": "Prêt",
+      "NOT_READY": "Pas encore",
+      "ANSWER_HINT": "Ouvrez le panneau (F2) pour répondre.",
+      "KICK_PASSED": "{{target}} a été expulsé par vote",
+      "KICK_FAILED": "Le vote pour expulser {{target}} a échoué",
+      "KICK_CANCELLED": "{{target}} est parti avant la fin du vote",
+      "READY_PASSED": "Tout le monde est prêt !",
+      "READY_FAILED": "Tout le monde n'est pas prêt"
     }
   },
   "SERVICE": {
@@ -302,6 +323,13 @@
     },
     "PARTY_HINT": {
       "MESSAGE": "Envie de faire des quêtes ensemble ? Formez un groupe et restez à proximité pour partager votre progression ! Consultez notre guide de jeu pour plus d'informations."
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Un autre vote est encore en cours.",
+      "REFUSED_COOLDOWN": "Attendez {{seconds}} s avant de relancer ce vote.",
+      "REFUSED_TOO_FEW": "Un vote d'expulsion nécessite au moins 3 joueurs.",
+      "REFUSED_HOST": "L'hôte ne peut pas être expulsé par vote.",
+      "REFUSED_TARGET": "Ce joueur n'est pas là."
     }
   }
 }

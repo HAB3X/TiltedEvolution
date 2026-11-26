@@ -19,6 +19,7 @@
 #include <Services/VoiceService.h>
 #include <Services/HostWorldService.h>
 #include <Services/ReturnService.h>
+#include <Services/VoteService.h>
 
 #include <es_loader/ESLoader.h>
 
@@ -45,6 +46,7 @@ World::World()
     ctx().emplace<VoiceService>(*this, m_dispatcher);
     ctx().emplace<HostWorldService>(*this, m_dispatcher);
     ctx().emplace<ReturnService>(*this);
+    ctx().emplace<VoteService>(*this, m_dispatcher);
 
     ESLoader::ESLoader loader;
     // emplace loaded mods into modscomponent.

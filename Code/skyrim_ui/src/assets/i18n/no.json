@@ -16,7 +16,9 @@
       "REVEAL_HINT": "Vis spillere i nærheten",
       "SAVES": "Lagringer",
       "SAVES_HINT": "Gruppens lagringspunkter",
-      "CANCEL_CONNECT": "Avbryt"
+      "CANCEL_CONNECT": "Avbryt",
+      "READY_CHECK": "Klarsjekk",
+      "READY_CHECK_HINT": "Spør om alle er klare"
     },
     "CHAT": {
       "SEND": "Send",
@@ -176,7 +178,8 @@
       "INVITE": "Inviter",
       "KICK": "Kast ut",
       "BAN": "Utesteng",
-      "IN_PARTY": "I gruppen din"
+      "IN_PARTY": "I gruppen din",
+      "VOTE_KICK": "Stem for utkasting"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spillere",
@@ -261,6 +264,24 @@
       "STEP_APPLYING": "Samkjører oppdrag, steder og personer",
       "STEP_TRAVELLING": "Flytter deg til verten",
       "CHANGED": "{{quests}} oppdrag, {{places}} steder og {{people}} personer endret for å stemme."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} vil kaste ut {{target}}",
+      "KICK_YOU": "De andre stemmer over å kaste deg ut",
+      "READY_QUESTION": "{{starter}} spør: er alle klare?",
+      "TALLY": "{{yes}} ja, {{no}} nei av {{eligible}}",
+      "READY_TALLY": "{{yes}} av {{eligible}} klare",
+      "SECONDS": "{{seconds}} s igjen",
+      "YES": "Kast ut",
+      "NO": "Behold",
+      "READY": "Klar",
+      "NOT_READY": "Ikke ennå",
+      "ANSWER_HINT": "Åpne panelet (F2) for å svare.",
+      "KICK_PASSED": "{{target}} ble stemt ut",
+      "KICK_FAILED": "Avstemningen om å kaste ut {{target}} feilet",
+      "KICK_CANCELLED": "{{target}} forlot spillet før avstemningen var ferdig",
+      "READY_PASSED": "Alle er klare!",
+      "READY_FAILED": "Ikke alle er klare"
     }
   },
   "SERVICE": {
@@ -302,6 +323,13 @@
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} inviterte deg til en gruppe."
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "En annen avstemning pågår fortsatt.",
+      "REFUSED_COOLDOWN": "Vent {{seconds}} s før du starter den avstemningen igjen.",
+      "REFUSED_TOO_FEW": "En avstemning om utkasting krever minst 3 spillere.",
+      "REFUSED_HOST": "Verten kan ikke stemmes ut.",
+      "REFUSED_TARGET": "Den spilleren er ikke her."
     }
   }
 }

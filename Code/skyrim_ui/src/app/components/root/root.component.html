@@ -2,6 +2,7 @@
   @if (!(menuOpen$ | async)) {
     <app-connection-status></app-connection-status>
     <app-host-world-sync></app-host-world-sync>
+    <app-vote></app-vote>
     <app-debug></app-debug>
     <app-group></app-group>
   }
@@ -70,6 +71,10 @@
                 <span class="hub-nav-hint">{{ 'COMPONENT.HUB.INVITE_HINT' | transloco }}</span>
               </button>
             }
+            <button class="hub-nav-item" (click)="startReadyCheck()">
+              <span class="hub-nav-label">{{ 'COMPONENT.HUB.READY_CHECK' | transloco }}</span>
+              <span class="hub-nav-hint">{{ 'COMPONENT.HUB.READY_CHECK_HINT' | transloco }}</span>
+            </button>
             <button class="hub-nav-item" [disabled]="revealingInProgress$" (click)="revealPlayers()">
               <span class="hub-nav-label">{{ 'COMPONENT.ROOT.REVEAL_PLAYERS' | transloco }}</span>
               <span class="hub-nav-hint">{{ 'COMPONENT.HUB.REVEAL_HINT' | transloco }}</span>

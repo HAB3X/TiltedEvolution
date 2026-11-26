@@ -16,7 +16,9 @@
       "REVEAL_HINT": "Visa spelare i närheten",
       "SAVES": "Sparningar",
       "SAVES_HINT": "Gruppens kontrollpunkter",
-      "CANCEL_CONNECT": "Avbryt"
+      "CANCEL_CONNECT": "Avbryt",
+      "READY_CHECK": "Redokoll",
+      "READY_CHECK_HINT": "Fråga om alla är redo"
     },
     "CHAT": {
       "SEND": "Skicka",
@@ -181,7 +183,8 @@
       "INVITE": "Bjud in",
       "KICK": "Sparka ut",
       "BAN": "Bannlys",
-      "IN_PARTY": "I din grupp"
+      "IN_PARTY": "I din grupp",
+      "VOTE_KICK": "Rösta om utsparkning"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spelarlista",
@@ -267,6 +270,24 @@
       "STEP_APPLYING": "Matchar uppdrag, platser och personer",
       "STEP_TRAVELLING": "Flyttar dig till värden",
       "CHANGED": "{{quests}} uppdrag, {{places}} platser och {{people}} personer ändrade för att stämma."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} vill sparka ut {{target}}",
+      "KICK_YOU": "De andra röstar om att sparka ut dig",
+      "READY_QUESTION": "{{starter}} frågar: är alla redo?",
+      "TALLY": "{{yes}} ja, {{no}} nej av {{eligible}}",
+      "READY_TALLY": "{{yes}} av {{eligible}} redo",
+      "SECONDS": "{{seconds}} s kvar",
+      "YES": "Sparka ut",
+      "NO": "Behåll",
+      "READY": "Redo",
+      "NOT_READY": "Inte än",
+      "ANSWER_HINT": "Öppna panelen (F2) för att svara.",
+      "KICK_PASSED": "{{target}} röstades ut",
+      "KICK_FAILED": "Omröstningen om att sparka ut {{target}} misslyckades",
+      "KICK_CANCELLED": "{{target}} lämnade innan omröstningen var klar",
+      "READY_PASSED": "Alla är redo!",
+      "READY_FAILED": "Inte alla är redo"
     }
   },
   "SERVICE": {
@@ -312,6 +333,13 @@
     },
     "PARTY_HINT": {
       "MESSAGE": "Vill du göra en quest tillsammans? Gå med i samma party och håll er nära varandra för att dela framsteg! Läs vår playguide för att lära er mer."
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "En annan omröstning pågår fortfarande.",
+      "REFUSED_COOLDOWN": "Vänta {{seconds}} s innan du startar den omröstningen igen.",
+      "REFUSED_TOO_FEW": "En omröstning om utsparkning kräver minst 3 spelare.",
+      "REFUSED_HOST": "Värden kan inte röstas ut.",
+      "REFUSED_TARGET": "Den spelaren är inte här."
     }
   }
 }

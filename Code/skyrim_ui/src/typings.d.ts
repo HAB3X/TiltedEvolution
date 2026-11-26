@@ -225,6 +225,12 @@ interface SkyrimTogether {
   /** How far joining a host world got (requesting, received, saving, applying, travelling, done, cancelled) and, once applied, what changed. */
   on(event: 'hostWorldSync', callback: (step: string, quests: number, places: number, people: number) => void): void;
 
+  /** A vote's state (the server's NotifyVote): id, kind (0 kick, 1 ready), state (0 open, 1 passed, 2 failed, 3 cancelled, 4-8 refused: busy, cooldown, too few, host, no such player), starter, target, yes, no, eligible voters and seconds left. */
+  on(
+    event: 'vote',
+    callback: (id: number, kind: number, state: number, starterId: number, targetId: number, yes: number, no: number, eligible: number, secondsLeft: number) => void,
+  ): void;
+
   on(event: 'dummyData', callback: SkyrimTogetherTypes.DummyDataCallback): void;
 
   on(event: 'partyInfo', callback: SkyrimTogetherTypes.PartyInfoCallback): void;
@@ -361,6 +367,7 @@ interface SkyrimTogether {
 
   off(event: 'hostWorldOffer', callback?: (host: string, quests: number, places: number, people: number) => void): void;
   off(event: 'hostWorldSync', callback?: (step: string, quests: number, places: number, people: number) => void): void;
+  off(event: 'vote', callback?: (...args: number[]) => void): void;
 
   off(
     event: 'dummyData',
@@ -450,6 +457,12 @@ interface SkyrimTogether {
    * Kick a player, or ban them (the host and admins only).
    */
   moderatePlayer(playerId: number, ban: boolean): void;
+
+  /** Start a vote: kind 0 kicks targetId (a majority of the others decides), kind 1 is a ready check (target unused). */
+  startVote(kind: number, targetId: number): void;
+
+  /** Answer the open vote: yes (kick, or ready) or no. */
+  answerVote(voteId: number, yes: boolean): void;
 
   /**
    * Show or hide other players' name tags.

@@ -16,7 +16,9 @@
       "REVEAL_HINT": "Show players nearby",
       "SAVES": "Saves",
       "SAVES_HINT": "Party checkpoints",
-      "CANCEL_CONNECT": "Cancel"
+      "CANCEL_CONNECT": "Cancel",
+      "READY_CHECK": "Ready check",
+      "READY_CHECK_HINT": "Ask if everyone is ready"
     },
     "CHAT": {
       "SEND": "Send",
@@ -181,7 +183,8 @@
       "INVITE": "Invite",
       "KICK": "Kick",
       "BAN": "Ban",
-      "IN_PARTY": "In your party"
+      "IN_PARTY": "In your party",
+      "VOTE_KICK": "Vote to kick"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Player List",
@@ -268,6 +271,24 @@
       "STEP_APPLYING": "Matching quests, places and people",
       "STEP_TRAVELLING": "Moving you to the host",
       "CHANGED": "{{quests}} quests, {{places}} places and {{people}} people changed to match."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} wants to kick {{target}}",
+      "KICK_YOU": "The others are voting on kicking you",
+      "READY_QUESTION": "{{starter}} asks: is everyone ready?",
+      "TALLY": "{{yes}} yes, {{no}} no of {{eligible}}",
+      "READY_TALLY": "{{yes}} of {{eligible}} ready",
+      "SECONDS": "{{seconds}} s left",
+      "YES": "Kick",
+      "NO": "Keep",
+      "READY": "Ready",
+      "NOT_READY": "Not yet",
+      "ANSWER_HINT": "Open the panel (F2) to answer.",
+      "KICK_PASSED": "{{target}} was voted out",
+      "KICK_FAILED": "The vote to kick {{target}} failed",
+      "KICK_CANCELLED": "{{target}} left before the vote ended",
+      "READY_PASSED": "Everyone is ready!",
+      "READY_FAILED": "Not everyone is ready"
     }
   },
   "SERVICE": {
@@ -313,6 +334,13 @@
     },
     "PARTY_HINT": {
       "MESSAGE": "Want to quest together? Form a party and stay close to share quest progress! Check out our play guide to learn more."
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Another vote is still open.",
+      "REFUSED_COOLDOWN": "Wait {{seconds}} s before starting that vote again.",
+      "REFUSED_TOO_FEW": "A vote to kick needs at least 3 players.",
+      "REFUSED_HOST": "The host can't be voted out.",
+      "REFUSED_TARGET": "That player isn't here."
     }
   }
 }

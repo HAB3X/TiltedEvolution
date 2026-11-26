@@ -15,6 +15,8 @@
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/TeleportRequest.h>
 #include <Messages/RequestModeratePlayer.h>
+#include <Messages/RequestVote.h>
+#include <Messages/RequestVoteAnswer.h>
 
 #include <Events/SetTimeCommandEvent.h>
 #include <Events/WaveCommandEvent.h>
@@ -66,6 +68,20 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             RequestModeratePlayer request;
             request.PlayerId = static_cast<uint32_t>(eventArgs->GetInt(0));
             request.Ban = eventArgs->GetBool(1);
+            World::Get().GetRunner().Queue([request]() { World::Get().GetTransport().Send(request); });
+        }
+        else if (eventName == "startVote")
+        {
+            RequestVote request;
+            request.Kind = eventArgs->GetInt(0) == 0 ? VoteKind::Kick : VoteKind::Ready;
+            request.TargetId = static_cast<uint32_t>(eventArgs->GetInt(1));
+            World::Get().GetRunner().Queue([request]() { World::Get().GetTransport().Send(request); });
+        }
+        else if (eventName == "answerVote")
+        {
+            RequestVoteAnswer request;
+            request.VoteId = static_cast<uint32_t>(eventArgs->GetInt(0));
+            request.Yes = eventArgs->GetBool(1);
             World::Get().GetRunner().Queue([request]() { World::Get().GetTransport().Send(request); });
         }
         else if (eventName == "searchLanServers")

@@ -16,7 +16,9 @@
       "REVEAL_HINT": "近くのプレイヤーを表示",
       "SAVES": "セーブデータ",
       "SAVES_HINT": "パーティーのチェックポイント",
-      "CANCEL_CONNECT": "キャンセル"
+      "CANCEL_CONNECT": "キャンセル",
+      "READY_CHECK": "準備確認",
+      "READY_CHECK_HINT": "全員の準備ができているか確認"
     },
     "CHAT": {
       "SEND": "送信",
@@ -176,7 +178,8 @@
       "INVITE": "招待",
       "KICK": "キック",
       "BAN": "BAN",
-      "IN_PARTY": "パーティーメンバー"
+      "IN_PARTY": "パーティーメンバー",
+      "VOTE_KICK": "キック投票"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "プレイヤーメニュー",
@@ -261,6 +264,24 @@
       "STEP_APPLYING": "クエスト、場所、人物を一致させています",
       "STEP_TRAVELLING": "ホストのところへ移動中",
       "CHANGED": "クエスト {{quests}} 件、場所 {{places}} 件、人物 {{people}} 人を一致させました。"
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} が {{target}} のキックを提案しています",
+      "KICK_YOU": "他のプレイヤーがあなたのキックを投票中です",
+      "READY_QUESTION": "{{starter}}：全員準備はいい？",
+      "TALLY": "賛成 {{yes}}、反対 {{no}}（{{eligible}} 人中）",
+      "READY_TALLY": "{{eligible}} 人中 {{yes}} 人準備完了",
+      "SECONDS": "残り {{seconds}} 秒",
+      "YES": "キックする",
+      "NO": "残す",
+      "READY": "準備完了",
+      "NOT_READY": "まだ",
+      "ANSWER_HINT": "パネル（F2）を開いて回答してください。",
+      "KICK_PASSED": "{{target}} は投票でキックされました",
+      "KICK_FAILED": "{{target}} のキック投票は否決されました",
+      "KICK_CANCELLED": "{{target}} は投票終了前に退出しました",
+      "READY_PASSED": "全員準備完了！",
+      "READY_FAILED": "全員の準備は整っていません"
     }
   },
   "SERVICE": {
@@ -302,6 +323,13 @@
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} がパーティーに招待しました。"
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "別の投票がまだ行われています。",
+      "REFUSED_COOLDOWN": "その投票をもう一度始めるには {{seconds}} 秒待ってください。",
+      "REFUSED_TOO_FEW": "キック投票には 3 人以上のプレイヤーが必要です。",
+      "REFUSED_HOST": "ホストを投票でキックすることはできません。",
+      "REFUSED_TARGET": "そのプレイヤーはいません。"
     }
   }
 }

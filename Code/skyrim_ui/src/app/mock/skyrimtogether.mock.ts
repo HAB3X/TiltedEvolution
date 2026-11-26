@@ -48,6 +48,17 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     console.log(`name tags ${enabled}`);
   }
 
+  // A vote as the server would run it, with one other player saying yes after a second
+  startVote(kind: number, targetId: number): void {
+    const id = Date.now() % 1000;
+    this.emit('vote', id, kind, 0, this.localPlayerId, targetId, 1, 0, kind === 0 ? 2 : 3, kind === 0 ? 60 : 30);
+    setTimeout(() => this.emit('vote', id, kind, kind === 0 ? 1 : 0, this.localPlayerId, targetId, 2, 0, kind === 0 ? 2 : 3, 0), 1500);
+  }
+
+  answerVote(voteId: number, yes: boolean): void {
+    console.log(`vote ${voteId}: ${yes ? 'yes' : 'no'}`);
+  }
+
   moderatePlayer(playerId: number, ban: boolean): void {
     console.log(`${ban ? 'ban' : 'kick'} ${playerId}`);
   }

@@ -1,0 +1,53 @@
+@if (vote$ | async; as vote) {
+  <section class="vote" [attr.data-state]="vote.state">
+    @if (vote.kind === 'kick') {
+      @switch (vote.state) {
+        @case ('open') {
+          <p class="question">
+            {{ (vote.isTarget ? 'COMPONENT.VOTE.KICK_YOU' : 'COMPONENT.VOTE.KICK_QUESTION') | transloco: { starter: vote.starter, target: vote.target } }}
+          </p>
+          <p class="tally">
+            {{ 'COMPONENT.VOTE.TALLY' | transloco: { yes: vote.yes, no: vote.no, eligible: vote.eligible } }} ·
+            {{ 'COMPONENT.VOTE.SECONDS' | transloco: { seconds: vote.secondsLeft } }}
+          </p>
+        }
+        @case ('passed') {
+          <p class="question">{{ 'COMPONENT.VOTE.KICK_PASSED' | transloco: { target: vote.target } }}</p>
+        }
+        @case ('failed') {
+          <p class="question">{{ 'COMPONENT.VOTE.KICK_FAILED' | transloco: { target: vote.target } }}</p>
+        }
+        @case ('cancelled') {
+          <p class="question">{{ 'COMPONENT.VOTE.KICK_CANCELLED' | transloco: { target: vote.target } }}</p>
+        }
+      }
+    } @else {
+      @switch (vote.state) {
+        @case ('open') {
+          <p class="question">{{ 'COMPONENT.VOTE.READY_QUESTION' | transloco: { starter: vote.starter } }}</p>
+          <p class="tally">
+            {{ 'COMPONENT.VOTE.READY_TALLY' | transloco: { yes: vote.yes, eligible: vote.eligible } }} ·
+            {{ 'COMPONENT.VOTE.SECONDS' | transloco: { seconds: vote.secondsLeft } }}
+          </p>
+        }
+        @case ('passed') {
+          <p class="question">{{ 'COMPONENT.VOTE.READY_PASSED' | transloco }}</p>
+        }
+        @default {
+          <p class="question">{{ 'COMPONENT.VOTE.READY_FAILED' | transloco }}</p>
+        }
+      }
+    }
+    @if (vote.canAnswer) {
+      <div class="answers">
+        <button class="btn btn-primary btn-small" (click)="answer(true)">
+          {{ (vote.kind === 'kick' ? 'COMPONENT.VOTE.YES' : 'COMPONENT.VOTE.READY') | transloco }}
+        </button>
+        <button class="btn btn-secondary btn-small" (click)="answer(false)">
+          {{ (vote.kind === 'kick' ? 'COMPONENT.VOTE.NO' : 'COMPONENT.VOTE.NOT_READY') | transloco }}
+        </button>
+      </div>
+      <p class="hint">{{ 'COMPONENT.VOTE.ANSWER_HINT' | transloco }}</p>
+    }
+  </section>
+}

@@ -35,6 +35,9 @@
 #include <Messages/NotifyPlayerJoined.h>
 #include <Messages/RequestHostWorld.h>
 #include <Messages/RequestModeratePlayer.h>
+#include <Messages/NotifyVote.h>
+#include <Messages/RequestVote.h>
+#include <Messages/RequestVoteAnswer.h>
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/ServerMessageFactory.h>
 #include <Messages/TeleportCommandResponse.h>
@@ -132,6 +135,7 @@ struct FakePlayer final : Client
             }
             Settings = pResponse->Settings;
             ServerVersion = pResponse->Version.c_str();
+            PlayerId = pResponse->PlayerId;
             break;
         }
         case kNotifyPlayerJoined:
@@ -149,6 +153,7 @@ struct FakePlayer final : Client
         case kNotifyHostWorldRequested: WorldRequest = *static_cast<NotifyHostWorldRequested*>(pMessage.get()); break;
         case kNotifyHostWorldState: World = *static_cast<NotifyHostWorldState*>(pMessage.get()); break;
         case kTeleportCommandResponse: Teleport = *static_cast<TeleportCommandResponse*>(pMessage.get()); break;
+        case kNotifyVote: Votes.push_back(*static_cast<NotifyVote*>(pMessage.get())); break;
         default: break;
         }
     }
@@ -182,6 +187,20 @@ struct FakePlayer final : Client
     std::optional<NotifyHostWorldRequested> WorldRequest;
     std::optional<NotifyHostWorldState> World;
     std::optional<TeleportCommandResponse> Teleport;
+    uint32_t PlayerId = 0;
+    // Every vote state the server sent, in order
+    std::vector<NotifyVote> Votes;
+
+    // The last vote state of this kind and state, if any came since aFrom
+    const NotifyVote* FindVote(VoteKind aKind, VoteState aState, size_t aFrom = 0) const
+    {
+        for (size_t i = Votes.size(); i > aFrom; --i)
+        {
+            if (Votes[i - 1].Kind == aKind && Votes[i - 1].State == aState)
+                return &Votes[i - 1];
+        }
+        return nullptr;
+    }
 };
 
 // Runs the player until the condition holds or the time is up
@@ -407,6 +426,97 @@ int RunModChecksums(const std::string& acEndpoint, const std::string& acPassword
     return s_failures ? 1 : 0;
 }
 
+// Votes (VoteService) between three players: the host on the server's computer (votehost, at 127.0.0.1) and two who
+// join from another address (votevoter and votetarget, at this computer's network address, so they aren't the host).
+// The voter can't kick the host; the host starts a kick vote against the target, the voter agrees and the target is
+// kicked; the host can't start another kick vote right away; then a ready check passes when both say ready. Start
+// votehost, then votetarget, both in the background, then votevoter.
+uint32_t IdOf(const FakePlayer& acPlayer, const std::string& acName)
+{
+    for (size_t i = 0; i < acPlayer.JoinedNames.size(); ++i)
+    {
+        if (acPlayer.JoinedNames[i] == acName)
+            return acPlayer.JoinedIds[i];
+    }
+    return 0;
+}
+
+int RunVoteHost(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer host("FakeVoteHost", acPassword);
+    host.Connect(acEndpoint);
+    Check("host logs in", RunUntil(host, [&] { return host.LoggedIn; }));
+    Check("sees the voter and the target join", RunUntil(host, [&] { return IdOf(host, "FakeVoter") && IdOf(host, "FakeTarget"); }, 40s));
+    // The voter tries to kick the host first
+    RunUntil(host, [] { return false; }, 3s);
+
+    RequestVote kick;
+    kick.Kind = VoteKind::Kick;
+    kick.TargetId = IdOf(host, "FakeTarget");
+    host.Send(kick);
+    const NotifyVote* pOpen = nullptr;
+    Check("a kick vote opens with the host's yes, the target not counted",
+          RunUntil(host, [&] { return (pOpen = host.FindVote(VoteKind::Kick, VoteState::Open)) != nullptr; }) && pOpen->Yes == 1 && pOpen->Eligible == 2);
+    Check("it passes when the voter agrees", RunUntil(host, [&] { return host.FindVote(VoteKind::Kick, VoteState::Passed) != nullptr; }, 30s));
+
+    const size_t cBefore = host.Votes.size();
+    kick.TargetId = IdOf(host, "FakeVoter");
+    host.Send(kick);
+    Check("the host can't start another kick vote right away",
+          RunUntil(host, [&] { return host.FindVote(VoteKind::Kick, VoteState::RefusedCooldown, cBefore) != nullptr; }));
+
+    RequestVote ready;
+    ready.Kind = VoteKind::Ready;
+    host.Send(ready);
+    Check("a ready check passes once everyone is ready", RunUntil(host, [&] { return host.FindVote(VoteKind::Ready, VoteState::Passed) != nullptr; }, 30s));
+    RunUntil(host, [] { return false; }, 3s);
+    return s_failures ? 1 : 0;
+}
+
+int RunVoteTarget(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer target("FakeTarget", acPassword);
+    target.Connect(acEndpoint);
+    Check("target logs in", RunUntil(target, [&] { return target.LoggedIn; }));
+    Check("hears of the vote against it", RunUntil(target, [&] { return !target.Votes.empty() && target.Votes.back().TargetId == target.PlayerId; }, 60s));
+    // Its own no doesn't count
+    RequestVoteAnswer no;
+    no.VoteId = target.Votes.back().VoteId;
+    target.Send(no);
+    Check("the vote kicks it", RunUntil(target, [&] { return target.Disconnected; }, 30s));
+    return s_failures ? 1 : 0;
+}
+
+int RunVoteVoter(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer voter("FakeVoter", acPassword);
+    voter.Connect(acEndpoint);
+    Check("voter logs in", RunUntil(voter, [&] { return voter.LoggedIn; }));
+
+    RequestVote kickHost;
+    kickHost.Kind = VoteKind::Kick;
+    kickHost.TargetId = IdOf(voter, "FakeVoteHost");
+    voter.Send(kickHost);
+    Check("can't start a vote against the host", RunUntil(voter, [&] { return voter.FindVote(VoteKind::Kick, VoteState::RefusedHost) != nullptr; }));
+
+    const NotifyVote* pOpen = nullptr;
+    Check("sees the kick vote", RunUntil(voter, [&] { return (pOpen = voter.FindVote(VoteKind::Kick, VoteState::Open)) != nullptr; }, 30s));
+    RequestVoteAnswer yes;
+    yes.VoteId = pOpen ? pOpen->VoteId : 0;
+    yes.Yes = true;
+    voter.Send(yes);
+    const NotifyVote* pPassed = nullptr;
+    Check("the vote passes with two yes of two", RunUntil(voter, [&] { return (pPassed = voter.FindVote(VoteKind::Kick, VoteState::Passed)) != nullptr; }) &&
+                                                 pPassed->Yes == 2 && pPassed->Eligible == 2);
+
+    Check("sees the ready check", RunUntil(voter, [&] { return (pOpen = voter.FindVote(VoteKind::Ready, VoteState::Open)) != nullptr; }, 30s));
+    yes.VoteId = pOpen ? pOpen->VoteId : 0;
+    voter.Send(yes);
+    Check("everyone is ready", RunUntil(voter, [&] { return voter.FindVote(VoteKind::Ready, VoteState::Passed) != nullptr; }));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // Like the game hosting: starts the server in a folder as a child that should stop with this process
 // (GameServer:uStopWithProcess), lets it run for a while, then exits. The caller checks the server stopped by itself.
 int RunParent(const std::string& acServerFolder)
@@ -581,6 +691,7 @@ int RunOldVersion(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe lostleader|lostmember|lostreturn [address:port] [password]: see RunLostLeader
 // FakePlayers.exe oldversion [address:port] [password]: see RunOldVersion
 // FakePlayers.exe modchecksums [address:port] [password]: against a server requiring Exact.esp|100|0000abcd
+// FakePlayers.exe votehost|votetarget|votevoter [address:port] [password]: see RunVoteHost
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -610,6 +721,12 @@ int main(int argc, char** argv)
         return RunOfficialListener(cEndpoint, cPassword);
     if (cRole == "talk184")
         return RunOfficialTalker(cEndpoint, cPassword);
+    if (cRole == "votehost")
+        return RunVoteHost(cEndpoint, cPassword);
+    if (cRole == "votetarget")
+        return RunVoteTarget(cEndpoint, cPassword);
+    if (cRole == "votevoter")
+        return RunVoteVoter(cEndpoint, cPassword);
     if (cRole == "modchecksums")
         return RunModChecksums(cEndpoint, cPassword);
     if (cRole == "oldversion")
