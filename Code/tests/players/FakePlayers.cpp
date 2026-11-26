@@ -126,7 +126,11 @@ struct FakePlayer final : Client
             JoinedNames.push_back(static_cast<NotifyPlayerJoined*>(pMessage.get())->Username.c_str());
             JoinedIds.push_back(static_cast<NotifyPlayerJoined*>(pMessage.get())->PlayerId);
             break;
-        case kNotifyChatMessageBroadcast: Chat = *static_cast<NotifyChatMessageBroadcast*>(pMessage.get()); break;
+        case kNotifyChatMessageBroadcast:
+            Chat = *static_cast<NotifyChatMessageBroadcast*>(pMessage.get());
+            if (Chat->PlayerName.c_str() == m_name)
+                ++OwnChatsBack;
+            break;
         case kNotifyPartyJoined: Party = *static_cast<NotifyPartyJoined*>(pMessage.get()); break;
         case kNotifyHostWorldRequested: WorldRequest = *static_cast<NotifyHostWorldRequested*>(pMessage.get()); break;
         case kNotifyHostWorldState: World = *static_cast<NotifyHostWorldState*>(pMessage.get()); break;
@@ -146,6 +150,7 @@ struct FakePlayer final : Client
     std::vector<std::string> JoinedNames;
     std::vector<uint32_t> JoinedIds;
     std::optional<NotifyChatMessageBroadcast> Chat;
+    uint32_t OwnChatsBack = 0;
     std::optional<NotifyPartyJoined> Party;
     std::optional<NotifyHostWorldRequested> WorldRequest;
     std::optional<NotifyHostWorldState> World;
@@ -356,7 +361,39 @@ int RunKicked(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Soak: stays connected for SOAK_SECONDS (default 300), chatting every two seconds, and checks it never drops and the
+// server echoes nearly every message. Run two at once so the server has two players to sync.
+int RunSoak(const std::string& acEndpoint, const std::string& acPassword)
+{
+    char seconds[16]{};
+    const auto cSeconds = std::chrono::seconds(GetEnvironmentVariableA("SOAK_SECONDS", seconds, sizeof(seconds)) ? std::atoi(seconds) : 300);
+    const std::string cName = "FakeSoak" + std::to_string(GetCurrentProcessId());
+
+    FakePlayer player(cName, acPassword);
+    player.Connect(acEndpoint);
+    Check("soak player logs in", RunUntil(player, [&] { return player.LoggedIn; }));
+
+    uint32_t sent = 0;
+    const auto cEnd = std::chrono::steady_clock::now() + cSeconds;
+    while (std::chrono::steady_clock::now() < cEnd && !player.Disconnected)
+    {
+        SendChatMessageRequest chat;
+        chat.MessageType = kGlobalChat;
+        chat.ChatMessage = ("soak " + std::to_string(sent)).c_str();
+        player.Send(chat);
+        ++sent;
+        RunUntil(player, [&] { return player.Disconnected; }, 2s);
+    }
+    RunUntil(player, [] { return false; }, 3s);
+
+    Check("stays connected the whole time", !player.Disconnected, std::to_string(cSeconds.count()) + " s");
+    Check("the server echoes at least 99% of its chat", player.OwnChatsBack * 100 >= sent * 99, std::to_string(player.OwnChatsBack) + " of " + std::to_string(sent));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
+// FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
 // FakePlayers.exe parent <server folder>: starts the server as the game would, and exits after 15 seconds
 // FakePlayers.exe mods [address:port] [password]: against a server requiring SomeMod.esp
@@ -374,6 +411,8 @@ int main(int argc, char** argv)
         return RunHost(cEndpoint, cPassword);
     if (cRole == "join")
         return RunJoiner(cEndpoint, cPassword);
+    if (cRole == "soak")
+        return RunSoak(cEndpoint, cPassword);
     if (cRole == "kicker")
         return RunKicker(cEndpoint, cPassword);
     if (cRole == "kicked")
