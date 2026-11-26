@@ -8,6 +8,7 @@ import {
 import { map } from 'rxjs/operators';
 import { ClientService } from '../../services/client.service';
 import { Sound, SoundService } from '../../services/sound.service';
+import { copyText } from '../../utils/clipboard';
 import { encodeJoinCode } from '../../utils/join-code';
 
 /** What to send friends to join the game this player hosts. */
@@ -42,13 +43,7 @@ export class InviteComponent {
     const text = this.password
       ? `Join my Skyrim Together game: code ${code}, password ${this.password}`
       : `Join my Skyrim Together game: code ${code}`;
-    // The overlay has no clipboard API; a selected text box and the copy command work
-    const box = document.createElement('textarea');
-    box.value = text;
-    document.body.appendChild(box);
-    box.select();
-    this.copied = document.execCommand('copy');
-    box.remove();
+    this.copied = copyText(text);
     this.sound.play(this.copied ? Sound.Ok : Sound.Fail);
   }
 
