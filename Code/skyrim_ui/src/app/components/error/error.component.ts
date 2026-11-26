@@ -22,6 +22,7 @@ import { copyText } from '../../utils/clipboard';
 export class ErrorComponent {
   error$: Observable<SafeHtml>;
   refusedMods$ = this.errorService.refusedMods$;
+  plusUpdate$ = this.errorService.plusUpdate$;
   copied = false;
 
   constructor(
@@ -43,6 +44,10 @@ export class ErrorComponent {
   removeError() {
     this.copied = false;
     this.errorService.removeError();
+  }
+
+  openReleasePage() {
+    this.client.openReleasePage();
   }
 
   searchNexus(mod: RefusedMod) {

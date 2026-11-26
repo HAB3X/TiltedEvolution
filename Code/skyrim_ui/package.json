@@ -10,7 +10,7 @@
     "deploy:production": "ng build --output-hashing none --configuration=production --base-href ./",
     "e2e": "ng e2e",
     "format": "prettier -w ./src/**/*.{ts,json,css,scss,html}",
-    "test:unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/join-code.test.mts && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/party-saves.test.mts && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/reconnect.test.mts"
+    "test:unit": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/join-code.test.mts && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/party-saves.test.mts && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/reconnect.test.mts && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/version.test.mts"
   },
   "private": true,
   "dependencies": {

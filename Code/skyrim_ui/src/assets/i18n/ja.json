@@ -111,7 +111,8 @@
       "FIND_MODS": "MODを入手",
       "SEARCH_NEXUS": "Nexusで検索",
       "DIFFERENT_VERSION": "バージョン違い",
-      "COPY_LIST": "リストをコピー"
+      "COPY_LIST": "リストをコピー",
+      "OPEN_RELEASES": "Plus のリリースページを開く"
     },
     "INVITE": {
       "CODE_INFO": "フレンドは「接続」でこの参加コードを入力します：",
@@ -294,7 +295,9 @@
         "SERVER_FULL": "このサーバーは満員です。",
         "BAD_UGRIDSTOLOAD": "Skyrim.iniの「uGridsToLoad」値がデフォルトではないようです。これはイケマセン。「Skyrim Together」が故障してしまいます。この値をデフォルト（５）に戻すか、Skyrim.iniを削除し１回バニラで起動し新しいファイルをジェネレートしてください。「uExterior Cell Buffer」と「uInterior Cell Buffer」もデフォルトの値のままであったほうがマシです。やり方が分からない場合はSkyrim TogetherのRedditやDiscordをご参考にしてください。",
         "NON_DEFAULT_INSTALL": "スカイリムが純粋なバニラではないようです［CCコンテンツなど］。\nMODSを使わなかったほうがマシ。\nAEのCCコンテンツコンテンツも含めて、インストールしたMODSを削除し無効にすることをお勧めします［詳細はWIKIに。］\n\n有効な順番はこの通り：<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>",
-        "BANNED": "このサーバーからBANされています。"
+        "BANNED": "このサーバーからBANされています。",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "このゲームは Skyrim Together Plus {{expectedVersion}} で動いていますが、あなたのバージョンは古い {{version}} です。全員が同じバージョンである必要があります。Plus のリリースページから更新して参加してください。",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "このゲームは Skyrim Together Plus {{expectedVersion}} で動いており、あなたの {{version}} より古いバージョンです。全員が同じバージョンである必要があります。ホストに Plus のリリースページから更新してもらうか、そこから {{expectedVersion}} をインストールしてください。"
       }
     },
     "PLAYER_LIST": {

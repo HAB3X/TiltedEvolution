@@ -117,7 +117,8 @@
       "FIND_MODS": "Mods ophalen",
       "SEARCH_NEXUS": "Zoeken op Nexus",
       "DIFFERENT_VERSION": "andere versie",
-      "COPY_LIST": "Lijst kopiëren"
+      "COPY_LIST": "Lijst kopiëren",
+      "OPEN_RELEASES": "Plus-releasepagina openen"
     },
     "INVITE": {
       "CODE_INFO": "Vrienden typen deze deelnamecode bij Verbinden:",
@@ -269,7 +270,9 @@
         "CLIENT_MODS_DISALLOWED": "Deze server staat de volgende mods niet toe {{mods}}. Verwijder ze om deel te nemen.",
         "WRONG_PASSWORD": "Het ingevoerde wachtwoord is incorrect.",
         "NO_REASON": "De server heeft de verbinding zonder reden geweigerd.",
-        "BANNED": "Je bent verbannen van deze server."
+        "BANNED": "Je bent verbannen van deze server.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Dit spel draait Skyrim Together Plus {{expectedVersion}} en jij hebt het oudere {{version}}. Iedereen heeft dezelfde versie nodig: werk bij via de Plus-releasepagina om mee te doen.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Dit spel draait Skyrim Together Plus {{expectedVersion}}, ouder dan die van jou ({{version}}). Iedereen heeft dezelfde versie nodig: vraag de host bij te werken via de Plus-releasepagina, of installeer daar {{expectedVersion}}."
       }
     },
     "PLAYER_LIST": {

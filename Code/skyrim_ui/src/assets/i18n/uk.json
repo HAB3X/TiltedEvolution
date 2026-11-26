@@ -113,7 +113,8 @@
       "FIND_MODS": "Де взяти моди",
       "SEARCH_NEXUS": "Шукати на Nexus",
       "DIFFERENT_VERSION": "інша версія",
-      "COPY_LIST": "Копіювати список"
+      "COPY_LIST": "Копіювати список",
+      "OPEN_RELEASES": "Відкрити сторінку релізів Plus"
     },
     "INVITE": {
       "CODE_INFO": "Друзі вводять цей код у вікні Підключитися:",
@@ -301,7 +302,9 @@
         "SERVER_FULL": "Цей сервер переповнений.",
         "BAD_UGRIDSTOLOAD": "Здається, що у вашому файлі Skyrim.ini встановлено нестандартне значення для 'uGridsToLoad'. ЦЕ ДУЖЕ ПОГАНА ІДЕЯ і скоріше за все зламає мод. Будь ласка, встановіть це значення на стандартне (5) або видаліть файл Skyrim.ini і запустіть звичайний Skyrim один раз, щоб створити новий файл. Параметри 'uExterior Cell Buffer' та 'uInterior Cell Buffer' також повинні залишатися зі стандартними значеннями. Якщо ви не знаєте, як це зробити, будь ласка, зверніться до нашої вікі або попросіть про допомогу на наших спільнотах Discord/Reddit.",
         "NON_DEFAULT_INSTALL": "Здається, що ваша установка не є чистою (ванільною), тобто вона містить контент Creation Club (Anniversary Update або інше) або інші моди.\nМи НЕ рекомендуємо грати з модами.\nМи рекомендуємо вам видалити та вимкнути ці моди (інструкції можна знайти на вікі).\n\nДля найкращого досвіду у вас повинен бути наступний список модів:<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>",
-        "BANNED": "Вас забанено на цьому сервері."
+        "BANNED": "Вас забанено на цьому сервері.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Ця гра працює на Skyrim Together Plus {{expectedVersion}}, а у вас старіша {{version}}. Усім потрібна однакова версія: оновіться зі сторінки релізів Plus, щоб під'єднатися.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Ця гра працює на Skyrim Together Plus {{expectedVersion}}, старішій за вашу ({{version}}). Усім потрібна однакова версія: попросіть хоста оновитися зі сторінки релізів Plus або встановіть звідти {{expectedVersion}}."
       }
     },
     "PLAYER_LIST": {

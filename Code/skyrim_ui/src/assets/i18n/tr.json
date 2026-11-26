@@ -113,7 +113,8 @@
       "FIND_MODS": "Modları edinin",
       "SEARCH_NEXUS": "Nexus'ta ara",
       "DIFFERENT_VERSION": "farklı sürüm",
-      "COPY_LIST": "Listeyi kopyala"
+      "COPY_LIST": "Listeyi kopyala",
+      "OPEN_RELEASES": "Plus sürüm sayfasını aç"
     },
     "INVITE": {
       "CODE_INFO": "Arkadaşların bu katılma kodunu Bağlan ekranına yazar:",
@@ -298,7 +299,9 @@
         "SERVER_FULL": "Sunucu Dolu.",
         "BAD_UGRIDSTOLOAD": "Görünüşe göre Skyrim.ini dosyanız 'uGridsToLoad' için varsayılan değerde değil. BU ÇOK KÖTÜ BİR FİKİR, ve muhtemelen modu bozar. Lütfen bu ayarı varsayılana çekiniz (5), ya da Skyrim.ini dosyasını silip Skyrim'ı vanilla olarak başlatıp yenisini oluşturun. 'uExterior Cell Buffer' ve 'uInterior Cell Buffer' ayarları varsayılan olarak kalmalı. Bunu nasıl yapacağınızı bilmiyorsanız, Lütfen wiki sayfamıza bakın veya Discord sunucusu/Reddit üzerinden yardım isteyiniz.",
         "NON_DEFAULT_INSTALL": "Görünüşe göre yüklemeniz tamamen vanilla değil, örneğin, Creation Club içeriği (Anniversary Güncellemesi ya da diğer türlüsü) ya da diğer modlar.\nModlar ile oynamanızı ÖNERMİYORUZ.\nBu modları silip deaktif etmenizi öneriyoruz (talimatlar wiki sayfasında bulunabilir).\n\nEn iyi deneyim için, bu mod listesine sahip olmanız gerek:<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>",
-        "BANNED": "Bu sunucudan yasaklandın."
+        "BANNED": "Bu sunucudan yasaklandın.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Bu oyun Skyrim Together Plus {{expectedVersion}} çalıştırıyor, sizdeki {{version}} daha eski. Herkesin aynı sürüme ihtiyacı var: katılmak için Plus sürüm sayfasından güncelleyin.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Bu oyun sizinkinden ({{version}}) daha eski olan Skyrim Together Plus {{expectedVersion}} çalıştırıyor. Herkesin aynı sürüme ihtiyacı var: sunucu sahibinden Plus sürüm sayfasından güncellemesini isteyin ya da oradan {{expectedVersion}} sürümünü kurun."
       }
     },
     "PLAYER_LIST": {

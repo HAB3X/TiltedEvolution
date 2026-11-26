@@ -492,6 +492,11 @@ export class ClientService implements OnDestroy {
     );
   }
 
+  /** The Plus release page, to update, in the default browser. */
+  public openReleasePage(): void {
+    skyrimtogether.openUrl('https://github.com/HAB3X/TiltedEvolution/releases');
+  }
+
   /** List the co-op saves, see partySavesChange. */
   public listPartySaves(): void {
     this.partySavesChange.next(null);

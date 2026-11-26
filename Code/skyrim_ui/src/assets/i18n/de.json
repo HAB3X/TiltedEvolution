@@ -111,7 +111,8 @@
       "FIND_MODS": "Mods besorgen",
       "SEARCH_NEXUS": "Auf Nexus suchen",
       "DIFFERENT_VERSION": "andere Version",
-      "COPY_LIST": "Liste kopieren"
+      "COPY_LIST": "Liste kopieren",
+      "OPEN_RELEASES": "Plus-Release-Seite öffnen"
     },
     "INVITE": {
       "CODE_INFO": "Freunde geben diesen Beitrittscode unter Verbinden ein:",
@@ -296,7 +297,9 @@
         "WRONG_PASSWORD": "Das eingegebene Passwort ist falsch.",
         "NO_REASON": "Der Server hat die Verbindung ohne Angabe von Gründen verweigert.",
         "SERVER_FULL": "Dieser Server ist voll.",
-        "BANNED": "Du bist von diesem Server gebannt."
+        "BANNED": "Du bist von diesem Server gebannt.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Dieses Spiel läuft mit Skyrim Together Plus {{expectedVersion}}, du hast das ältere {{version}}. Alle brauchen dieselbe Version: Aktualisiere über die Plus-Release-Seite, um beizutreten.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Dieses Spiel läuft mit Skyrim Together Plus {{expectedVersion}}, älter als deines ({{version}}). Alle brauchen dieselbe Version: Bitte den Host, über die Plus-Release-Seite zu aktualisieren, oder installiere dort {{expectedVersion}}."
       }
     },
     "PLAYER_LIST": {

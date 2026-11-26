@@ -112,7 +112,8 @@
       "FIND_MODS": "Consigue los mods",
       "SEARCH_NEXUS": "Buscar en Nexus",
       "DIFFERENT_VERSION": "versión distinta",
-      "COPY_LIST": "Copiar lista"
+      "COPY_LIST": "Copiar lista",
+      "OPEN_RELEASES": "Abrir la página de versiones de Plus"
     },
     "INVITE": {
       "CODE_INFO": "Tus amigos escriben este código de partida en Conectar:",
@@ -290,7 +291,9 @@
         "SERVER_FULL": "El servidor está lleno.",
         "BAD_UGRIDSTOLOAD": "Parece que su Skyrim.ini tiene un valor no predeterminado para 'uGridsToLoad'. ESTA ES UNA MUY MALA IDEA y lo más probable es que rompa el mod. Por favor, restaurar esta configuración a su valor predeterminado (5) , o elimine el Skyrim.ini e lanzar Skyrim Vanilla una vez para generar un nuevo archivo. Las configuraciones 'uExterior Cell Buffer' y 'uInterior Cell Buffer' también deben dejarse en la configuración predeterminada. Si no sabe cómo hacerlo. , consulte nuestra wiki o solicite ayuda en nuestro servidor de Discord/subreddit.",
         "NON_DEFAULT_INSTALL": "Parece que tu instalación no es puramente básica, en ejemplo, tiene contenido del Creation Club (De aniversario o no) o otras modificaciones.\nNO recomendamos jugar con modificaciones.\nRecomendamos que desinstales y deshabilites estas modificaciones (las instrucciones se pueden encontrar en la wiki).\n\nPara la mejor experiencia, debe tener la siguiente lista de mods:<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>",
-        "BANNED": "Estás vetado en este servidor."
+        "BANNED": "Estás vetado en este servidor.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Esta partida usa Skyrim Together Plus {{expectedVersion}} y tú tienes {{version}}, que es anterior. Todos necesitan la misma versión: actualiza desde la página de versiones de Plus para unirte.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Esta partida usa Skyrim Together Plus {{expectedVersion}}, anterior a la tuya ({{version}}). Todos necesitan la misma versión: pide al anfitrión que actualice desde la página de versiones de Plus, o instala {{expectedVersion}} desde allí."
       }
     },
     "PLAYER_LIST": {

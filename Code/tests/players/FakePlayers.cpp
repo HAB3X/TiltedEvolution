@@ -85,7 +85,7 @@ struct FakePlayer final : Client
     {
         std::printf("%s connected\n", m_name.c_str());
         AuthenticationRequest request;
-        request.Version = Wire::IsOfficial184() ? Wire::kOfficial184Version : BUILD_COMMIT;
+        request.Version = !Version.empty() ? Version.c_str() : Wire::IsOfficial184() ? Wire::kOfficial184Version : BUILD_COMMIT;
         request.Token = m_password.c_str();
         request.Username = m_name.c_str();
         request.Level = 1;
@@ -156,6 +156,8 @@ struct FakePlayer final : Client
     bool LoggedIn = false, Disconnected = false;
     // Says it comes back after its game stopped (AuthenticationRequest::Returning)
     bool Returning = false;
+    // The version it says it has, when not this build's
+    std::string Version;
     struct Plugin
     {
         std::string Name;
@@ -528,6 +530,20 @@ int RunLostReturn(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// A player with another Plus release: refused as a wrong version, and told which version the server runs. The server
+// also logs it for the host's chat ([Host] line), which the caller checks in its log.
+int RunOldVersion(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer player("FakeOldBuild", acPassword);
+    player.Version = "v1.8.4-plus.0";
+    player.Connect(acEndpoint);
+    Check("a player with another Plus release is refused as a wrong version",
+          RunUntil(player, [&] { return player.Refusal.has_value(); }) && player.Refusal == AuthenticationResponse::ResponseType::kWrongVersion);
+    Check("and told the server's version", player.ServerVersion == BUILD_COMMIT, player.ServerVersion);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -536,6 +552,7 @@ int RunLostReturn(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe modversions [address:port] [password]: against a server requiring Sized.esp|12345 and Plain.esp
 // FakePlayers.exe listen184|talk184 [address:port] [password]: the same against an official v1.8.4 server
 // FakePlayers.exe lostleader|lostmember|lostreturn [address:port] [password]: see RunLostLeader
+// FakePlayers.exe oldversion [address:port] [password]: see RunOldVersion
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -565,6 +582,8 @@ int main(int argc, char** argv)
         return RunOfficialListener(cEndpoint, cPassword);
     if (cRole == "talk184")
         return RunOfficialTalker(cEndpoint, cPassword);
+    if (cRole == "oldversion")
+        return RunOldVersion(cEndpoint, cPassword);
     if (cRole == "lostleader")
         return RunLostLeader(cEndpoint, cPassword);
     if (cRole == "lostmember")

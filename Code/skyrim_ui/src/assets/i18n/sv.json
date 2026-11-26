@@ -113,7 +113,8 @@
       "FIND_MODS": "Skaffa mods",
       "SEARCH_NEXUS": "Sök på Nexus",
       "DIFFERENT_VERSION": "annan version",
-      "COPY_LIST": "Kopiera listan"
+      "COPY_LIST": "Kopiera listan",
+      "OPEN_RELEASES": "Öppna Plus-releasesidan"
     },
     "INVITE": {
       "CODE_INFO": "Vänner skriver den här anslutningskoden under Anslut:",
@@ -301,7 +302,9 @@
         "SERVER_FULL": "Servern är full.",
         "BAD_UGRIDSTOLOAD": "Det verkar som din Skyrim.ini inte har standardvärdet för 'uGridsToLoad'. DET ÄR INTE BRA, och kommer troligen skapa problem. Var vänlig och återställ den till standardvärdet (5), eller radera Skyrim.ini och starta Skyrim en gång utan mods för att generera en ny fil. Inställningen 'uExterior Cell Buffer' och 'uInterior Cell Buffer' ska också lämnas på standardvärdena. Om du inte vet hur man ändrar det, läs mer på vår wiki eller kontakta vår Discordserver/Reddit för att få hjälp.",
         "NON_DEFAULT_INSTALL": "Det verkar som din installation inte är Skyrim utan mods, dvs. den har Creation Club-plugins (Anniversary Update eller CC) eller andra mods.\nVi rekommenderar INTE att spela med mods.\nVi rekommenderar att du avinstallerar eller avaktiverar dessa mods (instruktioner finns på vår wiki).\n\nFör en stabil upplevelse ska du ha följande plugins eller modlista:<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>",
-        "BANNED": "Du är bannlyst från den här servern."
+        "BANNED": "Du är bannlyst från den här servern.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Det här spelet kör Skyrim Together Plus {{expectedVersion}} och du har den äldre {{version}}. Alla behöver samma version: uppdatera från Plus-releasesidan för att ansluta.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Det här spelet kör Skyrim Together Plus {{expectedVersion}}, som är äldre än din ({{version}}). Alla behöver samma version: be värden uppdatera från Plus-releasesidan, eller installera {{expectedVersion}} därifrån."
       }
     },
     "PLAYER_LIST": {

@@ -1048,6 +1048,10 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
     if (acRequest->Version != cVersion)
     {
         spdlog::info("New player {:x} '{}' tried to connect with client {} - Version mismatch", aConnectionId, remoteAddress, acRequest->Version.c_str());
+        // Shown in the host's chat when the game hosts this server (LocalServerService)
+        spdlog::info("[Host] {} couldn't join: they have Skyrim Together {} and this game runs {}. Everyone needs the same version (Plus releases: "
+                     "github.com/HAB3X/TiltedEvolution/releases).",
+                     acRequest->Username.c_str(), acRequest->Version.c_str(), cVersion.c_str());
         sendKick(RT::kWrongVersion);
         return;
     }

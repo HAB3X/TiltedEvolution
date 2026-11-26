@@ -111,7 +111,8 @@
       "FIND_MODS": "Skaff spillendringene",
       "SEARCH_NEXUS": "Søk på Nexus",
       "DIFFERENT_VERSION": "annen versjon",
-      "COPY_LIST": "Kopier listen"
+      "COPY_LIST": "Kopier listen",
+      "OPEN_RELEASES": "Åpne Plus-utgivelsessiden"
     },
     "INVITE": {
       "CODE_INFO": "Venner skriver denne tilkoblingskoden under Koble til:",
@@ -294,7 +295,9 @@
         "SERVER_FULL": "Denne serveren er full.",
         "BAD_UGRIDSTOLOAD": "Det ser ut som Skyrim.ini har en feil verdi for 'uGridsToLoad'. DETTE ER EN VELDIG DÅRLIG IDE, og vil mest sannsynling knekke denne modden. Sett denne tilbake til (5), eller fjern Skyrim.ini filen and kjør Skyrim vanilla en gang for en ny fil. Instillingen 'uExterior Cell Buffer' og 'uInterior Cell Buffer' bør også bli værende på standardinnstillingen. Hvis du trenger hjelp med dette kan du spør på Discord, Reddit eller wikien.",
         "NON_DEFAULT_INSTALL": "Det ser ut som innstallasjonen din ikke er vanilla. Creation Club mods (inkluderte de fra Anniversary oppdateringen) eller andre mods bør unngås .\nVi anbefaller IKKE å spille med mods.\nDu bør avinstallere og skru av disse (instruksjoner kan finnes på wikien).\n\nFor den beste opplevelsen bør du ha følgene mods:<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>",
-        "BANNED": "Du er utestengt fra denne serveren."
+        "BANNED": "Du er utestengt fra denne serveren.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Dette spillet kjører Skyrim Together Plus {{expectedVersion}}, og du har den eldre {{version}}. Alle trenger samme versjon: oppdater fra Plus-utgivelsessiden for å bli med.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Dette spillet kjører Skyrim Together Plus {{expectedVersion}}, som er eldre enn din ({{version}}). Alle trenger samme versjon: be verten oppdatere fra Plus-utgivelsessiden, eller installer {{expectedVersion}} derfra."
       }
     },
     "PLAYER_LIST": {

@@ -111,7 +111,8 @@
       "FIND_MODS": "Získejte módy",
       "SEARCH_NEXUS": "Hledat na Nexusu",
       "DIFFERENT_VERSION": "jiná verze",
-      "COPY_LIST": "Kopírovat seznam"
+      "COPY_LIST": "Kopírovat seznam",
+      "OPEN_RELEASES": "Otevřít stránku vydání Plus"
     },
     "INVITE": {
       "CODE_INFO": "Přátelé zadají tento kód v okně Připojit:",
@@ -292,7 +293,9 @@
         "WRONG_PASSWORD": "Zadané heslo je chybné.",
         "NO_REASON": "Server odmítl připojení bez udání důvodu.",
         "SERVER_FULL": "Tento server je plný.",
-        "BANNED": "Na tomto serveru máš ban."
+        "BANNED": "Na tomto serveru máš ban.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Tato hra běží na Skyrim Together Plus {{expectedVersion}} a vy máte starší {{version}}. Všichni potřebují stejnou verzi: aktualizujte ze stránky vydání Plus, abyste se mohli připojit.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Tato hra běží na Skyrim Together Plus {{expectedVersion}}, starší než vaše ({{version}}). Všichni potřebují stejnou verzi: požádejte hostitele o aktualizaci ze stránky vydání Plus, nebo si odtud nainstalujte {{expectedVersion}}."
       }
     },
     "PLAYER_LIST": {

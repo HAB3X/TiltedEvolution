@@ -112,7 +112,8 @@
       "FIND_MODS": "Obtenir les mods",
       "SEARCH_NEXUS": "Chercher sur Nexus",
       "DIFFERENT_VERSION": "autre version",
-      "COPY_LIST": "Copier la liste"
+      "COPY_LIST": "Copier la liste",
+      "OPEN_RELEASES": "Ouvrir la page des versions Plus"
     },
     "INVITE": {
       "CODE_INFO": "Vos amis tapent ce code de partie dans Connexion :",
@@ -291,7 +292,9 @@
         "WRONG_PASSWORD": "Le mot de passe que vous avez saisi est incorrect.",
         "NO_REASON": "Le serveur a refusé la connexion sans raison.",
         "SERVER_FULL": "Le serveur est plein.",
-        "BANNED": "Vous êtes banni de ce serveur."
+        "BANNED": "Vous êtes banni de ce serveur.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Cette partie utilise Skyrim Together Plus {{expectedVersion}} et vous avez {{version}}, plus ancienne. Tout le monde a besoin de la même version : mettez à jour depuis la page des versions Plus pour rejoindre.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Cette partie utilise Skyrim Together Plus {{expectedVersion}}, plus ancienne que la vôtre ({{version}}). Tout le monde a besoin de la même version : demandez à l'hôte de mettre à jour depuis la page des versions Plus, ou installez-y {{expectedVersion}}."
       }
     },
     "PLAYER_LIST": {

@@ -112,7 +112,8 @@
       "FIND_MODS": "获取模组",
       "SEARCH_NEXUS": "在 Nexus 上搜索",
       "DIFFERENT_VERSION": "版本不同",
-      "COPY_LIST": "复制列表"
+      "COPY_LIST": "复制列表",
+      "OPEN_RELEASES": "打开 Plus 发布页面"
     },
     "INVITE": {
       "CODE_INFO": "好友在「连接」中输入此加入码：",
@@ -287,7 +288,9 @@
         "WRONG_PASSWORD": "您输入的密码不正确。",
         "NO_REASON": "服务器无故拒绝了连接。",
         "SERVER_FULL": "服务器已满。",
-        "BANNED": "你已被此服务器封禁。"
+        "BANNED": "你已被此服务器封禁。",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "此游戏运行的是 Skyrim Together Plus {{expectedVersion}}，而你的版本 {{version}} 较旧。所有人需要相同的版本：请从 Plus 发布页面更新后再加入。",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "此游戏运行的是 Skyrim Together Plus {{expectedVersion}}，比你的版本（{{version}}）旧。所有人需要相同的版本：请让主机从 Plus 发布页面更新，或从那里安装 {{expectedVersion}}。"
       }
     },
     "PLAYER_LIST": {
