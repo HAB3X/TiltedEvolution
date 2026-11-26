@@ -1,5 +1,6 @@
 ﻿#include <Components.h>
 #include <GameServer.h>
+#include <LanDiscoveryResponder.h>
 #include <Packet.hpp>
 
 #include <Events/CharacterRemoveEvent.h>
@@ -26,6 +27,7 @@ Console::Setting uServerPort{"GameServer:uPort", "Which port to host the server 
 Console::Setting uMaxPlayerCount{"GameServer:uMaxPlayerCount", "Maximum number of players allowed on the server (going over the default of 8 is not recommended)", 8u};
 Console::Setting bPremiumTickrate{"GameServer:bPremiumMode", "Server tick rate: 60 updates per second if true, 30 if false", true};
 
+Console::Setting bLanDiscovery{"GameServer:bLanDiscovery", "Lets players on the same network find this server in Connect, Local games (UDP port 10579)", true};
 Console::StringSetting sServerName{"GameServer:sServerName", "Name that shows up in the server list", "Dedicated Together Server"};
 Console::StringSetting sAdminPassword{"GameServer:sAdminPassword", "Password for server admins. Joining with it gives admin rights. Leave empty to disable", ""};
 Console::StringSetting sPassword{"GameServer:sPassword", "Password players need to join the server. Leave empty to let anyone join", ""};
@@ -196,6 +198,8 @@ GameServer::GameServer(Console::ConsoleRegistry& aConsole) noexcept
     m_isPasswordProtected = strcmp(sPassword.value(), "") != 0;
 
     UpdateInfo();
+    if (bLanDiscovery)
+        m_pLanDiscovery = MakeUnique<LanDiscoveryResponder>();
     spdlog::info("Server {} started on port {}", BUILD_COMMIT, GetPort());
     UpdateTitle();
 
@@ -584,6 +588,18 @@ void GameServer::OnUpdate()
     auto& dispatcher = m_pWorld->GetDispatcher();
 
     dispatcher.trigger(UpdateEvent{cDeltaSeconds});
+
+    if (m_pLanDiscovery)
+    {
+        LanDiscovery::Reply reply;
+        reply.Port = GetPort();
+        reply.Players = m_pWorld->GetPlayerManager().Count();
+        reply.MaxPlayers = uMaxPlayerCount.value_as<uint32_t>();
+        reply.HasPassword = m_isPasswordProtected;
+        reply.HostWorld = IsHostWorld();
+        reply.Name = m_info.name.c_str();
+        m_pLanDiscovery->Poll(reply);
+    }
 
     if (m_requestStop)
         Close();

@@ -3,9 +3,13 @@
     <div class="instructions">
       <p>{{ 'COMPONENT.CONNECT.HOST.INFO' | transloco }}</p>
     </div>
+    <label class="field-label" for="host-password">{{
+      'COMPONENT.CONNECT.HOST.PASSWORD' | transloco
+    }}</label>
     <input
+      id="host-password"
       type="text"
-      [placeholder]="'COMPONENT.CONNECT.PASSWORD' | transloco"
+      [placeholder]="'COMPONENT.CONNECT.HOST.PASSWORD_PLACEHOLDER' | transloco"
       spellcheck="false"
       [(ngModel)]="hostPassword"
       (keydown.enter)="host()"
@@ -53,6 +57,7 @@
       spellcheck="false"
     />
     <input
+      #passwordInput
       [type]="hidePassword ? 'password' : 'text'"
       [placeholder]="'COMPONENT.CONNECT.PASSWORD' | transloco"
       spellcheck="false"
@@ -90,6 +95,49 @@
         {{ 'COMPONENT.CONNECT.CANCEL' | transloco }}
       </button>
     </app-action-buttons>
+    <hr />
+    <div class="lan">
+      <div class="lan-header">
+        <span>{{ 'COMPONENT.CONNECT.LAN.TITLE' | transloco }}</span>
+        <button
+          [disabled]="(lanServers$ | async) === null"
+          (click)="searchLan()"
+          data-style-ornament="simple"
+        >
+          {{ 'COMPONENT.CONNECT.LAN.REFRESH' | transloco }}
+        </button>
+      </div>
+      @let lanServers = lanServers$ | async;
+      @if (lanServers === null) {
+        <p class="lan-empty">{{ 'COMPONENT.CONNECT.LAN.SEARCHING' | transloco }}</p>
+      } @else if (lanServers.length === 0) {
+        <p class="lan-empty">{{ 'COMPONENT.CONNECT.LAN.NONE' | transloco }}</p>
+      } @else {
+        @for (server of lanServers; track server.address + server.port) {
+          <div class="lan-server">
+            <span class="lan-name">
+              {{ server.name }}
+              <small>
+                {{ server.players }}/{{ server.maxPlayers }}
+                @if (server.hasPassword) {
+                  · {{ 'COMPONENT.CONNECT.LAN.PASSWORD' | transloco }}
+                }
+                @if (server.hostWorld) {
+                  · {{ 'COMPONENT.CONNECT.LAN.HOST_WORLD' | transloco }}
+                }
+              </small>
+            </span>
+            <button
+              [disabled]="connecting"
+              (click)="joinLan(server)"
+              data-style-ornament="simple"
+            >
+              {{ 'COMPONENT.CONNECT.LAN.JOIN' | transloco }}
+            </button>
+          </div>
+        }
+      }
+    </div>
     <hr />
     <button (click)="openServerList()" data-style-ornament="simple">
       {{ 'COMPONENT.CONNECT.PUBLIC_SERVERS' | transloco }}

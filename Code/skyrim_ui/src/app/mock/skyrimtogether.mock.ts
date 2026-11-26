@@ -30,6 +30,17 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
   private localPlayerId: number;
   public readonly players$ = playerStore.pipe(selectAllEntities());
 
+  searchLanServers(): void {
+    setTimeout(() => {
+      this.emit(
+        'lanServers',
+        JSON.stringify([
+          { address: '192.168.1.20', port: 10578, name: 'Mock co-op', players: 1, maxPlayers: 8, hasPassword: true, hostWorld: true },
+        ]),
+      );
+    }, 500);
+  }
+
   hostServer(password: string, hostWorld: boolean): void {
     this.connect('127.0.0.1', 10578, password);
   }

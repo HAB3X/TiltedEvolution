@@ -258,6 +258,32 @@ void OverlayService::SetVersion(const std::string& acVersion)
     m_pOverlay->ExecuteAsync("setVersion", pArguments);
 }
 
+void OverlayService::SendError(const std::string& acMessage) const noexcept
+{
+    if (!m_pOverlay)
+        return;
+
+    // triggerError's argument is JSON: an error event, or a string to show as it is
+    auto pArguments = CefListValue::Create();
+    pArguments->SetString(0, ToJsonString(acMessage));
+    m_pOverlay->ExecuteAsync("triggerError", pArguments);
+}
+
+std::string OverlayService::ToJsonString(const std::string& acText) noexcept
+{
+    std::string out = "\"";
+    for (const unsigned char c : acText)
+    {
+        if (c == '"' || c == '\\')
+            out += '\\', out += static_cast<char>(c);
+        else if (c < 0x20)
+            out += fmt::format("\\u{:04x}", c);
+        else
+            out += static_cast<char>(c);
+    }
+    return out + "\"";
+}
+
 void OverlayService::SendSystemMessage(const std::string& acMessage)
 {
     if (!m_pOverlay)

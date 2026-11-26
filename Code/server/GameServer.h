@@ -22,6 +22,8 @@ namespace Console
 class ConsoleRegistry;
 }
 
+struct LanDiscoveryResponder;
+
 struct GameServer final : Server
 {
     // TODO: eventually refactor this.
@@ -118,6 +120,7 @@ private:
     TiltedPhoques::Map<ConnectionId_t, entt::entity> m_connectionToEntity;
 
     UniquePtr<World> m_pWorld;
+    UniquePtr<LanDiscoveryResponder> m_pLanDiscovery;
 
     bool m_requestStop;
 

@@ -12,7 +12,7 @@ import {
 import { TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { View } from '../../models/view.enum';
-import { ClientService } from '../../services/client.service';
+import { ClientService, LanServer } from '../../services/client.service';
 import { ErrorService } from '../../services/error.service';
 import { Sound, SoundService } from '../../services/sound.service';
 import { StoreService } from '../../services/store.service';
@@ -37,6 +37,9 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
   public hosting = false;
   public hostPassword = '';
   public hostWorld = true;
+
+  /** Servers on the local network, null while searching. */
+  public readonly lanServers$ = this.client.lanServersChange;
 
   @Output() public done = new EventEmitter<void>();
 
@@ -89,7 +92,23 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
     this.hostWorld = this.storeService.getBool('host_world', true);
   }
 
+  public searchLan(): void {
+    this.client.searchLanServers();
+  }
+
+  /** Fills in the server's address; joins at once unless it needs a password that isn't typed yet. */
+  public joinLan(server: LanServer): void {
+    this.address = `${server.address}:${server.port}`;
+    if (server.hasPassword && this.password === '') {
+      this.sound.play(Sound.Ok);
+      this.passwordRef.nativeElement.focus();
+      return;
+    }
+    void this.connect();
+  }
+
   public ngAfterViewInit(): void {
+    this.searchLan();
     setTimeout(() => {
       this.inputRef.nativeElement.focus();
     }, 100);
@@ -155,6 +174,9 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
 
   @ViewChild('input')
   private inputRef!: ElementRef;
+
+  @ViewChild('passwordInput')
+  private passwordRef!: ElementRef;
 
   private connectionSubscription: Subscription;
 

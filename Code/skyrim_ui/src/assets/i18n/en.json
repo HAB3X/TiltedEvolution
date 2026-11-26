@@ -19,8 +19,19 @@
       "CONNECT": "Connect",
       "CANCEL": "Cancel",
       "PUBLIC_SERVERS": "Public servers",
+      "LAN": {
+        "TITLE": "Games on your network",
+        "REFRESH": "Refresh",
+        "SEARCHING": "Looking for games…",
+        "NONE": "No games found on your network.",
+        "PASSWORD": "password",
+        "HOST_WORLD": "host's world",
+        "JOIN": "Join"
+      },
       "HOST": {
         "OPEN": "Host a game",
+        "PASSWORD": "Password your friends will type",
+        "PASSWORD_PLACEHOLDER": "Leave empty for no password",
         "INFO": "Start a server on this computer and join it. Friends connect to your IP address with port 10578 and this password. Over the internet, forward UDP port 10578 on your router.",
         "HOST_WORLD": "Friends join my world (my quests, cleared dungeons and dead NPCs)",
         "START": "Host",

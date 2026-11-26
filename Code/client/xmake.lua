@@ -67,6 +67,8 @@ target(name)
         "miniaudio")
 
     add_syslinks(
+        "ws2_32",
+        "iphlpapi",
         "version",
         "dbghelp",
         "kernel32")

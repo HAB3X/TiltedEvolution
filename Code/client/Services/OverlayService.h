@@ -62,6 +62,14 @@ struct OverlayService
 
     void SendSystemMessage(const std::string& acMessage);
 
+    // Shows the error box with this message
+
+    void SendError(const std::string& acMessage) const noexcept;
+
+    // The text as a JSON string literal, for event arguments the overlay parses
+
+    static std::string ToJsonString(const std::string& acText) noexcept;
+
     void SetPlayerHealthPercentage(uint32_t aFormId) const noexcept;
 
 protected:

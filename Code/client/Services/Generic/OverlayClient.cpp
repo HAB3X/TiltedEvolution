@@ -7,6 +7,7 @@
 #include <Services/TransportService.h>
 #include <Services/VoiceService.h>
 #include <Services/LocalServerService.h>
+#include <Services/LanSearch.h>
 
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/TeleportRequest.h>
@@ -46,6 +47,8 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
 
         if (eventName == "connect")
             ProcessConnectMessage(eventArgs);
+        else if (eventName == "searchLanServers")
+            LanSearch::Start();
         else if (eventName == "hostServer")
         {
             const std::string password = eventArgs->GetString(0).ToString();

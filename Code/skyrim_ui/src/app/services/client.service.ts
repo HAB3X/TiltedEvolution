@@ -10,6 +10,17 @@ import { ErrorEvents, ErrorService } from './error.service';
 import { LoadingService } from './loading.service';
 
 /** Client game service. */
+/** A server on the local network, as it answered a search. */
+export interface LanServer {
+  address: string;
+  port: number;
+  name: string;
+  players: number;
+  maxPlayers: number;
+  hasPassword: boolean;
+  hostWorld: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -77,6 +88,9 @@ export class ClientService implements OnDestroy {
 
   /** Receive error from core */
   public triggerError = new ReplaySubject<ErrorEvents>(1);
+
+  /** Servers found on the local network by the last search, null while searching. */
+  public lanServersChange = new BehaviorSubject<LanServer[] | null>([]);
 
   /** Used purely for debugging. */
   public debugChange = new Subject<void>();
@@ -146,6 +160,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('setLocalPlayerId', this.onSetLocalPlayerId.bind(this));
     skyrimtogether.on('protocolMismatch', this.onProtocolMismatch.bind(this));
     skyrimtogether.on('triggerError', this.onTriggerError.bind(this));
+    skyrimtogether.on('lanServers', this.onLanServers.bind(this));
     skyrimtogether.on('dummyData', this.onDummyData.bind(this));
     skyrimtogether.on('partyInfo', this.onPartyInfo.bind(this));
     skyrimtogether.on('partyCreated', this.onPartyCreated.bind(this));
@@ -183,6 +198,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('setLocalPlayerId');
     skyrimtogether.off('protocolMismatch');
     skyrimtogether.off('triggerError');
+    skyrimtogether.off('lanServers');
     skyrimtogether.off('dummyData');
     skyrimtogether.off('partyInfo');
     skyrimtogether.off('partyCreated');
@@ -198,6 +214,12 @@ export class ClientService implements OnDestroy {
    * @param port Port.
    * @param password Password or admin password
    */
+  /** Look for servers on the local network, see lanServersChange. */
+  public searchLanServers(): void {
+    this.lanServersChange.next(null);
+    skyrimtogether.searchLanServers();
+  }
+
   /** Start the server next to the game and connect to it once it's up. */
   public hostServer(password: string, hostWorld: boolean): void {
     skyrimtogether.hostServer(password, hostWorld);
@@ -567,6 +589,12 @@ export class ClientService implements OnDestroy {
   private onProtocolMismatch() {
     this.zone.run(() => {
       this.protocolMismatchChange.next(true);
+    });
+  }
+
+  private onLanServers(json: string) {
+    this.zone.run(() => {
+      this.lanServersChange.next(JSON.parse(json) as LanServer[]);
     });
   }
 

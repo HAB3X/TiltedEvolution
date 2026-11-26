@@ -85,6 +85,9 @@ declare namespace SkyrimTogetherTypes {
 
   type TriggerError = () => void;
 
+  /** JSON array of the servers found on the local network. */
+  type LanServersCallback = (json: string) => void;
+
   type DummyDataCallback = (data: Array<number>) => void;
 
   type PartyInfoCallback = (playerIds: Array<number>, leaderId: number) => void;
@@ -204,6 +207,8 @@ interface SkyrimTogether {
   ): void;
 
   on(event: 'triggerError', callback: SkyrimTogetherTypes.TriggerError): void;
+
+  on(event: 'lanServers', callback: SkyrimTogetherTypes.LanServersCallback): void;
 
   on(event: 'dummyData', callback: SkyrimTogetherTypes.DummyDataCallback): void;
 
@@ -331,6 +336,8 @@ interface SkyrimTogether {
 
   off(event: 'triggerError', callback?: SkyrimTogetherTypes.TriggerError): void;
 
+  off(event: 'lanServers', callback?: SkyrimTogetherTypes.LanServersCallback): void;
+
   off(
     event: 'dummyData',
     callback?: SkyrimTogetherTypes.DummyDataCallback,
@@ -377,6 +384,11 @@ interface SkyrimTogether {
    * @param hostWorld Whether friends who join take over the host's world.
    */
   hostServer(password: string, hostWorld: boolean): void;
+
+  /**
+   * Look for servers on the local network; the answer comes as a lanServers event.
+   */
+  searchLanServers(): void;
 
   /**
    * Disconnect from server or cancel connection.

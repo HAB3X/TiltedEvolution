@@ -187,9 +187,6 @@ void LocalServerService::Fail(const std::string& acReason) const noexcept
     spdlog::error("[LocalServer]: {}", acReason);
 
     // Ends the overlay's connecting state, then shows why
-    auto* pOverlay = m_world.GetOverlayService().GetOverlayApp();
-    pOverlay->ExecuteAsync("disconnect");
-    auto pArgs = CefListValue::Create();
-    pArgs->SetString(0, acReason);
-    pOverlay->ExecuteAsync("triggerError", pArgs);
+    m_world.GetOverlayService().GetOverlayApp()->ExecuteAsync("disconnect");
+    m_world.GetOverlayService().SendError(acReason);
 }
