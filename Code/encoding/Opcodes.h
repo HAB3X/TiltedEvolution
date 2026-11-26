@@ -69,6 +69,7 @@ enum ClientOpcode : unsigned char
     kRequestPartyDoor,
     kRequestPartySummon,
     kRequestPartySummonAnswer,
+    kRequestRespawnAtPartner,
     kClientOpcodeMax
 };
 

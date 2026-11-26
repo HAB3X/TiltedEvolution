@@ -2,6 +2,8 @@
 
 #include <chrono>
 #include <cstdint>
+#include <optional>
+#include <vector>
 
 // Moving party members to each other (the player list's "Go to" and "Summon"): when the server allows it.
 namespace PartyTeleport
@@ -31,5 +33,30 @@ inline Refusal Check(bool aSameParty, bool aMoverInCombat, std::chrono::steady_c
     if (aSinceLastMove < aCooldown)
         return kCooldown;
     return kAllowed;
+}
+// A party member a respawning player could join
+struct Partner
+{
+    uint32_t PlayerId;
+    // Whether the server knows where they are (a character with a position)
+    bool HasCharacter;
+    bool InCombat;
+};
+
+// Whom a player respawning under the death system joins: the first member out of combat, else the first in combat;
+// nobody when no member has a character to stand next to
+inline std::optional<uint32_t> RespawnPartner(const std::vector<Partner>& acMembers) noexcept
+{
+    std::optional<uint32_t> inCombat;
+    for (const Partner& cMember : acMembers)
+    {
+        if (!cMember.HasCharacter)
+            continue;
+        if (!cMember.InCombat)
+            return cMember.PlayerId;
+        if (!inCombat)
+            inCombat = cMember.PlayerId;
+    }
+    return inCombat;
 }
 } // namespace PartyTeleport

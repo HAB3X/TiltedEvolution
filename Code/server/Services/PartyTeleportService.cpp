@@ -10,6 +10,7 @@
 #include <Messages/NotifyTeleport.h>
 #include <Messages/RequestPartySummon.h>
 #include <Messages/RequestPartySummonAnswer.h>
+#include <Messages/RequestRespawnAtPartner.h>
 #include <Messages/TeleportCommandResponse.h>
 #include <Messages/TeleportRequest.h>
 
@@ -17,6 +18,7 @@
 
 namespace
 {
+Console::Setting bRespawnAtPartner{"Gameplay:bRespawnAtPartner", "Whether a player respawning under the death system is moved next to a party member", true};
 Console::Setting uPartyTeleportCooldown{"Gameplay:uPartyTeleportCooldown", "Seconds a player waits between going to or summoning party members", 30u};
 
 // How long a summons waits for its answer, as long as the overlay shows it
@@ -46,6 +48,7 @@ PartyTeleportService::PartyTeleportService(World& aWorld, entt::dispatcher& aDis
     m_summonConnection = aDispatcher.sink<PacketEvent<RequestPartySummon>>().connect<&PartyTeleportService::OnSummon>(this);
     m_summonAnswerConnection = aDispatcher.sink<PacketEvent<RequestPartySummonAnswer>>().connect<&PartyTeleportService::OnSummonAnswer>(this);
     m_playerLeaveConnection = aDispatcher.sink<PlayerLeaveEvent>().connect<&PartyTeleportService::OnPlayerLeave>(this);
+    m_respawnAtPartnerConnection = aDispatcher.sink<PacketEvent<RequestRespawnAtPartner>>().connect<&PartyTeleportService::OnRespawnAtPartner>(this);
 }
 
 void PartyTeleportService::Refuse(const Player* apTo, PartyTeleport::Refusal aReason, const Player* apOther, uint32_t aSecondsLeft) noexcept
@@ -158,4 +161,30 @@ void PartyTeleportService::OnPlayerLeave(const PlayerLeaveEvent& acEvent) noexce
     const uint32_t cId = acEvent.pPlayer->GetId();
     m_lastMoves.erase(cId);
     m_summons.erase(cId);
+}
+
+void PartyTeleportService::OnRespawnAtPartner(const PacketEvent<RequestRespawnAtPartner>& acMessage) const noexcept
+{
+    const Player* pPlayer = acMessage.pPlayer;
+    if (!bRespawnAtPartner)
+        return;
+
+    // A member out of combat if there is one, so the respawned player doesn't land back in the fight
+    std::vector<PartyTeleport::Partner> members;
+    for (const Player* pOther : m_world.GetPlayerManager())
+    {
+        if (pOther != pPlayer && SameParty(*pPlayer, *pOther))
+            members.push_back({pOther->GetId(), pOther->GetCharacter().has_value(), pOther->IsInCombat()});
+    }
+    const auto cPartnerId = PartyTeleport::RespawnPartner(members);
+    const Player* pPartner = cPartnerId ? m_world.GetPlayerManager().GetById(*cPartnerId) : nullptr;
+
+    if (!pPartner)
+    {
+        spdlog::info("[PartyTeleport]: {} respawned with no party member to join, staying at the respawn point", pPlayer->GetUsername().c_str());
+        return;
+    }
+
+    spdlog::info("[PartyTeleport]: {} respawns next to {}", pPlayer->GetUsername().c_str(), pPartner->GetUsername().c_str());
+    pPlayer->Send(CommandService::WhereIs(m_world, *pPartner));
 }

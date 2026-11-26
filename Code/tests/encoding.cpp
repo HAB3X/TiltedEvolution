@@ -1308,6 +1308,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestPartyDoor).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestPartySummon).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestPartySummonAnswer).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestRespawnAtPartner).has_value());
         REQUIRE_FALSE(Wire::FromWire(55).has_value());
     }
 
@@ -1478,6 +1479,15 @@ TEST_CASE("Party teleports", "[encoding.party_teleport]")
     REQUIRE(Check(true, false, 29s, 30s) == kCooldown);
     // Not in the party comes first: it says the most
     REQUIRE(Check(false, true, 1s, 30s) == kNotInParty);
+
+    GIVEN("Whom a respawning player joins")
+    {
+        REQUIRE(RespawnPartner({}) == std::nullopt);
+        REQUIRE(RespawnPartner({{1, false, false}}) == std::nullopt);
+        REQUIRE(RespawnPartner({{1, true, true}, {2, true, false}}) == 2u);
+        REQUIRE(RespawnPartner({{1, true, true}, {2, false, false}, {3, true, true}}) == 1u);
+        REQUIRE(RespawnPartner({{1, false, false}, {2, true, false}, {3, true, false}}) == 2u);
+    }
 }
 
 TEST_CASE("Required mods lists", "[encoding.required_mods]")

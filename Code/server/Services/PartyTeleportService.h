@@ -10,11 +10,13 @@ struct PlayerLeaveEvent;
 struct TeleportRequest;
 struct RequestPartySummon;
 struct RequestPartySummonAnswer;
+struct RequestRespawnAtPartner;
 
 /**
  * @brief Moving party members to each other: going to one (TeleportRequest, the player list's "Go to") and summoning
  * one, who must say yes (RequestPartySummon, RequestPartySummonAnswer). Both only within a party, not for a player in
  * combat, and at most once per Gameplay:uPartyTeleportCooldown seconds for the player who asks.
+ * And a player respawning under the death system is moved next to a party member (Gameplay:bRespawnAtPartner).
  */
 struct PartyTeleportService
 {
@@ -27,6 +29,7 @@ private:
     void OnSummon(const PacketEvent<RequestPartySummon>& acMessage) noexcept;
     void OnSummonAnswer(const PacketEvent<RequestPartySummonAnswer>& acMessage) noexcept;
     void OnPlayerLeave(const PlayerLeaveEvent& acEvent) noexcept;
+    void OnRespawnAtPartner(const PacketEvent<RequestRespawnAtPartner>& acMessage) const noexcept;
 
     // Whether apAsker may move apMover to the other one, by the rules above; tells apAsker when not
     bool Allowed(const Player* apAsker, const Player* apMover, const Player* apOther) const noexcept;
@@ -47,4 +50,5 @@ private:
     entt::scoped_connection m_summonConnection;
     entt::scoped_connection m_summonAnswerConnection;
     entt::scoped_connection m_playerLeaveConnection;
+    entt::scoped_connection m_respawnAtPartnerConnection;
 };

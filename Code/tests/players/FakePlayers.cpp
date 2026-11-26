@@ -41,6 +41,7 @@
 #include <Messages/RequestPartySummon.h>
 #include <Messages/RequestPartySummonAnswer.h>
 #include <Messages/TeleportRequest.h>
+#include <Messages/RequestRespawnAtPartner.h>
 #include <PartyTeleport.h>
 #include <Messages/RequestQuestStages.h>
 #include <Messages/PartyCreateRequest.h>
@@ -892,6 +893,33 @@ int RunMoveMember(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Respawning at a partner: fake players have no character to stand next to, so the server leaves the member at the
+// game's respawn point (the choice itself is PartyTeleport::RespawnPartner, tested in TPTests)
+int RunRespawnLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeRespawnLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("respawn leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("respawn leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    RunUntil(leader, [] { return false; }, 10s);
+    return s_failures ? 1 : 0;
+}
+
+int RunRespawnMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeRespawnMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("respawn member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    member.Send(RequestRespawnAtPartner{});
+    RunUntil(member, [&] { return member.Teleport.has_value(); }, 5s);
+    Check("no partner with a character: stays at the respawn point", !member.Teleport.has_value());
+    Check("still connected", !member.Disconnected);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -906,6 +934,7 @@ int RunMoveMember(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe pingleader|pingmember [address:port] [password]: start the leader first
 // FakePlayers.exe doorleader|doorfollower [address:port] [password]: start the leader first; doorleaderany with
 //   Gameplay:bPartyDoorsAnyMember=true
+// FakePlayers.exe respawnleader|respawnmember [address:port] [password]: start the leader first
 // FakePlayers.exe moveleader|movemember [address:port] [password]: start the leader first (uPartyTeleportCooldown=5)
 int main(int argc, char** argv)
 {
@@ -962,11 +991,15 @@ int main(int argc, char** argv)
         return RunDoorLeader(cEndpoint, cPassword, true);
     if (cRole == "doorfollower")
         return RunDoorFollower(cEndpoint, cPassword);
+    if (cRole == "respawnleader")
+        return RunRespawnLeader(cEndpoint, cPassword);
+    if (cRole == "respawnmember")
+        return RunRespawnMember(cEndpoint, cPassword);
     if (cRole == "moveleader")
         return RunMoveLeader(cEndpoint, cPassword);
     if (cRole == "movemember")
         return RunMoveMember(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|moveleader|movemember [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|moveleader|movemember|respawnleader|respawnmember [address:port] [password]\n");
     return 2;
 }
