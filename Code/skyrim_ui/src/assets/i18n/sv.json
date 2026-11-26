@@ -110,6 +110,8 @@
       "BACK": "Tillbaka"
     },
     "ROOT": {
+      "REJOIN": "Anslut igen till {{address}}",
+      "REHOST": "Var värd igen",
       "CONNECT": "Anslut",
       "DISCONNECT": "Logga ut",
       "REVEAL_PLAYERS": "Lys upp spelare",

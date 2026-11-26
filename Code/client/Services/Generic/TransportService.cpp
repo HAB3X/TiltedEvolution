@@ -264,7 +264,7 @@ void TransportService::OnDisconnected(EDisconnectReason aReason)
 
     spdlog::warn("Disconnected from server {}", aReason);
 
-    m_dispatcher.trigger(DisconnectedEvent());
+    m_dispatcher.trigger(DisconnectedEvent(aReason == kTimeout || aReason == kLocalProblem));
 }
 
 void TransportService::OnUpdate()

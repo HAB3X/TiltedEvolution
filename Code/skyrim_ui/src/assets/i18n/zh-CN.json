@@ -106,6 +106,8 @@
       "BACK": "返回"
     },
     "ROOT": {
+      "REJOIN": "重新加入 {{address}}",
+      "REHOST": "再次主持",
       "CONNECT": "连接",
       "DISCONNECT": "断开连接",
       "RECONNECT": "重新连接",

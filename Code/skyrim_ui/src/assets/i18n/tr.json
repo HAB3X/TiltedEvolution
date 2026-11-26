@@ -107,6 +107,8 @@
       "BACK": "Geri"
     },
     "ROOT": {
+      "REJOIN": "{{address}} sunucusuna yeniden katıl",
+      "REHOST": "Yeniden kur",
       "CONNECT": "Bağlan",
       "DISCONNECT": "Bağlantıyı Kopar",
       "REVEAL_PLAYERS": "Oyuncuları Göster",

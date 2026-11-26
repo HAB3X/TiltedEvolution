@@ -108,6 +108,8 @@
       "BACK": "Zurück"
     },
     "ROOT": {
+      "REJOIN": "Erneut beitreten: {{address}}",
+      "REHOST": "Wieder hosten",
       "CONNECT": "Verbinden",
       "DISCONNECT": "Verbindung trennen",
       "REVEAL_PLAYERS": "Spieler hervorheben",

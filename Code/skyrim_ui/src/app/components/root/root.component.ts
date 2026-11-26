@@ -51,6 +51,7 @@ export class RootComponent implements OnInit {
   inGame$ = this.client.inGameStateChange.asObservable();
   active$ = this.client.activationStateChange.asObservable();
   hosting$ = this.client.hostingChange.asObservable();
+  lastSession$ = this.client.lastSessionChange.asObservable();
   connectionInProgress$ =
     this.client.isConnectionInProgressChange.asObservable();
   revealingInProgress$ = false;
@@ -70,6 +71,11 @@ export class RootComponent implements OnInit {
     this.translocoService.setActiveLang(
       this.settingService.settings.language.getValue(),
     );
+  }
+
+  public rejoin(): void {
+    this.sound.play(Sound.Ok);
+    this.client.rejoin();
   }
 
   public ngOnInit(): void {

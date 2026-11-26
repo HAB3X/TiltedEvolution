@@ -109,6 +109,8 @@
       "BACK": "Retour"
     },
     "ROOT": {
+      "REJOIN": "Rejoindre {{address}}",
+      "REHOST": "Héberger à nouveau",
       "CONNECT": "Connexion",
       "DISCONNECT": "Déconnexion",
       "REVEAL_PLAYERS": "Révéler les joueurs",

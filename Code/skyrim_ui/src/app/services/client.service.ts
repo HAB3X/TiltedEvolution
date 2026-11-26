@@ -6,10 +6,20 @@ import { Debug } from '../models/debug';
 import { PartyInfo } from '../models/party-info';
 import { Player } from '../models/player';
 import { ChatService } from './chat.service';
+import { StoreService } from './store.service';
 import { ErrorEvents, ErrorService } from './error.service';
 import { LoadingService } from './loading.service';
 
 /** Client game service. */
+/** Where the player last played, kept while connected (see ClientService.rejoin). */
+export interface LastSession {
+  host: string;
+  port: number;
+  hosting: boolean;
+}
+
+const LAST_SESSION_KEY = 'last_session';
+
 /** A server on the local network, as it answered a search. */
 export interface LanServer {
   address: string;
@@ -92,6 +102,9 @@ export class ClientService implements OnDestroy {
   /** The public address:port of the game this player hosts, once the router has said it. */
   public hostAddressChange = new BehaviorSubject<string | null>(null);
 
+  /** The session the game crashed or quit in, which Rejoin returns to; null when there's none. */
+  public lastSessionChange = new BehaviorSubject<LastSession | null>(null);
+
   /** Whether this player hosts the game they're connected to (Host a game). */
   public hostingChange = new BehaviorSubject(false);
 
@@ -142,6 +155,7 @@ export class ClientService implements OnDestroy {
     private readonly loadingService: LoadingService,
     private readonly translocoService: TranslocoService,
     private readonly chatService: ChatService,
+    private readonly storeService: StoreService,
   ) {
     skyrimtogether.on('init', this.onInit.bind(this));
     skyrimtogether.on('activate', this.onActivate.bind(this));
@@ -173,6 +187,14 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('triggerError', this.onTriggerError.bind(this));
     skyrimtogether.on('lanServers', this.onLanServers.bind(this));
     skyrimtogether.on('hostAddress', this.onHostAddress.bind(this));
+
+    try {
+      this.lastSessionChange.next(
+        JSON.parse(this.storeService.get(LAST_SESSION_KEY, 'null')),
+      );
+    } catch {
+      this.storeService.remove(LAST_SESSION_KEY);
+    }
     skyrimtogether.on('dummyData', this.onDummyData.bind(this));
     skyrimtogether.on('partyInfo', this.onPartyInfo.bind(this));
     skyrimtogether.on('partyCreated', this.onPartyCreated.bind(this));
@@ -233,6 +255,27 @@ export class ClientService implements OnDestroy {
     skyrimtogether.searchLanServers();
   }
 
+  /** Returns to the last session: hosts it again, or connects to its server with the saved password. */
+  public rejoin(): void {
+    const session = this.lastSessionChange.getValue();
+    if (!session) {
+      return;
+    }
+    if (session.hosting) {
+      this.hostServer(
+        this.storeService.get('host_password', ''),
+        this.storeService.getBool('host_world', true),
+        this.storeService.getBool('host_require_mods', true),
+      );
+    } else {
+      this.connect(
+        session.host,
+        session.port,
+        this.storeService.get('last_connected_password', ''),
+      );
+    }
+  }
+
   /** Start the server next to the game and connect to it once it's up. */
   public hostServer(
     password: string,
@@ -262,6 +305,9 @@ export class ClientService implements OnDestroy {
   public disconnect(): void {
     skyrimtogether.disconnect();
     this._remainingReconnectionAttempt = 0;
+    // Left on purpose: nothing to rejoin
+    this.storeService.remove(LAST_SESSION_KEY);
+    this.lastSessionChange.next(null);
   }
 
   /**
@@ -406,6 +452,15 @@ export class ClientService implements OnDestroy {
       this.connectionStateChange.next(true);
 
       this.chatService.pushSystemMessage('SERVICE.CLIENT.CONNECTED');
+
+      // Kept until the player disconnects, so that after a crash the next start offers to rejoin
+      const session: LastSession = {
+        host: this._host,
+        port: this._port,
+        hosting: this.hostingChange.getValue(),
+      };
+      this.storeService.set(LAST_SESSION_KEY, JSON.stringify(session));
+      this.lastSessionChange.next(null);
     });
   }
 

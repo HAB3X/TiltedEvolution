@@ -105,6 +105,8 @@
       "BACK": "Zpět"
     },
     "ROOT": {
+      "REJOIN": "Znovu se připojit: {{address}}",
+      "REHOST": "Znovu hostovat",
       "CONNECT": "Připojit",
       "DISCONNECT": "Odpojit",
       "RECONNECT": "Znovu připojit",

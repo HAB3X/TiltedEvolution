@@ -106,6 +106,8 @@
       "BACK": "Atrás"
     },
     "ROOT": {
+      "REJOIN": "Volver a {{address}}",
+      "REHOST": "Hospedar de nuevo",
       "CONNECT": "Conectar",
       "DISCONNECT": "Desconectar",
       "REVEAL_PLAYERS": "Revelar jugadores",

@@ -110,6 +110,8 @@
       "BACK": "Back"
     },
     "ROOT": {
+      "REJOIN": "Rejoin {{address}}",
+      "REHOST": "Host again",
       "CONNECT": "Connect",
       "DISCONNECT": "Disconnect",
       "REVEAL_PLAYERS": "Reveal Players",

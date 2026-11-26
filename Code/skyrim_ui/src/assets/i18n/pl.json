@@ -109,6 +109,8 @@
       "BACK": "Wróć"
     },
     "ROOT": {
+      "REJOIN": "Dołącz ponownie: {{address}}",
+      "REHOST": "Hostuj ponownie",
       "CONNECT": "Połącz",
       "DISCONNECT": "Odłącz",
       "REVEAL_PLAYERS": "Podświetl Graczy",

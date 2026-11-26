@@ -105,6 +105,8 @@
       "BACK": "Tilbake"
     },
     "ROOT": {
+      "REJOIN": "Koble til {{address}} igjen",
+      "REHOST": "Vær vert igjen",
       "CONNECT": "Koblte til",
       "DISCONNECT": "Koble fra",
       "RECONNECT": "Koble til på nytt",

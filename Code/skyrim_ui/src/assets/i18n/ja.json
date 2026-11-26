@@ -105,6 +105,8 @@
       "BACK": "戻る"
     },
     "ROOT": {
+      "REJOIN": "{{address}} に再接続",
+      "REHOST": "もう一度ホスト",
       "CONNECT": "接続",
       "DISCONNECT": "切断",
       "RECONNECT": "再接続",

@@ -14,6 +14,16 @@
   >
     <app-window border="strip" class="app-root-menu">
       @if (!(connected$ | async) && !(connectionInProgress$ | async)) {
+        @if (lastSession$ | async; as session) {
+          <button data-style-ornament="inverted" (click)="rejoin()">
+            {{
+              (session.hosting
+                ? 'COMPONENT.ROOT.REHOST'
+                : 'COMPONENT.ROOT.REJOIN'
+              ) | transloco: { address: session.host + ':' + session.port }
+            }}
+          </button>
+        }
         <button
           data-style-ornament="inverted"
           [attr.data-style-active]="(view$ | async) === RootView.CONNECT"

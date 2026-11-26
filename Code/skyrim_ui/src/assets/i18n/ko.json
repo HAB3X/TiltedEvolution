@@ -105,6 +105,8 @@
       "BACK": "뒤로"
     },
     "ROOT": {
+      "REJOIN": "{{address}}에 다시 참가",
+      "REHOST": "다시 호스트",
       "CONNECT": "연결",
       "DISCONNECT": "연결 해제",
       "RECONNECT": "재연결",

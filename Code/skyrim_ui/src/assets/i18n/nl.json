@@ -107,6 +107,8 @@
       "BACK": "Terug"
     },
     "ROOT": {
+      "REJOIN": "Opnieuw verbinden met {{address}}",
+      "REHOST": "Opnieuw hosten",
       "CONNECT": "Verbinden",
       "DISCONNECT": "Verbinding verbreken",
       "RECONNECT": "Opnieuw verbinden",

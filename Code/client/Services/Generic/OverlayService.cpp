@@ -340,9 +340,12 @@ void OverlayService::OnConnectedEvent(const ConnectedEvent& acEvent) noexcept
     m_pOverlay->ExecuteAsync("setLocalPlayerId", pArguments);
 }
 
-void OverlayService::OnDisconnectedEvent(const DisconnectedEvent&) noexcept
+void OverlayService::OnDisconnectedEvent(const DisconnectedEvent& acEvent) noexcept
 {
-    m_pOverlay->ExecuteAsync("disconnect");
+    // An unexpected disconnect makes the overlay try to reconnect
+    auto pArguments = CefListValue::Create();
+    pArguments->SetBool(0, acEvent.Unexpected);
+    m_pOverlay->ExecuteAsync("disconnect", pArguments);
 }
 
 void OverlayService::OnWaitingFor3DRemoved(entt::registry& aRegistry, entt::entity aEntity) const noexcept
