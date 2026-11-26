@@ -1,5 +1,14 @@
 {
   "COMPONENT": {
+    "IMMERSION": {
+      "HEADER": "Ekran öğeleri",
+      "IMMERSIVE_MODE": "Sürükleyici mod",
+      "IMMERSIVE_HINT": "Sürükleyici mod aşağıdakilerin hepsini gizler; kapattığında seçimlerin geri gelir.",
+      "PARTY_ALERTS": "Grup savaş ve yere düşme uyarıları",
+      "PING_MARKERS": "Diğer oyuncuların işaretleri için yol noktaları",
+      "PING_MESSAGES": "Sohbette işaret mesajları",
+      "NAME_TAGS": "Oyuncu isim etiketleri"
+    },
     "PARTY_BAR": {
       "DOWNED": "Yere düştü",
       "IN_COMBAT": "Savaşta",

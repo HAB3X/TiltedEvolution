@@ -2,6 +2,15 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "IMMERSION": {
+      "HEADER": "Elementen op het scherm",
+      "IMMERSIVE_MODE": "Immersieve modus",
+      "IMMERSIVE_HINT": "De immersieve modus verbergt alles hieronder; je keuzes komen terug als je hem uitzet.",
+      "PARTY_ALERTS": "Meldingen van gevecht en neergaan in de groep",
+      "PING_MARKERS": "Routepunten bij markeringen van andere spelers",
+      "PING_MESSAGES": "Markeringsberichten in de chat",
+      "NAME_TAGS": "Naamlabels van spelers"
+    },
     "PARTY_BAR": {
       "DOWNED": "Neergeslagen",
       "IN_COMBAT": "In gevecht",

@@ -20,6 +20,9 @@ struct MapService
 
     TP_NOCOPYMOVE(MapService);
 
+    // Whether other players' pings set a waypoint here (the overlay's setting); their chat line is the overlay's
+    void SetPingMarkersEnabled(bool aEnabled) noexcept { m_pingMarkersEnabled = aEnabled; }
+
   protected:
     void OnSetWaypoint(const SetWaypointEvent& acMessage) noexcept;
     void OnRemoveWaypoint(const RemoveWaypointEvent& acMessage) noexcept;
@@ -44,4 +47,5 @@ struct MapService
     entt::scoped_connection m_partyPingConnection;
 
     std::chrono::steady_clock::time_point m_lastPing{};
+    bool m_pingMarkersEnabled = true;
 };

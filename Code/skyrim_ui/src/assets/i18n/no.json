@@ -1,5 +1,14 @@
 {
   "COMPONENT": {
+    "IMMERSION": {
+      "HEADER": "Elementer på skjermen",
+      "IMMERSIVE_MODE": "Oppslukende modus",
+      "IMMERSIVE_HINT": "Oppslukende modus skjuler alt nedenfor; valgene dine kommer tilbake når du slår den av.",
+      "PARTY_ALERTS": "Varsler om kamp og nedslåtte i gruppen",
+      "PING_MARKERS": "Veipunkter for andre spilleres markeringer",
+      "PING_MESSAGES": "Markeringsmeldinger i chatten",
+      "NAME_TAGS": "Navneskilt for spillere"
+    },
     "PARTY_BAR": {
       "DOWNED": "Slått ned",
       "IN_COMBAT": "I kamp",

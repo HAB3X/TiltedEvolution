@@ -1,5 +1,14 @@
 {
   "COMPONENT": {
+    "IMMERSION": {
+      "HEADER": "On-screen elements",
+      "IMMERSIVE_MODE": "Immersive mode",
+      "IMMERSIVE_HINT": "Immersive mode hides everything below; your choices come back when you turn it off.",
+      "PARTY_ALERTS": "Party combat and downed alerts",
+      "PING_MARKERS": "Waypoints on other players' pings",
+      "PING_MESSAGES": "Ping messages in chat",
+      "NAME_TAGS": "Player name tags"
+    },
     "PARTY_BAR": {
       "DOWNED": "Downed",
       "IN_COMBAT": "In combat",

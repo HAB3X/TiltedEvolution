@@ -34,6 +34,14 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     console.log(`host world: ${join ? 'join' : 'keep'}`);
   }
 
+  setPingMarkers(enabled: boolean): void {
+    console.log(`ping markers: ${enabled ? 'on' : 'off'}`);
+  }
+
+  setPartyBar(enabled: boolean): void {
+    console.log(`party bar: ${enabled ? 'on' : 'off'}`);
+  }
+
   setNameTags(enabled: boolean): void {
     console.log(`name tags ${enabled}`);
   }

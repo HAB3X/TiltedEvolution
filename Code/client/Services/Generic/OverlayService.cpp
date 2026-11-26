@@ -602,7 +602,7 @@ void OverlayService::RunPlayerHealthUpdates() noexcept
 void OverlayService::RunPartyDistanceUpdates() noexcept
 {
     const auto& cParty = m_world.GetPartyService();
-    if (!m_transport.IsConnected() || !cParty.IsInParty())
+    if (!m_partyBarEnabled || !m_transport.IsConnected() || !cParty.IsInParty())
         return;
 
     static std::chrono::steady_clock::time_point lastSendTimePoint;

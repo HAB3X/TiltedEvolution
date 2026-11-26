@@ -496,6 +496,12 @@ interface SkyrimTogether {
    */
   answerPartyDoor(follow: boolean): void;
 
+  /** Whether other players' pings set a waypoint in this game. */
+  setPingMarkers(enabled: boolean): void;
+
+  /** Whether the party bar is shown: the game works out members' distances only while it is. */
+  setPartyBar(enabled: boolean): void;
+
   /**
    * Disconnect from server or cancel connection.
    */

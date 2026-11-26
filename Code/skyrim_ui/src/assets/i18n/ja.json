@@ -1,5 +1,14 @@
 {
   "COMPONENT": {
+    "IMMERSION": {
+      "HEADER": "画面上の表示",
+      "IMMERSIVE_MODE": "没入モード",
+      "IMMERSIVE_HINT": "没入モードでは以下をすべて非表示にします。オフにすると元の設定に戻ります。",
+      "PARTY_ALERTS": "パーティーの戦闘・ダウン通知",
+      "PING_MARKERS": "他のプレイヤーのピンのウェイポイント",
+      "PING_MESSAGES": "チャットのピンメッセージ",
+      "NAME_TAGS": "プレイヤーの名前表示"
+    },
     "PARTY_BAR": {
       "DOWNED": "ダウン",
       "IN_COMBAT": "戦闘中",

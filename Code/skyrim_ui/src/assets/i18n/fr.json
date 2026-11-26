@@ -2,6 +2,15 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "IMMERSION": {
+      "HEADER": "Éléments à l'écran",
+      "IMMERSIVE_MODE": "Mode immersif",
+      "IMMERSIVE_HINT": "Le mode immersif masque tout ce qui suit ; vos choix reviennent quand vous le désactivez.",
+      "PARTY_ALERTS": "Alertes de combat et de chute du groupe",
+      "PING_MARKERS": "Points de repère des signalements des autres joueurs",
+      "PING_MESSAGES": "Messages de signalement dans le chat",
+      "NAME_TAGS": "Noms des joueurs"
+    },
     "PARTY_BAR": {
       "DOWNED": "À terre",
       "IN_COMBAT": "En combat",

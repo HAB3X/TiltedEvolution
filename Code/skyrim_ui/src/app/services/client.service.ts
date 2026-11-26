@@ -1,4 +1,5 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { SettingService } from './setting.service';
 import { Ping } from '../utils/party-bar';
 import { TranslocoService } from '@jsverse/transloco';
 import { AsyncSubject, BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
@@ -232,8 +233,16 @@ export class ClientService implements OnDestroy {
     private readonly loadingService: LoadingService,
     private readonly translocoService: TranslocoService,
     private readonly chatService: ChatService,
+    private readonly settingService: SettingService,
     private readonly storeService: StoreService,
   ) {
+    // The game starts with every element shown; once it's ready, it gets the player's choices and their changes, so
+    // a hidden element also stops its work there
+    this.initDone.subscribe(() => {
+      this.settingService.shown('nameTags').subscribe(shown => skyrimtogether.setNameTags(shown));
+      this.settingService.shown('pingMarkers').subscribe(shown => skyrimtogether.setPingMarkers(shown));
+      this.settingService.shown('isPartyShown').subscribe(shown => skyrimtogether.setPartyBar(shown));
+    });
     skyrimtogether.on('init', this.onInit.bind(this));
     skyrimtogether.on('activate', this.onActivate.bind(this));
     skyrimtogether.on('deactivate', this.onDeactivate.bind(this));
@@ -536,8 +545,6 @@ export class ClientService implements OnDestroy {
    */
   // TODO: is this still used?
   private onInit(): void {
-    // The game starts with name tags on; tell it the saved choice
-    skyrimtogether.setNameTags(this.chatService.nameTagsEnabled);
     this.zone.run(() => {
       this.initDone.next(undefined);
       this.initDone.complete();

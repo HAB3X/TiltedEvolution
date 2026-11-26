@@ -77,6 +77,9 @@ struct OverlayService
 
     void SetPlayerHealthPercentage(uint32_t aFormId) const noexcept;
 
+    // The overlay's party bar is shown: members' distances are only worked out then
+    void SetPartyBarEnabled(bool aEnabled) noexcept { m_partyBarEnabled = aEnabled; }
+
 protected:
     void OnUpdate(const UpdateEvent&) noexcept;
     void OnConnectedEvent(const ConnectedEvent&) noexcept;
@@ -108,6 +111,7 @@ private:
 
     bool m_active = false;
     bool m_inGame = false;
+    bool m_partyBarEnabled = true;
 
     entt::scoped_connection m_updateConnection;
     entt::scoped_connection m_connectedConnection;

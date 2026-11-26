@@ -2,6 +2,15 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "IMMERSION": {
+      "HEADER": "屏幕元素",
+      "IMMERSIVE_MODE": "沉浸模式",
+      "IMMERSIVE_HINT": "沉浸模式会隐藏下面的所有内容；关闭后会恢复你的设置。",
+      "PARTY_ALERTS": "队伍战斗和倒地提醒",
+      "PING_MARKERS": "其他玩家标记的路径点",
+      "PING_MESSAGES": "聊天中的标记消息",
+      "NAME_TAGS": "玩家名牌"
+    },
     "PARTY_BAR": {
       "DOWNED": "倒地",
       "IN_COMBAT": "战斗中",

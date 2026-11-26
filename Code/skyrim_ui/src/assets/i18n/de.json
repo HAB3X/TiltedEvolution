@@ -1,5 +1,14 @@
 {
   "COMPONENT": {
+    "IMMERSION": {
+      "HEADER": "Bildschirmelemente",
+      "IMMERSIVE_MODE": "Immersiver Modus",
+      "IMMERSIVE_HINT": "Der immersive Modus blendet alles darunter aus; beim Ausschalten kehren deine Einstellungen zurück.",
+      "PARTY_ALERTS": "Hinweise auf Kampf und Niederschlag in der Gruppe",
+      "PING_MARKERS": "Wegpunkte für Markierungen anderer Spieler",
+      "PING_MESSAGES": "Markierungsnachrichten im Chat",
+      "NAME_TAGS": "Namensschilder der Spieler"
+    },
     "PARTY_BAR": {
       "DOWNED": "Am Boden",
       "IN_COMBAT": "Im Kampf",

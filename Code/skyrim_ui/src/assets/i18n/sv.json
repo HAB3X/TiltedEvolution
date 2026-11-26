@@ -1,5 +1,14 @@
 {
   "COMPONENT": {
+    "IMMERSION": {
+      "HEADER": "Element på skärmen",
+      "IMMERSIVE_MODE": "Uppslukande läge",
+      "IMMERSIVE_HINT": "Uppslukande läge döljer allt nedan; dina val kommer tillbaka när du stänger av det.",
+      "PARTY_ALERTS": "Varningar om strid och nedslagna i gruppen",
+      "PING_MARKERS": "Vägpunkter för andra spelares markeringar",
+      "PING_MESSAGES": "Markeringsmeddelanden i chatten",
+      "NAME_TAGS": "Namnskyltar för spelare"
+    },
     "PARTY_BAR": {
       "DOWNED": "Nedslagen",
       "IN_COMBAT": "I strid",

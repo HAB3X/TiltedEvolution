@@ -19,6 +19,7 @@ import { LoadingService } from './loading.service';
 import { PlayerListService } from './player-list.service';
 import { Sound, SoundService } from './sound.service';
 import { PopupNotificationService } from './popup-notification.service';
+import { SettingService } from './setting.service';
 import { partyAlerts } from '../utils/party-bar';
 import { faSkull } from '@fortawesome/free-solid-svg-icons';
 
@@ -51,6 +52,7 @@ export class GroupService implements OnDestroy {
     private readonly loadingService: LoadingService,
     private readonly translocoService: TranslocoService,
     private readonly popupNotificationService: PopupNotificationService,
+    private readonly settingService: SettingService,
   ) {
     this.onDebug();
     this.onConnectionStateChanged();
@@ -250,7 +252,8 @@ export class GroupService implements OnDestroy {
           player.magicka === undefined
             ? undefined
             : { inCombat: player.inCombat, downed: player.downed };
-        for (const alert of partyAlerts(previous, { inCombat, downed })) {
+        const alerts = this.settingService.isShown('partyAlerts') ? partyAlerts(previous, { inCombat, downed }) : [];
+        for (const alert of alerts) {
           if (alert === 'combat') {
             this.chatService.pushSystemMessage('COMPONENT.PARTY_BAR.ALERT_COMBAT', { name: player.name });
           } else {

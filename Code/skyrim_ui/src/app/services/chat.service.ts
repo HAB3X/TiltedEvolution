@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Command, CommandHandler } from './chat/commands';
+import { SettingService } from './setting.service';
 
 export enum MessageTypes {
   SYSTEM_MESSAGE = 0,
@@ -19,7 +20,6 @@ export interface ChatMessage {
 }
 
 const MUTED_KEY = 'muted_players';
-const NAME_TAGS_KEY = 'name_tags';
 
 @Injectable({
   providedIn: 'root',
@@ -126,21 +126,11 @@ export class ChatService {
   private NameTags: Command = {
     name: 'nametags',
     executor: async () => {
-      const enabled = this.readStore(NAME_TAGS_KEY) === 'false';
-      try {
-        localStorage.setItem(NAME_TAGS_KEY, String(enabled));
-      } catch {
-        // Only for this session then
-      }
-      skyrimtogether.setNameTags(enabled);
+      const enabled = !this.settingService.settings.nameTags.getValue();
+      this.settingService.settings.nameTags.next(enabled);
       this.pushSystemMessage(enabled ? 'COMPONENT.CHAT.NAME_TAGS_ON' : 'COMPONENT.CHAT.NAME_TAGS_OFF');
     },
   };
-
-  /** The saved name tag choice, for the game when it starts */
-  public get nameTagsEnabled(): boolean {
-    return this.readStore(NAME_TAGS_KEY) !== 'false';
-  }
 
   private Mute: Command = {
     name: 'mute',
@@ -169,7 +159,7 @@ export class ChatService {
     },
   };
 
-  constructor() {
+  constructor(private readonly settingService: SettingService) {
     skyrimtogether.on('message', this.onMessageRecieved.bind(this));
 
     this.CommandHandler = new CommandHandler(this);

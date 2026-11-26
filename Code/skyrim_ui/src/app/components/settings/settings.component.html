@@ -16,6 +16,35 @@
     </section>
 
     <section>
+      <h2>{{ 'COMPONENT.IMMERSION.HEADER' | transloco }}</h2>
+      @let immersive = settings.immersiveMode | async;
+      <div class="setting">
+        <label for="immersiveMode">{{ 'COMPONENT.IMMERSION.IMMERSIVE_MODE' | transloco }}</label>
+        <input
+          type="checkbox"
+          id="immersiveMode"
+          [ngModel]="immersive"
+          (ngModelChange)="settings.immersiveMode.next($event)"
+        />
+      </div>
+      @if (immersive) {
+        <div class="flex-item">{{ 'COMPONENT.IMMERSION.IMMERSIVE_HINT' | transloco }}</div>
+      }
+      @for (element of immersionElements; track element.setting) {
+        <div class="setting">
+          <label [for]="element.setting">{{ element.label | transloco }}</label>
+          <input
+            type="checkbox"
+            [id]="element.setting"
+            [disabled]="immersive"
+            [ngModel]="settings[element.setting] | async"
+            (ngModelChange)="settings[element.setting].next($event)"
+          />
+        </div>
+      }
+    </section>
+
+    <section>
       <h2>{{ 'COMPONENT.SETTINGS.AUDIO' | transloco }}</h2>
       <div class="setting">
         <label for="muted">{{
@@ -81,17 +110,6 @@
 
     <section>
       <h2>{{ 'COMPONENT.SETTINGS.PARTY' | transloco }}</h2>
-      <div class="setting">
-        <label for="showParty">{{
-          'COMPONENT.SETTINGS.SHOW_PARTY' | transloco
-        }}</label>
-        <input
-          type="checkbox"
-          id="showParty"
-          [ngModel]="settings.isPartyShown | async"
-          (ngModelChange)="settings.isPartyShown.next($event)"
-        />
-      </div>
       <div class="setting">
         <label for="autoHideParty">{{
           'COMPONENT.SETTINGS.AUTO_HIDE_PARTY' | transloco

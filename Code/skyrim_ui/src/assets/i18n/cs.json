@@ -1,5 +1,14 @@
 {
   "COMPONENT": {
+    "IMMERSION": {
+      "HEADER": "Prvky na obrazovce",
+      "IMMERSIVE_MODE": "Imerzivní režim",
+      "IMMERSIVE_HINT": "Imerzivní režim skryje vše níže; po vypnutí se vrátí tvá nastavení.",
+      "PARTY_ALERTS": "Upozornění na boj a sražení člena družiny",
+      "PING_MARKERS": "Body trasy u označení ostatních hráčů",
+      "PING_MESSAGES": "Zprávy o označení v chatu",
+      "NAME_TAGS": "Jmenovky hráčů"
+    },
     "PARTY_BAR": {
       "DOWNED": "Sražen",
       "IN_COMBAT": "V boji",

@@ -12,6 +12,7 @@
 #include <Services/NameTagService.h>
 #include <Services/HostWorldService.h>
 #include <Services/TravelTogetherService.h>
+#include <Services/MapService.h>
 
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/TeleportRequest.h>
@@ -61,6 +62,16 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
         {
             const bool travel = eventArgs->GetBool(0);
             World::Get().GetRunner().Queue([travel]() { World::Get().ctx().at<TravelTogetherService>().Answer(travel); });
+        }
+        else if (eventName == "setPartyBar")
+        {
+            const bool enabled = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([enabled]() { World::Get().GetOverlayService().SetPartyBarEnabled(enabled); });
+        }
+        else if (eventName == "setPingMarkers")
+        {
+            const bool enabled = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([enabled]() { World::Get().ctx().at<MapService>().SetPingMarkersEnabled(enabled); });
         }
         else if (eventName == "answerPartyDoor")
         {

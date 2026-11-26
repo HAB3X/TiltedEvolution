@@ -203,6 +203,7 @@ void MapService::Ping() noexcept
 void MapService::OnNotifyPartyPing(const NotifyPartyPing& acMessage) const noexcept
 {
     const NiPoint3 cPosition(acMessage.Position);
-    SetPingWaypoint(acMessage.WorldSpaceId, acMessage.CellId, cPosition);
+    if (m_pingMarkersEnabled)
+        SetPingWaypoint(acMessage.WorldSpaceId, acMessage.CellId, cPosition);
     ShowPing(acMessage.PlayerName, acMessage.Target, acMessage.WorldSpaceId, acMessage.CellId, cPosition);
 }

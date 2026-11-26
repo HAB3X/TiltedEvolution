@@ -2,6 +2,15 @@
   "INFO": "Polska lokalizacja do Skyrim Together: Reborn! Wersja: 1.4.0. Autor:<strong>Nutyo</strong>",
 
   "COMPONENT": {
+    "IMMERSION": {
+      "HEADER": "Elementy na ekranie",
+      "IMMERSIVE_MODE": "Tryb immersji",
+      "IMMERSIVE_HINT": "Tryb immersji ukrywa wszystko poniżej; po wyłączeniu wracają twoje ustawienia.",
+      "PARTY_ALERTS": "Powiadomienia o walce i powaleniu w drużynie",
+      "PING_MARKERS": "Punkty trasy przy oznaczeniach innych graczy",
+      "PING_MESSAGES": "Wiadomości o oznaczeniach na czacie",
+      "NAME_TAGS": "Nazwy graczy"
+    },
     "PARTY_BAR": {
       "DOWNED": "Powalony",
       "IN_COMBAT": "W walce",

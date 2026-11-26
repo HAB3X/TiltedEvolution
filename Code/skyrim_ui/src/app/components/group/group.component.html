@@ -1,47 +1,49 @@
-<div [@fadeInOutActive]="isShown | async" class="group-container-wrapper">
-  @if (group$ | async) {
-    <div class="group-container" [ngStyle]="positionStyle | async">
-      @for (player of groupMembers$ | async; track player) {
-        <div
-          [title]="player.cellName"
-          class="group-member"
-          [class.not-loaded]="!player.isLoaded"
-        >
-          <b class="group-member-level">{{ player.level }} </b>
-          @if (player.health === 0) {
-            <div class="group-member-dead"></div>
-          }
-          @if (player.isOwner) {
-            <div class="group-member-leader"></div>
-          }
-          <span class="member-name">{{ player.name }}</span>
-          @if (player.downed) {
-            <span class="group-member-state downed">{{ 'COMPONENT.PARTY_BAR.DOWNED' | transloco }}</span>
-          } @else if (player.inCombat) {
-            <fa-icon class="group-member-state combat" [icon]="faShieldHalved" [title]="'COMPONENT.PARTY_BAR.IN_COMBAT' | transloco"></fa-icon>
-          }
-          @if (player.health !== undefined && player.isLoaded) {
-            <div class="group-member-health">
-              <div
-                class="group-member-health-value"
-                [app-health]="player.health"
-              ></div>
-            </div>
-          }
-          @if (player.magicka !== undefined) {
-            <div class="group-member-vitals">
-              <div class="vital magicka"><div [style.width.%]="player.magicka"></div></div>
-              <div class="vital stamina"><div [style.width.%]="player.stamina"></div></div>
-            </div>
-          }
-          <div class="group-member-where">
-            {{ player.cellName }}
-            @if (player.isLoaded && player.distance !== undefined) {
-              · {{ 'COMPONENT.PARTY_BAR.DISTANCE' | transloco: { meters: player.distance, direction: ('COMPONENT.PARTY_BAR.DIRECTION.' + compassKey(player.direction) | transloco) } }}
+@if (barShown$ | async) {
+  <div [@fadeInOutActive]="isShown | async" class="group-container-wrapper">
+    @if (group$ | async) {
+      <div class="group-container" [ngStyle]="positionStyle | async">
+        @for (player of groupMembers$ | async; track player) {
+          <div
+            [title]="player.cellName"
+            class="group-member"
+            [class.not-loaded]="!player.isLoaded"
+          >
+            <b class="group-member-level">{{ player.level }} </b>
+            @if (player.health === 0) {
+              <div class="group-member-dead"></div>
             }
+            @if (player.isOwner) {
+              <div class="group-member-leader"></div>
+            }
+            <span class="member-name">{{ player.name }}</span>
+            @if (player.downed) {
+              <span class="group-member-state downed">{{ 'COMPONENT.PARTY_BAR.DOWNED' | transloco }}</span>
+            } @else if (player.inCombat) {
+              <fa-icon class="group-member-state combat" [icon]="faShieldHalved" [title]="'COMPONENT.PARTY_BAR.IN_COMBAT' | transloco"></fa-icon>
+            }
+            @if (player.health !== undefined && player.isLoaded) {
+              <div class="group-member-health">
+                <div
+                  class="group-member-health-value"
+                  [app-health]="player.health"
+                ></div>
+              </div>
+            }
+            @if (player.magicka !== undefined) {
+              <div class="group-member-vitals">
+                <div class="vital magicka"><div [style.width.%]="player.magicka"></div></div>
+                <div class="vital stamina"><div [style.width.%]="player.stamina"></div></div>
+              </div>
+            }
+            <div class="group-member-where">
+              {{ player.cellName }}
+              @if (player.isLoaded && player.distance !== undefined) {
+                · {{ 'COMPONENT.PARTY_BAR.DISTANCE' | transloco: { meters: player.distance, direction: ('COMPONENT.PARTY_BAR.DIRECTION.' + compassKey(player.direction) | transloco) } }}
+              }
+            </div>
           </div>
-        </div>
-      }
-    </div>
-  }
-</div>
+        }
+      </div>
+    }
+  </div>
+}
