@@ -293,8 +293,14 @@ interface SkyrimTogether {
   /** On joining a party: the leader is further in this many shared quests; answer with answerQuestCatchUp. */
   on(event: 'questCatchUp', callback: (leader: string, quests: number) => void): void;
 
-  /** Shared quests differ from another party member's: the first few named, and how many more. */
-  on(event: 'questDesync', callback: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
+  /**
+   * Shared quests differ from another party member's: the first few named, and how many more. repairable: how many of
+   * them a member can bring to the leader's stages with repairQuestDesync (0 for the leader, or when none can).
+   */
+  on(
+    event: 'questDesync',
+    callback: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number, repairable: number) => void,
+  ): void;
 
   /** Another player took the same items out of a container first, so this player's were given back. */
   on(event: 'lootRefused', callback: (item: string, count: number) => void): void;
@@ -471,7 +477,10 @@ interface SkyrimTogether {
 
   off(event: 'questCatchUp', callback?: (leader: string, quests: number) => void): void;
 
-  off(event: 'questDesync', callback?: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
+  off(
+    event: 'questDesync',
+    callback?: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number, repairable: number) => void,
+  ): void;
 
   off(event: 'lootRefused', callback?: (item: string, count: number) => void): void;
 
@@ -584,6 +593,9 @@ interface SkyrimTogether {
 
   /** Whether to take the party leader's progress in the shared quests (the questCatchUp event). */
   answerQuestCatchUp(take: boolean): void;
+
+  /** Takes the party leader's stages of the quests the last questDesync event named. */
+  repairQuestDesync(): void;
 
   /** Whether other players' pings set a waypoint in this game. */
   setPingMarkers(enabled: boolean): void;

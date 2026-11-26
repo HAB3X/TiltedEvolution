@@ -344,6 +344,7 @@ void QuestService::CheckDesync(const Player& acLeader, Player& aMember) const no
     toMember.OtherPlayer = acLeader.GetUsername();
     toMember.OtherIsLeader = true;
     toMember.Quests = lasting;
+    toMember.LeaderStages = QuestDesync::LeaderStages(*cLeaderLog, lasting);
     aMember.Send(toMember);
 
     NotifyQuestDesync toLeader;

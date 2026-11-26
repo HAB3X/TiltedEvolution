@@ -403,7 +403,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Twój postęp w zadaniach różni się od postępu lidera drużyny {{name}}: {{quests}}.",
       "WITH_MEMBER": "Postęp gracza {{name}} w zadaniach różni się od twojego: {{quests}}.",
-      "MORE": "{{quests}} i {{count}} więcej"
+      "MORE": "{{quests}} i {{count}} więcej",
+      "REPAIR_OFFER": "Twoje zadania wciąż różnią się od zadań przywódcy drużyny {{name}} w {{count}} wspólnych zadaniach. Przejąć jego etapy?",
+      "REPAIR": "Napraw"
     },
     "LOOT": {
       "TAKEN_FIRST": "Inny gracz był szybszy: {{item}} ({{count}}) trafił do niego."

@@ -398,7 +398,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Ta progression des quêtes diffère de celle de ton chef de groupe {{name}} : {{quests}}.",
       "WITH_MEMBER": "La progression des quêtes de {{name}} diffère de la tienne : {{quests}}.",
-      "MORE": "{{quests}} et {{count}} autres"
+      "MORE": "{{quests}} et {{count}} autres",
+      "REPAIR_OFFER": "Tes quêtes diffèrent toujours de celles de ton chef de groupe {{name}} dans {{count}} quêtes partagées. Prendre ses étapes ?",
+      "REPAIR": "Réparer"
     },
     "LOOT": {
       "TAKEN_FIRST": "Un autre joueur a été plus rapide : {{item}} ({{count}}) lui revient."

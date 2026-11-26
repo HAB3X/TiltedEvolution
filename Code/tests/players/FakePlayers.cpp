@@ -944,6 +944,7 @@ int RunDesyncLeader(const std::string& acEndpoint, const std::string& acPassword
           leader.Desyncs.size() == 1 && leader.Desyncs[0].OtherPlayer == "FakeDesyncMember" && !leader.Desyncs[0].OtherIsLeader &&
               leader.Desyncs[0].Quests == Vector<GameId>{kDesyncExtra, kDesyncStage},
           std::to_string(leader.Desyncs.size()) + " notices");
+    Check("the leader has nothing to repair with", !leader.Desyncs.empty() && leader.Desyncs[0].LeaderStages.Entries.empty());
     return s_failures ? 1 : 0;
 }
 
@@ -980,6 +981,11 @@ int RunDesyncMember(const std::string& acEndpoint, const std::string& acPassword
           member.Desyncs.size() == 1 && member.Desyncs[0].OtherPlayer == "FakeDesyncLeader" && member.Desyncs[0].OtherIsLeader &&
               member.Desyncs[0].Quests == Vector<GameId>{kDesyncExtra, kDesyncStage},
           detail);
+    // Only the quest the leader has a stage of can be repaired: the one only the member has isn't there
+    QuestLog repairWith;
+    repairWith.Entries = {{kDesyncStage, 20}};
+    Check("with the leader's stage to repair with", !member.Desyncs.empty() && member.Desyncs[0].LeaderStages == repairWith,
+          member.Desyncs.empty() ? "" : std::to_string(member.Desyncs[0].LeaderStages.Entries.size()) + " stages");
     std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
     return s_failures ? 1 : 0;
 }

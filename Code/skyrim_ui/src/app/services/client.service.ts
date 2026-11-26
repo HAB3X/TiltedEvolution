@@ -191,7 +191,7 @@ export class ClientService implements OnDestroy {
   public questCatchUpChange = new Subject<{ leader: string; quests: number }>();
 
   /** Shared quests differ from another party member's (the leader's, or a member's for the leader). */
-  public questDesyncChange = new Subject<{ otherPlayer: string; otherIsLeader: boolean; quests: string; more: number }>();
+  public questDesyncChange = new Subject<{ otherPlayer: string; otherIsLeader: boolean; quests: string; more: number; repairable: number }>();
 
   /** Another player took the same items out of a container first, so this player's were given back. */
   public lootRefusedChange = new Subject<{ item: string; count: number }>();
@@ -281,6 +281,11 @@ export class ClientService implements OnDestroy {
   /** Whether to take the leader's quest progress, after questCatchUpChange. */
   public answerQuestCatchUp(take: boolean): void {
     skyrimtogether.answerQuestCatchUp(take);
+  }
+
+  /** Takes the leader's stages of the quests the last questDesyncChange named. */
+  public repairQuestDesync(): void {
+    skyrimtogether.repairQuestDesync();
   }
 
   /** The joiner's answer to the host world offer. */
@@ -1323,9 +1328,9 @@ export class ClientService implements OnDestroy {
     });
   }
 
-  private onQuestDesync(otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) {
+  private onQuestDesync(otherPlayer: string, otherIsLeader: boolean, quests: string, more: number, repairable: number) {
     this.zone.run(() => {
-      this.questDesyncChange.next({ otherPlayer, otherIsLeader, quests, more });
+      this.questDesyncChange.next({ otherPlayer, otherIsLeader, quests, more, repairable });
     });
   }
 

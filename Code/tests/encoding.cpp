@@ -1234,6 +1234,7 @@ TEST_CASE("Packets", "[encoding.packets]")
         sendMessage.OtherIsLeader = true;
         sendMessage.Quests.push_back(GameId(0, 0x3372B));
         sendMessage.Quests.push_back(GameId(2, 0x1234));
+        sendMessage.LeaderStages.Entries.push_back({GameId(0, 0x3372B), 30});
 
         Buffer buff(1000);
         Buffer::Writer writer(&buff);
@@ -1613,6 +1614,28 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         received.DeserializeRaw(reader);
         REQUIRE(received.Username == "Lydia");
         REQUIRE_FALSE(received.Returning);
+        REQUIRE(Serialization::ReadVarInt(reader) == 42);
+    }
+
+    GIVEN("A desync notice without the leader's stages")
+    {
+        NotifyQuestDesync sent;
+        sent.OtherPlayer = "Lydia";
+        sent.Quests.push_back(GameId(0, 0x3372B));
+        sent.LeaderStages.Entries.push_back({GameId(0, 0x3372B), 30});
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 42);
+
+        Buffer::Reader reader(&buffer);
+        uint64_t opcode;
+        reader.ReadBits(opcode, 8);
+        NotifyQuestDesync received;
+        received.DeserializeRaw(reader);
+        REQUIRE(received.Quests == sent.Quests);
+        REQUIRE(received.LeaderStages.Entries.empty());
         REQUIRE(Serialization::ReadVarInt(reader) == 42);
     }
 

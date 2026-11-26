@@ -117,6 +117,8 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             const bool take = eventArgs->GetBool(0);
             World::Get().GetRunner().Queue([take]() { World::Get().ctx().at<QuestDesyncService>().AnswerCatchUp(take); });
         }
+        else if (eventName == "repairQuestDesync")
+            World::Get().GetRunner().Queue([]() { World::Get().ctx().at<QuestDesyncService>().Repair(); });
         else if (eventName == "answerPartyDoor")
         {
             const bool follow = eventArgs->GetBool(0);

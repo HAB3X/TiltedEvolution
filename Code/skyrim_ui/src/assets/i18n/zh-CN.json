@@ -394,7 +394,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "你的任务进度与队长 {{name}} 不同：{{quests}}。",
       "WITH_MEMBER": "{{name}} 的任务进度与你不同：{{quests}}。",
-      "MORE": "{{quests}} 等另外 {{count}} 个"
+      "MORE": "{{quests}} 等另外 {{count}} 个",
+      "REPAIR_OFFER": "你有 {{count}} 个共享任务仍与队长 {{name}} 的进度不同。要采用队长的阶段吗？",
+      "REPAIR": "修复"
     },
     "LOOT": {
       "TAKEN_FIRST": "另一名玩家抢先一步：{{item}}（{{count}}）归了对方。"

@@ -403,7 +403,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Görev ilerlemen grup lideri {{name}} ile farklı: {{quests}}.",
       "WITH_MEMBER": "{{name}} adlı oyuncunun görev ilerlemesi seninkinden farklı: {{quests}}.",
-      "MORE": "{{quests}} ve {{count}} tane daha"
+      "MORE": "{{quests}} ve {{count}} tane daha",
+      "REPAIR_OFFER": "Görevlerin, {{count}} ortak görevde hâlâ grup lideri {{name}} ile farklı. Liderin aşamalarını alalım mı?",
+      "REPAIR": "Onar"
     },
     "LOOT": {
       "TAKEN_FIRST": "Başka bir oyuncu daha hızlıydı: {{item}} ({{count}}) ona gitti."

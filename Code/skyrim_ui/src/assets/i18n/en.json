@@ -407,7 +407,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Your quest progress differs from your party leader {{name}}'s: {{quests}}.",
       "WITH_MEMBER": "{{name}}'s quest progress differs from yours: {{quests}}.",
-      "MORE": "{{quests}} and {{count}} more"
+      "MORE": "{{quests}} and {{count}} more",
+      "REPAIR_OFFER": "Your quests still differ from your party leader {{name}}'s in {{count}} shared quests. Take the leader's stages of them?",
+      "REPAIR": "Repair"
     },
     "LOOT": {
       "TAKEN_FIRST": "Another player was quicker: {{item}} ({{count}}) went to them."

@@ -399,7 +399,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "퀘스트 진행 상황이 파티장 {{name}}님과 다릅니다: {{quests}}.",
       "WITH_MEMBER": "{{name}}님의 퀘스트 진행 상황이 당신과 다릅니다: {{quests}}.",
-      "MORE": "{{quests}} 외 {{count}}개"
+      "MORE": "{{quests}} 외 {{count}}개",
+      "REPAIR_OFFER": "공유 퀘스트 {{count}}개가 아직 파티 리더 {{name}}의 것과 다릅니다. 리더의 단계로 맞출까요?",
+      "REPAIR": "복구"
     },
     "LOOT": {
       "TAKEN_FIRST": "다른 플레이어가 더 빨랐습니다: {{item}} ({{count}})은(는) 그 플레이어에게 갔습니다."

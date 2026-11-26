@@ -377,7 +377,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Je questvoortgang verschilt van die van je groepsleider {{name}}: {{quests}}.",
       "WITH_MEMBER": "De questvoortgang van {{name}} verschilt van die van jou: {{quests}}.",
-      "MORE": "{{quests}} en nog {{count}}"
+      "MORE": "{{quests}} en nog {{count}}",
+      "REPAIR_OFFER": "Je quests verschillen nog steeds van die van je groepsleider {{name}} in {{count}} gedeelde quests. Zijn fases overnemen?",
+      "REPAIR": "Herstellen"
     },
     "LOOT": {
       "TAKEN_FIRST": "Een andere speler was sneller: {{item}} ({{count}}) ging naar hem."

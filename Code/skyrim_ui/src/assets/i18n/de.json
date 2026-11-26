@@ -403,7 +403,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Dein Questfortschritt weicht von dem deines Gruppenleiters {{name}} ab: {{quests}}.",
       "WITH_MEMBER": "Der Questfortschritt von {{name}} weicht von deinem ab: {{quests}}.",
-      "MORE": "{{quests}} und {{count}} weitere"
+      "MORE": "{{quests}} und {{count}} weitere",
+      "REPAIR_OFFER": "Deine Quests weichen in {{count}} geteilten Quests immer noch von denen deines Gruppenanführers {{name}} ab. Seine Stufen übernehmen?",
+      "REPAIR": "Reparieren"
     },
     "LOOT": {
       "TAKEN_FIRST": "Ein anderer Spieler war schneller: {{item}} ({{count}}) ging an ihn."

@@ -399,7 +399,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "Oppdragsfremgangen din er ulik den til gruppelederen {{name}}: {{quests}}.",
       "WITH_MEMBER": "Oppdragsfremgangen til {{name}} er ulik din: {{quests}}.",
-      "MORE": "{{quests}} og {{count}} til"
+      "MORE": "{{quests}} og {{count}} til",
+      "REPAIR_OFFER": "Oppdragene dine skiller seg fortsatt fra gruppelederen {{name}} sine i {{count}} delte oppdrag. Ta over lederens trinn?",
+      "REPAIR": "Reparer"
     },
     "LOOT": {
       "TAKEN_FIRST": "En annen spiller var raskere: {{item}} ({{count}}) gikk til dem."

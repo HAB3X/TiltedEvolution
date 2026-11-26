@@ -399,7 +399,9 @@
     "QUEST_DESYNC": {
       "WITH_LEADER": "あなたのクエスト進行がパーティーリーダー{{name}}と異なります: {{quests}}。",
       "WITH_MEMBER": "{{name}}のクエスト進行があなたと異なります: {{quests}}。",
-      "MORE": "{{quests}} 他{{count}}件"
+      "MORE": "{{quests}} 他{{count}}件",
+      "REPAIR_OFFER": "共有クエストのうち{{count}}件が、まだパーティーリーダー{{name}}と食い違っています。リーダーの段階に合わせますか？",
+      "REPAIR": "修復"
     },
     "LOOT": {
       "TAKEN_FIRST": "他のプレイヤーが先に取りました：{{item}}（{{count}}）はそのプレイヤーのものになりました。"
