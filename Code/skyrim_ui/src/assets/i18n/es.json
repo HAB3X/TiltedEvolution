@@ -242,6 +242,12 @@
       "KICK_NO_PARTY_LEADER": "No puedes expulsar a otros miembros ya que no eres el líder del grupo.",
       "MAKE_LEADER_NO_PARTY_LEADER": "No puedes hacer que otro miembro sea líder, ya que no eres el líder del grupo."
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "¿Viajar con {{leader}} a {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} ha viajado rápido. ¿Viajar con él?",
+      "YES": "Sí",
+      "NO": "No"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "El servidor requiere la versión {{expectedVersion}} pero te encuentras en la versión {{version}}.",

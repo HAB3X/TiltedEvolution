@@ -253,6 +253,12 @@
       "KICK_NO_PARTY_LEADER": "Ви не можете виганяти інших гравіців, оскільки не є лідером групи.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Ви не можете робити іншого члена лідером, оскільки не є лідером групи."
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Вирушити з {{leader}} до {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} швидко переміщується. Вирушити слідом?",
+      "YES": "Так",
+      "NO": "Ні"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Цей сервер очікує версію клієнта {{expectedVersion}}, але у вас версія {{version}}.",

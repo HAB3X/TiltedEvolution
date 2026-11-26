@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   faHandshakeSimple,
+  faRoute,
   faUserGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
@@ -34,6 +35,20 @@ export class PopupNotificationService {
           nameKey: 'COMPONENT.NOTIFICATIONS.ACCEPT',
           callback,
         },
+      ],
+    });
+  }
+
+  /** The party leader fast travelled: travel with them? Goes away after 30 seconds, like a party invite. */
+  public addPartyTravel(leader: string, place: string, answer: (travel: boolean) => void) {
+    this.addMessage({
+      messageKey: place ? 'SERVICE.TRAVEL_TOGETHER.QUESTION' : 'SERVICE.TRAVEL_TOGETHER.QUESTION_NO_PLACE',
+      messageParams: { leader, place },
+      icon: faRoute,
+      duration: 30000,
+      actions: [
+        { nameKey: 'SERVICE.TRAVEL_TOGETHER.YES', callback: () => answer(true) },
+        { nameKey: 'SERVICE.TRAVEL_TOGETHER.NO', callback: () => answer(false) },
       ],
     });
   }

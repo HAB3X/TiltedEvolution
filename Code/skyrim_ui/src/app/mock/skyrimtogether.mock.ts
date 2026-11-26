@@ -353,6 +353,14 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     this.emit('questUpdated');
   }
 
+  mockPartyTravel() {
+    this.emit('partyTravel', 'Lydia', 'Riverwood');
+  }
+
+  answerPartyTravel(travel: boolean): void {
+    console.log(`travel together: ${travel ? 'yes' : 'no'}`);
+  }
+
   inviteToPlayerMockParty(playerId: number) {
     playerStore.update(updateEntities(playerId, { invitedLocalPlayer: true }));
     this.emit('partyInviteReceived', playerId);

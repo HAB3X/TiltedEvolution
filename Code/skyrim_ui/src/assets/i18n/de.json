@@ -250,6 +250,12 @@
       "KICK_NO_PARTY_LEADER": "Wenn du nicht der Gruppenleiter bist, kannst du keine anderen Gruppenmitglieder rauswerfen.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Wenn du nicht der Gruppenleiter bist, kannst du niemand anderen zum Gruppenleiter machen."
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Mit {{leader}} nach {{place}} reisen?",
+      "QUESTION_NO_PLACE": "{{leader}} hat eine Schnellreise gemacht. Mitreisen?",
+      "YES": "Ja",
+      "NO": "Nein"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Dieser Server setzt die Version {{expectedVersion}} voraus, du benutzt aber Version {{version}}.",

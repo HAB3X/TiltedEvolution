@@ -250,6 +250,12 @@
       "KICK_NO_PARTY_LEADER": "Nie możesz Wyrzucić innych graczy z grupy ponieważ nie jesteś liderem grupy.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Nie możesz sprawić by inny gracz w grupie stał się liderem, nie będąc samemu liderem."
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Podróżować z {{leader}} do: {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} użył szybkiej podróży. Podróżować razem?",
+      "YES": "Tak",
+      "NO": "Nie"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Ten Serwer spodziewa się wersji {{expectedVersion}} ale ty jesteś na wersji {{version}}.",

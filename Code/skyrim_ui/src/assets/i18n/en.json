@@ -254,6 +254,12 @@
       "KICK_NO_PARTY_LEADER": "You cannot kick other members as you are not the party leader.",
       "MAKE_LEADER_NO_PARTY_LEADER": "You cannot make another member the leader as you are not the party leader."
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Travel with {{leader}} to {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} fast travelled. Travel with them?",
+      "YES": "Yes",
+      "NO": "No"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "This server expects version {{expectedVersion}} but you are on version {{version}}.",

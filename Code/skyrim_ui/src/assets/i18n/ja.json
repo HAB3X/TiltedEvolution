@@ -246,6 +246,12 @@
       "KICK_NO_PARTY_LEADER": "パーティーリーダーでない為、他のプレイヤーをキックすることは出来ません。",
       "MAKE_LEADER_NO_PARTY_LEADER": "パーティーリーダーでない為、他のプレイヤーをリーダーにすることは出来ません。"
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "{{leader}}と一緒に{{place}}へ移動しますか？",
+      "QUESTION_NO_PLACE": "{{leader}}がファストトラベルしました。一緒に移動しますか？",
+      "YES": "はい",
+      "NO": "いいえ"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "サーバーバージョン「{{expectedVersion}}」 とクライアントバージョン「{{version}}」が違います。",

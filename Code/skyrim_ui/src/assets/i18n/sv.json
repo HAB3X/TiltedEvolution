@@ -253,6 +253,12 @@
       "KICK_NO_PARTY_LEADER": "Du kan inte slänga ut andra medlemmar då du inte är partyledaren.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Du kan inte göra en annan medlem till ledare då du inte är partyledaren."
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Resa med {{leader}} till {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} snabbreste. Resa med?",
+      "YES": "Ja",
+      "NO": "Nej"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Servern förväntar sig version {{expectedVersion}} men du kör version {{version}}.",

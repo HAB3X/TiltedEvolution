@@ -18,6 +18,8 @@
 #include <Messages/PartyChangeLeaderRequest.h>
 #include <Messages/PartyKickRequest.h>
 #include <Messages/NotifyPlayerJoined.h>
+#include <Messages/NotifyPartyTravel.h>
+#include <Messages/RequestPartyTravel.h>
 
 PartyService::PartyService(World& aWorld, entt::dispatcher& aDispatcher) noexcept
     : m_world(aWorld)
@@ -30,6 +32,7 @@ PartyService::PartyService(World& aWorld, entt::dispatcher& aDispatcher) noexcep
     , m_partyCreateConnection(aDispatcher.sink<PacketEvent<PartyCreateRequest>>().connect<&PartyService::OnPartyCreate>(this))
     , m_partyChangeLeaderConnection(aDispatcher.sink<PacketEvent<PartyChangeLeaderRequest>>().connect<&PartyService::OnPartyChangeLeader>(this))
     , m_partyKickConnection(aDispatcher.sink<PacketEvent<PartyKickRequest>>().connect<&PartyService::OnPartyKick>(this))
+    , m_partyTravelConnection(aDispatcher.sink<PacketEvent<RequestPartyTravel>>().connect<&PartyService::OnPartyTravel>(this))
 {
 }
 
@@ -173,6 +176,23 @@ void PartyService::OnPartyChangeLeader(const PacketEvent<PartyChangeLeaderReques
             }
         }
     }
+}
+
+void PartyService::OnPartyTravel(const PacketEvent<RequestPartyTravel>& acPacket) const noexcept
+{
+    const Player* pLeader = acPacket.pPlayer;
+    // Only the leader leads the way, a member's own trips stay their own
+    if (!IsPlayerLeader(pLeader))
+    {
+        spdlog::warn("[PartyService]: {} isn't a party leader, not offering their travel to {}", pLeader->GetUsername().c_str(), acPacket.Packet.Place.c_str());
+        return;
+    }
+
+    NotifyPartyTravel notify;
+    notify.LeaderId = pLeader->GetId();
+    notify.LeaderName = pLeader->GetUsername();
+    notify.Place = acPacket.Packet.Place;
+    GameServer::Get()->SendToParty(notify, pLeader->GetParty(), pLeader);
 }
 
 void PartyService::OnPartyKick(const PacketEvent<PartyKickRequest>& acPacket) noexcept

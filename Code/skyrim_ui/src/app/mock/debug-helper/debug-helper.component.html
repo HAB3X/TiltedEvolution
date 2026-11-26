@@ -15,6 +15,7 @@
       <div class="separator">Players</div>
       <button (click)="addMockPlayer()">Add Player</button>
       <button (click)="mockQuestUpdate()">Quest Update</button>
+      <button (click)="mockPartyTravel()">Leader Fast Travel</button>
       <div class="player-actions">
         @for (player of players$ | async; track player) {
           <div>

@@ -88,6 +88,9 @@ export class ClientService implements OnDestroy {
   /** Local quest started or updated while not in a party. */
   public questUpdatedChange = new Subject<void>();
 
+  /** The party leader fast travelled, see answerPartyTravel. */
+  public partyTravelChange = new Subject<{ leader: string; place: string }>();
+
   /** Disconnect player to server change. */
   public playerDisconnectedChange = new Subject<Player>();
 
@@ -110,6 +113,11 @@ export class ClientService implements OnDestroy {
 
   /** A host world server's offer, waiting for the joiner's answer; null when there's none. */
   public hostWorldOfferChange = new BehaviorSubject<HostWorldOffer | null>(null);
+
+  /** Whether to travel with the party leader, after partyTravelChange. */
+  public answerPartyTravel(travel: boolean): void {
+    skyrimtogether.answerPartyTravel(travel);
+  }
 
   /** The joiner's answer to the host world offer. */
   public answerHostWorld(join: boolean): void {
@@ -223,6 +231,7 @@ export class ClientService implements OnDestroy {
       this.onPartyInviteReceived.bind(this),
     );
     skyrimtogether.on('questUpdated', this.onQuestUpdated.bind(this));
+    skyrimtogether.on('partyTravel', this.onPartyTravel.bind(this));
   }
 
   /**
@@ -260,6 +269,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('partyLeft');
     skyrimtogether.off('partyInviteReceived');
     skyrimtogether.off('questUpdated');
+    skyrimtogether.off('partyTravel');
   }
 
   /**
@@ -801,6 +811,12 @@ export class ClientService implements OnDestroy {
   private onQuestUpdated() {
     this.zone.run(() => {
       this.questUpdatedChange.next();
+    });
+  }
+
+  private onPartyTravel(leader: string, place: string) {
+    this.zone.run(() => {
+      this.partyTravelChange.next({ leader, place });
     });
   }
 }

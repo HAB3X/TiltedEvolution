@@ -61,6 +61,7 @@ enum ClientOpcode : unsigned char
     kRequestHostWorld,
     kHostWorldStateRequest,
     kRequestModeratePlayer,
+    kRequestPartyTravel,
     kClientOpcodeMax
 };
 
@@ -126,5 +127,6 @@ enum ServerOpcode : unsigned char
     kNotifyVoiceData,
     kNotifyHostWorldRequested,
     kNotifyHostWorldState,
+    kNotifyPartyTravel,
     kServerOpcodeMax
 };

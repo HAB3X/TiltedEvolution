@@ -663,6 +663,46 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    GIVEN("RequestPartyTravel")
+    {
+        RequestPartyTravel sendMessage, recvMessage;
+        sendMessage.Place = "Riverwood";
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyPartyTravel")
+    {
+        NotifyPartyTravel sendMessage, recvMessage;
+        sendMessage.LeaderId = 4321;
+        sendMessage.LeaderName = "Lydia";
+        sendMessage.Place = "Dragonsreach";
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
     GIVEN("NotifyPartyCheckpoint")
     {
         NotifyPartyCheckpoint sendMessage, recvMessage;
@@ -889,6 +929,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE(Wire::FromWire(static_cast<uint8_t>(kNotifyChatMessageBroadcast) - 1) == kNotifyChatMessageBroadcast);
         REQUIRE_FALSE(Wire::ToWire(kRequestInventorySnapshot).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestHostWorld).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestPartyTravel).has_value());
         REQUIRE_FALSE(Wire::FromWire(55).has_value());
     }
 

@@ -27,7 +27,10 @@
 #include <Messages/NotifyPartyJoined.h>
 #include <Messages/NotifyPlayerJoined.h>
 #include <Messages/NotifyQuestUpdate.h>
+#include <Messages/NotifyPartyTravel.h>
 #include <Messages/PartyCreateRequest.h>
+#include <Messages/RequestPartyTravel.h>
+#include <Messages/TeleportCommandRequest.h>
 #include <Messages/RequestQuestUpdate.h>
 #include <Messages/RequestHostWorld.h>
 #include <Messages/RequestModeratePlayer.h>
@@ -139,6 +142,7 @@ struct FakePlayer final : Client
         case kNotifyHostWorldState: World = *static_cast<NotifyHostWorldState*>(pMessage.get()); break;
         case kTeleportCommandResponse: Teleport = *static_cast<TeleportCommandResponse*>(pMessage.get()); break;
         case kNotifyQuestUpdate: QuestUpdates.push_back(*static_cast<NotifyQuestUpdate*>(pMessage.get())); break;
+        case kNotifyPartyTravel: Travel = *static_cast<NotifyPartyTravel*>(pMessage.get()); break;
         default: break;
         }
     }
@@ -160,6 +164,7 @@ struct FakePlayer final : Client
     std::optional<NotifyHostWorldState> World;
     std::optional<TeleportCommandResponse> Teleport;
     std::vector<NotifyQuestUpdate> QuestUpdates;
+    std::optional<NotifyPartyTravel> Travel;
 };
 
 // Runs the player until the condition holds or the time is up
@@ -443,6 +448,53 @@ int RunQuestMember(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Travel together: the leader fast travels to Riverwood and the member is asked to follow, and says yes (a teleport
+// to the leader); the member's own trip isn't offered to the leader, only the leader leads.
+constexpr char kTravelPlace[] = "Riverwood";
+
+int RunTravelLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeTravelLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("travel leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("travel leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    RunUntil(leader, [] { return false; }, 2s);
+
+    RequestPartyTravel travel;
+    travel.Place = kTravelPlace;
+    leader.Send(travel);
+    RunUntil(leader, [] { return false; }, 10s);
+    Check("the member's own trip isn't offered to the leader", !leader.Travel.has_value(), leader.Travel ? leader.Travel->LeaderName.c_str() : "");
+    return s_failures ? 1 : 0;
+}
+
+int RunTravelMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeTravelMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("travel member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    Check("is asked to travel with the leader", RunUntil(member, [&] { return member.Travel.has_value(); }, 20s));
+    Check("the offer names the leader and the place",
+          member.Travel && member.Travel->LeaderName == "FakeTravelLeader" && member.Travel->Place == kTravelPlace && member.Party &&
+              member.Travel->LeaderId == member.Party->LeaderPlayerId,
+          member.Travel ? std::string(member.Travel->LeaderName.c_str()) + " to " + member.Travel->Place.c_str() : "");
+
+    // A member fast travelling on their own
+    RequestPartyTravel ownTrip;
+    ownTrip.Place = "Whiterun";
+    member.Send(ownTrip);
+
+    // Yes: the teleport to the leader the client sends, the server answers with where the leader is
+    TeleportCommandRequest follow;
+    follow.TargetPlayer = member.Travel ? member.Travel->LeaderName : "";
+    member.Send(follow);
+    Check("saying yes gets the leader's whereabouts", RunUntil(member, [&] { return member.Teleport.has_value(); }));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -450,6 +502,7 @@ int RunQuestMember(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe mods [address:port] [password]: against a server requiring SomeMod.esp
 // FakePlayers.exe listen184|talk184 [address:port] [password]: the same against an official v1.8.4 server
 // FakePlayers.exe questleader|questmember [address:port] [password]: start the leader first (sSharedQuestTypes=Main,Misc)
+// FakePlayers.exe travelleader|travelmember [address:port] [password]: start the leader first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -481,7 +534,11 @@ int main(int argc, char** argv)
         return RunQuestLeader(cEndpoint, cPassword);
     if (cRole == "questmember")
         return RunQuestMember(cEndpoint, cPassword);
+    if (cRole == "travelleader")
+        return RunTravelLeader(cEndpoint, cPassword);
+    if (cRole == "travelmember")
+        return RunTravelMember(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|listen184|talk184|questleader|questmember [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|listen184|talk184|questleader|questmember|travelleader|travelmember [address:port] [password]\n");
     return 2;
 }

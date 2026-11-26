@@ -224,6 +224,12 @@
       "KICK_NO_PARTY_LEADER": "Je kan geen spelers uit de groep gooien omdat je niet de groepsleider bent.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Je kan geen lid de leider maken omdat jij niet de groepsleider bent."
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Met {{leader}} naar {{place}} reizen?",
+      "QUESTION_NO_PLACE": "{{leader}} is snel gereisd. Meereizen?",
+      "YES": "Ja",
+      "NO": "Nee"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Deze server verwacht versie {{expectedVersion}}, maar jij bent op versie {{version}}.",

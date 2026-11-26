@@ -250,6 +250,12 @@
       "KICK_NO_PARTY_LEADER": "Parti lideri olmadığın için diğer oyuncuları atamazsın.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Parti lideri olmadığın için diğer oyuncuları parti lideri yapamazsın."
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "{{leader}} ile {{place}} konumuna seyahat edilsin mi?",
+      "QUESTION_NO_PLACE": "{{leader}} hızlı seyahat etti. Onunla gidilsin mi?",
+      "YES": "Evet",
+      "NO": "Hayır"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Bu sunucu {{expectedVersion}} versiyonu ama sizdeki {{version}}.",

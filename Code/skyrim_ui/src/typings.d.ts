@@ -237,6 +237,9 @@ interface SkyrimTogether {
     callback: SkyrimTogetherTypes.QuestUpdatedCallback,
   ): void;
 
+  /** The party leader fast travelled; place is empty when the game had no name for it. */
+  on(event: 'partyTravel', callback: (leader: string, place: string) => void): void;
+
   /** Remove listener from when the application is first initialized. */
   off(event: 'init', callback?: SkyrimTogetherTypes.InitCallback): void;
 
@@ -378,6 +381,8 @@ interface SkyrimTogether {
     callback?: SkyrimTogetherTypes.QuestUpdatedCallback,
   ): void;
 
+  off(event: 'partyTravel', callback?: (leader: string, place: string) => void): void;
+
   /**
    * Connect to server at given address and port.
    *
@@ -417,6 +422,11 @@ interface SkyrimTogether {
    * Answer a host world server's offer: join the host's world, or keep this one and leave.
    */
   answerHostWorld(join: boolean): void;
+
+  /**
+   * A party member's answer to the leader's fast travel (the partyTravel event): yes moves them next to the leader.
+   */
+  answerPartyTravel(travel: boolean): void;
 
   /**
    * Disconnect from server or cancel connection.

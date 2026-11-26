@@ -246,6 +246,12 @@
       "KICK_NO_PARTY_LEADER": "Nemůžete vyhodit ostatní hráče, protože nejste vůdcem skupiny.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Nemůžete povýšit hráče na lídra, protože nejste lídr skupiny."
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Cestovat s hráčem {{leader}} do {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} rychle cestoval. Cestovat s ním?",
+      "YES": "Ano",
+      "NO": "Ne"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Tento server očekává verzi {{expectedVersion}}, ale vy máte verzi {{version}}.",

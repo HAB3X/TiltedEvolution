@@ -253,6 +253,12 @@
       "KICK_NO_PARTY_LEADER": "Недостаточно прав, вы не можете выгонять других игроков",
       "MAKE_LEADER_NO_PARTY_LEADER": "Недостаточно прав, вы не можете назначить нового лидера"
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Отправиться с {{leader}} в {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} быстро переместился. Отправиться следом?",
+      "YES": "Да",
+      "NO": "Нет"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Сервер требует версию клиента {{expectedVersion}}, но вы используете версию {{version}}.",

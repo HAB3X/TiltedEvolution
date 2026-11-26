@@ -245,6 +245,12 @@
       "KICK_NO_PARTY_LEADER": "Vous ne pouvez pas exclure les autres membres car vous n'êtes pas chef du groupe.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Vous ne pouvez pas faire d'un autre membre le chef, car vous n'êtes pas chef du groupe. "
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Voyager avec {{leader}} jusqu'à {{place}} ?",
+      "QUESTION_NO_PLACE": "{{leader}} a fait un voyage rapide. Le suivre ?",
+      "YES": "Oui",
+      "NO": "Non"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Ce serveur attend la version {{expectedVersion}} mais vous êtes sur la version {{version}}.",

@@ -246,6 +246,12 @@
       "KICK_NO_PARTY_LEADER": "Kun gruppelederen kan hive ut andre medlemmer.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Kun gruppelederen kan gjøre andre til leder."
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Reise med {{leader}} til {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} hurtigreiste. Reise med?",
+      "YES": "Ja",
+      "NO": "Nei"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Denne serveren forventer versjon {{expectedVersion}}, men du er på versjon {{version}}.",

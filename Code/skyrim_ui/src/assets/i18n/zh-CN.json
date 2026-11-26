@@ -241,6 +241,12 @@
       "KICK_NO_PARTY_LEADER": "您不是队长，无法踢出其他人。",
       "MAKE_LEADER_NO_PARTY_LEADER": "您不是队长，无法将队长转移至其他人。"
     },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "与 {{leader}} 一起前往{{place}}？",
+      "QUESTION_NO_PLACE": "{{leader}} 已快速旅行。要一起前往吗？",
+      "YES": "是",
+      "NO": "否"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "服务器支持的版本为{{expectedVersion}}而您的版本为{{version}}。",
