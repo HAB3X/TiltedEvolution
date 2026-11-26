@@ -1482,6 +1482,57 @@ int RunLootSecond(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Per player loot (Gameplay:bPerPlayerLoot=true): both players take the chest's one sword, neither gives it back or
+// hears of the other's take, and the chest stays empty for the one who took it
+bool ChestHasSword(const FakePlayer& acPlayer)
+{
+    if (!acPlayer.Objects || acPlayer.Objects->Objects.size() != 1)
+        return false;
+    for (const Inventory::Entry& cEntry : acPlayer.Objects->Objects[0].CurrentInventory.Entries)
+    {
+        if (cEntry.BaseId == kLootSword && cEntry.Count > 0)
+            return true;
+    }
+    return false;
+}
+
+int RunOwnLootFirst(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer first("FakeOwnLootFirst", acPassword);
+    first.Connect(acEndpoint);
+    Check("first looter logs in", RunUntil(first, [&] { return first.LoggedIn; }));
+    const auto cChest = SeeLootChest(first);
+    Check("first looter sees the chest", cChest.has_value());
+    Check("sees the second looter join", RunUntil(first, [&] { return !first.JoinedNames.empty(); }, 30s));
+    if (cChest)
+        TakeSword(first, *cChest);
+    RunUntil(first, [] { return false; }, 10s);
+    Check("the first keeps their sword", first.LootRefusals.empty(), std::to_string(first.LootRefusals.size()) + " refusals");
+    Check("isn't told of the other's take", first.InventoryChanges.empty(), std::to_string(first.InventoryChanges.size()) + " changes");
+
+    first.Objects.reset();
+    SeeLootChest(first);
+    Check("their chest is empty when they look again", first.Objects && !ChestHasSword(first));
+    return s_failures ? 1 : 0;
+}
+
+int RunOwnLootSecond(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer second("FakeOwnLootSecond", acPassword);
+    second.Connect(acEndpoint);
+    Check("second looter logs in", RunUntil(second, [&] { return second.LoggedIn; }));
+    RunUntil(second, [] { return false; }, 2s);
+    const auto cChest = SeeLootChest(second);
+    Check("second looter sees the chest", cChest.has_value());
+    Check("with a sword of their own in it", ChestHasSword(second));
+    if (cChest)
+        TakeSword(second, *cChest);
+    RunUntil(second, [] { return false; }, 5s);
+    Check("the second keeps their sword too", second.LootRefusals.empty(), std::to_string(second.LootRefusals.size()) + " refusals");
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // Loot race over a body: the owner of a dead bandit with one sword takes it, a player next to it takes it as soon as
 // the owner's take reaches them, and is told to give it back
 constexpr uint32_t kBodyCookie = 0x3000;
@@ -1590,6 +1641,7 @@ int RunCorpseLooter(const std::string& acEndpoint, const std::string& acPassword
 // FakePlayers.exe doorfirst|doorlater [address:port] [password]: start the first one first
 // FakePlayers.exe lootfirst|lootsecond [address:port] [password]: start the first one first
 // FakePlayers.exe corpseowner|corpselooter [address:port] [password]: start the owner first
+// FakePlayers.exe ownlootfirst|ownlootsecond [address:port] [password]: start the first one first (bPerPlayerLoot=true)
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -1689,6 +1741,10 @@ int main(int argc, char** argv)
         return RunCorpseOwner(cEndpoint, cPassword);
     if (cRole == "corpselooter")
         return RunCorpseLooter(cEndpoint, cPassword);
-    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|corpseowner|corpselooter [address:port] [password]\n");
+    if (cRole == "ownlootfirst")
+        return RunOwnLootFirst(cEndpoint, cPassword);
+    if (cRole == "ownlootsecond")
+        return RunOwnLootSecond(cEndpoint, cPassword);
+    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
     return 2;
 }

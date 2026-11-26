@@ -159,6 +159,7 @@ bool LocalServerService::Start(const HostSettings& acSettings) noexcept
         written = written && WritePrivateProfileStringW(L"Gameplay", L"bHostWorld", Bool(acSettings.HostWorld), cIni.c_str()) &&
                   WritePrivateProfileStringW(L"ModPolicy", L"bRequireMods", Bool(acSettings.RequireMods), cIni.c_str()) &&
                   WritePrivateProfileStringW(L"Gameplay", L"bPauseWhenAllInMenus", Bool(acSettings.PauseInMenus), cIni.c_str()) &&
+                  WritePrivateProfileStringW(L"Gameplay", L"bPerPlayerLoot", Bool(acSettings.PerPlayerLoot), cIni.c_str()) &&
                   WritePrivateProfileStringW(L"Gameplay", L"sSharedQuestTypes", Widen(acSettings.SharedQuestTypes).c_str(), cIni.c_str()) &&
                   // The older Misc switch would share Misc quests even when the host leaves them out
                   WritePrivateProfileStringW(L"Gameplay", L"bEnableMiscQuestSync", L"false", cIni.c_str()) &&

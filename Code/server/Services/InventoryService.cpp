@@ -20,6 +20,13 @@ namespace
 Console::Setting bEnableItemDrops{"Gameplay:bEnableItemDrops", "(Experimental) Syncs dropped items by players", false};
 Console::Setting bAllowPlayerInventoryTransfers{"Gameplay:bAllowPlayerInventoryTransfers",
     "Allow players in the same party and in range of each other to move items into each other's inventories (needed by player trading mods)", false};
+Console::Setting bPerPlayerLoot{"Gameplay:bPerPlayerLoot",
+    "Each player gets their own copy of what is in chests, barrels and other containers, instead of first come first served. Bodies stay first come first served", false};
+}
+
+bool InventoryService::IsPerPlayerLoot() noexcept
+{
+    return bPerPlayerLoot;
 }
 
 InventoryService::InventoryService(World& aWorld, entt::dispatcher& aDispatcher)
@@ -115,11 +122,22 @@ void InventoryService::OnInventoryChanges(const PacketEvent<RequestInventoryChan
 
     auto& inventoryComponent = view.get<InventoryComponent>(*it);
 
+    // Per player loot: the change is only the sender's, and nobody else hears of it
+    const auto* pObjectComponent = m_world.try_get<ObjectComponent>(*it);
+    if (bPerPlayerLoot && pObjectComponent && pObjectComponent->IsLoot())
+    {
+        const int32_t cApplied = inventoryComponent.ChangePlayerCopy(acMessage.pPlayer->GetUsername(), message.Item);
+        if (cApplied != message.Item.Count)
+            spdlog::info("Player {} changed item {:X} by {} in their copy of container {:X}, which only had room for {}", acMessage.pPlayer->GetUsername().c_str(),
+                         message.Item.BaseId.BaseId, message.Item.Count, message.ServerId, cApplied);
+        return;
+    }
+
     // A dead NPC's loot only changes through looting and the owner's snapshots, so the server's copy settles races
     // over a body as it does over a container
     const auto* pCharacterComponent = m_world.try_get<CharacterComponent>(*it);
     const bool cIsCorpse = pCharacterComponent && !pCharacterComponent->IsPlayer() && pCharacterComponent->IsDead();
-    const bool cIsLoot = cIsCorpse || m_world.all_of<ObjectComponent>(*it);
+    const bool cIsLoot = cIsCorpse || pObjectComponent;
 
     Inventory::Entry applied = message.Item;
     if (pOwnerComponent && !cIsCorpse)

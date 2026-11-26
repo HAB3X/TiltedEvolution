@@ -109,6 +109,8 @@
         "KIND_CLASSIC_HINT": "使用普通 Skyrim Together 1.8.4 的好友也能加入。Plus 专属选项会关闭。",
         "PAUSE_TITLE": "菜单中暂停",
         "PAUSE": "所有玩家都在菜单（如物品栏或地图）中时，世界会暂停。",
+        "LOOT_TITLE": "每位玩家各自的战利品",
+        "LOOT": "箱子、木桶等容器中的物品，每位玩家各有一份。尸体上的物品仍然先到先得。",
         "REQUIRE_MODS_TITLE": "好友需要我的模组",
         "MODS_REQUIRED": "好友需要的模组：{{count}}",
         "MODS_REQUIRED_NONE": "除游戏自带文件外你没有其他模组，因此好友无需任何模组。",

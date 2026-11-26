@@ -89,6 +89,8 @@ export interface HostOptions {
   /** A relay (SkyrimTogetherRelay) friends join through when the router can't be opened, address:port; empty for none */
   relay: string;
   relayPassword: string;
+  /** Each player gets their own copy of what is in containers (Gameplay:bPerPlayerLoot) */
+  perPlayerLoot: boolean;
 }
 
 /** A server on the local network, as it answered a search. */
@@ -534,6 +536,7 @@ export class ClientService implements OnDestroy {
       sharedQuestTypes: this.storeService.get('host_quest_types', DEFAULT_SHARED_QUEST_TYPES.join(',')),
       relay: this.storeService.get('host_relay', ''),
       relayPassword: this.storeService.get('host_relay_password', ''),
+      perPlayerLoot: this.storeService.getBool('host_per_player_loot', false),
     };
   }
 
@@ -548,6 +551,7 @@ export class ClientService implements OnDestroy {
     this.storeService.set('host_quest_types', options.sharedQuestTypes);
     this.storeService.set('host_relay', options.relay);
     this.storeService.set('host_relay_password', options.relayPassword);
+    this.storeService.set('host_per_player_loot', String(options.perPlayerLoot));
     skyrimtogether.hostServer(
       password,
       options.hostWorld,
@@ -558,6 +562,7 @@ export class ClientService implements OnDestroy {
       options.sharedQuestTypes,
       options.relay,
       options.relayPassword,
+      options.perPlayerLoot,
     );
     this.hostingChange.next(true);
     this.isConnectionInProgressChange.next(true);

@@ -109,6 +109,8 @@
         "KIND_CLASSIC_HINT": "Mogą dołączyć znajomi ze zwykłym Skyrim Together 1.8.4. Opcje tylko z Plus są wyłączone.",
         "PAUSE_TITLE": "Pauza w menu",
         "PAUSE": "Świat zatrzymuje się, gdy wszyscy gracze są w menu, np. w ekwipunku lub na mapie.",
+        "LOOT_TITLE": "Łup dla każdego gracza",
+        "LOOT": "Każdy gracz znajduje własną kopię zawartości skrzyń, beczek i innych pojemników. Ciała nadal przeszukuje ten, kto pierwszy zdąży.",
         "REQUIRE_MODS_TITLE": "Znajomi potrzebują moich modów",
         "MODS_REQUIRED": "Mody potrzebne znajomym: {{count}}",
         "MODS_REQUIRED_NONE": "Nie masz modów poza plikami samej gry, więc znajomi nie potrzebują żadnych.",

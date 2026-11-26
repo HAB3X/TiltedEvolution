@@ -15,12 +15,12 @@
  * @brief What a host world server keeps of the shared world between runs (WorldSaveService), as bytes for a file.
  *
  * Layout, numbers as TiltedCore varints and the structures in this build's network encoding:
- *   "STWORLD" and a version byte (2: quest items name their quest)
+ *   "STWORLD" and a version byte (2: quest items name their quest, containers keep players' own copies)
  *   the plugin ids: count, then per plugin its id, lite flag and file name. Every GameId below uses these ids, so
  *     they are registered again, in the same order, before anyone joins
  *   NPCs killed while nobody had them loaded: count, then per NPC its GameId and its Inventory (their loot)
  *   containers: count, then per container its ObjectData (id, cell, lock, contents) and the names of the players
- *     whose own storage was merged into it
+ *     whose own storage was merged into it, then count and per player their name and own copy (per player loot)
  *   "END" as a check that nothing was cut off
  */
 struct WorldSave
@@ -42,10 +42,20 @@ struct WorldSave
         bool operator==(const DeadActor&) const noexcept = default;
     };
 
+    struct PlayerCopy
+    {
+        String Name;
+        Inventory Content{};
+
+        bool operator==(const PlayerCopy&) const noexcept = default;
+    };
+
     struct Container
     {
         ObjectData Object{};
         Vector<String> MergedPlayers{};
+        // Per player loot: each player's own copy of the container
+        Vector<PlayerCopy> PlayerCopies{};
 
         bool operator==(const Container&) const noexcept = default;
     };

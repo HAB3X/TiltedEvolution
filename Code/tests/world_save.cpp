@@ -21,6 +21,7 @@ TEST_CASE("World saves", "[server.world_save]")
     chest.Object.IsContainer = true;
     chest.Object.CurrentInventory = loot;
     chest.MergedPlayers.push_back("Lydia");
+    chest.PlayerCopies.push_back({"Serana", Inventory{}});
     save.Containers.push_back(chest);
 
     const std::string cBytes = save.Serialize();

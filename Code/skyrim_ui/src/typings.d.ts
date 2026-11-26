@@ -477,6 +477,7 @@ interface SkyrimTogether {
    * @param sharedQuestTypes Comma separated quest categories shared with the party (Gameplay:sSharedQuestTypes).
    * @param relay A relay (SkyrimTogetherRelay) friends join through when the router can't be opened, address:port; empty for none.
    * @param relayPassword That relay's password.
+   * @param perPlayerLoot Whether each player gets their own copy of what is in containers (Gameplay:bPerPlayerLoot).
    */
   hostServer(
     password: string,
@@ -488,6 +489,7 @@ interface SkyrimTogether {
     sharedQuestTypes: string,
     relay: string,
     relayPassword: string,
+    perPlayerLoot: boolean,
   ): void;
 
   /**

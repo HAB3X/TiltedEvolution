@@ -17,6 +17,9 @@ struct ObjectComponent
     bool IsContainer{};
     // Players whose local copy of a storage container has already been merged into the server state.
     TiltedPhoques::Set<String> MergedPlayers{};
+
+    // A container players loot rather than store in: only player home storage merges each player's own copy
+    [[nodiscard]] bool IsLoot() const noexcept { return IsContainer && MergedPlayers.empty(); }
     // Doors: open or closed (ObjectData::SettledDoorState), kept while anyone is in the cell
     uint8_t DoorState{ObjectData::kNotADoor};
 };

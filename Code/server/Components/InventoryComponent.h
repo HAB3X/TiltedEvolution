@@ -5,12 +5,30 @@
 #endif
 
 #include <Structs/Inventory.h>
+#include <TiltedCore/Stl.hpp>
 
 #include <algorithm>
 
 struct InventoryComponent
 {
     Inventory Content{};
+
+    // Per player loot (Gameplay:bPerPlayerLoot): each player's own copy of a container, by name so it outlives a
+    // reconnect. A player who hasn't changed the container yet sees Content, as it was when first seen.
+    TiltedPhoques::Map<String, Inventory> PlayerCopies{};
+
+    [[nodiscard]] const Inventory& ContentFor(const String& acPlayerName) const noexcept
+    {
+        const auto cIt = PlayerCopies.find(acPlayerName);
+        return cIt != PlayerCopies.end() ? cIt->second : Content;
+    }
+
+    // Applies a player's change to their own copy, as far as it has the items; returns how much it applied
+    int32_t ChangePlayerCopy(const String& acPlayerName, const Inventory::Entry& acItem) noexcept
+    {
+        auto it = PlayerCopies.try_emplace(acPlayerName, Content).first;
+        return it.value().AddOrRemoveEntryClamped(acItem);
+    }
 
     // Two players taking the same items out of a container at once both get them in their game. The later one's
     // take finds the server's copy short; what other players took just before is that player's to give back. A

@@ -110,6 +110,8 @@
         "KIND_CLASSIC_HINT": "Vänner med vanliga Skyrim Together 1.8.4 kan gå med. Alternativ som bara finns i Plus är av.",
         "PAUSE_TITLE": "Paus i menyer",
         "PAUSE": "Världen pausas medan alla spelare är i en meny, som inventariet eller kartan.",
+        "LOOT_TITLE": "Byte för varje spelare",
+        "LOOT": "Varje spelare hittar sin egen kopia av det som finns i kistor, tunnor och andra behållare. För kroppar gäller fortfarande först till kvarn.",
         "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar",
         "MODS_REQUIRED": "Mods som vännerna behöver: {{count}}",
         "MODS_REQUIRED_NONE": "Du har inga mods utöver spelets egna, så vännerna behöver inga.",

@@ -110,6 +110,8 @@
         "KIND_CLASSIC_HINT": "Normal Skyrim Together 1.8.4 kullanan arkadaşlar katılabilir. Yalnızca Plus'a ait seçenekler kapalıdır.",
         "PAUSE_TITLE": "Menülerde duraklat",
         "PAUSE": "Tüm oyuncular envanter ya da harita gibi bir menüdeyken dünya duraklar.",
+        "LOOT_TITLE": "Her oyuncuya ayrı ganimet",
+        "LOOT": "Her oyuncu sandıklarda, fıçılarda ve diğer kaplarda kendi kopyasını bulur. Cesetlerde ise ilk gelen alır.",
         "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun",
         "MODS_REQUIRED": "Arkadaşlarının ihtiyaç duyduğu modlar: {{count}}",
         "MODS_REQUIRED_NONE": "Oyunun kendi dosyaları dışında modun yok, bu yüzden arkadaşlarının mod ihtiyacı yok.",

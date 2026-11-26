@@ -109,6 +109,8 @@
         "KIND_CLASSIC_HINT": "Les amis avec le Skyrim Together 1.8.4 normal peuvent rejoindre. Les options propres à Plus sont désactivées.",
         "PAUSE_TITLE": "Pause dans les menus",
         "PAUSE": "Le monde se met en pause tant que tous les joueurs sont dans un menu, comme l'inventaire ou la carte.",
+        "LOOT_TITLE": "Butin pour chaque joueur",
+        "LOOT": "Chaque joueur trouve sa propre copie du contenu des coffres, tonneaux et autres conteneurs. Les corps restent au premier arrivé.",
         "REQUIRE_MODS_TITLE": "Mes amis ont besoin de mes mods",
         "MODS_REQUIRED": "Mods requis pour vos amis : {{count}}",
         "MODS_REQUIRED_NONE": "Vous n'avez aucun mod en dehors des fichiers du jeu, vos amis n'en ont donc besoin d'aucun.",

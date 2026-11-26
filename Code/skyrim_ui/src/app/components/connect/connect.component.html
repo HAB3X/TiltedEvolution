@@ -89,6 +89,13 @@
         </span>
         <input type="checkbox" id="host-pause" [(ngModel)]="pauseInMenus" />
       </label>
+      <label class="toggle-row" for="host-loot">
+        <span class="toggle-text">
+          <span class="toggle-title">{{ 'COMPONENT.CONNECT.HOST.LOOT_TITLE' | transloco }}</span>
+          <span class="toggle-hint">{{ 'COMPONENT.CONNECT.HOST.LOOT' | transloco }}</span>
+        </span>
+        <input type="checkbox" id="host-loot" [(ngModel)]="perPlayerLoot" />
+      </label>
       }
       <label class="toggle-row" for="host-pvp">
         <span class="toggle-text">

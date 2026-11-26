@@ -108,6 +108,8 @@
         "KIND_CLASSIC_HINT": "通常の Skyrim Together 1.8.4 のフレンドも参加できます。Plus 専用の設定はオフになります。",
         "PAUSE_TITLE": "メニューで一時停止",
         "PAUSE": "全員がインベントリやマップなどのメニューを開いている間、世界が一時停止します。",
+        "LOOT_TITLE": "プレイヤーごとの戦利品",
+        "LOOT": "宝箱や樽などの入れ物の中身は、プレイヤーごとに別々に用意されます。死体は早い者勝ちのままです。",
         "REQUIRE_MODS_TITLE": "フレンドに自分のMODを要求",
         "MODS_REQUIRED": "フレンドに必要なMOD: {{count}}",
         "MODS_REQUIRED_NONE": "ゲーム本体以外のMODがないため、フレンドに必要なMODはありません。",
