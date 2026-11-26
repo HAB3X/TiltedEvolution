@@ -528,6 +528,16 @@ void CharacterService::OnReferencesMoveRequest(const PacketEvent<ClientReference
             if (pPlayer == acMessage.pPlayer || !cellIdComponent.IsInRange(pPlayer->GetCellComponent(), characterComponent.IsDragon()))
                 continue;
 
+            // Players are always relayed in full, NPCs less often the further they are from this player
+            if (!characterComponent.IsPlayer())
+            {
+                const auto cCharacter = pPlayer->GetCharacter();
+                const auto* pReceiverMovement = cCharacter ? m_world.try_get<MovementComponent>(*cCharacter) : nullptr;
+                const float cDistance = pReceiverMovement ? glm::distance(pReceiverMovement->Position, movementComponent.Position) : 0.f;
+                if (!m_world.get_or_emplace<MovementRelayComponent>(entity).ShouldRelay(pPlayer->GetId(), cDistance, message.Tick))
+                    continue;
+            }
+
             auto& relay = messages[pPlayer];
             relay.Tick = message.Tick;
             relay.Updates[id] = movement;

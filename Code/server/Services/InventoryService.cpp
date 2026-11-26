@@ -7,6 +7,7 @@
 #include <Messages/NotifyObjectInventoryChanges.h>
 #include <Messages/RequestInventoryChanges.h>
 #include <Messages/NotifyInventoryChanges.h>
+#include <Messages/NotifyLootRefused.h>
 #include <Messages/RequestInventorySnapshot.h>
 #include <Messages/NotifyInventorySnapshot.h>
 #include <Messages/RequestEquipmentChanges.h>
@@ -113,10 +114,31 @@ void InventoryService::OnInventoryChanges(const PacketEvent<RequestInventoryChan
     }
 
     auto& inventoryComponent = view.get<InventoryComponent>(*it);
+    Inventory::Entry applied = message.Item;
     if (pOwnerComponent)
         inventoryComponent.Content.AddOrRemoveEntry(message.Item);
     else
-        inventoryComponent.Content.AddOrRemoveEntryClamped(message.Item);
+        applied.Count = inventoryComponent.Content.AddOrRemoveEntryClamped(message.Item);
+
+    // Two players took the same items out of a container at once: the later one gives back what the other got
+    auto* pObjectComponent = m_world.try_get<ObjectComponent>(*it);
+    if (pObjectComponent && message.Item.Count < 0)
+    {
+        const int32_t cRefused = pObjectComponent->RefusedTake(acMessage.pPlayer->GetId(), message.Item, -message.Item.Count, -applied.Count, GameServer::Get()->GetTick());
+        if (cRefused > 0)
+        {
+            NotifyLootRefused refused;
+            refused.ServerId = message.ServerId;
+            refused.Item = message.Item;
+            refused.Item.Count = cRefused;
+            acMessage.pPlayer->Send(refused);
+            spdlog::info("Player {:X} took {} of item {:X} from container {:X} another player had just taken, gives back {}", acMessage.pPlayer->GetId(),
+                         -message.Item.Count, message.Item.BaseId.BaseId, message.ServerId, cRefused);
+        }
+    }
+
+    if (applied.Count == 0)
+        return;
 
     if (!message.UpdateClients && !isRemoteNpcInteraction)
         return;
@@ -124,7 +146,7 @@ void InventoryService::OnInventoryChanges(const PacketEvent<RequestInventoryChan
     NotifyInventoryChanges notify;
     notify.ServerId = message.ServerId;
     notify.OwnershipEpoch = message.OwnershipEpoch;
-    notify.Item = message.Item;
+    notify.Item = applied;
 
     notify.Drop = bEnableItemDrops && !isRemoteNpcInteraction ? message.Drop : false;
 

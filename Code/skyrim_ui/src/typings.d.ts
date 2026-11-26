@@ -284,6 +284,9 @@ interface SkyrimTogether {
   /** Shared quests differ from another party member's: the first few named, and how many more. */
   on(event: 'questDesync', callback: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
 
+  /** Another player took the same items out of a container first, so this player's were given back. */
+  on(event: 'lootRefused', callback: (item: string, count: number) => void): void;
+
   /** Remove listener from when the application is first initialized. */
   off(event: 'init', callback?: SkyrimTogetherTypes.InitCallback): void;
 
@@ -449,6 +452,8 @@ interface SkyrimTogether {
   off(event: 'partyPing', callback?: (player: string, target: string, meters: number, direction: number, place: string) => void): void;
 
   off(event: 'questDesync', callback?: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
+
+  off(event: 'lootRefused', callback?: (item: string, count: number) => void): void;
 
   /**
    * Connect to server at given address and port.

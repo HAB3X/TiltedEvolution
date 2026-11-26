@@ -179,6 +179,9 @@ export class ClientService implements OnDestroy {
   /** Shared quests differ from another party member's (the leader's, or a member's for the leader). */
   public questDesyncChange = new Subject<{ otherPlayer: string; otherIsLeader: boolean; quests: string; more: number }>();
 
+  /** Another player took the same items out of a container first, so this player's were given back. */
+  public lootRefusedChange = new Subject<{ item: string; count: number }>();
+
   /** Disconnect player to server change. */
   public playerDisconnectedChange = new Subject<Player>();
 
@@ -387,6 +390,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('partyTeleportRefused', this.onPartyTeleportRefused.bind(this));
     skyrimtogether.on('partyPing', this.onPartyPing.bind(this));
     skyrimtogether.on('questDesync', this.onQuestDesync.bind(this));
+    skyrimtogether.on('lootRefused', this.onLootRefused.bind(this));
   }
 
   /**
@@ -438,6 +442,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('partyTeleportRefused');
     skyrimtogether.off('partyPing');
     skyrimtogether.off('questDesync');
+    skyrimtogether.off('lootRefused');
   }
 
   /**
@@ -1244,6 +1249,12 @@ export class ClientService implements OnDestroy {
   private onQuestDesync(otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) {
     this.zone.run(() => {
       this.questDesyncChange.next({ otherPlayer, otherIsLeader, quests, more });
+    });
+  }
+
+  private onLootRefused(item: string, count: number) {
+    this.zone.run(() => {
+      this.lootRefusedChange.next({ item, count });
     });
   }
 }

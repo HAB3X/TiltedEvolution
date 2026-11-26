@@ -182,6 +182,9 @@ void ObjectService::OnCellChange(const CellChangeEvent& acEvent) noexcept
             objectData.CurrentLockData.LockLevel = pLock->lockLevel;
         }
 
+        if (pObject->baseForm->formType == FormType::Door)
+            objectData.DoorState = ObjectData::SettledDoorState(pObject->GetOpenState());
+
         if (pObject->baseForm->formType == FormType::Container)
         {
             objectData.CurrentInventory = pObject->GetInventory();
@@ -226,6 +229,14 @@ void ObjectService::OnAssignObjectsResponse(const AssignObjectsResponse& acMessa
             pLock->lockLevel = objectData.CurrentLockData.LockLevel;
             pLock->SetLock(objectData.CurrentLockData.IsLocked);
             pObject->LockChange();
+        }
+
+        // Doors the players already in the cell opened or closed
+        if (pObject->baseForm->formType == FormType::Door && objectData.DoorState != ObjectData::kNotADoor &&
+            ObjectData::SettledDoorState(pObject->GetOpenState()) != objectData.DoorState)
+        {
+            spdlog::info("Door {:X} set {} as the players in the cell left it", pObject->formID, objectData.DoorState == ObjectData::kDoorOpen ? "open" : "closed");
+            pObject->SetOpenState(objectData.DoorState == ObjectData::kDoorOpen, true);
         }
 
         if (pObject->baseForm->formType == FormType::Container)
@@ -359,15 +370,10 @@ void ObjectService::OnActivateNotify(const NotifyActivate& acMessage) noexcept
 
     if (pObject->baseForm->formType == FormType::Door)
     {
-        auto remotePreActivationState = static_cast<TESObjectREFR::OpenState>(acMessage.PreActivationOpenState);
-        TESObjectREFR::OpenState localState = pObject->GetOpenState();
-
-        if (remotePreActivationState != localState)
-        {
-            // The doors are unsynced at this point. If we'll Activate the one on our side
-            // it'll just continue to be unsynced (open remotely, closed locally and vice versa)
+        // Compared by where each door is headed: one still opening here is as open as the other side's open door.
+        // When they differ, ours is already where the other player's activation takes theirs.
+        if (ObjectData::SettledDoorState(acMessage.PreActivationOpenState) != ObjectData::SettledDoorState(pObject->GetOpenState()))
             return;
-        }
     }
 
     // unsure if these flags are the best, but these are passed with the papyrus Activate fn

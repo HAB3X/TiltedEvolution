@@ -6,7 +6,7 @@ using TiltedPhoques::Serialization;
 
 bool ObjectData::operator==(const ObjectData& acRhs) const noexcept
 {
-    return ServerId == acRhs.ServerId && Id == acRhs.Id && CellId == acRhs.CellId && WorldSpaceId == acRhs.WorldSpaceId && CurrentCoords == acRhs.CurrentCoords && CurrentLockData == acRhs.CurrentLockData && CurrentInventory == acRhs.CurrentInventory && IsSenderFirst == acRhs.IsSenderFirst && IsContainer == acRhs.IsContainer && MergeInventory == acRhs.MergeInventory;
+    return ServerId == acRhs.ServerId && Id == acRhs.Id && CellId == acRhs.CellId && WorldSpaceId == acRhs.WorldSpaceId && CurrentCoords == acRhs.CurrentCoords && CurrentLockData == acRhs.CurrentLockData && CurrentInventory == acRhs.CurrentInventory && IsSenderFirst == acRhs.IsSenderFirst && IsContainer == acRhs.IsContainer && MergeInventory == acRhs.MergeInventory && DoorState == acRhs.DoorState;
 }
 
 bool ObjectData::operator!=(const ObjectData& acRhs) const noexcept
@@ -29,6 +29,7 @@ void ObjectData::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noexcep
         return;
     Serialization::WriteBool(aWriter, IsContainer);
     Serialization::WriteBool(aWriter, MergeInventory);
+    aWriter.WriteBits(DoorState, 3);
 }
 
 void ObjectData::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcept
@@ -43,4 +44,8 @@ void ObjectData::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcept
     IsSenderFirst = Serialization::ReadBool(aReader);
     IsContainer = !Wire::IsOfficial184() && Serialization::ReadBool(aReader);
     MergeInventory = !Wire::IsOfficial184() && Serialization::ReadBool(aReader);
+    uint64_t doorState = kNotADoor;
+    if (!Wire::IsOfficial184())
+        aReader.ReadBits(doorState, 3);
+    DoorState = static_cast<uint8_t>(doorState);
 }

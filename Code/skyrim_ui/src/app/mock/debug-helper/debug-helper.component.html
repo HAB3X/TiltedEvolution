@@ -21,6 +21,7 @@
       <button (click)="mockPartyDoor()">Party Door</button>
       <button (click)="mockPartySummon()">Party Summons</button>
       <button (click)="mockQuestDesync()">Quest Desync</button>
+      <button (click)="mockLootRefused()">Loot Refused</button>
       <div class="player-actions">
         @for (player of players$ | async; track player) {
           <div>

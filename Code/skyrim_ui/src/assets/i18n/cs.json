@@ -390,6 +390,9 @@
       "WITH_MEMBER": "Postup hráče {{name}} v úkolech se liší od tvého: {{quests}}.",
       "MORE": "{{quests}} a {{count}} dalších"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "Jiný hráč byl rychlejší: {{item}} ({{count}}) připadlo jemu."
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Tento server očekává verzi {{expectedVersion}}, ale vy máte verzi {{version}}.",

@@ -394,6 +394,9 @@
       "WITH_MEMBER": "{{name}} adlı oyuncunun görev ilerlemesi seninkinden farklı: {{quests}}.",
       "MORE": "{{quests}} ve {{count}} tane daha"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "Başka bir oyuncu daha hızlıydı: {{item}} ({{count}}) ona gitti."
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Bu sunucu {{expectedVersion}} versiyonu ama sizdeki {{version}}.",

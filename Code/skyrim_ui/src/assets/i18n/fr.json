@@ -389,6 +389,9 @@
       "WITH_MEMBER": "La progression des quêtes de {{name}} diffère de la tienne : {{quests}}.",
       "MORE": "{{quests}} et {{count}} autres"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "Un autre joueur a été plus rapide : {{item}} ({{count}}) lui revient."
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Ce serveur attend la version {{expectedVersion}} mais vous êtes sur la version {{version}}.",

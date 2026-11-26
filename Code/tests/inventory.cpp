@@ -120,3 +120,24 @@ TEST_CASE("Drop inventory packets preserve removals and ownership", "[inventory]
     REQUIRE(decodedNotify->GetOpcode() == NotifyInventoryChanges::Opcode);
     REQUIRE(*static_cast<NotifyInventoryChanges*>(decodedNotify.get()) == notify);
 }
+
+TEST_CASE("A container never gives out more than it holds", "[inventory]")
+{
+    Inventory container;
+    Inventory::Entry gold{};
+    gold.BaseId = GameId(0, 0xF);
+    gold.Count = 10;
+    container.AddOrRemoveEntryClamped(gold);
+
+    Inventory::Entry take = gold;
+    take.Count = -7;
+    REQUIRE(container.AddOrRemoveEntryClamped(take) == -7);
+    // A second player taking the same 7 at the same time only gets the 3 left
+    REQUIRE(container.AddOrRemoveEntryClamped(take) == -3);
+    REQUIRE(container.AddOrRemoveEntryClamped(take) == 0);
+    REQUIRE(container.Entries.empty());
+
+    Inventory::Entry put = gold;
+    put.Count = 2;
+    REQUIRE(container.AddOrRemoveEntryClamped(put) == 2);
+}

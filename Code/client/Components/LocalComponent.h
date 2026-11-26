@@ -5,6 +5,7 @@
 #endif
 
 #include <Structs/ActionEvent.h>
+#include <Systems/MovementSendFilter.h>
 
 struct LocalComponent
 {
@@ -17,6 +18,7 @@ struct LocalComponent
     uint32_t Id;
     uint32_t OwnershipEpoch;
     ActionEvent CurrentAction;
+    MovementSendFilter MovementFilter;
     bool IsDead = false;
     bool IsWeaponDrawn = false;
 };

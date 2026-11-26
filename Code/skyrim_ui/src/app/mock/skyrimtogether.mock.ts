@@ -521,6 +521,10 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     console.log(`party door: ${follow ? 'follow' : 'stay'}`);
   }
 
+  mockLootRefused() {
+    this.emit('lootRefused', 'Iron Sword', 1);
+  }
+
   answerPartyTravel(travel: boolean): void {
     console.log(`travel together: ${travel ? 'yes' : 'no'}`);
   }

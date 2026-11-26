@@ -146,5 +146,6 @@ enum ServerOpcode : unsigned char
     kNotifyPartySummon,
     kNotifyPartyTeleportRefused,
     kNotifyVote,
+    kNotifyLootRefused,
     kServerOpcodeMax
 };

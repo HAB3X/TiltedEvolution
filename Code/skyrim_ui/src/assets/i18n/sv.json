@@ -397,6 +397,9 @@
       "WITH_MEMBER": "{{name}}s uppdragsframsteg skiljer sig från dina: {{quests}}.",
       "MORE": "{{quests}} och {{count}} till"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "En annan spelare var snabbare: {{item}} ({{count}}) gick till dem."
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Servern förväntar sig version {{expectedVersion}} men du kör version {{version}}.",

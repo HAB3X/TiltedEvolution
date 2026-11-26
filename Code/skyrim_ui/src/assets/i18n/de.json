@@ -394,6 +394,9 @@
       "WITH_MEMBER": "Der Questfortschritt von {{name}} weicht von deinem ab: {{quests}}.",
       "MORE": "{{quests}} und {{count}} weitere"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "Ein anderer Spieler war schneller: {{item}} ({{count}}) ging an ihn."
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Dieser Server setzt die Version {{expectedVersion}} voraus, du benutzt aber Version {{version}}.",

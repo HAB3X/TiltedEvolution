@@ -10,6 +10,7 @@ struct InventoryChangeEvent;
 struct EquipmentChangeEvent;
 struct NotifyEquipmentChanges;
 struct NotifyInventorySnapshot;
+struct NotifyLootRefused;
 struct Inventory;
 struct Actor;
 
@@ -58,6 +59,11 @@ struct InventoryService
     void OnNotifyInventorySnapshot(const NotifyInventorySnapshot& acMessage) noexcept;
 
     /**
+     * @brief Gives back items another player took out of the same container first, and says so in chat.
+     */
+    void OnNotifyLootRefused(const NotifyLootRefused& acMessage) const noexcept;
+
+    /**
      * @brief Applies a full inventory from the server to a remote actor, or to its pending spawn if its 3D isn't loaded yet.
      */
     static void ApplyRemoteInventory(World& aWorld, entt::entity aEntity, const Inventory& acInventory) noexcept;
@@ -83,4 +89,5 @@ private:
     entt::scoped_connection m_inventoryChangeConnection;
     entt::scoped_connection m_equipmentChangeConnection;
     entt::scoped_connection m_inventorySnapshotConnection;
+    entt::scoped_connection m_lootRefusedConnection;
 };

@@ -18,11 +18,17 @@
 #include <LanDiscovery.h>
 #include <WireProtocol.h>
 #include <Messages/AssignCharacterRequest.h>
+#include <Messages/AssignCharacterResponse.h>
+#include <Messages/AssignObjectsRequest.h>
+#include <Messages/AssignObjectsResponse.h>
+#include <Messages/ActivateRequest.h>
 #include <Messages/AuthenticationRequest.h>
 #include <Messages/AssignObjectsRequest.h>
 #include <Messages/AssignObjectsResponse.h>
 #include <Messages/AuthenticationResponse.h>
 #include <Messages/ClientMessageFactory.h>
+#include <Messages/ClientReferencesMoveRequest.h>
+#include <Messages/EnterExteriorCellRequest.h>
 #include <Messages/EnterInteriorCellRequest.h>
 #include <Messages/HostWorldStateRequest.h>
 #include <Messages/NotifyHostWorldRequested.h>
@@ -30,6 +36,7 @@
 #include <Messages/NotifyChatMessageBroadcast.h>
 #include <Messages/NotifyPartyInfo.h>
 #include <Messages/NotifyPartyInvite.h>
+#include <Messages/NotifyLootRefused.h>
 #include <Messages/NotifyPartyJoined.h>
 #include <Messages/PartyAcceptInviteRequest.h>
 #include <Messages/PartyCreateRequest.h>
@@ -58,12 +65,14 @@
 #include <Messages/TeleportCommandRequest.h>
 #include <Messages/RequestQuestUpdate.h>
 #include <Messages/RequestHostWorld.h>
+#include <Messages/RequestInventoryChanges.h>
 #include <Messages/RequestModeratePlayer.h>
 #include <Messages/NotifyVote.h>
 #include <Messages/RequestVote.h>
 #include <Messages/RequestVoteAnswer.h>
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/ServerMessageFactory.h>
+#include <Messages/ServerReferencesMoveRequest.h>
 #include <Messages/TeleportCommandResponse.h>
 
 #include <WinSock2.h>
@@ -71,6 +80,7 @@
 #include <chrono>
 #include <cstdio>
 #include <functional>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -188,6 +198,18 @@ struct FakePlayer final : Client
         case kNotifyTeleport: ++Teleports; break;
         case kNotifyVote: Votes.push_back(*static_cast<NotifyVote*>(pMessage.get())); break;
         case kAssignObjectsResponse: Objects = *static_cast<AssignObjectsResponse*>(pMessage.get()); break;
+        case kAssignCharacterResponse:
+        {
+            const auto* pResponse = static_cast<AssignCharacterResponse*>(pMessage.get());
+            AssignedIds[pResponse->Cookie] = pResponse->ServerId;
+            break;
+        }
+        case kNotifyLootRefused: LootRefusals.push_back(*static_cast<NotifyLootRefused*>(pMessage.get())); break;
+        case kServerReferencesMoveRequest:
+            MovementBytes += aSize;
+            for (const auto& [cId, cMovement] : static_cast<ServerReferencesMoveRequest*>(pMessage.get())->Updates)
+                RelayedMovements.push_back(cMovement);
+            break;
         default: break;
         }
     }
@@ -245,6 +267,12 @@ struct FakePlayer final : Client
         }
         return nullptr;
     }
+    // Server ids of the characters this player assigned, by cookie
+    std::map<uint32_t, uint32_t> AssignedIds;
+    // Movement relayed to this player, and the bytes it took
+    std::vector<Movement> RelayedMovements;
+    size_t MovementBytes = 0;
+    std::vector<NotifyLootRefused> LootRefusals;
 };
 
 // Runs the player until the condition holds or the time is up
@@ -981,6 +1009,115 @@ int RunBarMember(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Movement relay rates: an owner moves NPCs at several distances from a watcher, the watcher counts what the server
+// relays. The owner's own character is far away too, players are always relayed in full.
+const GameId kRelayWorld{0, 0x3C};
+const GameId kRelayCell{0, 0xD74};
+constexpr float kWatcherX = 100.f;
+constexpr float kNearX = 600.f, kMidX = 4100.f, kFarX = 8100.f, kOwnerX = 9500.f, kOutsideX = 21000.f;
+
+// Assigns a character at aX and waits for its server id; the player's own character is 0:14
+std::optional<uint32_t> AssignAt(FakePlayer& aPlayer, uint32_t aCookie, GameId aReference, float aX)
+{
+    AssignCharacterRequest request;
+    request.Cookie = aCookie;
+    request.ReferenceId = aReference;
+    request.CellId = kRelayCell;
+    request.WorldSpaceId = kRelayWorld;
+    request.Position = glm::vec3(aX, 0.f, 0.f);
+    aPlayer.Send(request);
+    if (!RunUntil(aPlayer, [&] { return aPlayer.AssignedIds.count(aCookie) != 0; }))
+        return std::nullopt;
+    return aPlayer.AssignedIds[aCookie];
+}
+
+void EnterRelayCell(FakePlayer& aPlayer, float aX)
+{
+    EnterExteriorCellRequest enter;
+    enter.WorldSpaceId = kRelayWorld;
+    enter.CellId = kRelayCell;
+    enter.CurrentCoords = GridCellCoords::CalculateGridCellCoords(aX, 0.f);
+    aPlayer.Send(enter);
+}
+
+int RunCrowdOwner(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer owner("FakeCrowdOwner", acPassword);
+    owner.Connect(acEndpoint);
+    Check("crowd owner logs in", RunUntil(owner, [&] { return owner.LoggedIn; }));
+    const auto cSelf = AssignAt(owner, 1, GameId(0, 0x14), kOwnerX);
+    Check("crowd owner gets its character", cSelf.has_value());
+    EnterRelayCell(owner, kOwnerX);
+
+    const std::vector<std::pair<uint32_t, float>> cActors{{0x2000, kNearX}, {0x2001, kMidX}, {0x2002, kFarX}, {0x2003, kOutsideX}};
+    std::map<uint32_t, float> ids;
+    if (cSelf)
+        ids[*cSelf] = kOwnerX;
+    for (const auto& [cBaseId, cX] : cActors)
+    {
+        if (const auto cId = AssignAt(owner, cBaseId, GameId(0, cBaseId), cX))
+            ids[*cId] = cX;
+    }
+    Check("its NPCs are assigned", ids.size() == cActors.size() + 1, std::to_string(ids.size()) + " characters");
+    Check("sees the watcher join", RunUntil(owner, [&] { return !owner.JoinedNames.empty(); }, 30s));
+    RunUntil(owner, [] { return false; }, 2s);
+
+    // Every actor walks a little each snapshot, at the 30 ms players and actors in combat are sent at
+    uint32_t snapshots = 0;
+    const auto cStart = std::chrono::steady_clock::now();
+    auto next = cStart;
+    while (std::chrono::steady_clock::now() - cStart < 6s)
+    {
+        owner.Update();
+        if (std::chrono::steady_clock::now() >= next)
+        {
+            next += 30ms;
+            ++snapshots;
+            ClientReferencesMoveRequest move;
+            move.Tick = owner.GetClock().GetCurrentTick();
+            for (const auto& [cId, cX] : ids)
+            {
+                auto& movement = move.Updates[cId];
+                movement.CellId = kRelayCell;
+                movement.WorldSpaceId = kRelayWorld;
+                movement.Position = glm::vec3(cX, static_cast<float>(snapshots % 50) * 4.f, 0.f);
+            }
+            owner.Send(move);
+        }
+        std::this_thread::sleep_for(1ms);
+    }
+    std::printf("sent %u snapshots of %zu characters\n", snapshots, ids.size());
+    RunUntil(owner, [] { return false; }, 5s);
+    return s_failures ? 1 : 0;
+}
+
+int RunCrowdWatcher(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer watcher("FakeCrowdWatcher", acPassword);
+    watcher.Connect(acEndpoint);
+    Check("crowd watcher logs in", RunUntil(watcher, [&] { return watcher.LoggedIn; }));
+    Check("crowd watcher gets its character", AssignAt(watcher, 1, GameId(0, 0x14), kWatcherX).has_value());
+    EnterRelayCell(watcher, kWatcherX);
+    RunUntil(watcher, [] { return false; }, 12s);
+
+    auto countAt = [&](float aX)
+    {
+        return std::count_if(watcher.RelayedMovements.begin(), watcher.RelayedMovements.end(), [aX](const Movement& acMovement) { return std::abs(acMovement.Position.x - aX) < 1.f; });
+    };
+    const auto cOwner = countAt(kOwnerX), cNear = countAt(kNearX), cMid = countAt(kMidX), cFar = countAt(kFarX), cOutside = countAt(kOutsideX);
+    const double cFull = static_cast<double>(std::max<ptrdiff_t>(cOwner, 1));
+    const std::string cCounts = "player " + std::to_string(cOwner) + ", near " + std::to_string(cNear) + ", mid " + std::to_string(cMid) + ", far " + std::to_string(cFar) +
+                                ", outside " + std::to_string(cOutside) + ", " + std::to_string(watcher.MovementBytes) + " bytes";
+    std::printf("relayed: %s\n", cCounts.c_str());
+    Check("the far player's movement is relayed in full", cOwner >= 150, cCounts);
+    Check("a nearby NPC's movement is relayed in full", cNear >= 0.9 * cFull, cCounts);
+    Check("a mid-distance NPC's is relayed about every third snapshot", cMid >= 0.2 * cFull && cMid <= 0.45 * cFull, cCounts);
+    Check("a far NPC's is relayed about every sixth snapshot", cFar >= 0.08 * cFull && cFar <= 0.25 * cFull, cCounts);
+    Check("an NPC out of range isn't relayed", cOutside == 0, cCounts);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // Pings: the member pings a target, the leader gets it with the member's name; a player without a party can't ping
 RequestPartyPing FakePing()
 {
@@ -1022,6 +1159,61 @@ int RunPingMember(const std::string& acEndpoint, const std::string& acPassword)
     member.Send(FakePing());
     RunUntil(member, [] { return false; }, 3s);
     Check("the pinger doesn't get its own ping back", member.Pings.empty(), std::to_string(member.Pings.size()) + " pings");
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+// Door state: the first player opens a door, a player entering the cell later is told it is open
+const GameId kDoorCell{0, 0x16BDF};
+const GameId kDoor{0, 0x16C01};
+
+AssignObjectsRequest ClosedDoorIn(const GameId acCell)
+{
+    AssignObjectsRequest request;
+    ObjectData door;
+    door.Id = kDoor;
+    door.CellId = acCell;
+    door.DoorState = ObjectData::kDoorClosed;
+    request.Objects.push_back(door);
+    return request;
+}
+
+void EnterDoorCell(FakePlayer& aPlayer)
+{
+    EnterInteriorCellRequest enter;
+    enter.CellId = kDoorCell;
+    aPlayer.Send(enter);
+}
+
+int RunDoorFirst(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer first("FakeDoorFirst", acPassword);
+    first.Connect(acEndpoint);
+    Check("door opener logs in", RunUntil(first, [&] { return first.LoggedIn; }));
+    EnterDoorCell(first);
+    first.Send(ClosedDoorIn(kDoorCell));
+    Check("is the first to see the door", RunUntil(first, [&] { return first.Objects && first.Objects->Objects.size() == 1 && first.Objects->Objects[0].IsSenderFirst; }));
+
+    ActivateRequest open;
+    open.Id = kDoor;
+    open.CellId = kDoorCell;
+    open.PreActivationOpenState = ObjectData::kDoorClosed;
+    first.Send(open);
+    RunUntil(first, [] { return false; }, 15s);
+    return s_failures ? 1 : 0;
+}
+
+int RunDoorLater(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer later("FakeDoorLater", acPassword);
+    later.Connect(acEndpoint);
+    Check("later player logs in", RunUntil(later, [&] { return later.LoggedIn; }));
+    EnterDoorCell(later);
+    later.Send(ClosedDoorIn(kDoorCell));
+    Check("is told about the door", RunUntil(later, [&] { return later.Objects && later.Objects->Objects.size() == 1; }));
+    const auto* pDoor = later.Objects && !later.Objects->Objects.empty() ? &later.Objects->Objects[0] : nullptr;
+    Check("the door is open, as the first player left it", pDoor && !pDoor->IsSenderFirst && pDoor->DoorState == ObjectData::kDoorOpen,
+          pDoor ? "state " + std::to_string(pDoor->DoorState) : "");
     std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
     return s_failures ? 1 : 0;
 }
@@ -1212,6 +1404,70 @@ int RunOldVersion(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Loot race: a chest with one sword, both players take it within a second, the later one is told to give it back
+const GameId kLootChest{0, 0x16C02};
+const GameId kLootSword{0, 0x12EB7};
+
+// Enters the loot cell and reports the chest; returns its server id
+std::optional<uint32_t> SeeLootChest(FakePlayer& aPlayer)
+{
+    EnterDoorCell(aPlayer);
+    AssignObjectsRequest request;
+    ObjectData chest;
+    chest.Id = kLootChest;
+    chest.CellId = kDoorCell;
+    chest.IsContainer = true;
+    Inventory::Entry sword{};
+    sword.BaseId = kLootSword;
+    sword.Count = 1;
+    chest.CurrentInventory.Entries.push_back(sword);
+    request.Objects.push_back(chest);
+    aPlayer.Send(request);
+    if (!RunUntil(aPlayer, [&] { return aPlayer.Objects && aPlayer.Objects->Objects.size() == 1; }))
+        return std::nullopt;
+    return aPlayer.Objects->Objects[0].ServerId;
+}
+
+void TakeSword(FakePlayer& aPlayer, uint32_t aChestId)
+{
+    RequestInventoryChanges take;
+    take.ServerId = aChestId;
+    take.Item.BaseId = kLootSword;
+    take.Item.Count = -1;
+    aPlayer.Send(take);
+}
+
+int RunLootFirst(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer first("FakeLootFirst", acPassword);
+    first.Connect(acEndpoint);
+    Check("first looter logs in", RunUntil(first, [&] { return first.LoggedIn; }));
+    const auto cChest = SeeLootChest(first);
+    Check("first looter sees the chest", cChest.has_value());
+    Check("sees the second looter join", RunUntil(first, [&] { return !first.JoinedNames.empty(); }, 30s));
+    if (cChest)
+        TakeSword(first, *cChest);
+    RunUntil(first, [] { return false; }, 10s);
+    Check("the first to take the sword keeps it", first.LootRefusals.empty(), std::to_string(first.LootRefusals.size()) + " refusals");
+    return s_failures ? 1 : 0;
+}
+
+int RunLootSecond(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer second("FakeLootSecond", acPassword);
+    second.Connect(acEndpoint);
+    Check("second looter logs in", RunUntil(second, [&] { return second.LoggedIn; }));
+    const auto cChest = SeeLootChest(second);
+    Check("second looter sees the chest", cChest.has_value());
+    if (cChest)
+        TakeSword(second, *cChest);
+    Check("the second gives the sword back", RunUntil(second, [&] { return !second.LootRefusals.empty(); }, 5s));
+    Check("one sword, from that chest", second.LootRefusals.size() == 1 && second.LootRefusals[0].Item.BaseId == kLootSword && second.LootRefusals[0].Item.Count == 1 &&
+                                            cChest && second.LootRefusals[0].ServerId == *cChest);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -1233,6 +1489,9 @@ int RunOldVersion(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe modchecksums [address:port] [password]: against a server requiring Exact.esp|100|0000abcd
 // FakePlayers.exe votehost|votetarget|votevoter [address:port] [password]: see RunVoteHost
 // FakePlayers.exe worldstore|worldload [address:port] [password]: see RunWorldStore
+// FakePlayers.exe crowdowner|crowdwatcher [address:port] [password]: start the owner first
+// FakePlayers.exe doorfirst|doorlater [address:port] [password]: start the first one first
+// FakePlayers.exe lootfirst|lootsecond [address:port] [password]: start the first one first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -1316,7 +1575,18 @@ int main(int argc, char** argv)
         return RunLostMember(cEndpoint, cPassword);
     if (cRole == "lostreturn")
         return RunLostReturn(cEndpoint, cPassword);
-
-    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|moveleader|movemember|respawnleader|respawnmember [address:port] [password]\n");
+    if (cRole == "crowdowner")
+        return RunCrowdOwner(cEndpoint, cPassword);
+    if (cRole == "crowdwatcher")
+        return RunCrowdWatcher(cEndpoint, cPassword);
+    if (cRole == "doorfirst")
+        return RunDoorFirst(cEndpoint, cPassword);
+    if (cRole == "doorlater")
+        return RunDoorLater(cEndpoint, cPassword);
+    if (cRole == "lootfirst")
+        return RunLootFirst(cEndpoint, cPassword);
+    if (cRole == "lootsecond")
+        return RunLootSecond(cEndpoint, cPassword);
+    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond [address:port] [password]\n");
     return 2;
 }
