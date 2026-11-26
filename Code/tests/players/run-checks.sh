@@ -16,7 +16,7 @@ suite() {
     mkdir -p "$dir/config"
     cp "$BUILD"/SkyrimTogetherServer.exe "$BUILD"/STServer.dll "$dir"/
     printf '%s\n' "$ini" > "$dir/config/STServer.ini"
-    [ -n "$mods" ] && printf '%s\n' "$mods" > "$dir/config/required-mods.txt"
+    [ -n "$mods" ] && printf '%s\n' "$mods" > "$dir/config/required-mods.txt" && printf 'NiceToHave.esp\nSomeMod.esp\n' > "$dir/config/recommended-mods.txt"
 
     echo "== $name"
     (cd "$dir" && ./SkyrimTogetherServer.exe < /dev/null > server.log 2>&1 &)

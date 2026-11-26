@@ -299,6 +299,10 @@ int RunRequiredMods(const std::string& acEndpoint, const std::string& acPassword
         with.PluginNames = {"Skyrim.esm", "SomeMod.esp", "ExtraMod.esp"};
         with.Connect(acEndpoint);
         Check("a player with them (and an extra mod) gets in", RunUntil(with, [&] { return with.LoggedIn; }));
+        // The server also recommends NiceToHave.esp, which this player lacks
+        Check("and is told about the recommended mod they lack", RunUntil(with, [&] { return with.Chat.has_value(); }, 5s) &&
+                                                                     std::string(with.Chat->ChatMessage.c_str()).find("NiceToHave.esp") != std::string::npos,
+              with.Chat ? with.Chat->ChatMessage.c_str() : "no message");
     }
     std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
     return s_failures ? 1 : 0;

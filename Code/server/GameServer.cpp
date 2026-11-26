@@ -2,6 +2,7 @@
 #include <GameServer.h>
 #include <LanDiscoveryResponder.h>
 #include <RequiredMods.h>
+#include <Messages/NotifyChatMessageBroadcast.h>
 
 #include <fstream>
 
@@ -346,30 +347,63 @@ void GameServer::Ban(const Player& acPlayer)
     Kick(acPlayer.GetConnectionId());
 }
 
-void GameServer::LoadRequiredMods()
+namespace
 {
-    m_requiredMods.clear();
-    if (!bRequireMods)
-        return;
-
-    std::ifstream file(RequiredMods::kFileName);
-    if (!file)
-    {
-        spdlog::error("ModPolicy:bRequireMods is on, but {} can't be read: nobody's mods are checked", RequiredMods::kFileName);
-        return;
-    }
-
+// The plugins listed in a mods file, without the game's own; empty when it can't be read
+Vector<String> ReadModList(const char* apPath, bool& aRead)
+{
+    Vector<String> mods;
+    std::ifstream file(apPath);
+    aRead = static_cast<bool>(file);
     for (std::string line; std::getline(file, line);)
     {
         if (!line.empty() && line.back() == '\r')
             line.pop_back();
         if (!line.empty() && !RequiredMods::IsGamePlugin(line))
-            m_requiredMods.push_back(line.c_str());
+            mods.push_back(line.c_str());
     }
+    return mods;
+}
+
+String JoinNames(const Vector<String>& acNames)
+{
     String list;
-    for (const String& cMod : m_requiredMods)
-        list += (list.empty() ? "" : ", ") + cMod;
-    spdlog::info("Players need these {} mods to join: {}", m_requiredMods.size(), list.c_str());
+    for (const String& cName : acNames)
+        list += (list.empty() ? "" : ", ") + cName;
+    return list;
+}
+
+// The listed mods the player doesn't have
+Vector<String> MissingMods(const Vector<String>& acListed, const Mods& acPlayerMods)
+{
+    Vector<String> missing;
+    for (const String& cListed : acListed)
+    {
+        const bool cHas = std::any_of(acPlayerMods.ModList.begin(), acPlayerMods.ModList.end(),
+                                      [&](const Mods::Entry& acMod) { return RequiredMods::Lower(acMod.Filename.c_str()) == RequiredMods::Lower(cListed.c_str()); });
+        if (!cHas)
+            missing.push_back(cListed);
+    }
+    return missing;
+}
+} // namespace
+
+void GameServer::LoadRequiredMods()
+{
+    bool read = false;
+    m_recommendedMods = ReadModList(RequiredMods::kRecommendedFileName, read);
+    if (!m_recommendedMods.empty())
+        spdlog::info("Players are told when they lack these {} recommended mods: {}", m_recommendedMods.size(), JoinNames(m_recommendedMods).c_str());
+
+    m_requiredMods.clear();
+    if (!bRequireMods)
+        return;
+
+    m_requiredMods = ReadModList(RequiredMods::kFileName, read);
+    if (!read)
+        spdlog::error("ModPolicy:bRequireMods is on, but {} can't be read: nobody's mods are checked", RequiredMods::kFileName);
+    else
+        spdlog::info("Players need these {} mods to join: {}", m_requiredMods.size(), JoinNames(m_requiredMods).c_str());
 }
 
 bool GameServer::CheckMoPo()
@@ -1046,18 +1080,13 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
         if (!IsMoPoActive() && !m_requiredMods.empty())
         {
             Mods missing;
-            for (const String& cRequired : m_requiredMods)
+            for (const String& cRequired : MissingMods(m_requiredMods, acRequest->UserMods))
             {
-                const auto cHas = std::any_of(acRequest->UserMods.ModList.begin(), acRequest->UserMods.ModList.end(),
-                                              [&](const Mods::Entry& acMod) { return RequiredMods::Lower(acMod.Filename.c_str()) == RequiredMods::Lower(cRequired.c_str()); });
-                if (!cHas)
-                {
-                    // Id 0: a mod to install, in the client's list of mods that don't match
-                    Mods::Entry entry;
-                    entry.Filename = cRequired;
-                    entry.Id = 0;
-                    missing.ModList.push_back(entry);
-                }
+                // Id 0: a mod to install, in the client's list of mods that don't match
+                Mods::Entry entry;
+                entry.Filename = cRequired;
+                entry.Id = 0;
+                missing.ModList.push_back(entry);
             }
 
             if (!missing.ModList.empty())
@@ -1165,6 +1194,14 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
 
         serverResponse.Type = AuthenticationResponse::ResponseType::kAccepted;
         Send(aConnectionId, serverResponse);
+
+        if (const auto cMissing = MissingMods(m_recommendedMods, acRequest->UserMods); !cMissing.empty())
+        {
+            NotifyChatMessageBroadcast recommend;
+            recommend.MessageType = kSystemMessage;
+            recommend.ChatMessage = "The host recommends mods you don't have: " + JoinNames(cMissing) + ". You can play without them, but things they add won't show for you.";
+            Send(aConnectionId, recommend);
+        }
 
         uint32_t startId = 0;
         auto initStringCache = StringCache::Get().Serialize(startId);

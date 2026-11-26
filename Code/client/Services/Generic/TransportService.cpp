@@ -133,6 +133,29 @@ void TransportService::OnConsume(const void* apData, uint32_t aSize)
 namespace
 {
 // BUILD_COMMIT stays the same across our builds, the launcher passes the id of its package instead.
+// Mods seen to break Skyrim Together, by the module they load: each gets a warning in chat on joining
+struct KnownProblem
+{
+    const wchar_t* Module;
+    const char* Warning;
+};
+constexpr KnownProblem kKnownProblems[] = {
+    // Made other players and NPCs invisible on a Mac playing Plus (rename it to EngineFixes.dll.off to turn it off)
+    {L"EngineFixes.dll", "SSE Engine Fixes is loaded: it can make other players and NPCs invisible in Skyrim Together. Turn it off while playing together (Data/SKSE/Plugins/EngineFixes.dll)."},
+};
+
+void WarnAboutKnownProblems(World& aWorld)
+{
+    for (const KnownProblem& cProblem : kKnownProblems)
+    {
+        if (GetModuleHandleW(cProblem.Module))
+        {
+            spdlog::warn("{}", cProblem.Warning);
+            aWorld.GetOverlayService().SendSystemMessage(cProblem.Warning);
+        }
+    }
+}
+
 String GetBuildVersion()
 {
     // The version an official server checks for, when speaking its protocol
@@ -311,6 +334,8 @@ void TransportService::HandleAuthenticationResponse(const AuthenticationResponse
     if (acMessage.Type == AR::kAccepted)
     {
         m_connected = true;
+
+        WarnAboutKnownProblems(m_world);
 
         // Once per game session, before co-op changes anything: host world servers make their own save first
         if (!m_backedUpThisSession && !acMessage.Settings.HostWorld)

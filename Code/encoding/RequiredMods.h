@@ -10,6 +10,8 @@
 namespace RequiredMods
 {
 constexpr char kFileName[] = "config/required-mods.txt";
+// Mods the host recommends: players missing them get in and are told which (one file name per line, like kFileName)
+constexpr char kRecommendedFileName[] = "config/recommended-mods.txt";
 
 inline std::string Lower(std::string_view aText)
 {
