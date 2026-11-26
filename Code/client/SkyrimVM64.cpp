@@ -26,6 +26,7 @@ int TP_MAKE_THISCALL(HookVMUpdate, GameVM, float a2)
 short TP_MAKE_THISCALL(HookMainLoop, Main)
 {
     BGSSaveLoadManager::ProcessQueuedSave();
+    BGSSaveLoadManager::ProcessQueuedLoad();
 
     return TiltedPhoques::ThisCall(MainLoop, apThis);
 }

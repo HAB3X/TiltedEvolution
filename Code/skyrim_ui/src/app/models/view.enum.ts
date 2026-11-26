@@ -8,4 +8,5 @@ export enum View {
   PLAYER_MANAGER,
   INVITE,
   HOST,
+  SAVES,
 }

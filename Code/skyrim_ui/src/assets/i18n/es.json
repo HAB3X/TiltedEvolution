@@ -16,6 +16,8 @@
       "PLAYERS_HINT": "Quién está, grupo",
       "INVITE_HINT": "Tu código",
       "REVEAL_HINT": "Mostrar jugadores cerca",
+      "SAVES": "Partidas guardadas",
+      "SAVES_HINT": "Puntos de control del grupo",
       "CANCEL_CONNECT": "Cancelar"
     },
     "CHAT": {
@@ -108,6 +110,18 @@
       "COPY": "Copiar invitación",
       "COPIED": "Copiado",
       "CLOSE": "Cerrar"
+    },
+    "SAVES": {
+      "TITLE": "Partidas guardadas",
+      "INFO": "Las partidas que Skyrim Together guardó para este personaje, de la más reciente a la más antigua. Cargar una sustituye la partida actual, así que guarda antes si quieres conservarla.",
+      "CHECKPOINT": "Punto de control del grupo {{slot}}",
+      "BEFORE_HOST_WORLD": "Antes de unirte al mundo de un anfitrión",
+      "BEFORE_COOP": "Antes de jugar juntos",
+      "LOAD": "Cargar",
+      "LOAD_CONFIRM": "Sí, cargar",
+      "EMPTY": "Aún no hay partidas cooperativas de este personaje. Skyrim Together guarda antes de tu primera sesión cooperativa, antes de unirte al mundo de un anfitrión y en los puntos de control del grupo.",
+      "ERROR": "No se pudo leer la carpeta de partidas guardadas: {{error}}",
+      "MENU_HINT": "Son partidas normales: también puedes cargarlas desde el menú del juego (Esc y luego Cargar)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Mensaje de",

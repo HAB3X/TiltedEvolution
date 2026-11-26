@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Wer da ist, Gruppe",
       "INVITE_HINT": "Dein Beitrittscode",
       "REVEAL_HINT": "Spieler in der Nähe zeigen",
+      "SAVES": "Spielstände",
+      "SAVES_HINT": "Gruppen-Speicherpunkte",
       "CANCEL_CONNECT": "Abbrechen"
     },
     "CHAT": {
@@ -107,6 +109,18 @@
       "COPY": "Einladung kopieren",
       "COPIED": "Kopiert",
       "CLOSE": "Schließen"
+    },
+    "SAVES": {
+      "TITLE": "Spielstände",
+      "INFO": "Die Spielstände, die Skyrim Together für diesen Charakter angelegt hat, die neuesten zuerst. Laden ersetzt das laufende Spiel – speichere vorher, wenn du es behalten willst.",
+      "CHECKPOINT": "Gruppen-Speicherpunkt {{slot}}",
+      "BEFORE_HOST_WORLD": "Vor dem Wechsel in die Welt des Hosts",
+      "BEFORE_COOP": "Vor dem gemeinsamen Spielen",
+      "LOAD": "Laden",
+      "LOAD_CONFIRM": "Ja, laden",
+      "EMPTY": "Noch keine Koop-Spielstände für diesen Charakter. Skyrim Together speichert vor deiner ersten Koop-Sitzung, bevor du der Welt eines Hosts beitrittst, und an Gruppen-Speicherpunkten.",
+      "ERROR": "Der Spielstand-Ordner konnte nicht gelesen werden: {{error}}",
+      "MENU_HINT": "Das sind normale Spielstände: Du kannst sie auch im Menü des Spiels laden (Esc, dann Laden)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Nachricht von",

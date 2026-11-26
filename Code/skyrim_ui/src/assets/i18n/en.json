@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Who's here, party",
       "INVITE_HINT": "Your join code",
       "REVEAL_HINT": "Show players nearby",
+      "SAVES": "Saves",
+      "SAVES_HINT": "Party checkpoints",
       "CANCEL_CONNECT": "Cancel"
     },
     "CHAT": {
@@ -97,6 +99,18 @@
       "COPY": "Copy invite",
       "COPIED": "Copied",
       "CLOSE": "Close"
+    },
+    "SAVES": {
+      "TITLE": "Saves",
+      "INFO": "The saves Skyrim Together made for this character, newest first. Loading one replaces the game you're playing, so save first if you want to keep it.",
+      "CHECKPOINT": "Party checkpoint {{slot}}",
+      "BEFORE_HOST_WORLD": "Before joining a host's world",
+      "BEFORE_COOP": "Before playing together",
+      "LOAD": "Load",
+      "LOAD_CONFIRM": "Yes, load",
+      "EMPTY": "No co-op saves for this character yet. Skyrim Together saves before your first co-op session, before you join a host's world, and at party checkpoints.",
+      "ERROR": "Couldn't read the game's save folder: {{error}}",
+      "MENU_HINT": "These are normal saves: you can also load them from the game's own menu (Esc, then Load)."
     },
     "DISCONNECT": {
       "PROMPT": "Are you sure you want to disconnect?",

@@ -1,0 +1,33 @@
+<h2 class="page-title">{{ 'COMPONENT.SAVES.TITLE' | transloco }}</h2>
+<p class="muted">{{ 'COMPONENT.SAVES.INFO' | transloco }}</p>
+@let list = list$ | async;
+@if (!list) {
+  <p class="muted">…</p>
+} @else if (list.error) {
+  <p class="notice">{{ 'COMPONENT.SAVES.ERROR' | transloco: { error: list.error } }}</p>
+} @else if (list.saves.length === 0) {
+  <p class="notice">{{ 'COMPONENT.SAVES.EMPTY' | transloco }}</p>
+} @else {
+  <ul class="save-list">
+    @for (save of list.saves; track save.name) {
+      <li class="save-row">
+        <span class="save-text">
+          <span class="save-label">{{ label(save) }}</span>
+          <span class="muted save-detail">{{ date(save) }} · {{ save.name }}</span>
+        </span>
+        <button
+          class="btn btn-small"
+          [class.btn-secondary]="confirming !== save.name"
+          [class.btn-danger]="confirming === save.name"
+          (click)="load(save)"
+        >
+          {{ (confirming === save.name ? 'COMPONENT.SAVES.LOAD_CONFIRM' : 'COMPONENT.SAVES.LOAD') | transloco }}
+        </button>
+      </li>
+    }
+  </ul>
+}
+<p class="muted hint">{{ 'COMPONENT.SAVES.MENU_HINT' | transloco }}</p>
+@if (list?.folder) {
+  <p class="muted hint folder">{{ list?.folder }}</p>
+}

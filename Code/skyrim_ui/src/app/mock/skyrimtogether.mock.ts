@@ -53,6 +53,32 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     }, 500);
   }
 
+  listPartySaves(): void {
+    const now = Math.floor(Date.now() / 1000);
+    setTimeout(
+      () =>
+        this.emit(
+          'partySaves',
+          JSON.stringify({
+            character: 'Mock',
+            folder: 'C:\\Users\\Mock\\Documents\\My Games\\Skyrim Special Edition\\Saves',
+            saves: [
+              { name: 'Together_Mock_3', time: now - 600 },
+              { name: 'Together_Mock_2', time: now - 7200 },
+              { name: 'BeforeHostWorld_Mock', time: now - 86400 },
+              { name: 'BeforeCoop_Mock', time: now - 90000 },
+              { name: 'Together_Other_1', time: now - 60 },
+            ],
+          }),
+        ),
+      300,
+    );
+  }
+
+  loadPartySave(name: string): void {
+    console.log(`load ${name}`);
+  }
+
   listHostMods(): void {
     setTimeout(
       () =>

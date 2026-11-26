@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Hvem som er her, gruppe",
       "INVITE_HINT": "Din tilkoblingskode",
       "REVEAL_HINT": "Vis spillere i nærheten",
+      "SAVES": "Lagringer",
+      "SAVES_HINT": "Gruppens lagringspunkter",
       "CANCEL_CONNECT": "Avbryt"
     },
     "CHAT": {
@@ -107,6 +109,18 @@
       "COPY": "Kopier invitasjon",
       "COPIED": "Kopiert",
       "CLOSE": "Lukk"
+    },
+    "SAVES": {
+      "TITLE": "Lagringer",
+      "INFO": "Lagringene Skyrim Together har laget for denne figuren, nyeste først. Å laste inn en erstatter spillet du spiller nå, så lagre først hvis du vil beholde det.",
+      "CHECKPOINT": "Gruppens lagringspunkt {{slot}}",
+      "BEFORE_HOST_WORLD": "Før du ble med i vertens verden",
+      "BEFORE_COOP": "Før dere spilte sammen",
+      "LOAD": "Last inn",
+      "LOAD_CONFIRM": "Ja, last inn",
+      "EMPTY": "Ingen samarbeidslagringer for denne figuren ennå. Skyrim Together lagrer før første samarbeidsøkt, før du blir med i vertens verden, og ved gruppens lagringspunkter.",
+      "ERROR": "Kunne ikke lese spillets lagringsmappe: {{error}}",
+      "MENU_HINT": "Dette er vanlige lagringer: du kan også laste dem inn fra spillets meny (Esc, deretter Last inn)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Message from",

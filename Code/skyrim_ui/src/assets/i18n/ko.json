@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "참가자와 파티",
       "INVITE_HINT": "내 참가 코드",
       "REVEAL_HINT": "근처 플레이어 표시",
+      "SAVES": "저장",
+      "SAVES_HINT": "파티 체크포인트",
       "CANCEL_CONNECT": "취소"
     },
     "CHAT": {
@@ -107,6 +109,18 @@
       "COPY": "초대 복사",
       "COPIED": "복사됨",
       "CLOSE": "닫기"
+    },
+    "SAVES": {
+      "TITLE": "저장",
+      "INFO": "Skyrim Together가 이 캐릭터를 위해 만든 저장 파일입니다(최신순). 불러오면 현재 게임이 대체되므로, 유지하려면 먼저 저장하세요.",
+      "CHECKPOINT": "파티 체크포인트 {{slot}}",
+      "BEFORE_HOST_WORLD": "호스트의 세계에 참가하기 전",
+      "BEFORE_COOP": "함께 플레이하기 전",
+      "LOAD": "불러오기",
+      "LOAD_CONFIRM": "네, 불러오기",
+      "EMPTY": "이 캐릭터의 협동 저장 파일이 아직 없습니다. Skyrim Together는 첫 협동 플레이 전, 호스트의 세계에 참가하기 전, 파티 체크포인트에서 저장합니다.",
+      "ERROR": "게임 저장 폴더를 읽을 수 없습니다: {{error}}",
+      "MENU_HINT": "일반 저장 파일이므로 게임 메뉴(Esc 후 불러오기)에서도 불러올 수 있습니다."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "메시지 보낸 사람:",

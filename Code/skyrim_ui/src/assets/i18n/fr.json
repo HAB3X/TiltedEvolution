@@ -16,6 +16,8 @@
       "PLAYERS_HINT": "Qui est là, groupe",
       "INVITE_HINT": "Votre code de partie",
       "REVEAL_HINT": "Montrer les joueurs proches",
+      "SAVES": "Sauvegardes",
+      "SAVES_HINT": "Points de sauvegarde du groupe",
       "CANCEL_CONNECT": "Annuler"
     },
     "CHAT": {
@@ -108,6 +110,18 @@
       "COPY": "Copier l'invitation",
       "COPIED": "Copié",
       "CLOSE": "Fermer"
+    },
+    "SAVES": {
+      "TITLE": "Sauvegardes",
+      "INFO": "Les sauvegardes que Skyrim Together a créées pour ce personnage, de la plus récente à la plus ancienne. En charger une remplace la partie en cours : sauvegardez d'abord si vous voulez la garder.",
+      "CHECKPOINT": "Point de sauvegarde du groupe {{slot}}",
+      "BEFORE_HOST_WORLD": "Avant de rejoindre le monde d'un hôte",
+      "BEFORE_COOP": "Avant de jouer ensemble",
+      "LOAD": "Charger",
+      "LOAD_CONFIRM": "Oui, charger",
+      "EMPTY": "Aucune sauvegarde coop pour ce personnage pour l'instant. Skyrim Together sauvegarde avant votre première session coop, avant de rejoindre le monde d'un hôte et aux points de sauvegarde du groupe.",
+      "ERROR": "Impossible de lire le dossier de sauvegardes du jeu : {{error}}",
+      "MENU_HINT": "Ce sont des sauvegardes normales : vous pouvez aussi les charger depuis le menu du jeu (Échap, puis Charger)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Message de",

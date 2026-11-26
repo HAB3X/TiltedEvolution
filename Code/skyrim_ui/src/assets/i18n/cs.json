@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Kdo tu je, družina",
       "INVITE_HINT": "Tvůj kód připojení",
       "REVEAL_HINT": "Ukázat hráče poblíž",
+      "SAVES": "Uložené hry",
+      "SAVES_HINT": "Kontrolní body družiny",
       "CANCEL_CONNECT": "Zrušit"
     },
     "CHAT": {
@@ -107,6 +109,18 @@
       "COPY": "Kopírovat pozvánku",
       "COPIED": "Zkopírováno",
       "CLOSE": "Zavřít"
+    },
+    "SAVES": {
+      "TITLE": "Uložené hry",
+      "INFO": "Uložené hry, které Skyrim Together vytvořil pro tuto postavu, od nejnovější. Načtení nahradí hru, kterou právě hrajete, takže si ji nejdřív ulož, pokud ji chceš zachovat.",
+      "CHECKPOINT": "Kontrolní bod družiny {{slot}}",
+      "BEFORE_HOST_WORLD": "Před připojením do světa hostitele",
+      "BEFORE_COOP": "Před společným hraním",
+      "LOAD": "Načíst",
+      "LOAD_CONFIRM": "Ano, načíst",
+      "EMPTY": "Pro tuto postavu zatím nejsou žádné kooperativní uložené hry. Skyrim Together ukládá před první společnou hrou, před připojením do světa hostitele a v kontrolních bodech družiny.",
+      "ERROR": "Nepodařilo se přečíst složku s uloženými hrami: {{error}}",
+      "MENU_HINT": "Jsou to běžné uložené hry: můžeš je načíst i z nabídky hry (Esc, pak Načíst)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Zpráva od",

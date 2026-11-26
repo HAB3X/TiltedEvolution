@@ -27,6 +27,12 @@ struct BGSSaveLoadManager
     // from the VM's update, where UpdateEvent comes from, would freeze the game.
     static void ProcessQueuedSave() noexcept;
 
+    // Asks for the save with this file name (without .ess) to be loaded, as the game's Load menu does. It runs
+    // from the main loop once no game menu is open, or is dropped (and the player told) after a few seconds.
+    static void QueueLoad(const String& acName) noexcept;
+    // Runs a queued load; main thread only, like ProcessQueuedSave
+    static void ProcessQueuedLoad() noexcept;
+
     struct Struct330
     {
         void* unk0; // 0

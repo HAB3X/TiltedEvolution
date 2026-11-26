@@ -29,6 +29,14 @@ export interface LastSession {
 const LAST_SESSION_KEY = 'last_session';
 
 /** A server on the local network, as it answered a search. */
+/** The partySaves event: the save folder's co-op saves and whose they are, or why they couldn't be read */
+export interface PartySavesList {
+  character?: string;
+  folder?: string;
+  saves?: { name: string; time: number }[];
+  error?: string;
+}
+
 export interface LanServer {
   address: string;
   port: number;
@@ -119,6 +127,9 @@ export class ClientService implements OnDestroy {
   /** The public address:port of the game this player hosts, once the router has said it. */
   public hostAddressChange = new BehaviorSubject<string | null>(null);
 
+  /** The co-op saves in the game's save folder, null until listed (see listPartySaves). */
+  public partySavesChange = new BehaviorSubject<PartySavesList | null>(null);
+
   /** The mods friends need when this player hosts and requires them, null until listed (see listHostMods). */
   public hostModsChange = new BehaviorSubject<string[] | null>(null);
 
@@ -208,6 +219,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('lanServers', this.onLanServers.bind(this));
     skyrimtogether.on('hostAddress', this.onHostAddress.bind(this));
     skyrimtogether.on('hostMods', this.onHostMods.bind(this));
+    skyrimtogether.on('partySaves', this.onPartySaves.bind(this));
     skyrimtogether.on('hostWorldOffer', this.onHostWorldOffer.bind(this));
 
     try {
@@ -257,6 +269,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('lanServers');
     skyrimtogether.off('hostAddress');
     skyrimtogether.off('hostMods');
+    skyrimtogether.off('partySaves');
     skyrimtogether.off('hostWorldOffer');
     skyrimtogether.off('dummyData');
     skyrimtogether.off('partyInfo');
@@ -403,6 +416,17 @@ export class ClientService implements OnDestroy {
     skyrimtogether.openUrl(
       `https://www.nexusmods.com/skyrimspecialedition/search/?gsearch=${encodeURIComponent(name)}`,
     );
+  }
+
+  /** List the co-op saves, see partySavesChange. */
+  public listPartySaves(): void {
+    this.partySavesChange.next(null);
+    skyrimtogether.listPartySaves();
+  }
+
+  /** Load a co-op save by its file name without .ess; the panel closes for the loading screen. */
+  public loadPartySave(name: string): void {
+    skyrimtogether.loadPartySave(name);
   }
 
   /** List the mods friends need when this player hosts and requires them, see hostModsChange. */
@@ -721,6 +745,12 @@ export class ClientService implements OnDestroy {
   private onHostAddress(address: string) {
     this.zone.run(() => {
       this.hostAddressChange.next(address);
+    });
+  }
+
+  private onPartySaves(json: string) {
+    this.zone.run(() => {
+      this.partySavesChange.next(JSON.parse(json) as PartySavesList);
     });
   }
 

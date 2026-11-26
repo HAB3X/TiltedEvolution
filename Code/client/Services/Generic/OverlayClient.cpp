@@ -8,6 +8,7 @@
 #include <Services/VoiceService.h>
 #include <Services/LocalServerService.h>
 #include <Services/LanSearch.h>
+#include <Services/PartySaves.h>
 #include <Services/NameTagService.h>
 #include <Services/HostWorldService.h>
 
@@ -121,6 +122,15 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             ProcessOpenPlayGuide();
         else if (eventName == "openUrl")
             ProcessOpenUrl(eventArgs);
+        else if (eventName == "listPartySaves")
+            World::Get().GetRunner().Queue([]() { PartySaves::Send(); });
+        else if (eventName == "loadPartySave")
+        {
+            const std::string name = eventArgs->GetString(0).ToString();
+            // Out of the way of the game's loading screen
+            SetUIVisible(false);
+            World::Get().GetRunner().Queue([name]() { PartySaves::Load(name); });
+        }
         else if (eventName == "listHostMods")
             World::Get().GetRunner().Queue([]() { World::Get().ctx().at<LocalServerService>().SendHostMods(); });
         else if (eventName == "voiceRefresh")

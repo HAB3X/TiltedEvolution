@@ -16,6 +16,8 @@
       "PLAYERS_HINT": "Wie er is, groep",
       "INVITE_HINT": "Je deelnamecode",
       "REVEAL_HINT": "Spelers in de buurt tonen",
+      "SAVES": "Opgeslagen spellen",
+      "SAVES_HINT": "Groepscheckpoints",
       "CANCEL_CONNECT": "Annuleren"
     },
     "CHAT": {
@@ -113,6 +115,18 @@
       "COPY": "Uitnodiging kopiëren",
       "COPIED": "Gekopieerd",
       "CLOSE": "Sluiten"
+    },
+    "SAVES": {
+      "TITLE": "Opgeslagen spellen",
+      "INFO": "De opgeslagen spellen die Skyrim Together voor dit personage heeft gemaakt, nieuwste eerst. Laden vervangt het spel dat je nu speelt, dus sla eerst op als je dat wilt houden.",
+      "CHECKPOINT": "Groepscheckpoint {{slot}}",
+      "BEFORE_HOST_WORLD": "Voordat je de wereld van een host binnenging",
+      "BEFORE_COOP": "Voordat jullie samen speelden",
+      "LOAD": "Laden",
+      "LOAD_CONFIRM": "Ja, laden",
+      "EMPTY": "Nog geen co-op-opslagen voor dit personage. Skyrim Together slaat op voor je eerste co-op-sessie, voordat je de wereld van een host binnengaat en bij groepscheckpoints.",
+      "ERROR": "Kon de map met opgeslagen spellen niet lezen: {{error}}",
+      "MENU_HINT": "Dit zijn gewone opslagen: je kunt ze ook laden via het menu van het spel (Esc, dan Laden)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Bericht van"

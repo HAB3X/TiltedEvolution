@@ -16,6 +16,8 @@
       "PLAYERS_HINT": "Kto jest, drużyna",
       "INVITE_HINT": "Twój kod dołączenia",
       "REVEAL_HINT": "Pokaż graczy w pobliżu",
+      "SAVES": "Zapisy",
+      "SAVES_HINT": "Punkty kontrolne drużyny",
       "CANCEL_CONNECT": "Anuluj"
     },
     "CHAT": {
@@ -108,6 +110,18 @@
       "COPY": "Kopiuj zaproszenie",
       "COPIED": "Skopiowano",
       "CLOSE": "Zamknij"
+    },
+    "SAVES": {
+      "TITLE": "Zapisy",
+      "INFO": "Zapisy, które Skyrim Together utworzył dla tej postaci, od najnowszego. Wczytanie zastępuje bieżącą grę, więc zapisz ją najpierw, jeśli chcesz ją zachować.",
+      "CHECKPOINT": "Punkt kontrolny drużyny {{slot}}",
+      "BEFORE_HOST_WORLD": "Przed dołączeniem do świata gospodarza",
+      "BEFORE_COOP": "Przed wspólną grą",
+      "LOAD": "Wczytaj",
+      "LOAD_CONFIRM": "Tak, wczytaj",
+      "EMPTY": "Brak jeszcze zapisów kooperacji dla tej postaci. Skyrim Together zapisuje przed pierwszą wspólną sesją, przed dołączeniem do świata gospodarza i w punktach kontrolnych drużyny.",
+      "ERROR": "Nie udało się odczytać folderu zapisów gry: {{error}}",
+      "MENU_HINT": "To zwykłe zapisy: możesz je też wczytać z menu gry (Esc, potem Wczytaj)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Wiadomość od",

@@ -71,6 +71,10 @@
               <span class="hub-nav-hint">{{ 'COMPONENT.HUB.REVEAL_HINT' | transloco }}</span>
             </button>
           }
+          <button class="hub-nav-item" [class.active]="page === RootView.SAVES" (click)="setView(RootView.SAVES)">
+            <span class="hub-nav-label">{{ 'COMPONENT.HUB.SAVES' | transloco }}</span>
+            <span class="hub-nav-hint">{{ 'COMPONENT.HUB.SAVES_HINT' | transloco }}</span>
+          </button>
           <button class="hub-nav-item" [class.active]="page === RootView.SETTINGS" (click)="setView(RootView.SETTINGS)">
             <span class="hub-nav-label">{{ 'COMPONENT.ROOT.SETTINGS' | transloco }}</span>
           </button>
@@ -96,6 +100,9 @@
             }
             @case (RootView.INVITE) {
               <app-invite (done)="closeView()"></app-invite>
+            }
+            @case (RootView.SAVES) {
+              <app-saves></app-saves>
             }
             @case (RootView.SETTINGS) {
               <app-settings

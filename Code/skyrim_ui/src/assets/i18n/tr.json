@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Kimler burada, grup",
       "INVITE_HINT": "Katılma kodun",
       "REVEAL_HINT": "Yakındaki oyuncuları göster",
+      "SAVES": "Kayıtlar",
+      "SAVES_HINT": "Grup kayıt noktaları",
       "CANCEL_CONNECT": "İptal"
     },
     "CHAT": {
@@ -109,6 +111,18 @@
       "COPY": "Daveti kopyala",
       "COPIED": "Kopyalandı",
       "CLOSE": "Kapat"
+    },
+    "SAVES": {
+      "TITLE": "Kayıtlar",
+      "INFO": "Skyrim Together'ın bu karakter için oluşturduğu kayıtlar, en yenisi önce. Bir kaydı yüklemek oynadığın oyunun yerini alır; korumak istiyorsan önce kaydet.",
+      "CHECKPOINT": "Grup kayıt noktası {{slot}}",
+      "BEFORE_HOST_WORLD": "Bir ev sahibinin dünyasına katılmadan önce",
+      "BEFORE_COOP": "Birlikte oynamadan önce",
+      "LOAD": "Yükle",
+      "LOAD_CONFIRM": "Evet, yükle",
+      "EMPTY": "Bu karakter için henüz ortak oyun kaydı yok. Skyrim Together ilk ortak oyunundan önce, bir ev sahibinin dünyasına katılmadan önce ve grup kayıt noktalarında kaydeder.",
+      "ERROR": "Oyunun kayıt klasörü okunamadı: {{error}}",
+      "MENU_HINT": "Bunlar normal kayıtlardır: onları oyunun menüsünden de yükleyebilirsin (Esc, ardından Yükle)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Gelen mesaj",

@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Vem som är här, grupp",
       "INVITE_HINT": "Din anslutningskod",
       "REVEAL_HINT": "Visa spelare i närheten",
+      "SAVES": "Sparningar",
+      "SAVES_HINT": "Gruppens kontrollpunkter",
       "CANCEL_CONNECT": "Avbryt"
     },
     "CHAT": {
@@ -109,6 +111,18 @@
       "COPY": "Kopiera inbjudan",
       "COPIED": "Kopierad",
       "CLOSE": "Stäng"
+    },
+    "SAVES": {
+      "TITLE": "Sparningar",
+      "INFO": "Sparningarna som Skyrim Together har gjort för den här karaktären, nyaste först. Att läsa in en ersätter spelet du spelar, så spara först om du vill behålla det.",
+      "CHECKPOINT": "Gruppens kontrollpunkt {{slot}}",
+      "BEFORE_HOST_WORLD": "Innan du gick med i värdens värld",
+      "BEFORE_COOP": "Innan ni spelade tillsammans",
+      "LOAD": "Läs in",
+      "LOAD_CONFIRM": "Ja, läs in",
+      "EMPTY": "Inga samarbetssparningar för den här karaktären än. Skyrim Together sparar före din första samarbetssession, innan du går med i värdens värld och vid gruppens kontrollpunkter.",
+      "ERROR": "Kunde inte läsa spelets sparmapp: {{error}}",
+      "MENU_HINT": "Det här är vanliga sparningar: du kan också läsa in dem från spelets meny (Esc, sedan Läs in)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Meddelande från",
