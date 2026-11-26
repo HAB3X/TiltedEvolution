@@ -252,6 +252,11 @@
       "YES": "はい",
       "NO": "いいえ"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "あなたのクエスト進行がパーティーリーダー{{name}}と異なります: {{quests}}。",
+      "WITH_MEMBER": "{{name}}のクエスト進行があなたと異なります: {{quests}}。",
+      "MORE": "{{quests}} 他{{count}}件"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "サーバーバージョン「{{expectedVersion}}」 とクライアントバージョン「{{version}}」が違います。",

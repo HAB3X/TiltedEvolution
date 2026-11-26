@@ -256,6 +256,11 @@
       "YES": "Evet",
       "NO": "Hayır"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Görev ilerlemen grup lideri {{name}} ile farklı: {{quests}}.",
+      "WITH_MEMBER": "{{name}} adlı oyuncunun görev ilerlemesi seninkinden farklı: {{quests}}.",
+      "MORE": "{{quests}} ve {{count}} tane daha"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Bu sunucu {{expectedVersion}} versiyonu ama sizdeki {{version}}.",

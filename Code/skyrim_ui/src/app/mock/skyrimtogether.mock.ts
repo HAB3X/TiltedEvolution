@@ -357,6 +357,10 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     this.emit('partyTravel', 'Lydia', 'Riverwood');
   }
 
+  mockQuestDesync() {
+    this.emit('questDesync', 'Lydia', true, 'Bleak Falls Barrow, The Golden Claw, Dragon Rising, The Way of the Voice, Diplomatic Immunity', 3);
+  }
+
   answerPartyTravel(travel: boolean): void {
     console.log(`travel together: ${travel ? 'yes' : 'no'}`);
   }

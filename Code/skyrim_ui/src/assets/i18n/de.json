@@ -256,6 +256,11 @@
       "YES": "Ja",
       "NO": "Nein"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Dein Questfortschritt weicht von dem deines Gruppenleiters {{name}} ab: {{quests}}.",
+      "WITH_MEMBER": "Der Questfortschritt von {{name}} weicht von deinem ab: {{quests}}.",
+      "MORE": "{{quests}} und {{count}} weitere"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Dieser Server setzt die Version {{expectedVersion}} voraus, du benutzt aber Version {{version}}.",

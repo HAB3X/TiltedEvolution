@@ -230,6 +230,11 @@
       "YES": "Ja",
       "NO": "Nee"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Je questvoortgang verschilt van die van je groepsleider {{name}}: {{quests}}.",
+      "WITH_MEMBER": "De questvoortgang van {{name}} verschilt van die van jou: {{quests}}.",
+      "MORE": "{{quests}} en nog {{count}}"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Deze server verwacht versie {{expectedVersion}}, maar jij bent op versie {{version}}.",

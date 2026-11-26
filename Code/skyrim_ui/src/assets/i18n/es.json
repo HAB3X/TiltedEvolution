@@ -248,6 +248,11 @@
       "YES": "Sí",
       "NO": "No"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Tu progreso en las misiones difiere del de tu líder de grupo {{name}}: {{quests}}.",
+      "WITH_MEMBER": "El progreso de {{name}} en las misiones difiere del tuyo: {{quests}}.",
+      "MORE": "{{quests}} y {{count}} más"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "El servidor requiere la versión {{expectedVersion}} pero te encuentras en la versión {{version}}.",

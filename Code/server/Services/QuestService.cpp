@@ -6,6 +6,10 @@
 
 #include <Messages/RequestQuestUpdate.h>
 #include <Messages/NotifyQuestUpdate.h>
+#include <Messages/NotifyQuestDesync.h>
+#include <Messages/RequestQuestStages.h>
+
+#include <QuestDesync.h>
 
 #include <Setting.h>
 #include <SharedQuests.h>
@@ -40,6 +44,7 @@ QuestService::QuestService(World& aWorld, entt::dispatcher& aDispatcher)
     : m_world(aWorld)
 {
     m_questUpdateConnection = aDispatcher.sink<PacketEvent<RequestQuestUpdate>>().connect<&QuestService::OnQuestChanges>(this);
+    m_questStagesConnection = aDispatcher.sink<PacketEvent<RequestQuestStages>>().connect<&QuestService::OnQuestStages>(this);
 }
 
 void QuestService::OnQuestChanges(const PacketEvent<RequestQuestUpdate>& acMessage) noexcept
@@ -132,4 +137,75 @@ void QuestService::OnQuestChanges(const PacketEvent<RequestQuestUpdate>& acMessa
     }
 
     GameServer::Get()->SendToParty(notify, partyComponent, acMessage.GetSender());
+}
+
+void QuestService::OnQuestStages(const PacketEvent<RequestQuestStages>& acMessage) noexcept
+{
+    Player* pPlayer = acMessage.pPlayer;
+    pPlayer->GetQuestLogComponent().ReportedStages = acMessage.Packet.Stages;
+
+    PartyService& partyService = m_world.GetPartyService();
+    const PartyService::Party* pParty = partyService.GetPlayerParty(pPlayer);
+    if (!pParty)
+        return;
+
+    Player* pLeader = m_world.GetPlayerManager().GetById(pParty->LeaderPlayerId);
+    if (!pLeader)
+        return;
+
+    if (pLeader != pPlayer)
+    {
+        CheckDesync(*pLeader, *pPlayer);
+        return;
+    }
+
+    for (Player* pMember : pParty->Members)
+    {
+        if (pMember != pLeader)
+            CheckDesync(*pLeader, *pMember);
+    }
+}
+
+void QuestService::CheckDesync(const Player& acLeader, Player& aMember) const noexcept
+{
+    const auto& cLeaderLog = acLeader.GetQuestLogComponent().ReportedStages;
+    auto& memberLog = aMember.GetQuestLogComponent();
+    if (!cLeaderLog || !memberLog.ReportedStages)
+        return;
+
+    // A new leader starts a new comparison
+    if (memberLog.DesyncLeaderId != acLeader.GetId())
+    {
+        memberLog.DesyncLeaderId = acLeader.GetId();
+        memberLog.LastDifferences.clear();
+        memberLog.NotifiedDifferences.clear();
+    }
+
+    Vector<GameId> differences = QuestDesync::Differences(*cLeaderLog, *memberLog.ReportedStages);
+    Vector<GameId> lasting = QuestDesync::InBoth(memberLog.LastDifferences, differences);
+    memberLog.LastDifferences = std::move(differences);
+
+    // Only when what differs changes, so the same desync is reported once
+    if (lasting == memberLog.NotifiedDifferences)
+        return;
+    memberLog.NotifiedDifferences = lasting;
+    if (lasting.empty())
+    {
+        spdlog::info("[QuestDesync]: {}'s quests match their leader {}'s again", aMember.GetUsername().c_str(), acLeader.GetUsername().c_str());
+        return;
+    }
+
+    spdlog::info("[QuestDesync]: {} shared quests differ between {} and their leader {}", lasting.size(), aMember.GetUsername().c_str(), acLeader.GetUsername().c_str());
+
+    NotifyQuestDesync toMember;
+    toMember.OtherPlayer = acLeader.GetUsername();
+    toMember.OtherIsLeader = true;
+    toMember.Quests = lasting;
+    aMember.Send(toMember);
+
+    NotifyQuestDesync toLeader;
+    toLeader.OtherPlayer = aMember.GetUsername();
+    toLeader.OtherIsLeader = false;
+    toLeader.Quests = std::move(lasting);
+    acLeader.Send(toLeader);
 }

@@ -259,6 +259,11 @@
       "YES": "Да",
       "NO": "Нет"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Ваш прогресс заданий отличается от прогресса лидера группы {{name}}: {{quests}}.",
+      "WITH_MEMBER": "Прогресс заданий игрока {{name}} отличается от вашего: {{quests}}.",
+      "MORE": "{{quests}} и ещё {{count}}"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Сервер требует версию клиента {{expectedVersion}}, но вы используете версию {{version}}.",

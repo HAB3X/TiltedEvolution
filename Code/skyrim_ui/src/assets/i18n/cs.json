@@ -252,6 +252,11 @@
       "YES": "Ano",
       "NO": "Ne"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Tvůj postup v úkolech se liší od vůdce družiny {{name}}: {{quests}}.",
+      "WITH_MEMBER": "Postup hráče {{name}} v úkolech se liší od tvého: {{quests}}.",
+      "MORE": "{{quests}} a {{count}} dalších"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Tento server očekává verzi {{expectedVersion}}, ale vy máte verzi {{version}}.",

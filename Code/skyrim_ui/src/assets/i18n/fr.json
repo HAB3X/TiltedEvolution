@@ -251,6 +251,11 @@
       "YES": "Oui",
       "NO": "Non"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Ta progression des quêtes diffère de celle de ton chef de groupe {{name}} : {{quests}}.",
+      "WITH_MEMBER": "La progression des quêtes de {{name}} diffère de la tienne : {{quests}}.",
+      "MORE": "{{quests}} et {{count}} autres"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Ce serveur attend la version {{expectedVersion}} mais vous êtes sur la version {{version}}.",

@@ -91,6 +91,9 @@ export class ClientService implements OnDestroy {
   /** The party leader fast travelled, see answerPartyTravel. */
   public partyTravelChange = new Subject<{ leader: string; place: string }>();
 
+  /** Shared quests differ from another party member's (the leader's, or a member's for the leader). */
+  public questDesyncChange = new Subject<{ otherPlayer: string; otherIsLeader: boolean; quests: string; more: number }>();
+
   /** Disconnect player to server change. */
   public playerDisconnectedChange = new Subject<Player>();
 
@@ -232,6 +235,7 @@ export class ClientService implements OnDestroy {
     );
     skyrimtogether.on('questUpdated', this.onQuestUpdated.bind(this));
     skyrimtogether.on('partyTravel', this.onPartyTravel.bind(this));
+    skyrimtogether.on('questDesync', this.onQuestDesync.bind(this));
   }
 
   /**
@@ -270,6 +274,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('partyInviteReceived');
     skyrimtogether.off('questUpdated');
     skyrimtogether.off('partyTravel');
+    skyrimtogether.off('questDesync');
   }
 
   /**
@@ -817,6 +822,12 @@ export class ClientService implements OnDestroy {
   private onPartyTravel(leader: string, place: string) {
     this.zone.run(() => {
       this.partyTravelChange.next({ leader, place });
+    });
+  }
+
+  private onQuestDesync(otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) {
+    this.zone.run(() => {
+      this.questDesyncChange.next({ otherPlayer, otherIsLeader, quests, more });
     });
   }
 }

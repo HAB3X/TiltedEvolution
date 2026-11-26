@@ -252,6 +252,11 @@
       "YES": "Ja",
       "NO": "Nei"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Oppdragsfremgangen din er ulik den til gruppelederen {{name}}: {{quests}}.",
+      "WITH_MEMBER": "Oppdragsfremgangen til {{name}} er ulik din: {{quests}}.",
+      "MORE": "{{quests}} og {{count}} til"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Denne serveren forventer versjon {{expectedVersion}}, men du er på versjon {{version}}.",

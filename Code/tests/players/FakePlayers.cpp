@@ -28,6 +28,8 @@
 #include <Messages/NotifyPlayerJoined.h>
 #include <Messages/NotifyQuestUpdate.h>
 #include <Messages/NotifyPartyTravel.h>
+#include <Messages/NotifyQuestDesync.h>
+#include <Messages/RequestQuestStages.h>
 #include <Messages/PartyCreateRequest.h>
 #include <Messages/RequestPartyTravel.h>
 #include <Messages/TeleportCommandRequest.h>
@@ -143,6 +145,7 @@ struct FakePlayer final : Client
         case kTeleportCommandResponse: Teleport = *static_cast<TeleportCommandResponse*>(pMessage.get()); break;
         case kNotifyQuestUpdate: QuestUpdates.push_back(*static_cast<NotifyQuestUpdate*>(pMessage.get())); break;
         case kNotifyPartyTravel: Travel = *static_cast<NotifyPartyTravel*>(pMessage.get()); break;
+        case kNotifyQuestDesync: Desyncs.push_back(*static_cast<NotifyQuestDesync*>(pMessage.get())); break;
         default: break;
         }
     }
@@ -165,6 +168,7 @@ struct FakePlayer final : Client
     std::optional<TeleportCommandResponse> Teleport;
     std::vector<NotifyQuestUpdate> QuestUpdates;
     std::optional<NotifyPartyTravel> Travel;
+    std::vector<NotifyQuestDesync> Desyncs;
 };
 
 // Runs the player until the condition holds or the time is up
@@ -495,6 +499,77 @@ int RunTravelMember(const std::string& acEndpoint, const std::string& acPassword
     return s_failures ? 1 : 0;
 }
 
+// Quest desync: the leader reports its shared quests once. The member first reports the same stages three times and
+// hears nothing; then three times with one quest at another stage and one the leader doesn't have, and both are told
+// once (a difference counts from its second report in a row, and the same one isn't told twice).
+// The server lists the quests sorted by id: kDesyncExtra, then kDesyncStage
+const GameId kDesyncSame(0, 0x3372B), kDesyncStage(0, 0x46EF2), kDesyncExtra(0, 0x2A49A);
+
+QuestLog LeaderStages()
+{
+    QuestLog log;
+    log.Entries = {{kDesyncSame, 10}, {kDesyncStage, 20}};
+    return log;
+}
+
+int RunDesyncLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeDesyncLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("desync leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("desync leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+
+    RequestQuestStages report;
+    report.Stages = LeaderStages();
+    leader.Send(report);
+    RunUntil(leader, [] { return false; }, 20s);
+
+    Check("the leader is told once which quests differ from the member's",
+          leader.Desyncs.size() == 1 && leader.Desyncs[0].OtherPlayer == "FakeDesyncMember" && !leader.Desyncs[0].OtherIsLeader &&
+              leader.Desyncs[0].Quests == Vector<GameId>{kDesyncExtra, kDesyncStage},
+          std::to_string(leader.Desyncs.size()) + " notices");
+    return s_failures ? 1 : 0;
+}
+
+int RunDesyncMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeDesyncMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("desync member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    // The leader reports once it sees this player join
+    RunUntil(member, [] { return false; }, 3s);
+
+    auto reportThrice = [&](const QuestLog& acStages)
+    {
+        for (int i = 0; i < 3; ++i)
+        {
+            RequestQuestStages report;
+            report.Stages = acStages;
+            member.Send(report);
+            RunUntil(member, [] { return false; }, 1s);
+        }
+    };
+
+    reportThrice(LeaderStages());
+    Check("the same stages: no notice", member.Desyncs.empty(), std::to_string(member.Desyncs.size()) + " notices");
+
+    QuestLog differing;
+    differing.Entries = {{kDesyncExtra, 5}, {kDesyncSame, 10}, {kDesyncStage, 30}};
+    reportThrice(differing);
+    RunUntil(member, [] { return false; }, 2s);
+    std::string detail = std::to_string(member.Desyncs.size()) + " notices";
+    if (!member.Desyncs.empty())
+        detail += ", from " + std::string(member.Desyncs[0].OtherPlayer.c_str()) + " naming " + std::to_string(member.Desyncs[0].Quests.size()) + " quests";
+    Check("different stages: told once, naming the leader and the two quests",
+          member.Desyncs.size() == 1 && member.Desyncs[0].OtherPlayer == "FakeDesyncLeader" && member.Desyncs[0].OtherIsLeader &&
+              member.Desyncs[0].Quests == Vector<GameId>{kDesyncExtra, kDesyncStage},
+          detail);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -503,6 +578,7 @@ int RunTravelMember(const std::string& acEndpoint, const std::string& acPassword
 // FakePlayers.exe listen184|talk184 [address:port] [password]: the same against an official v1.8.4 server
 // FakePlayers.exe questleader|questmember [address:port] [password]: start the leader first (sSharedQuestTypes=Main,Misc)
 // FakePlayers.exe travelleader|travelmember [address:port] [password]: start the leader first
+// FakePlayers.exe desyncleader|desyncmember [address:port] [password]: start the leader first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -538,7 +614,11 @@ int main(int argc, char** argv)
         return RunTravelLeader(cEndpoint, cPassword);
     if (cRole == "travelmember")
         return RunTravelMember(cEndpoint, cPassword);
+    if (cRole == "desyncleader")
+        return RunDesyncLeader(cEndpoint, cPassword);
+    if (cRole == "desyncmember")
+        return RunDesyncMember(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|listen184|talk184|questleader|questmember|travelleader|travelmember [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember [address:port] [password]\n");
     return 2;
 }

@@ -17,6 +17,7 @@
 #include <Messages/RequestOwnershipTransfer.h>
 #include <Structs/Movement.h>
 #include <Structs/ServerSettings.h>
+#include <QuestDesync.h>
 #include <WireProtocol.h>
 #include <Messages/ServerMessageFactory.h>
 #include <Structs/Vector2_NetQuantize.h>
@@ -205,6 +206,33 @@ TEST_CASE("Static structures", "[encoding.static]")
         REQUIRE(SharedQuests::IsShared(cMask, SharedQuests::kNone));
         REQUIRE_FALSE(SharedQuests::IsShared(cMask, SharedQuests::kDaedric));
         REQUIRE_FALSE(SharedQuests::IsShared(cMask, 200));
+    }
+}
+
+TEST_CASE("Quest desync", "[encoding.quest_desync]")
+{
+    const GameId cA(0, 0x10), cB(0, 0x20), cC(1, 0x05), cD(2, 0x01);
+    QuestLog leader, member;
+    leader.Entries = {{cB, 20}, {cA, 10}, {cC, 5}};
+    member.Entries = {{cA, 10}, {cD, 1}, {cB, 30}};
+
+    GIVEN("The same quests at the same stages, in any order")
+    {
+        QuestLog same;
+        same.Entries = {{cC, 5}, {cA, 10}, {cB, 20}};
+        REQUIRE(QuestDesync::Differences(leader, same).empty());
+    }
+
+    GIVEN("A different stage, and quests only one side has")
+    {
+        REQUIRE(QuestDesync::Differences(leader, member) == Vector<GameId>{cB, cC, cD});
+        REQUIRE(QuestDesync::Differences(leader, QuestLog{}) == Vector<GameId>{cA, cB, cC});
+    }
+
+    GIVEN("Only differences seen twice in a row count")
+    {
+        REQUIRE(QuestDesync::InBoth({cB, cC, cD}, {cA, cC, cD}) == Vector<GameId>{cC, cD});
+        REQUIRE(QuestDesync::InBoth({}, {cA}).empty());
     }
 }
 
@@ -703,6 +731,48 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    GIVEN("RequestQuestStages")
+    {
+        RequestQuestStages sendMessage, recvMessage;
+        sendMessage.Stages.Entries.push_back({GameId(0, 0x3372B), 10});
+        sendMessage.Stages.Entries.push_back({GameId(2, 0x1234), 200});
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyQuestDesync")
+    {
+        NotifyQuestDesync sendMessage, recvMessage;
+        sendMessage.OtherPlayer = "Lydia";
+        sendMessage.OtherIsLeader = true;
+        sendMessage.Quests.push_back(GameId(0, 0x3372B));
+        sendMessage.Quests.push_back(GameId(2, 0x1234));
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
     GIVEN("NotifyPartyCheckpoint")
     {
         NotifyPartyCheckpoint sendMessage, recvMessage;
@@ -930,6 +1000,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestInventorySnapshot).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestHostWorld).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestPartyTravel).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestQuestStages).has_value());
         REQUIRE_FALSE(Wire::FromWire(55).has_value());
     }
 

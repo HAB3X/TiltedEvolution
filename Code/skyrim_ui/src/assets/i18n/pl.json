@@ -256,6 +256,11 @@
       "YES": "Tak",
       "NO": "Nie"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Twój postęp w zadaniach różni się od postępu lidera drużyny {{name}}: {{quests}}.",
+      "WITH_MEMBER": "Postęp gracza {{name}} w zadaniach różni się od twojego: {{quests}}.",
+      "MORE": "{{quests}} i {{count}} więcej"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Ten Serwer spodziewa się wersji {{expectedVersion}} ale ty jesteś na wersji {{version}}.",

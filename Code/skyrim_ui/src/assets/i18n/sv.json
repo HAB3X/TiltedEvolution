@@ -259,6 +259,11 @@
       "YES": "Ja",
       "NO": "Nej"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Dina uppdragsframsteg skiljer sig från gruppledaren {{name}}s: {{quests}}.",
+      "WITH_MEMBER": "{{name}}s uppdragsframsteg skiljer sig från dina: {{quests}}.",
+      "MORE": "{{quests}} och {{count}} till"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Servern förväntar sig version {{expectedVersion}} men du kör version {{version}}.",

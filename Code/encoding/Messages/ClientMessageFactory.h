@@ -64,6 +64,7 @@
 #include <Messages/HostWorldStateRequest.h>
 #include <Messages/RequestModeratePlayer.h>
 #include <Messages/RequestPartyTravel.h>
+#include <Messages/RequestQuestStages.h>
 
 using TiltedPhoques::UniquePtr;
 
@@ -78,7 +79,7 @@ struct ClientMessageFactory
             PartyChangeLeaderRequest, PartyKickRequest, RequestActorValueChanges, RequestActorMaxValueChanges, EnterExteriorCellRequest, RequestHealthChangeBroadcast, ActivateRequest, LockChangeRequest, AssignObjectsRequest, RequestDeathStateChange, ShiftGridCellRequest,
             RequestOwnershipTransfer, RequestOwnershipClaim, RequestObjectInventoryChanges, SpellCastRequest, ProjectileLaunchRequest, InterruptCastRequest, AddTargetRequest, ScriptAnimationRequest, DrawWeaponRequest, MountRequest, NewPackageRequest, RequestRespawn, SyncExperienceRequest,
             RequestEquipmentChanges, SendChatMessageRequest, TeleportCommandRequest, PlayerRespawnRequest, DialogueRequest, SubtitleRequest, PlayerDialogueRequest, PlayerLevelRequest, TeleportRequest, RequestPlayerHealthUpdate, RequestWeatherChange, RequestCurrentWeather, RequestSetWaypoint,
-            RequestRemoveWaypoint, RemoveSpellRequest, SetTimeCommandRequest, RequestActionEvents, PartyCheckpointRequest, VoiceDataRequest, VoiceStateRequest, RequestHostWorld, HostWorldStateRequest, RequestModeratePlayer, RequestPartyTravel>;
+            RequestRemoveWaypoint, RemoveSpellRequest, SetTimeCommandRequest, RequestActionEvents, PartyCheckpointRequest, VoiceDataRequest, VoiceStateRequest, RequestHostWorld, HostWorldStateRequest, RequestModeratePlayer, RequestPartyTravel, RequestQuestStages>;
 
         return s_visitor(std::forward<T>(func));
     }

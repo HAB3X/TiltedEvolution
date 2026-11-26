@@ -247,6 +247,11 @@
       "YES": "是",
       "NO": "否"
     },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "你的任务进度与队长 {{name}} 不同：{{quests}}。",
+      "WITH_MEMBER": "{{name}} 的任务进度与你不同：{{quests}}。",
+      "MORE": "{{quests}} 等另外 {{count}} 个"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "服务器支持的版本为{{expectedVersion}}而您的版本为{{version}}。",
