@@ -527,6 +527,28 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    SECTION("NotifyLootRefused")
+    {
+        Buffer buff(1000);
+
+        NotifyLootRefused sendMessage, recvMessage;
+        sendMessage.ServerId = 0x1234;
+        sendMessage.Item.BaseId = GameId(0, 0xF);
+        sendMessage.Item.Count = 3;
+
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
     SECTION("AuthenticationResponse")
     {
         Buffer buff(1000);
@@ -1124,6 +1146,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestHostWorld).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestPartyTravel).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestQuestStages).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kNotifyLootRefused).has_value());
         REQUIRE_FALSE(Wire::FromWire(55).has_value());
     }
 

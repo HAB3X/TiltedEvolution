@@ -32,6 +32,7 @@
 #include <Messages/NotifyHostWorldRequested.h>
 #include <Messages/NotifyHostWorldState.h>
 #include <Messages/NotifyChatMessageBroadcast.h>
+#include <Messages/NotifyLootRefused.h>
 #include <Messages/NotifyPartyJoined.h>
 #include <Messages/NotifyPlayerJoined.h>
 #include <Messages/NotifyQuestUpdate.h>
@@ -43,6 +44,7 @@
 #include <Messages/TeleportCommandRequest.h>
 #include <Messages/RequestQuestUpdate.h>
 #include <Messages/RequestHostWorld.h>
+#include <Messages/RequestInventoryChanges.h>
 #include <Messages/RequestModeratePlayer.h>
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/ServerMessageFactory.h>
@@ -165,6 +167,7 @@ struct FakePlayer final : Client
             AssignedIds[pResponse->Cookie] = pResponse->ServerId;
             break;
         }
+        case kNotifyLootRefused: LootRefusals.push_back(*static_cast<NotifyLootRefused*>(pMessage.get())); break;
         case kAssignObjectsResponse: Objects = *static_cast<AssignObjectsResponse*>(pMessage.get()); break;
         case kServerReferencesMoveRequest:
             MovementBytes += aSize;
@@ -206,6 +209,7 @@ struct FakePlayer final : Client
     std::vector<Movement> RelayedMovements;
     size_t MovementBytes = 0;
     std::optional<AssignObjectsResponse> Objects;
+    std::vector<NotifyLootRefused> LootRefusals;
 };
 
 // Runs the player until the condition holds or the time is up
@@ -813,6 +817,70 @@ int RunDoorLater(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Loot race: a chest with one sword, both players take it within a second, the later one is told to give it back
+const GameId kLootChest{0, 0x16C02};
+const GameId kLootSword{0, 0x12EB7};
+
+// Enters the loot cell and reports the chest; returns its server id
+std::optional<uint32_t> SeeLootChest(FakePlayer& aPlayer)
+{
+    EnterDoorCell(aPlayer);
+    AssignObjectsRequest request;
+    ObjectData chest;
+    chest.Id = kLootChest;
+    chest.CellId = kDoorCell;
+    chest.IsContainer = true;
+    Inventory::Entry sword{};
+    sword.BaseId = kLootSword;
+    sword.Count = 1;
+    chest.CurrentInventory.Entries.push_back(sword);
+    request.Objects.push_back(chest);
+    aPlayer.Send(request);
+    if (!RunUntil(aPlayer, [&] { return aPlayer.Objects && aPlayer.Objects->Objects.size() == 1; }))
+        return std::nullopt;
+    return aPlayer.Objects->Objects[0].ServerId;
+}
+
+void TakeSword(FakePlayer& aPlayer, uint32_t aChestId)
+{
+    RequestInventoryChanges take;
+    take.ServerId = aChestId;
+    take.Item.BaseId = kLootSword;
+    take.Item.Count = -1;
+    aPlayer.Send(take);
+}
+
+int RunLootFirst(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer first("FakeLootFirst", acPassword);
+    first.Connect(acEndpoint);
+    Check("first looter logs in", RunUntil(first, [&] { return first.LoggedIn; }));
+    const auto cChest = SeeLootChest(first);
+    Check("first looter sees the chest", cChest.has_value());
+    Check("sees the second looter join", RunUntil(first, [&] { return !first.JoinedNames.empty(); }, 30s));
+    if (cChest)
+        TakeSword(first, *cChest);
+    RunUntil(first, [] { return false; }, 10s);
+    Check("the first to take the sword keeps it", first.LootRefusals.empty(), std::to_string(first.LootRefusals.size()) + " refusals");
+    return s_failures ? 1 : 0;
+}
+
+int RunLootSecond(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer second("FakeLootSecond", acPassword);
+    second.Connect(acEndpoint);
+    Check("second looter logs in", RunUntil(second, [&] { return second.LoggedIn; }));
+    const auto cChest = SeeLootChest(second);
+    Check("second looter sees the chest", cChest.has_value());
+    if (cChest)
+        TakeSword(second, *cChest);
+    Check("the second gives the sword back", RunUntil(second, [&] { return !second.LootRefusals.empty(); }, 5s));
+    Check("one sword, from that chest", second.LootRefusals.size() == 1 && second.LootRefusals[0].Item.BaseId == kLootSword && second.LootRefusals[0].Item.Count == 1 &&
+                                            cChest && second.LootRefusals[0].ServerId == *cChest);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -825,6 +893,7 @@ int RunDoorLater(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe desyncleader|desyncmember [address:port] [password]: start the leader first
 // FakePlayers.exe crowdowner|crowdwatcher [address:port] [password]: start the owner first
 // FakePlayers.exe doorfirst|doorlater [address:port] [password]: start the first one first
+// FakePlayers.exe lootfirst|lootsecond [address:port] [password]: start the first one first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -874,7 +943,11 @@ int main(int argc, char** argv)
         return RunDoorFirst(cEndpoint, cPassword);
     if (cRole == "doorlater")
         return RunDoorLater(cEndpoint, cPassword);
+    if (cRole == "lootfirst")
+        return RunLootFirst(cEndpoint, cPassword);
+    if (cRole == "lootsecond")
+        return RunLootSecond(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|crowdowner|crowdwatcher|doorfirst|doorlater [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond [address:port] [password]\n");
     return 2;
 }

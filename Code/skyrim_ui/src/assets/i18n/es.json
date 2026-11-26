@@ -279,6 +279,9 @@
       "WITH_MEMBER": "El progreso de {{name}} en las misiones difiere del tuyo: {{quests}}.",
       "MORE": "{{quests}} y {{count}} más"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "Otro jugador fue más rápido: {{item}} ({{count}}) fue para él."
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "El servidor requiere la versión {{expectedVersion}} pero te encuentras en la versión {{version}}.",

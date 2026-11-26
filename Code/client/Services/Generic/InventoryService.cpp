@@ -10,6 +10,7 @@
 #include <Messages/RequestEquipmentChanges.h>
 #include <Messages/NotifyEquipmentChanges.h>
 #include <Messages/NotifyInventorySnapshot.h>
+#include <Messages/NotifyLootRefused.h>
 #include <Messages/DrawWeaponRequest.h>
 #include <Messages/NotifyDrawWeapon.h>
 
@@ -18,6 +19,8 @@
 #include <Events/EquipmentChangeEvent.h>
 
 #include <World.h>
+#include <Services/OverlayService.h>
+#include <OverlayApp.hpp>
 #include <Systems/OwnershipSystem.h>
 #include <Games/Skyrim/Interface/UI.h>
 #include <PlayerCharacter.h>
@@ -46,6 +49,7 @@ InventoryService::InventoryService(World& aWorld, entt::dispatcher& aDispatcher,
     m_inventoryChangeConnection = m_dispatcher.sink<NotifyInventoryChanges>().connect<&InventoryService::OnNotifyInventoryChanges>(this);
     m_equipmentChangeConnection = m_dispatcher.sink<NotifyEquipmentChanges>().connect<&InventoryService::OnNotifyEquipmentChanges>(this);
     m_inventorySnapshotConnection = m_dispatcher.sink<NotifyInventorySnapshot>().connect<&InventoryService::OnNotifyInventorySnapshot>(this);
+    m_lootRefusedConnection = m_dispatcher.sink<NotifyLootRefused>().connect<&InventoryService::OnNotifyLootRefused>(this);
 }
 
 void InventoryService::OnUpdate(const UpdateEvent& acUpdateEvent) noexcept
@@ -200,6 +204,23 @@ void InventoryService::OnNotifyInventoryChanges(const NotifyInventoryChanges& ac
 
     ScopedInventoryOverride _;
     pObject->AddOrRemoveItem(acMessage.Item);
+}
+
+void InventoryService::OnNotifyLootRefused(const NotifyLootRefused& acMessage) const noexcept
+{
+    // Removed through the game's hooks, so the server learns this player no longer has them
+    Inventory::Entry giveBack = acMessage.Item;
+    giveBack.Count = -acMessage.Item.Count;
+    PlayerCharacter::Get()->AddOrRemoveItem(giveBack);
+
+    const auto* pItem = TESForm::GetById(m_world.GetModSystem().GetGameId(acMessage.Item.BaseId));
+    const char* cpName = pItem ? pItem->GetName() : nullptr;
+    spdlog::info("Gave back {} of item {:X}, another player took them out of container {:X} first", acMessage.Item.Count, acMessage.Item.BaseId.BaseId, acMessage.ServerId);
+
+    auto pArguments = CefListValue::Create();
+    pArguments->SetString(0, cpName && *cpName ? cpName : fmt::format("{:X}", acMessage.Item.BaseId.BaseId));
+    pArguments->SetInt(1, acMessage.Item.Count);
+    m_world.GetOverlayService().GetOverlayApp()->ExecuteAsync("lootRefused", pArguments);
 }
 
 void InventoryService::OnNotifyEquipmentChanges(const NotifyEquipmentChanges& acMessage) noexcept

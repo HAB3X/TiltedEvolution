@@ -283,6 +283,9 @@
       "WITH_MEMBER": "Oppdragsfremgangen til {{name}} er ulik din: {{quests}}.",
       "MORE": "{{quests}} og {{count}} til"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "En annen spiller var raskere: {{item}} ({{count}}) gikk til dem."
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Denne serveren forventer versjon {{expectedVersion}}, men du er på versjon {{version}}.",

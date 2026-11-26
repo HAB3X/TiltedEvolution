@@ -278,6 +278,9 @@
       "WITH_MEMBER": "{{name}} 的任务进度与你不同：{{quests}}。",
       "MORE": "{{quests}} 等另外 {{count}} 个"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "另一名玩家抢先一步：{{item}}（{{count}}）归了对方。"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "服务器支持的版本为{{expectedVersion}}而您的版本为{{version}}。",

@@ -261,6 +261,9 @@
       "WITH_MEMBER": "De questvoortgang van {{name}} verschilt van die van jou: {{quests}}.",
       "MORE": "{{quests}} en nog {{count}}"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "Een andere speler was sneller: {{item}} ({{count}}) ging naar hem."
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Deze server verwacht versie {{expectedVersion}}, maar jij bent op versie {{version}}.",

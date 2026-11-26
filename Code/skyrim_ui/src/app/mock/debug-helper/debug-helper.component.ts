@@ -111,6 +111,10 @@ export class DebugHelperComponent implements OnInit {
     this.mockClientService.skyrimtogether.mockQuestDesync();
   }
 
+  mockLootRefused() {
+    this.mockClientService.skyrimtogether.mockLootRefused();
+  }
+
   inviteToPlayerMockParty(playerId: number) {
     this.mockClientService.skyrimtogether.inviteToPlayerMockParty(playerId);
   }

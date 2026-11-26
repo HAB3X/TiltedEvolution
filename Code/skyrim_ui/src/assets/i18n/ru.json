@@ -290,6 +290,9 @@
       "WITH_MEMBER": "Прогресс заданий игрока {{name}} отличается от вашего: {{quests}}.",
       "MORE": "{{quests}} и ещё {{count}}"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "Другой игрок оказался быстрее: {{item}} ({{count}}) досталось ему."
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Сервер требует версию клиента {{expectedVersion}}, но вы используете версию {{version}}.",

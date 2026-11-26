@@ -134,5 +134,6 @@ enum ServerOpcode : unsigned char
     kNotifyPause,
     kNotifyPartyTravel,
     kNotifyQuestDesync,
+    kNotifyLootRefused,
     kServerOpcodeMax
 };

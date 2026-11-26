@@ -283,6 +283,9 @@
       "WITH_MEMBER": "{{name}}のクエスト進行があなたと異なります: {{quests}}。",
       "MORE": "{{quests}} 他{{count}}件"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "他のプレイヤーが先に取りました：{{item}}（{{count}}）はそのプレイヤーのものになりました。"
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "サーバーバージョン「{{expectedVersion}}」 とクライアントバージョン「{{version}}」が違います。",

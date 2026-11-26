@@ -287,6 +287,9 @@
       "WITH_MEMBER": "Postęp gracza {{name}} w zadaniach różni się od twojego: {{quests}}.",
       "MORE": "{{quests}} i {{count}} więcej"
     },
+    "LOOT": {
+      "TAKEN_FIRST": "Inny gracz był szybszy: {{item}} ({{count}}) trafił do niego."
+    },
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "Ten Serwer spodziewa się wersji {{expectedVersion}} ale ty jesteś na wersji {{version}}.",
