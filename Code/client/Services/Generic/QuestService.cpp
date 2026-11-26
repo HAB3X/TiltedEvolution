@@ -713,6 +713,13 @@ void QuestService::CollectSharedQuests(QuestLog& aRunning, QuestLog& aCompleted)
     }
 }
 
+std::string QuestService::GetName(TESQuest* apQuest) noexcept
+{
+    if (apQuest->fullName.value.data && *apQuest->fullName.value.AsAscii())
+        return apQuest->fullName.value.AsAscii();
+    return apQuest->idName.AsAscii();
+}
+
 void QuestService::DebugDumpQuests()
 {
     auto& quests = ModManager::Get()->quests;

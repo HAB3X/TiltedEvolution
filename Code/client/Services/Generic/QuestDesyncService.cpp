@@ -19,16 +19,13 @@ constexpr std::chrono::seconds kReportInterval{60};
 // The chat names this many quests, and counts the rest
 constexpr size_t kNamedQuests = 5;
 
-// The quest's name in this game's language, else its editor id
 std::string QuestName(const GameId& acId) noexcept
 {
     const uint32_t cFormId = World::Get().GetModSystem().GetGameId(acId);
     TESQuest* pQuest = Cast<TESQuest>(TESForm::GetById(cFormId));
     if (!pQuest)
         return fmt::format("{:X}:{:X}", acId.ModId, acId.BaseId);
-    if (pQuest->fullName.value.data && *pQuest->fullName.value.AsAscii())
-        return pQuest->fullName.value.AsAscii();
-    return pQuest->idName.AsAscii();
+    return QuestService::GetName(pQuest);
 }
 } // namespace
 

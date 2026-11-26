@@ -49,6 +49,8 @@ public:
     static bool IsSharedQuest(TESQuest* apQuest) noexcept;
     // The shared quests this game has started and not stopped, and those it completed, at their current stage
     static void CollectSharedQuests(QuestLog& aRunning, QuestLog& aCompleted) noexcept;
+    // The quest's name in this game's language, else its editor id
+    static std::string GetName(TESQuest* apQuest) noexcept;
     static void DebugDumpQuests();
     static bool StopQuest(uint32_t aformId);
 
