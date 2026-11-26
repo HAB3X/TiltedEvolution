@@ -8,8 +8,6 @@
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/PlayerDialogueRequest.h>
 #include <Messages/NotifyPlayerDialogue.h>
-#include <Messages/TeleportRequest.h>
-#include <Messages/NotifyTeleport.h>
 #include <Messages/RequestPlayerHealthUpdate.h>
 #include <Messages/NotifyPlayerHealthUpdate.h>
 
@@ -23,7 +21,6 @@ OverlayService::OverlayService(World& aWorld, entt::dispatcher& aDispatcher)
 {
     m_chatMessageConnection = aDispatcher.sink<PacketEvent<SendChatMessageRequest>>().connect<&OverlayService::HandleChatMessage>(this);
     m_playerDialogueConnection = aDispatcher.sink<PacketEvent<PlayerDialogueRequest>>().connect<&OverlayService::OnPlayerDialogue>(this);
-    m_teleportConnection = aDispatcher.sink<PacketEvent<TeleportRequest>>().connect<&OverlayService::OnTeleport>(this);
     m_playerHealthConnection = aDispatcher.sink<PacketEvent<RequestPlayerHealthUpdate>>().connect<&OverlayService::OnPlayerHealthUpdate>(this);
 }
 
@@ -71,30 +68,6 @@ void OverlayService::HandleChatMessage(const PacketEvent<SendChatMessageRequest>
 void OverlayService::OnPlayerDialogue(const PacketEvent<PlayerDialogueRequest>& acMessage) const noexcept
 {
     sendPlayerMessage(kPlayerDialogue, acMessage.Packet.Text, acMessage.pPlayer);
-}
-
-void OverlayService::OnTeleport(const PacketEvent<TeleportRequest>& acMessage) const noexcept
-{
-    Player* pTargetPlayer = m_world.GetPlayerManager().GetById(acMessage.Packet.PlayerId);
-    if (!pTargetPlayer)
-        return;
-
-    NotifyTeleport response{};
-
-    auto character = pTargetPlayer->GetCharacter();
-    if (character)
-    {
-        const auto* pMovementComponent = m_world.try_get<MovementComponent>(*character);
-        if (pMovementComponent)
-        {
-            const auto& cellComponent = pTargetPlayer->GetCellComponent();
-            response.CellId = cellComponent.Cell;
-            response.Position = pMovementComponent->Position;
-            response.WorldSpaceId = cellComponent.WorldSpaceId;
-        }
-    }
-
-    acMessage.pPlayer->Send(response);
 }
 
 void OverlayService::OnPlayerHealthUpdate(const PacketEvent<RequestPlayerHealthUpdate>& acMessage) const noexcept
