@@ -287,6 +287,8 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
   launchParty(): void {
     if (this.connected) {
       this.emit('partyCreated');
+      // The server's default: every kind but Misc
+      this.emit('partyQuestSharing', true, 0b111110111110);
     }
   }
 
@@ -296,6 +298,7 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
 
   acceptPartyInvite(inviterId: number): void {
     this.emit('partyCreated');
+    this.emit('partyQuestSharing', true, 0b111110111110);
     this.emit(
       'partyInfo',
       [
@@ -508,6 +511,40 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
 
   answerPartySummon(summonerId: number, accept: boolean): void {
     console.log(`summons from ${summonerId}: ${accept ? 'go' : 'stay'}`);
+  }
+
+  setPartyQuestSharing(enabled: boolean, types: number): void {
+    // The server tells the whole party, the leader too
+    setTimeout(() => this.emit('partyQuestSharing', enabled, types), 200);
+  }
+
+  listShareableQuests(): void {
+    const quests = [
+      { id: 0x3372b, name: 'The Golden Claw' },
+      { id: 0x2a49a, name: 'The Black Star' },
+      { id: -16775168, name: 'A Light Plugin Quest' },
+    ];
+    setTimeout(() => this.emit('shareableQuests', JSON.stringify(quests)), 200);
+  }
+
+  shareQuest(questId: number): void {
+    console.log(`offering quest ${questId} to the party`);
+  }
+
+  answerQuestShare(questId: number, accept: boolean): void {
+    console.log(`quest ${questId} offer: ${accept ? 'accepted' : 'declined'}`);
+  }
+
+  answerQuestCatchUp(take: boolean): void {
+    console.log(`leader's quest progress: ${take ? 'taken' : 'kept mine'}`);
+  }
+
+  mockQuestShareOffer() {
+    this.emit('questShareOffer', 'Lydia', 'The Golden Claw', 0x3372b);
+  }
+
+  mockQuestCatchUp() {
+    this.emit('questCatchUp', 'Lydia', 4);
   }
 
   mockPartySummon() {

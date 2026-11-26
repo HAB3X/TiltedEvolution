@@ -6,6 +6,7 @@ import { ClientService } from 'src/app/services/client.service';
 import { GroupService } from 'src/app/services/group.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { PlayerListService } from 'src/app/services/player-list.service';
+import { maskFromQuestTypes, PartyQuestSharing, QUEST_TYPES, questTypesFromMask } from 'src/app/models/shared-quests';
 
 @Component({
   selector: 'app-party-menu',
@@ -22,6 +23,13 @@ export class PartyMenuComponent {
   isLaunchPartyDisabled$: Observable<boolean>;
   invitations$: Observable<Player[]>;
   isPartyLeader$: Observable<boolean>;
+  questSharing$ = this.clientService.partyQuestSharingChange.asObservable();
+  shareableQuests$ = this.clientService.shareableQuestsChange.asObservable();
+  readonly questTypes = QUEST_TYPES;
+  /** Whether the list of this player's quests to offer is open */
+  showShareable = false;
+  /** The quests offered since the list was opened */
+  offered = new Set<number>();
 
   constructor(
     private readonly groupService: GroupService,
@@ -66,6 +74,31 @@ export class PartyMenuComponent {
 
   public kickMember(playerId: number) {
     this.clientService.kickPartyMember(playerId);
+  }
+
+  public isShared(sharing: PartyQuestSharing, type: string): boolean {
+    return questTypesFromMask(sharing.types).includes(type);
+  }
+
+  public setSharingEnabled(sharing: PartyQuestSharing, enabled: boolean) {
+    this.clientService.setPartyQuestSharing(enabled, sharing.types);
+  }
+
+  public toggleType(sharing: PartyQuestSharing, type: string) {
+    const types = new Set(questTypesFromMask(sharing.types));
+    if (!types.delete(type)) types.add(type);
+    this.clientService.setPartyQuestSharing(sharing.enabled, maskFromQuestTypes(types));
+  }
+
+  public listShareableQuests() {
+    this.showShareable = true;
+    this.offered = new Set();
+    this.clientService.listShareableQuests();
+  }
+
+  public shareQuest(questId: number) {
+    this.offered = new Set(this.offered).add(questId);
+    this.clientService.shareQuest(questId);
   }
 
   public changeLeader(playerId: number) {

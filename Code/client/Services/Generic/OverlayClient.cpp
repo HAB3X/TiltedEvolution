@@ -12,6 +12,8 @@
 #include <Services/NameTagService.h>
 #include <Services/HostWorldService.h>
 #include <Services/TravelTogetherService.h>
+#include <Services/QuestSharingService.h>
+#include <Services/QuestDesyncService.h>
 #include <Services/MapService.h>
 
 #include <Messages/SendChatMessageRequest.h>
@@ -90,6 +92,30 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             const uint32_t summonerId = eventArgs->GetInt(0);
             const bool accept = eventArgs->GetBool(1);
             World::Get().GetRunner().Queue([summonerId, accept]() { World::Get().ctx().at<TravelTogetherService>().AnswerSummon(summonerId, accept); });
+        }
+        else if (eventName == "setPartyQuestSharing")
+        {
+            const bool enabled = eventArgs->GetBool(0);
+            const uint32_t types = static_cast<uint32_t>(eventArgs->GetInt(1));
+            World::Get().GetRunner().Queue([enabled, types]() { World::Get().ctx().at<QuestSharingService>().SetSharing(enabled, types); });
+        }
+        else if (eventName == "listShareableQuests")
+            World::Get().GetRunner().Queue([]() { World::Get().ctx().at<QuestSharingService>().ListShareableQuests(); });
+        else if (eventName == "shareQuest")
+        {
+            const uint32_t questId = static_cast<uint32_t>(eventArgs->GetInt(0));
+            World::Get().GetRunner().Queue([questId]() { World::Get().ctx().at<QuestSharingService>().Share(questId); });
+        }
+        else if (eventName == "answerQuestShare")
+        {
+            const uint32_t questId = static_cast<uint32_t>(eventArgs->GetInt(0));
+            const bool accept = eventArgs->GetBool(1);
+            World::Get().GetRunner().Queue([questId, accept]() { World::Get().ctx().at<QuestSharingService>().Answer(questId, accept); });
+        }
+        else if (eventName == "answerQuestCatchUp")
+        {
+            const bool take = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([take]() { World::Get().ctx().at<QuestDesyncService>().AnswerCatchUp(take); });
         }
         else if (eventName == "answerPartyDoor")
         {

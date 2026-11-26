@@ -221,7 +221,16 @@
         "TELEPORT": "Teleporter",
         "MAKE_LEADER": "Make leader"
       },
-      "LEAVE_PARTY": "Leave party"
+      "LEAVE_PARTY": "Leave party",
+      "QUESTS": {
+        "TITLE": "Oppdrag",
+        "SHARE_BY_KIND": "Del disse typene oppdrag med gruppen",
+        "LEADER_CHOOSES": "Gruppelederen velger hvilke typer oppdrag gruppen deler.",
+        "SHARE_A_QUEST": "Del et av oppdragene mine",
+        "NOTHING_TO_SHARE": "Du har ingen andre oppdrag å dele.",
+        "SHARE": "Del",
+        "OFFERED": "Tilbudt"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "Nobody here but us chickens",
@@ -425,6 +434,14 @@
     },
     "CRASH": {
       "ATTACH": "Legg ved {{file}} fra {{folder}} i saken, og skriv hva du gjorde da det krasjet."
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} vil dele oppdraget {{quest}} med deg.",
+      "ACCEPT": "Godta",
+      "DECLINE": "Avslå",
+      "CATCH_UP": "Gruppelederen din {{name}} er på andre trinn i {{count}} delte oppdrag. Ta over fremgangen deres, eller beholde din egen?",
+      "TAKE_PROGRESS": "Ta over fremgangen",
+      "KEEP_MINE": "Behold min"
     }
   }
 }

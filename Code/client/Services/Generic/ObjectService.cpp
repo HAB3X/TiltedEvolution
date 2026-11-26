@@ -64,8 +64,9 @@ bool IsPlayerHome(const TESObjectCELL* pCell) noexcept
     return false;
 }
 
-// Find each loaded faction's containers for a jailed player's belongings and stolen items.
-// Do not sync them: each player's items must stay separate (#700).
+// Find each loaded faction's containers for a jailed player's belongings and stolen items, and its merchant's chest.
+// Do not sync them: each player's items must stay separate (#700), and each player trades with their own copy of a
+// merchant (its stock and gold are in the chest), so two players can't both sell into, or buy out of, one stock.
 // Only compare the container pointers; never read through them.
 Set<const TESObjectREFR*> GetPlayerStashContainers() noexcept
 {
@@ -85,6 +86,9 @@ Set<const TESObjectREFR*> GetPlayerStashContainers() noexcept
 
         if (pFaction->crimeData.stolenGoodsContainer)
             containers.insert(pFaction->crimeData.stolenGoodsContainer);
+
+        if (pFaction->vendorData.merchantContainer)
+            containers.insert(pFaction->vendorData.merchantContainer);
     }
 
     return containers;

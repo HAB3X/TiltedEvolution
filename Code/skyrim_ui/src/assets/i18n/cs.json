@@ -221,7 +221,16 @@
         "TELEPORT": "Teleportovat",
         "MAKE_LEADER": "Povýšit na lídra"
       },
-      "LEAVE_PARTY": "Opustit skupinu"
+      "LEAVE_PARTY": "Opustit skupinu",
+      "QUESTS": {
+        "TITLE": "Úkoly",
+        "SHARE_BY_KIND": "Sdílet tyto druhy úkolů s družinou",
+        "LEADER_CHOOSES": "Které druhy úkolů družina sdílí, určuje její vůdce.",
+        "SHARE_A_QUEST": "Sdílet jeden z mých úkolů",
+        "NOTHING_TO_SHARE": "Nemáte žádné další úkoly ke sdílení.",
+        "SHARE": "Sdílet",
+        "OFFERED": "Nabídnuto"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "Nikdo tu není",
@@ -423,6 +432,14 @@
     },
     "CRASH": {
       "ATTACH": "K hlášení přiložte soubor {{file}} ze složky {{folder}} a napište, co jste dělali, když hra spadla."
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} s vámi chce sdílet úkol {{quest}}.",
+      "ACCEPT": "Přijmout",
+      "DECLINE": "Odmítnout",
+      "CATCH_UP": "Vůdce vaší družiny {{name}} je ve {{count}} sdílených úkolech v jiné fázi. Převzít jeho postup, nebo si ponechat svůj?",
+      "TAKE_PROGRESS": "Převzít jeho postup",
+      "KEEP_MINE": "Ponechat svůj"
     }
   }
 }

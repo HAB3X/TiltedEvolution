@@ -20,6 +20,7 @@
 #include <Structs/ObjectData.h>
 #include <Structs/ServerSettings.h>
 #include <QuestDesync.h>
+#include <SharedQuests.h>
 #include <PartyCompass.h>
 #include <PartyTeleport.h>
 #include <WireProtocol.h>
@@ -309,6 +310,13 @@ TEST_CASE("Quest desync", "[encoding.quest_desync]")
         REQUIRE(QuestDesync::InBoth({cB, cC, cD}, {cA, cC, cD}) == Vector<GameId>{cC, cD});
         REQUIRE(QuestDesync::InBoth({}, {cA}).empty());
     }
+
+    GIVEN("Catching up takes the leader's stages of the quests that differ, and none the leader doesn't have")
+    {
+        const QuestLog cCatchUp = QuestDesync::LeaderStages(leader, QuestDesync::Differences(leader, member));
+        REQUIRE(cCatchUp.Entries == Vector<QuestLog::Entry>{{cB, 20}, {cC, 5}});
+        REQUIRE(QuestDesync::LeaderStages(leader, {}).Entries.empty());
+    }
 }
 
 TEST_CASE("Differential structures", "[encoding.differential]")
@@ -352,6 +360,24 @@ TEST_CASE("Differential structures", "[encoding.differential]")
             recvAction.ApplyDifferential(reader);
 
             REQUIRE(sendAction == recvAction);
+        }
+
+        {
+            // A target sent as a server id keeps its flag next to the action type's own bits
+            Buffer buff(1000);
+            Buffer::Writer writer(&buff);
+
+            sendAction.TargetId = 7;
+            sendAction.Type = 4 | ActionEvent::kTargetIsServerId;
+
+            sendAction.GenerateDifferential(recvAction, writer);
+
+            Buffer::Reader reader(&buff);
+            recvAction.ApplyDifferential(reader);
+
+            REQUIRE(sendAction == recvAction);
+            REQUIRE((recvAction.Type & 0x3) == 0);
+            REQUIRE((recvAction.Type & 0x4) != 0);
         }
     }
 
@@ -500,6 +526,57 @@ TEST_CASE("Differential structures", "[encoding.differential]")
             REQUIRE(vars.Integers == recvVars.Integers);
         }
     }
+}
+
+// Writes the message and reads it back the way the receiving side does, after its opcode
+template <class T> T RoundTrip(const T& acSent)
+{
+    Buffer buffer(1000);
+    Buffer::Writer writer(&buffer);
+    acSent.Serialize(writer);
+
+    Buffer::Reader reader(&buffer);
+    uint64_t opcode;
+    reader.ReadBits(opcode, 8);
+    T received;
+    received.DeserializeRaw(reader);
+    return received;
+}
+
+TEST_CASE("Party quest sharing messages", "[encoding.quest_sharing]")
+{
+    const GameId cQuest(2, 0x1234);
+
+    RequestPartyQuestSharing sharing;
+    sharing.Enabled = true;
+    sharing.Types = SharedQuests::Bit(SharedQuests::kMain) | SharedQuests::Bit(SharedQuests::kDaedric);
+    REQUIRE(RoundTrip(sharing) == sharing);
+
+    NotifyPartyQuestSharing notifySharing;
+    notifySharing.Types = SharedQuests::kDefault;
+    REQUIRE(RoundTrip(notifySharing) == notifySharing);
+
+    RequestQuestShare share;
+    share.Id = cQuest;
+    share.Stage = 300;
+    share.ClientQuestType = SharedQuests::kSide;
+    REQUIRE(RoundTrip(share) == share);
+
+    NotifyQuestShareOffer offer;
+    offer.PlayerId = 7;
+    offer.PlayerName = "Lydia";
+    offer.Id = cQuest;
+    REQUIRE(RoundTrip(offer) == offer);
+
+    RequestQuestShareAnswer answer;
+    answer.Id = cQuest;
+    answer.Accept = true;
+    REQUIRE(RoundTrip(answer) == answer);
+
+    NotifyQuestCatchUp catchUp;
+    catchUp.LeaderName = "Lydia";
+    catchUp.Quests.Entries = {{cQuest, 40}, {GameId(0, 0x2610C), 10}};
+    REQUIRE(RoundTrip(catchUp) == catchUp);
 }
 
 TEST_CASE("Packets", "[encoding.packets]")
@@ -1406,6 +1483,12 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestPartySummonAnswer).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestRespawnAtPartner).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyLootRefused).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestPartyQuestSharing).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestQuestShare).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestQuestShareAnswer).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kNotifyPartyQuestSharing).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kNotifyQuestShareOffer).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kNotifyQuestCatchUp).has_value());
         REQUIRE_FALSE(Wire::FromWire(55).has_value());
     }
 

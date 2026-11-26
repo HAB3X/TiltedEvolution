@@ -224,7 +224,16 @@
         "TELEPORT": "Teleportieren",
         "MAKE_LEADER": "Zum Anführer befördern"
       },
-      "LEAVE_PARTY": "Gruppe verlassen"
+      "LEAVE_PARTY": "Gruppe verlassen",
+      "QUESTS": {
+        "TITLE": "Quests",
+        "SHARE_BY_KIND": "Diese Questarten mit der Gruppe teilen",
+        "LEADER_CHOOSES": "Der Gruppenanführer wählt, welche Questarten die Gruppe teilt.",
+        "SHARE_A_QUEST": "Eine meiner Quests teilen",
+        "NOTHING_TO_SHARE": "Du hast keine weiteren Quests zum Teilen.",
+        "SHARE": "Teilen",
+        "OFFERED": "Angeboten"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "Hm... keiner da. Mist.",
@@ -430,6 +439,14 @@
     },
     "CRASH": {
       "ATTACH": "Hänge {{file}} aus {{folder}} an das Issue an und schreibe, was du beim Absturz gemacht hast."
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} möchte die Quest {{quest}} mit dir teilen.",
+      "ACCEPT": "Annehmen",
+      "DECLINE": "Ablehnen",
+      "CATCH_UP": "Dein Gruppenanführer {{name}} ist in {{count}} geteilten Quests an einer anderen Stelle. Seinen Fortschritt übernehmen oder deinen behalten?",
+      "TAKE_PROGRESS": "Fortschritt übernehmen",
+      "KEEP_MINE": "Meinen behalten"
     }
   }
 }

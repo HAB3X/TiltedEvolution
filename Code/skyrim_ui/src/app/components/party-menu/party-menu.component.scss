@@ -1,4 +1,5 @@
 @use 'env';
+@use 'mixins/quest-type-chips';
 :host {
   position: relative;
   display: flex;
@@ -132,4 +133,27 @@ ul {
   &:hover:not([disabled]) {
     border-color: env.$color-accent;
   }
+}
+
+.quest-sharing {
+  @include quest-type-chips.quest-type-chips;
+
+  .quest-type:disabled {
+    cursor: default;
+  }
+}
+
+.quest-sharing-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.shareable-quest {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
 }

@@ -225,7 +225,16 @@
         "TELEPORT": "Téléporter",
         "MAKE_LEADER": "En faire le chef de groupe"
       },
-      "LEAVE_PARTY": "Quitter le groupe"
+      "LEAVE_PARTY": "Quitter le groupe",
+      "QUESTS": {
+        "TITLE": "Quêtes",
+        "SHARE_BY_KIND": "Partager ces types de quêtes avec le groupe",
+        "LEADER_CHOOSES": "Le chef du groupe choisit les types de quêtes que le groupe partage.",
+        "SHARE_A_QUEST": "Partager une de mes quêtes",
+        "NOTHING_TO_SHARE": "Vous n'avez pas d'autre quête à partager.",
+        "SHARE": "Partager",
+        "OFFERED": "Proposée"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "Il n'y a personne ici à part nous poulets ",
@@ -425,6 +434,14 @@
     },
     "CRASH": {
       "ATTACH": "Joignez {{file}} depuis {{folder}} au rapport et dites ce que vous faisiez au moment du plantage."
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} veut partager la quête {{quest}} avec vous.",
+      "ACCEPT": "Accepter",
+      "DECLINE": "Refuser",
+      "CATCH_UP": "Votre chef de groupe {{name}} en est à d'autres étapes dans {{count}} quêtes partagées. Prendre sa progression ou garder la vôtre ?",
+      "TAKE_PROGRESS": "Prendre sa progression",
+      "KEEP_MINE": "Garder la mienne"
     }
   }
 }

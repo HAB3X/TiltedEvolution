@@ -17,4 +17,13 @@ struct QuestLogComponent
     uint32_t DesyncLeaderId{};
     Vector<GameId> LastDifferences;
     Vector<GameId> NotifiedDifferences;
+
+    // Forgets the comparison with a leader, for a player leaving their party
+    void ResetDesync() noexcept
+    {
+        ReportedStages.reset();
+        DesyncLeaderId = 0;
+        LastDifferences.clear();
+        NotifiedDifferences.clear();
+    }
 };

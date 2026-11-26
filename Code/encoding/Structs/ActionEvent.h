@@ -8,6 +8,10 @@ using TiltedPhoques::String;
 
 struct ActionEvent
 {
+    // Type bit: TargetId is the target actor's server id, not a form ID. The same form ID is another actor in each game
+    // (0x14 is every game's own player, other players are temporary references), so synced actors go by server id.
+    static constexpr uint32_t kTargetIsServerId = 1 << 3;
+
     uint64_t Tick{0};
     uint32_t ActorId{0};
     uint32_t ActionId{0};
