@@ -6,6 +6,8 @@
 #include <World.h>
 
 #include <Events/PartyJoinedEvent.h>
+#include <Events/UpdateEvent.h>
+#include <Services/OverlayService.h>
 
 #include <Messages/HostWorldStateRequest.h>
 #include <Messages/NotifyHostWorldRequested.h>
@@ -18,9 +20,14 @@
 #include <Forms/TESQuest.h>
 #include <Games/Overrides.h>
 #include <Games/TES.h>
+#include <Games/Skyrim/SaveLoad.h>
 
 namespace
 {
+constexpr char kOwnWorldSave[] = "BeforeHostWorld";
+// How long to wait for the player to be free to save (not in combat or a menu)
+constexpr std::chrono::seconds kOwnWorldSaveTimeout{60};
+
 // The quests a joiner takes over: the ones the party syncs, without the background (None) and Miscellaneous ones,
 // which the server only relays with Gameplay:bEnableMiscQuestSync, and which run per player for things like radiant
 // favours and the game's own systems
@@ -55,6 +62,7 @@ HostWorldService::HostWorldService(World& aWorld, entt::dispatcher& aDispatcher,
     : m_world(aWorld)
     , m_transport(aTransportService)
     , m_partyJoinedConnection(aDispatcher.sink<PartyJoinedEvent>().connect<&HostWorldService::OnPartyJoined>(this))
+    , m_updateConnection(aDispatcher.sink<UpdateEvent>().connect<&HostWorldService::OnUpdate>(this))
     , m_hostWorldRequestedConnection(aDispatcher.sink<NotifyHostWorldRequested>().connect<&HostWorldService::OnHostWorldRequested>(this))
     , m_hostWorldStateConnection(aDispatcher.sink<NotifyHostWorldState>().connect<&HostWorldService::OnHostWorldState>(this))
 {
@@ -65,7 +73,49 @@ void HostWorldService::OnPartyJoined(const PartyJoinedEvent& acEvent) noexcept
     if (acEvent.IsLeader || !m_world.GetServerSettings().HostWorld)
         return;
 
-    spdlog::info("[HostWorld]: joined the host's party, asking for the host's world");
+    // Rejoining in the same session: the game is the host's world already
+    if (m_appliedThisSession)
+    {
+        RequestWorld();
+        return;
+    }
+
+    spdlog::info("[HostWorld]: joined the host's party, saving our own world before taking over the host's");
+    m_world.GetOverlayService().SendSystemMessage("Saving your own world before joining the host's...");
+    BGSSaveLoadManager::QueueSaveAs(kOwnWorldSave);
+    m_savingOwnWorld = true;
+    m_ownWorldSaveDeadline = std::chrono::steady_clock::now() + kOwnWorldSaveTimeout;
+}
+
+void HostWorldService::OnUpdate(const UpdateEvent&) noexcept
+{
+    if (!m_savingOwnWorld)
+        return;
+
+    if (BGSSaveLoadManager::IsSaveQueued())
+    {
+        if (std::chrono::steady_clock::now() < m_ownWorldSaveDeadline)
+            return;
+
+        // Joining matters more than the extra save: the earlier saves are still on disk
+        BGSSaveLoadManager::CancelQueuedSave();
+        spdlog::warn("[HostWorld]: couldn't save our own world in time, joining without it");
+        m_world.GetOverlayService().SendSystemMessage(
+            "Couldn't save your own world first (you were busy for a minute). Your earlier saves are untouched: load one of them to go back to your own world.");
+    }
+    else
+    {
+        m_world.GetOverlayService().SendSystemMessage(
+            fmt::format("Saved your own world as {}_<your character>. Load it to go back to your own world after playing in the host's.", kOwnWorldSave));
+    }
+
+    m_savingOwnWorld = false;
+    RequestWorld();
+}
+
+void HostWorldService::RequestWorld() noexcept
+{
+    spdlog::info("[HostWorld]: asking for the host's world");
     m_transport.Send(RequestHostWorld{});
 }
 
@@ -122,13 +172,18 @@ void HostWorldService::OnHostWorldState(const NotifyHostWorldState& acMessage) n
                  acMessage.State.RunningQuests.Entries.size(), acMessage.State.CompletedQuests.Entries.size(), acMessage.State.ClearedLocations.size(),
                  acMessage.State.DeadUniqueActors.size());
 
-    ApplyQuests(acMessage.State);
-    ApplyLocations(acMessage.State);
-    ApplyUniqueActorDeaths(acMessage.State);
+    const uint32_t cQuests = ApplyQuests(acMessage.State);
+    const uint32_t cLocations = ApplyLocations(acMessage.State);
+    const uint32_t cActors = ApplyUniqueActorDeaths(acMessage.State);
+    m_appliedThisSession = true;
+
+    m_world.GetOverlayService().SendSystemMessage(fmt::format("You're in {}'s world: {} quests, {} cleared or uncleared places and {} people changed to match it.",
+                                                              acMessage.HostName.c_str(), cQuests, cLocations, cActors));
 }
 
-void HostWorldService::ApplyQuests(const HostWorldState& acState) noexcept
+uint32_t HostWorldService::ApplyQuests(const HostWorldState& acState) noexcept
 {
+    uint32_t changed = 0;
     const auto& modSystem = m_world.GetModSystem();
     auto& questService = m_world.ctx().at<QuestService>();
 
@@ -150,6 +205,9 @@ void HostWorldService::ApplyQuests(const HostWorldState& acState) noexcept
             update.Stage = entry.Stage;
             update.Status = NotifyQuestUpdate::StageUpdate;
             update.ClientQuestType = static_cast<uint8_t>(pQuest->type);
+            // Counted when the quest isn't there yet: the update itself skips stages that were already reached
+            if (aCompleted || pQuest->IsStopped() || !pQuest->IsStageReached(entry.Stage))
+                ++changed;
             questService.ApplyRemoteUpdate(update);
         }
     };
@@ -164,11 +222,13 @@ void HostWorldService::ApplyQuests(const HostWorldState& acState) noexcept
         {
             spdlog::info("[HostWorld]: stopping our quest {:X} ({}), the host doesn't have it", pQuest->formID, pQuest->idName.AsAscii());
             QuestService::StopQuest(pQuest->formID);
+            ++changed;
         }
     }
+    return changed;
 }
 
-void HostWorldService::ApplyLocations(const HostWorldState& acState) const noexcept
+uint32_t HostWorldService::ApplyLocations(const HostWorldState& acState) const noexcept
 {
     const auto& modSystem = m_world.GetModSystem();
 
@@ -190,10 +250,12 @@ void HostWorldService::ApplyLocations(const HostWorldState& acState) const noexc
         ++changed;
     }
     spdlog::info("[HostWorld]: {} locations changed to the host's cleared state", changed);
+    return changed;
 }
 
-void HostWorldService::ApplyUniqueActorDeaths(const HostWorldState& acState) const noexcept
+uint32_t HostWorldService::ApplyUniqueActorDeaths(const HostWorldState& acState) const noexcept
 {
+    uint32_t changed = 0;
     const auto& modSystem = m_world.GetModSystem();
 
     TiltedPhoques::Set<uint32_t> dead;
@@ -213,5 +275,7 @@ void HostWorldService::ApplyUniqueActorDeaths(const HostWorldState& acState) con
                 apActor->KillImpl(nullptr, 100.f, true, true);
             else
                 apActor->Respawn();
+            ++changed;
         });
+    return changed;
 }

@@ -61,6 +61,7 @@ void HostWorldService::OnHostWorldState(const PacketEvent<HostWorldStateRequest>
         message.State.RunningQuests.Entries.size(), message.State.CompletedQuests.Entries.size(), message.State.ClearedLocations.size(), message.State.DeadUniqueActors.size());
 
     NotifyHostWorldState notify;
+    notify.HostName = acPacket.pPlayer->GetUsername();
     notify.State = message.State;
     pJoiner->Send(notify);
 

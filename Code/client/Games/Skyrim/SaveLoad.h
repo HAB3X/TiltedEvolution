@@ -13,6 +13,10 @@ struct BGSSaveLoadManager
 
     // Asks for a save in the given slot, replacing any queued one. It runs once the player is free to save.
     static void QueueSave(uint32_t aSlot) noexcept;
+    // Asks for one save named <apLabel>_<character>, replacing an earlier one of that name. Runs like QueueSave.
+    static void QueueSaveAs(const char* apLabel) noexcept;
+    // Whether a save asked for is still waiting to run
+    static bool IsSaveQueued() noexcept;
     static void CancelQueuedSave() noexcept;
 
     // Saving makes the game wait for the script VM, so this must run on the main thread. Running it

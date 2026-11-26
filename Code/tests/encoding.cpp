@@ -563,6 +563,7 @@ TEST_CASE("Packets", "[encoding.packets]")
     GIVEN("NotifyHostWorldState")
     {
         NotifyHostWorldState sendMessage, recvMessage;
+        sendMessage.HostName = "Lydia's host";
         sendMessage.State.CompletedQuests.Entries.push_back({GameId(0, 0x46EF2), 200});
         sendMessage.State.DeadUniqueActors.push_back(GameId(0, 0x1A69C));
 

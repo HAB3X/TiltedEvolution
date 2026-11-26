@@ -10,6 +10,7 @@
 #include <World.h>
 
 #include <atomic>
+#include <mutex>
 #include <cctype>
 #include <chrono>
 
@@ -35,6 +36,9 @@ TSaveImpl* RealSaveImpl = nullptr;
 
 // Zero when no save is queued
 std::atomic<uint32_t> s_queuedSlot{0};
+// A labelled save (QueueSaveAs), empty when none is queued; runs before a slot save
+std::mutex s_labelMutex;
+String s_queuedLabel;
 std::chrono::steady_clock::time_point s_nextAttempt{};
 
 bool IsPlayerBusy() noexcept
@@ -56,9 +60,11 @@ bool IsPlayerBusy() noexcept
     return false;
 }
 
-String BuildSaveName(const uint32_t aSlot) noexcept
+// <aPrefix>_<character>_<aSuffix>, or <aPrefix>_<character> without a suffix
+String BuildSaveName(const char* apPrefix, const String& acSuffix) noexcept
 {
-    String name = "Together_";
+    String name = apPrefix;
+    name += '_';
 
     // Characters share the save folder, and a file name only allows so much
     if (const char* cpPlayerName = PlayerCharacter::Get()->baseForm->GetName())
@@ -70,8 +76,11 @@ String BuildSaveName(const uint32_t aSlot) noexcept
         }
     }
 
-    name += '_';
-    name += std::to_string(aSlot).c_str();
+    if (!acSuffix.empty())
+    {
+        name += '_';
+        name += acSuffix;
+    }
     return name;
 }
 } // namespace
@@ -106,15 +115,34 @@ void BGSSaveLoadManager::QueueSave(const uint32_t aSlot) noexcept
     s_queuedSlot = aSlot;
 }
 
+void BGSSaveLoadManager::QueueSaveAs(const char* apLabel) noexcept
+{
+    std::scoped_lock _(s_labelMutex);
+    s_queuedLabel = apLabel;
+}
+
+bool BGSSaveLoadManager::IsSaveQueued() noexcept
+{
+    std::scoped_lock _(s_labelMutex);
+    return s_queuedSlot != 0 || !s_queuedLabel.empty();
+}
+
 void BGSSaveLoadManager::CancelQueuedSave() noexcept
 {
     s_queuedSlot = 0;
+    std::scoped_lock _(s_labelMutex);
+    s_queuedLabel.clear();
 }
 
 void BGSSaveLoadManager::ProcessQueuedSave() noexcept
 {
+    String label;
+    {
+        std::scoped_lock _(s_labelMutex);
+        label = s_queuedLabel;
+    }
     uint32_t slot = s_queuedSlot;
-    if (slot == 0)
+    if (slot == 0 && label.empty())
         return;
 
     const auto cNow = std::chrono::steady_clock::now();
@@ -127,7 +155,24 @@ void BGSSaveLoadManager::ProcessQueuedSave() noexcept
     if (!pManager || IsPlayerBusy() || !pManager->CanSave())
         return;
 
-    const String cName = BuildSaveName(slot);
+    if (!label.empty())
+    {
+        const String cName = BuildSaveName(label.c_str(), {});
+        if (!TiltedPhoques::ThisCall(RealSaveImpl, pManager, kDeviceManual, 0u, cName.c_str()))
+        {
+            spdlog::warn("Save {} was refused, trying again later", cName);
+            s_nextAttempt = cNow + kRefusedRetryDelay;
+            return;
+        }
+        spdlog::info("Saved as {}", cName);
+
+        std::scoped_lock _(s_labelMutex);
+        if (s_queuedLabel == label)
+            s_queuedLabel.clear();
+        return;
+    }
+
+    const String cName = BuildSaveName("Together", std::to_string(slot).c_str());
     if (!TiltedPhoques::ThisCall(RealSaveImpl, pManager, kDeviceManual, 0u, cName.c_str()))
     {
         spdlog::warn("Party checkpoint save {} was refused, trying again later", cName);

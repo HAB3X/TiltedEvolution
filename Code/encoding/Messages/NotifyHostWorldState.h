@@ -15,7 +15,9 @@ struct NotifyHostWorldState final : ServerMessage
     void SerializeRaw(TiltedPhoques::Buffer::Writer& aWriter) const noexcept override;
     void DeserializeRaw(TiltedPhoques::Buffer::Reader& aReader) noexcept override;
 
-    bool operator==(const NotifyHostWorldState& acRhs) const noexcept { return GetOpcode() == acRhs.GetOpcode() && State == acRhs.State; }
+    bool operator==(const NotifyHostWorldState& acRhs) const noexcept { return GetOpcode() == acRhs.GetOpcode() && HostName == acRhs.HostName && State == acRhs.State; }
 
+    // Whose world it is, for the joiner's summary
+    String HostName{};
     HostWorldState State{};
 };
