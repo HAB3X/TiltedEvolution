@@ -30,18 +30,6 @@ constexpr char kOwnWorldSave[] = "BeforeHostWorld";
 // How long to wait for the player to be free to save (not in combat or a menu)
 constexpr std::chrono::seconds kOwnWorldSaveTimeout{60};
 
-// The quests a joiner takes over: the categories the host shares (Gameplay:sSharedQuestTypes), never the background
-// (None) ones even when Miscellaneous is shared, as those include the game's own systems that run per player
-static_assert(SharedQuests::kMisc == static_cast<uint8_t>(TESQuest::Type::Miscellaneous) && SharedQuests::kDragonborn == static_cast<uint8_t>(TESQuest::Type::DLC02_Dragonborn),
-              "SharedQuests mirrors TESQuest::Type");
-
-bool IsHostWorldQuest(TESQuest* apQuest) noexcept
-{
-    const uint8_t cType = static_cast<uint8_t>(apQuest->type);
-    return apQuest->type != TESQuest::Type::None && SharedQuests::IsShared(World::Get().GetServerSettings().SharedQuestTypes, cType) &&
-           !QuestService::IsNonSyncableQuest(apQuest);
-}
-
 bool IsCompleted(const TESQuest* apQuest) noexcept
 {
     return (apQuest->flags & TESQuest::Flags::Completed) != 0;
@@ -132,17 +120,8 @@ HostWorldState HostWorldService::CollectWorld() const noexcept
     const auto& modSystem = m_world.GetModSystem();
     HostWorldState state;
 
-    for (TESQuest* pQuest : ModManager::Get()->quests)
-    {
-        GameId id;
-        if (!IsHostWorldQuest(pQuest) || !modSystem.GetServerModId(pQuest->formID, id))
-            continue;
-
-        if (IsCompleted(pQuest))
-            state.CompletedQuests.Entries.push_back({id, pQuest->currentStage});
-        else if (!pQuest->IsStopped())
-            state.RunningQuests.Entries.push_back({id, pQuest->currentStage});
-    }
+    // The quests a joiner takes over
+    QuestService::CollectSharedQuests(state.RunningQuests, state.CompletedQuests);
 
     for (BGSLocation* pLocation : ModManager::Get()->locations)
     {
@@ -284,7 +263,7 @@ uint32_t HostWorldService::ApplyQuests(const HostWorldState& acState, Mode aMode
     ScopedQuestOverride _;
     for (TESQuest* pQuest : ModManager::Get()->quests)
     {
-        if (IsHostWorldQuest(pQuest) && !pQuest->IsStopped() && !IsCompleted(pQuest) && !hostQuests.contains(pQuest->formID))
+        if (QuestService::IsSharedQuest(pQuest) && !pQuest->IsStopped() && !IsCompleted(pQuest) && !hostQuests.contains(pQuest->formID))
         {
             ++changed;
             if (aMode == Mode::Count)

@@ -10,6 +10,7 @@ struct PartyLeftEvent;
 struct UpdateEvent;
 
 struct TESQuest;
+struct QuestLog;
 
 /**
  * @brief Syncs quest starts, stops and stages across the party
@@ -44,6 +45,10 @@ public:
     ~QuestService() = default;
 
     static bool IsNonSyncableQuest(TESQuest* apQuest);
+    // A quest of a category the party shares (ServerSettings::SharedQuestTypes) that can be synced
+    static bool IsSharedQuest(TESQuest* apQuest) noexcept;
+    // The shared quests this game has started and not stopped, and those it completed, at their current stage
+    static void CollectSharedQuests(QuestLog& aRunning, QuestLog& aCompleted) noexcept;
     static void DebugDumpQuests();
     static bool StopQuest(uint32_t aformId);
 
