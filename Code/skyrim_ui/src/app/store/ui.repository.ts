@@ -18,7 +18,8 @@ const uiStore = createStore(
   { name: 'auth' },
   withProps<UiProps>({
     view: null,
-    playerManagerTab: PlayerManagerTab.PARTY_MENU,
+    // Who is here comes first; the party menu is a click away (and opened directly by party hints)
+    playerManagerTab: PlayerManagerTab.PLAYER_LIST,
     connectIp: null,
     connectPort: null,
     connectName: null,

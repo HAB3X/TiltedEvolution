@@ -1,5 +1,21 @@
 {
   "COMPONENT": {
+    "HUB": {
+      "TITLE": "Skyrim Together",
+      "HOSTING": "Kurucusun",
+      "CONNECTED": "Bağlı",
+      "OFFLINE": "Bağlı değil",
+      "REJOIN": "Yeniden katıl",
+      "JOIN": "Oyuna katıl",
+      "JOIN_HINT": "Kod, adres veya yakında",
+      "HOST": "Oyun kur",
+      "HOST_HINT": "Kendi dünyanda oyna",
+      "PLAYERS": "Oyuncular",
+      "PLAYERS_HINT": "Kimler burada, grup",
+      "INVITE_HINT": "Katılma kodun",
+      "REVEAL_HINT": "Yakındaki oyuncuları göster",
+      "CANCEL_CONNECT": "İptal"
+    },
     "CHAT": {
       "SEND": "Gönder",
       "MESSAGE": "Mesaj",
@@ -31,15 +47,20 @@
         "OPEN": "Oyun kur",
         "PASSWORD": "Arkadaşlarının yazacağı şifre",
         "PASSWORD_PLACEHOLDER": "Şifresiz için boş bırak",
-        "INFO": "Bu bilgisayarda bir sunucu başlatır ve ona katılır. Arkadaşların IP adresin, 10578 portu ve bu şifreyle bağlanır. İnternet üzerinden modem genelde portu kendisi açar; açmazsa UDP 10578 portunu yönlendir.",
-        "HOST_WORLD": "Arkadaşlarım benim dünyama girsin (görevlerim, temizlenmiş zindanlar ve ölü NPC'ler)",
-        "REQUIRE_MODS": "Arkadaşlarımın katılmak için modlarıma ihtiyacı var (oyun hangilerinin eksik olduğunu söyler)",
+        "INFO": "Bu bilgisayarda bir sunucu başlatır ve katılır. Arkadaşların kodunla (Davet) katılır veya seni ağında bulur.",
+        "HOST_WORLD": "Görevlerini, temizlenmiş zindanları ve ölü NPC'leri alır, yanında başlarlar.",
+        "REQUIRE_MODS": "Modlarından biri eksik olan hangisini kuracağını öğrenir.",
         "START": "Kur",
         "BACK": "Geri",
         "PRESET_STORY": "Hikâye ortaklığı",
         "PRESET_FREE_ROAM": "Serbest",
         "PRESET_PVP": "PvP",
-        "PVP": "Oyuncular birbirine zarar verebilir (PvP)"
+        "PVP": "Oyuncular birbirine zarar verebilir.",
+        "PRESET_STORY_HINT": "Arkadaşlar dünyana girer ve modlarına ihtiyaç duyar",
+        "PRESET_FREE_ROAM_HINT": "Herkes kendi dünyasında; modların gerekli",
+        "PRESET_PVP_HINT": "Oyuncular dövüşebilir; her mod",
+        "HOST_WORLD_TITLE": "Arkadaşlarım dünyama girsin",
+        "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun"
       },
       "LAN": {
         "TITLE": "Ağındaki oyunlar",
@@ -123,7 +144,8 @@
       },
       "INVITE": "Davet Et",
       "KICK": "At",
-      "BAN": "Yasakla"
+      "BAN": "Yasakla",
+      "IN_PARTY": "Grubunda"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Oyuncu listesi",

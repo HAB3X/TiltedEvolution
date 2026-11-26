@@ -1,5 +1,21 @@
 {
   "COMPONENT": {
+    "HUB": {
+      "TITLE": "Skyrim Together",
+      "HOSTING": "ホスト中",
+      "CONNECTED": "接続中",
+      "OFFLINE": "未接続",
+      "REJOIN": "再参加",
+      "JOIN": "ゲームに参加",
+      "JOIN_HINT": "コード・アドレス・近くのゲーム",
+      "HOST": "ゲームをホスト",
+      "HOST_HINT": "自分の世界で遊ぶ",
+      "PLAYERS": "プレイヤー",
+      "PLAYERS_HINT": "参加者とパーティー",
+      "INVITE_HINT": "参加コード",
+      "REVEAL_HINT": "近くのプレイヤーを表示",
+      "CANCEL_CONNECT": "キャンセル"
+    },
     "CHAT": {
       "SEND": "送信",
       "MESSAGE": "メッセージ",
@@ -29,15 +45,20 @@
         "OPEN": "ゲームをホスト",
         "PASSWORD": "フレンドが入力するパスワード",
         "PASSWORD_PLACEHOLDER": "パスワードなしにする場合は空欄",
-        "INFO": "このPCでサーバーを起動して参加します。フレンドはあなたのIPアドレス、ポート10578、このパスワードで接続します。インターネット経由では通常ルーターが自動でポートを開きます。開かない場合はUDPポート10578を転送してください。",
-        "HOST_WORLD": "フレンドを自分の世界に招く（自分のクエスト、攻略済みダンジョン、死亡したNPC）",
-        "REQUIRE_MODS": "参加するにはフレンドにも自分のMODが必要（足りないMODはゲームが知らせます）",
+        "INFO": "このPCでサーバーを起動して参加します。フレンドは招待のコードで参加するか、ネットワーク上で見つけられます。",
+        "HOST_WORLD": "あなたのクエスト、攻略済みダンジョン、死亡したNPCを引き継ぎ、あなたの隣から始まります。",
+        "REQUIRE_MODS": "MODが足りない人には、どれを入れるか表示されます。",
         "START": "ホスト",
         "BACK": "戻る",
         "PRESET_STORY": "ストーリー協力",
         "PRESET_FREE_ROAM": "自由探索",
         "PRESET_PVP": "PvP",
-        "PVP": "プレイヤー同士でダメージあり（PvP）"
+        "PVP": "プレイヤー同士でダメージあり。",
+        "PRESET_STORY_HINT": "フレンドがあなたの世界に入り、MODが必要",
+        "PRESET_FREE_ROAM_HINT": "各自の世界のまま。あなたのMODが必要",
+        "PRESET_PVP_HINT": "プレイヤー同士で戦える。MOD自由",
+        "HOST_WORLD_TITLE": "フレンドを自分の世界に招く",
+        "REQUIRE_MODS_TITLE": "フレンドに自分のMODを要求"
       },
       "LAN": {
         "TITLE": "ネットワーク上のゲーム",
@@ -121,7 +142,8 @@
       },
       "INVITE": "招待",
       "KICK": "キック",
-      "BAN": "BAN"
+      "BAN": "BAN",
+      "IN_PARTY": "パーティーメンバー"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "プレイヤーメニュー",

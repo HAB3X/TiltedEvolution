@@ -1,5 +1,21 @@
 {
   "COMPONENT": {
+    "HUB": {
+      "TITLE": "Skyrim Together",
+      "HOSTING": "Hostuješ",
+      "CONNECTED": "Připojeno",
+      "OFFLINE": "Nepřipojeno",
+      "REJOIN": "Znovu se připojit",
+      "JOIN": "Připojit se ke hře",
+      "JOIN_HINT": "Kód, adresa nebo poblíž",
+      "HOST": "Hostovat hru",
+      "HOST_HINT": "Hraj ve svém světě",
+      "PLAYERS": "Hráči",
+      "PLAYERS_HINT": "Kdo tu je, družina",
+      "INVITE_HINT": "Tvůj kód připojení",
+      "REVEAL_HINT": "Ukázat hráče poblíž",
+      "CANCEL_CONNECT": "Zrušit"
+    },
     "CHAT": {
       "SEND": "Odeslat",
       "MESSAGE": "Zpráva",
@@ -29,15 +45,20 @@
         "OPEN": "Hostovat hru",
         "PASSWORD": "Heslo, které zadají tví přátelé",
         "PASSWORD_PLACEHOLDER": "Nech prázdné pro hru bez hesla",
-        "INFO": "Spustí server na tomto počítači a připojí se k němu. Přátelé se připojí přes tvou IP adresu, port 10578 a toto heslo. Přes internet router obvykle port otevře sám, jinak přesměruj UDP port 10578.",
-        "HOST_WORLD": "Přátelé vstoupí do mého světa (moje úkoly, vyčištěné kobky a mrtvé postavy)",
-        "REQUIRE_MODS": "Přátelé potřebují mé mody, aby se připojili (hra jim řekne, které chybí)",
+        "INFO": "Spustí server na tomto počítači a připojí se. Přátelé se připojí tvým kódem (Pozvat) nebo tě najdou v síti.",
+        "HOST_WORLD": "Převezmou tvé úkoly, vyčištěné kobky a mrtvé postavy a začnou vedle tebe.",
+        "REQUIRE_MODS": "Komu chybí některý tvůj mod, dozví se, který nainstalovat.",
         "START": "Hostovat",
         "BACK": "Zpět",
         "PRESET_STORY": "Příběhový koop",
         "PRESET_FREE_ROAM": "Volná hra",
         "PRESET_PVP": "PvP",
-        "PVP": "Hráči si mohou ublížit (PvP)"
+        "PVP": "Hráči si mohou ublížit.",
+        "PRESET_STORY_HINT": "Přátelé vstoupí do tvého světa a potřebují tvé mody",
+        "PRESET_FREE_ROAM_HINT": "Každý má svůj svět; tvé mody nutné",
+        "PRESET_PVP_HINT": "Hráči mohou bojovat; libovolné mody",
+        "HOST_WORLD_TITLE": "Přátelé vstoupí do mého světa",
+        "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody"
       },
       "LAN": {
         "TITLE": "Hry ve tvé síti",
@@ -121,7 +142,8 @@
       },
       "INVITE": "Pozvat",
       "KICK": "Vyhodit",
-      "BAN": "Zabanovat"
+      "BAN": "Zabanovat",
+      "IN_PARTY": "Ve tvé družině"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Seznam hráčů",

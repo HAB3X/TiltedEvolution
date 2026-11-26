@@ -1,47 +1,34 @@
 @if ((playerListLength$ | async) === 0) {
-  <div class="no-players">
-    <span>{{ 'COMPONENT.PARTY_LIST.NO_OTHER_PLAYERS' | transloco }}</span>
-  </div>
+  <p class="no-players">{{ 'COMPONENT.PARTY_LIST.NO_OTHER_PLAYERS' | transloco }}</p>
 } @else {
   <div class="player-list">
-    <table cellspacing="5" cellpadding="5" class="player-list-table">
-      <thead class="list-header">
-        <tr>
-          <th>{{ 'COMPONENT.PARTY_LIST.TABLE_HEADERS.LEVEL' | transloco }}</th>
-          <th>{{ 'COMPONENT.PARTY_LIST.TABLE_HEADERS.NAME' | transloco }}</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody class="listBody">
-        @for (player of playerList$ | async; track player) {
-          <tr>
-            <td>{{ player.level }}</td>
-            <td>{{ player.name }}</td>
-            <td class="actions-col">
-              <button
-                [class.hidden]="player.isMember || !(isPartyLeader$ | async)"
-                [disabled]="
-                  player.hasBeenInvited ||
-                  player.isMember ||
-                  !(isPartyLeader$ | async)
-                "
-                class="user-action-button"
-                (click)="sendPartyInvite(player.id)"
-              >
-                {{ 'COMPONENT.PARTY_LIST.INVITE' | transloco }}
-              </button>
-              @if (hosting$ | async) {
-                <button class="user-action-button" (click)="moderate(player.id, false)">
-                  {{ 'COMPONENT.PARTY_LIST.KICK' | transloco }}
-                </button>
-                <button class="user-action-button" (click)="moderate(player.id, true)">
-                  {{ 'COMPONENT.PARTY_LIST.BAN' | transloco }}
-                </button>
-              }
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    @for (player of playerList$ | async; track player.id) {
+      <div class="player">
+        <div class="player-who">
+          <span class="player-name">{{ player.name }}</span>
+          <span class="player-tags">
+            <span class="tag">{{ 'COMPONENT.PARTY_LIST.TABLE_HEADERS.LEVEL' | transloco }} {{ player.level }}</span>
+            @if (player.isMember) {
+              <span class="tag tag-party">{{ 'COMPONENT.PARTY_LIST.IN_PARTY' | transloco }}</span>
+            }
+          </span>
+        </div>
+        <div class="player-actions">
+          @if (!player.isMember && (isPartyLeader$ | async)) {
+            <button class="btn btn-secondary btn-small" [disabled]="player.hasBeenInvited" (click)="sendPartyInvite(player.id)">
+              {{ 'COMPONENT.PARTY_LIST.INVITE' | transloco }}
+            </button>
+          }
+          @if (hosting$ | async) {
+            <button class="btn btn-danger btn-small" (click)="moderate(player.id, false)">
+              {{ 'COMPONENT.PARTY_LIST.KICK' | transloco }}
+            </button>
+            <button class="btn btn-danger btn-small" (click)="moderate(player.id, true)">
+              {{ 'COMPONENT.PARTY_LIST.BAN' | transloco }}
+            </button>
+          }
+        </div>
+      </div>
+    }
   </div>
 }

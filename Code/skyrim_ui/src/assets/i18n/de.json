@@ -1,5 +1,21 @@
 {
   "COMPONENT": {
+    "HUB": {
+      "TITLE": "Skyrim Together",
+      "HOSTING": "Hostest",
+      "CONNECTED": "Verbunden",
+      "OFFLINE": "Nicht verbunden",
+      "REJOIN": "Erneut beitreten",
+      "JOIN": "Spiel beitreten",
+      "JOIN_HINT": "Code, Adresse oder in der Nähe",
+      "HOST": "Spiel hosten",
+      "HOST_HINT": "In deiner Welt spielen",
+      "PLAYERS": "Spieler",
+      "PLAYERS_HINT": "Wer da ist, Gruppe",
+      "INVITE_HINT": "Dein Beitrittscode",
+      "REVEAL_HINT": "Spieler in der Nähe zeigen",
+      "CANCEL_CONNECT": "Abbrechen"
+    },
     "CHAT": {
       "SEND": "Senden",
       "MESSAGE": "Nachricht",
@@ -29,15 +45,20 @@
         "OPEN": "Spiel hosten",
         "PASSWORD": "Passwort, das deine Freunde eingeben",
         "PASSWORD_PLACEHOLDER": "Leer lassen für kein Passwort",
-        "INFO": "Startet einen Server auf diesem Computer und tritt ihm bei. Freunde verbinden sich mit deiner IP-Adresse, Port 10578 und diesem Passwort. Über das Internet öffnet der Router den Port meist selbst, sonst UDP-Port 10578 weiterleiten.",
-        "HOST_WORLD": "Freunde betreten meine Welt (meine Quests, geräumten Dungeons und toten NPCs)",
-        "REQUIRE_MODS": "Freunde brauchen meine Mods zum Beitreten (das Spiel sagt ihnen, welche fehlen)",
+        "INFO": "Startet einen Server auf diesem Computer und tritt ihm bei. Freunde treten mit deinem Code aus Einladen bei oder finden dich in deinem Netzwerk.",
+        "HOST_WORLD": "Sie übernehmen deine Quests, geräumten Dungeons und toten NPCs und starten neben dir.",
+        "REQUIRE_MODS": "Wem eine deiner Mods fehlt, erfährt, welche er installieren muss.",
         "START": "Hosten",
         "BACK": "Zurück",
         "PRESET_STORY": "Story-Koop",
         "PRESET_FREE_ROAM": "Freies Spiel",
         "PRESET_PVP": "PvP",
-        "PVP": "Spieler können sich gegenseitig verletzen (PvP)"
+        "PVP": "Spieler können sich gegenseitig verletzen.",
+        "PRESET_STORY_HINT": "Freunde betreten deine Welt und brauchen deine Mods",
+        "PRESET_FREE_ROAM_HINT": "Jeder behält seine Welt; deine Mods nötig",
+        "PRESET_PVP_HINT": "Spieler können kämpfen; beliebige Mods",
+        "HOST_WORLD_TITLE": "Freunde betreten meine Welt",
+        "REQUIRE_MODS_TITLE": "Freunde brauchen meine Mods"
       },
       "LAN": {
         "TITLE": "Spiele in deinem Netzwerk",
@@ -124,7 +145,8 @@
       },
       "INVITE": "Einladen",
       "KICK": "Rauswerfen",
-      "BAN": "Bannen"
+      "BAN": "Bannen",
+      "IN_PARTY": "In deiner Gruppe"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spielerliste",

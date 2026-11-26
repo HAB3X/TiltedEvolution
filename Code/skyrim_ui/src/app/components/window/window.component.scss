@@ -6,6 +6,18 @@
 
   display: block;
 
+  // Pop-ups in the Together panel's look
+  &[data-app-window-border='panel'] {
+    border: 1px solid env.$color-line;
+    border-image: none;
+    border-radius: env.$radius * 2;
+    background: rgb(18, 16, 14);
+    box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.7);
+    padding: 1.4rem 1.6rem;
+    min-width: 24rem;
+    color: env.$color-text;
+  }
+
   &[data-app-window-border='fancy'] {
     border: 26px solid;
     border-image: url('../../../assets/images/frame/fancy.svg') 26 fill;

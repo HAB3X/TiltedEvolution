@@ -53,6 +53,7 @@ export class RootComponent implements OnInit {
   hosting$ = this.client.hostingChange.asObservable();
   lastSession$ = this.client.lastSessionChange.asObservable();
   hostWorldOffer$ = this.client.hostWorldOfferChange.asObservable();
+  debugData$ = this.client.debugDataChange.asObservable();
   connectionInProgress$ =
     this.client.isConnectionInProgressChange.asObservable();
   revealingInProgress$ = false;
@@ -121,6 +122,25 @@ export class RootComponent implements OnInit {
       .subscribe(size => {
         document.documentElement.setAttribute('style', `font-size: ${size}px;`);
       });
+  }
+
+  /**
+   * The page the Together panel shows: the one chosen, while it makes sense, otherwise Join when offline and
+   * Players when connected. Pop-up views (disconnect, server list) keep the default page behind them.
+   */
+  public currentPage(view: View | null, connected: boolean): View {
+    const offlineOnly = [View.CONNECT, View.HOST];
+    const onlineOnly = [View.PLAYER_MANAGER, View.INVITE];
+    const pages = [...offlineOnly, ...onlineOnly, View.SETTINGS];
+    if (
+      view !== null &&
+      pages.includes(view) &&
+      !(connected && offlineOnly.includes(view)) &&
+      !(!connected && onlineOnly.includes(view))
+    ) {
+      return view;
+    }
+    return connected ? View.PLAYER_MANAGER : View.CONNECT;
   }
 
   public setView(view: View | null) {

@@ -30,25 +30,26 @@
       );
     }
 
+    // Softer than the old neon, in the panel's palette
     &.system {
       .app-chat-date,
       .app-chat-message {
-        color: #9999ff;
+        color: env.$color-accent;
       }
     }
     &.dialogue {
       .app-chat-message {
-        color: #00ff33;
+        color: #b4d39a;
       }
     }
     &.party {
       .app-chat-message {
-        color: #9affe6;
+        color: #9fd6c9;
       }
     }
     &.local {
       .app-chat-message {
-        color: #eeff00;
+        color: #e3d391;
       }
     }
   }
@@ -81,17 +82,63 @@
 }
 
 .app-chat-tabs {
-  display: flex;
-  gap: 0.3em;
-  margin-bottom: 0.3em;
+  display: inline-flex;
+  align-self: flex-start;
+  margin-bottom: 0.4rem;
+  border: 1px solid env.$color-line;
+  border-radius: env.$radius;
+  overflow: hidden;
 
   button {
-    font-size: 0.8em;
-    padding: 0.1em 0.6em;
-    opacity: 0.6;
+    padding: 0.25rem 0.8rem;
+    font-size: 0.8rem;
+    opacity: 1;
+    color: env.$color-muted;
+    cursor: pointer;
+
+    & + button {
+      border-left: 1px solid env.$color-line;
+    }
+
+    &:hover {
+      color: env.$color-text;
+    }
 
     &.active {
-      opacity: 1;
+      color: #1a140a;
+      background: env.$color-accent;
     }
+  }
+}
+
+// The message box, like the panel's fields
+.app-chat-input {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+
+  input {
+    flex: 1 1 auto;
+    opacity: 1;
+    padding: 0.45rem 0.6rem;
+    border-radius: env.$radius;
+    border: 1px solid env.$color-line !important;
+    background: rgba(0, 0, 0, 0.35);
+    color: env.$color-text;
+
+    &:focus-visible,
+    &:hover {
+      border-color: env.$color-accent !important;
+    }
+  }
+
+  button {
+    padding: 0.3rem 0.9rem;
+    border-radius: env.$radius;
+    border: 1px solid env.$color-accent;
+    background: env.$color-accent;
+    color: #1a140a;
+    opacity: 1;
+    cursor: pointer;
   }
 }

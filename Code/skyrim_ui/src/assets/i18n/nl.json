@@ -2,6 +2,22 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "HUB": {
+      "TITLE": "Skyrim Together",
+      "HOSTING": "Host",
+      "CONNECTED": "Verbonden",
+      "OFFLINE": "Niet verbonden",
+      "REJOIN": "Opnieuw verbinden",
+      "JOIN": "Spel joinen",
+      "JOIN_HINT": "Code, adres of in de buurt",
+      "HOST": "Spel hosten",
+      "HOST_HINT": "Speel in jouw wereld",
+      "PLAYERS": "Spelers",
+      "PLAYERS_HINT": "Wie er is, groep",
+      "INVITE_HINT": "Je deelnamecode",
+      "REVEAL_HINT": "Spelers in de buurt tonen",
+      "CANCEL_CONNECT": "Annuleren"
+    },
     "CHAT": {
       "SEND": "Verzenden",
       "MESSAGE": "Bericht",
@@ -30,15 +46,20 @@
         "OPEN": "Spel hosten",
         "PASSWORD": "Wachtwoord dat je vrienden typen",
         "PASSWORD_PLACEHOLDER": "Leeg laten voor geen wachtwoord",
-        "INFO": "Start een server op deze computer en doet mee. Vrienden verbinden met je IP-adres, poort 10578 en dit wachtwoord. Via internet opent de router de poort meestal zelf; zo niet, stuur UDP-poort 10578 door.",
-        "HOST_WORLD": "Vrienden komen in mijn wereld (mijn quests, leeggemaakte kerkers en dode NPC's)",
-        "REQUIRE_MODS": "Vrienden hebben mijn mods nodig om mee te doen (het spel zegt welke ontbreken)",
+        "INFO": "Start een server op deze computer en doet mee. Vrienden doen mee met je code (Uitnodigen) of vinden je in je netwerk.",
+        "HOST_WORLD": "Ze nemen je quests, leeggemaakte kerkers en dode NPC's over en starten naast je.",
+        "REQUIRE_MODS": "Wie een van je mods mist, hoort welke te installeren.",
         "START": "Hosten",
         "BACK": "Terug",
         "PRESET_STORY": "Verhaal-coop",
         "PRESET_FREE_ROAM": "Vrij spel",
         "PRESET_PVP": "PvP",
-        "PVP": "Spelers kunnen elkaar verwonden (PvP)"
+        "PVP": "Spelers kunnen elkaar verwonden.",
+        "PRESET_STORY_HINT": "Vrienden betreden je wereld en hebben je mods nodig",
+        "PRESET_FREE_ROAM_HINT": "Iedereen houdt zijn wereld; jouw mods vereist",
+        "PRESET_PVP_HINT": "Spelers kunnen vechten; elke mod",
+        "HOST_WORLD_TITLE": "Vrienden betreden mijn wereld",
+        "REQUIRE_MODS_TITLE": "Vrienden hebben mijn mods nodig"
       },
       "LAN": {
         "TITLE": "Spellen in je netwerk",
@@ -123,7 +144,8 @@
       },
       "INVITE": "Uitnodigen",
       "KICK": "Verwijderen",
-      "BAN": "Verbannen"
+      "BAN": "Verbannen",
+      "IN_PARTY": "In je groep"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spelerslijst",

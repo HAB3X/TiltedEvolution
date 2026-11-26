@@ -7,4 +7,5 @@ export enum View {
   SETTINGS,
   PLAYER_MANAGER,
   INVITE,
+  HOST,
 }

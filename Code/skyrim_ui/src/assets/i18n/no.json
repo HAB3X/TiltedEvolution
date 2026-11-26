@@ -1,5 +1,21 @@
 {
   "COMPONENT": {
+    "HUB": {
+      "TITLE": "Skyrim Together",
+      "HOSTING": "Vert",
+      "CONNECTED": "Tilkoblet",
+      "OFFLINE": "Ikke tilkoblet",
+      "REJOIN": "Koble til igjen",
+      "JOIN": "Bli med i spill",
+      "JOIN_HINT": "Kode, adresse eller i nærheten",
+      "HOST": "Vær vert",
+      "HOST_HINT": "Spill i din verden",
+      "PLAYERS": "Spillere",
+      "PLAYERS_HINT": "Hvem som er her, gruppe",
+      "INVITE_HINT": "Din tilkoblingskode",
+      "REVEAL_HINT": "Vis spillere i nærheten",
+      "CANCEL_CONNECT": "Avbryt"
+    },
     "CHAT": {
       "SEND": "Send",
       "MESSAGE": "Melding",
@@ -29,15 +45,20 @@
         "OPEN": "Vær vert",
         "PASSWORD": "Passord vennene dine skriver",
         "PASSWORD_PLACEHOLDER": "La stå tomt for ingen passord",
-        "INFO": "Starter en server på denne datamaskinen og kobler til den. Venner kobler til med IP-adressen din, port 10578 og dette passordet. Over internett åpner ruteren vanligvis porten selv, ellers videresend UDP-port 10578.",
-        "HOST_WORLD": "Venner kommer inn i min verden (mine oppdrag, ryddede grotter og døde NPC-er)",
-        "REQUIRE_MODS": "Venner trenger modene mine for å bli med (spillet sier hvilke som mangler)",
+        "INFO": "Starter en server på denne datamaskinen og kobler til. Venner kobler til med koden din (Inviter) eller finner deg på nettverket.",
+        "HOST_WORLD": "De tar over oppdragene, ryddede grotter og døde NPC-er og starter ved siden av deg.",
+        "REQUIRE_MODS": "Den som mangler en av modene dine får vite hvilken.",
         "START": "Start",
         "BACK": "Tilbake",
         "PRESET_STORY": "Historie-coop",
         "PRESET_FREE_ROAM": "Fritt",
         "PRESET_PVP": "PvP",
-        "PVP": "Spillere kan skade hverandre (PvP)"
+        "PVP": "Spillere kan skade hverandre.",
+        "PRESET_STORY_HINT": "Venner går inn i din verden og trenger modene dine",
+        "PRESET_FREE_ROAM_HINT": "Alle beholder sin verden; dine moder kreves",
+        "PRESET_PVP_HINT": "Spillere kan sloss; alle moder",
+        "HOST_WORLD_TITLE": "Venner går inn i min verden",
+        "REQUIRE_MODS_TITLE": "Venner trenger modene mine"
       },
       "LAN": {
         "TITLE": "Spill på nettverket ditt",
@@ -121,7 +142,8 @@
       },
       "INVITE": "Inviter",
       "KICK": "Kast ut",
-      "BAN": "Utesteng"
+      "BAN": "Utesteng",
+      "IN_PARTY": "I gruppen din"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spillere",

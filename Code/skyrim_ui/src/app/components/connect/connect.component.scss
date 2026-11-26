@@ -1,106 +1,182 @@
 @use 'env';
 
-@use 'functions/mod';
-@use 'mixins/gapped-vertical';
+:host {
+  display: block;
+  color: env.$color-text;
+}
 
-.container {
-  @include gapped-vertical.gapped-vertical(env.$size-gap);
-
+.page {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 1.1rem;
+}
 
-  ::ng-deep {
-    strong {
-      color: mod.mod(env.$color-background, 1);
-    }
+.page-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.3rem;
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-lead {
+  margin: 0;
+  line-height: 1.35;
+
+  ::ng-deep strong {
+    color: env.$color-text;
   }
 }
 
-.password-options {
-  width: 100%;
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.column {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-width: 0;
+}
 
-  span {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-  }
-
-  span + span {
-    margin-left: 1.5em;
-  }
-
-  input[type='checkbox'] {
-    flex: 0 0 env.$scrollbar;
-    min-width: env.$scrollbar;
-    min-height: env.$scrollbar;
-  }
+.checks {
+  display: flex;
+  gap: 1.2rem;
+  color: env.$color-muted;
+  font-size: 0.9rem;
 
   label {
-    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
   }
 }
 
-.instructions > * {
-  text-align: center;
-  margin: 0.3em;
-  line-height: env.$size-line;
-}
-
-input {
+.join-button {
   width: 100%;
-
-  &[type='password'] {
-    border: 3px solid #808081;
-  }
 }
 
 .warning {
-  color: rgb(247, 54, 54);
+  margin: 0;
+  padding: 0.6rem 0.7rem;
+  border-left: 3px solid env.$color-danger;
+  background: rgba(211, 107, 98, 0.1);
+  color: env.$color-muted;
+  font-size: 0.85rem;
+  line-height: 1.3;
 }
 
-hr {
-  border: 0;
-  clear: both;
-  display: block;
-  width: 80%;
-  background-color: grey;
-  height: 1px;
+.lan-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .section-title {
+    margin: 0;
+  }
 }
 
-.field-label {
-  width: 100%;
-}
-
-.lan {
-  width: 100%;
+.lan-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
+  gap: 0.4rem;
+  min-height: 6rem;
 }
 
-.lan-header,
 .lan-server {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1em;
+  gap: 0.8rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: env.$radius;
+  background: env.$color-surface-raised;
 }
 
-.lan-name small {
-  display: block;
-  opacity: 0.7;
+.lan-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
 }
 
-.lan-empty {
-  opacity: 0.7;
+.lan-tags {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 0.1rem 0.4rem;
+  border-radius: env.$radius;
+  border: 1px solid env.$color-line;
+  color: env.$color-muted;
+  font-size: 0.75rem;
 }
 
 .presets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.preset {
   display: flex;
-  gap: 0.5em;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  padding: 0.8rem;
+  opacity: 1;
+  text-align: left;
+  text-transform: none;
+  border-radius: env.$radius;
+  border: 1px solid env.$color-line;
+  background: transparent;
+  cursor: pointer;
+
+  .preset-name {
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .preset-hint {
+    color: env.$color-muted;
+    font-size: 0.8rem;
+    line-height: 1.25;
+  }
+
+  &:hover {
+    border-color: env.$color-accent;
+  }
+
+  &.chosen {
+    border-color: env.$color-accent;
+    background: rgba(212, 187, 132, 0.12);
+
+    .preset-name {
+      color: env.$color-accent-strong;
+    }
+  }
+}
+
+.toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+// The page's main button stays in view at the bottom of the panel, however far the page scrolls
+.actions {
+  position: sticky;
+  bottom: -1.2rem;
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 -1.5rem -1.2rem;
+  padding: 0.8rem 1.5rem;
+  border-top: 1px solid env.$color-line;
+  background: env.$color-surface;
 }

@@ -1,26 +1,17 @@
 @let code = code$ | async;
+<h2 class="page-title">{{ 'COMPONENT.ROOT.INVITE' | transloco }}</h2>
 @if (code) {
-  <p>{{ 'COMPONENT.INVITE.CODE_INFO' | transloco }}</p>
-  <p class="code">{{ code }}</p>
-  @if (password) {
-    <p>
-      {{ 'COMPONENT.INVITE.PASSWORD' | transloco }} <strong>{{ password }}</strong>
-    </p>
-  }
-} @else {
-  <p>{{ 'COMPONENT.INVITE.NO_CODE' | transloco }}</p>
-}
-<p class="hint">{{ 'COMPONENT.INVITE.LAN_INFO' | transloco }}</p>
-<app-action-buttons>
-  @if (code) {
-    <button (click)="copy(code)" data-style-ornament="simple">
-      {{
-        (copied ? 'COMPONENT.INVITE.COPIED' : 'COMPONENT.INVITE.COPY')
-          | transloco
-      }}
-    </button>
-  }
-  <button (click)="close()" data-style-ornament="simple">
-    {{ 'COMPONENT.INVITE.CLOSE' | transloco }}
+  <p class="muted">{{ 'COMPONENT.INVITE.CODE_INFO' | transloco }}</p>
+  <div class="code-box">
+    <span class="code">{{ code }}</span>
+    @if (password) {
+      <span class="muted">{{ 'COMPONENT.INVITE.PASSWORD' | transloco }} <strong>{{ password }}</strong></span>
+    }
+  </div>
+  <button class="btn btn-primary" (click)="copy(code)">
+    {{ (copied ? 'COMPONENT.INVITE.COPIED' : 'COMPONENT.INVITE.COPY') | transloco }}
   </button>
-</app-action-buttons>
+} @else {
+  <p class="notice">{{ 'COMPONENT.INVITE.NO_CODE' | transloco }}</p>
+}
+<p class="muted hint">{{ 'COMPONENT.INVITE.LAN_INFO' | transloco }}</p>

@@ -1,5 +1,21 @@
 {
   "COMPONENT": {
+    "HUB": {
+      "TITLE": "Skyrim Together",
+      "HOSTING": "Hosting",
+      "CONNECTED": "Connected",
+      "OFFLINE": "Not connected",
+      "REJOIN": "Rejoin",
+      "JOIN": "Join a game",
+      "JOIN_HINT": "Code, address or nearby",
+      "HOST": "Host a game",
+      "HOST_HINT": "Play in your world",
+      "PLAYERS": "Players",
+      "PLAYERS_HINT": "Who's here, party",
+      "INVITE_HINT": "Your join code",
+      "REVEAL_HINT": "Show players nearby",
+      "CANCEL_CONNECT": "Cancel"
+    },
     "CHAT": {
       "SEND": "Send",
       "MESSAGE": "Message",
@@ -40,15 +56,20 @@
         "OPEN": "Host a game",
         "PASSWORD": "Password your friends will type",
         "PASSWORD_PLACEHOLDER": "Leave empty for no password",
-        "INFO": "Start a server on this computer and join it. Friends connect to your IP address with port 10578 and this password. Over the internet, forward UDP port 10578 on your router.",
-        "HOST_WORLD": "Friends join my world (my quests, cleared dungeons and dead NPCs)",
-        "REQUIRE_MODS": "Friends need my mods to join (the game tells them which are missing)",
+        "INFO": "Starts a server on this computer and joins it. Friends join with your code from Invite, or find you on your network.",
+        "HOST_WORLD": "They take over your quests, cleared dungeons and dead NPCs, and start next to you.",
+        "REQUIRE_MODS": "Anyone missing one of your mods is told which to install.",
         "START": "Host",
         "BACK": "Back",
         "PRESET_STORY": "Story co-op",
         "PRESET_FREE_ROAM": "Free roam",
         "PRESET_PVP": "PvP",
-        "PVP": "Players can hurt each other (PvP)"
+        "PVP": "Players can hurt each other.",
+        "PRESET_STORY_HINT": "Friends join your world and need your mods",
+        "PRESET_FREE_ROAM_HINT": "Everyone keeps their own world; your mods required",
+        "PRESET_PVP_HINT": "Players can fight each other; any mods",
+        "HOST_WORLD_TITLE": "Friends join my world",
+        "REQUIRE_MODS_TITLE": "Friends need my mods"
       },
       "ERROR": {
         "CONNECTION": "Could not connect to the specified server. Please make sure you've entered the correct address and that you're not experiencing network issues",
@@ -126,7 +147,8 @@
       },
       "INVITE": "Invite",
       "KICK": "Kick",
-      "BAN": "Ban"
+      "BAN": "Ban",
+      "IN_PARTY": "In your party"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Player List",

@@ -10,7 +10,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: color.adjust(env.$color-background, $alpha: -0.8);
+  // Dark enough that the pop-up reads on its own over the panel and the game
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
 
   > app-window {
     flex: 0 0 auto;

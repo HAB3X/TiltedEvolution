@@ -1,55 +1,60 @@
+@use 'env';
+
 :host {
-  position: relative;
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
 .no-players {
-  overflow: hidden;
-  margin: 3%;
-  display: flex;
-  justify-content: center;
-}
-
-.hidden {
-  opacity: 0;
+  margin: 1rem 0;
+  color: env.$color-muted;
 }
 
 .player-list {
-  overflow: auto;
-  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
 
-  .player-list-table {
-    width: 100%;
-    border-collapse: collapse;
+.player {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: env.$radius;
+  background: env.$color-surface-raised;
+}
 
-    .list-header {
-      position: sticky;
-      top: 0px;
-      background-color: #151515;
-      z-index: 1;
-    }
+.player-who {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
 
-    th {
-      text-align: left;
-      border-bottom: 1px solid grey;
-      border-collapse: separate;
+.player-name {
+  font-size: 1.05rem;
+}
 
-      button {
-        padding: 0 0.5rem;
-      }
-    }
+.player-tags {
+  display: flex;
+  gap: 0.3rem;
+}
 
-    tr:not(:last-child) {
-      border-bottom: 1px solid grey;
-      padding: 15px;
-    }
+.tag {
+  padding: 0.1rem 0.4rem;
+  border-radius: env.$radius;
+  border: 1px solid env.$color-line;
+  color: env.$color-muted;
+  font-size: 0.75rem;
+}
 
-    .user-action-button {
-      padding: 0.25vw;
-      background-color: #292929;
-      border-radius: 2px;
-      margin-left: 5%;
-    }
-  }
+.tag-party {
+  color: env.$color-accent;
+  border-color: env.$color-accent;
+}
+
+.player-actions {
+  display: flex;
+  gap: 0.4rem;
 }

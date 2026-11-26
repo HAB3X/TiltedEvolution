@@ -1,5 +1,21 @@
 {
   "COMPONENT": {
+    "HUB": {
+      "TITLE": "Skyrim Together",
+      "HOSTING": "Värd",
+      "CONNECTED": "Ansluten",
+      "OFFLINE": "Inte ansluten",
+      "REJOIN": "Anslut igen",
+      "JOIN": "Gå med i spel",
+      "JOIN_HINT": "Kod, adress eller i närheten",
+      "HOST": "Var värd",
+      "HOST_HINT": "Spela i din värld",
+      "PLAYERS": "Spelare",
+      "PLAYERS_HINT": "Vem som är här, grupp",
+      "INVITE_HINT": "Din anslutningskod",
+      "REVEAL_HINT": "Visa spelare i närheten",
+      "CANCEL_CONNECT": "Avbryt"
+    },
     "CHAT": {
       "SEND": "Skicka",
       "MESSAGE": "Meddelande",
@@ -31,15 +47,20 @@
         "OPEN": "Vara värd",
         "PASSWORD": "Lösenord som dina vänner skriver",
         "PASSWORD_PLACEHOLDER": "Lämna tomt för inget lösenord",
-        "INFO": "Startar en server på den här datorn och ansluter till den. Vänner ansluter med din IP-adress, port 10578 och det här lösenordet. Över internet öppnar routern oftast porten själv, annars vidarebefordra UDP-port 10578.",
-        "HOST_WORLD": "Vänner går in i min värld (mina uppdrag, rensade grottor och döda NPC:er)",
-        "REQUIRE_MODS": "Vänner behöver mina moddar för att ansluta (spelet säger vilka som saknas)",
+        "INFO": "Startar en server på den här datorn och ansluter. Vänner ansluter med din kod (Bjud in) eller hittar dig i ditt nätverk.",
+        "HOST_WORLD": "De tar över dina uppdrag, rensade grottor och döda NPC:er och börjar bredvid dig.",
+        "REQUIRE_MODS": "Den som saknar en av dina moddar får veta vilken.",
         "START": "Starta",
         "BACK": "Tillbaka",
         "PRESET_STORY": "Story-coop",
         "PRESET_FREE_ROAM": "Fritt",
         "PRESET_PVP": "PvP",
-        "PVP": "Spelare kan skada varandra (PvP)"
+        "PVP": "Spelare kan skada varandra.",
+        "PRESET_STORY_HINT": "Vänner går in i din värld och behöver dina moddar",
+        "PRESET_FREE_ROAM_HINT": "Alla behåller sin värld; dina moddar krävs",
+        "PRESET_PVP_HINT": "Spelare kan slåss; valfria moddar",
+        "HOST_WORLD_TITLE": "Vänner går in i min värld",
+        "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar"
       },
       "LAN": {
         "TITLE": "Spel i ditt nätverk",
@@ -126,7 +147,8 @@
       },
       "INVITE": "Bjud in",
       "KICK": "Sparka ut",
-      "BAN": "Bannlys"
+      "BAN": "Bannlys",
+      "IN_PARTY": "I din grupp"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spelarlista",

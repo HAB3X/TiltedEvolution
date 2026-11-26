@@ -2,6 +2,22 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "HUB": {
+      "TITLE": "Skyrim Together",
+      "HOSTING": "主持中",
+      "CONNECTED": "已连接",
+      "OFFLINE": "未连接",
+      "REJOIN": "重新加入",
+      "JOIN": "加入游戏",
+      "JOIN_HINT": "加入码、地址或附近",
+      "HOST": "主持游戏",
+      "HOST_HINT": "在你的世界里玩",
+      "PLAYERS": "玩家",
+      "PLAYERS_HINT": "在场的人和队伍",
+      "INVITE_HINT": "你的加入码",
+      "REVEAL_HINT": "显示附近玩家",
+      "CANCEL_CONNECT": "取消"
+    },
     "CHAT": {
       "SEND": "发送",
       "MESSAGE": "消息",
@@ -30,15 +46,20 @@
         "OPEN": "主持游戏",
         "PASSWORD": "好友需要输入的密码",
         "PASSWORD_PLACEHOLDER": "留空表示不设密码",
-        "INFO": "在这台电脑上启动服务器并加入。好友通过你的 IP 地址、端口 10578 和此密码连接。通过互联网时路由器通常会自动打开端口；否则请转发 UDP 端口 10578。",
-        "HOST_WORLD": "好友进入我的世界（我的任务、已清理的地下城和已死亡的 NPC）",
-        "REQUIRE_MODS": "好友需要我的模组才能加入（游戏会告诉他们缺少哪些）",
+        "INFO": "在这台电脑上启动服务器并加入。好友用你的加入码（邀请）加入，或在网络中找到你。",
+        "HOST_WORLD": "他们会继承你的任务、已清理的地下城和已死亡的 NPC，并在你身边出发。",
+        "REQUIRE_MODS": "缺少你某个模组的人会被告知要安装哪个。",
         "START": "主持",
         "BACK": "返回",
         "PRESET_STORY": "剧情合作",
         "PRESET_FREE_ROAM": "自由探索",
         "PRESET_PVP": "PvP",
-        "PVP": "玩家之间可以互相伤害（PvP）"
+        "PVP": "玩家之间可以互相伤害。",
+        "PRESET_STORY_HINT": "好友进入你的世界，需要你的模组",
+        "PRESET_FREE_ROAM_HINT": "各自保留自己的世界；需要你的模组",
+        "PRESET_PVP_HINT": "玩家可以互相战斗；模组随意",
+        "HOST_WORLD_TITLE": "好友进入我的世界",
+        "REQUIRE_MODS_TITLE": "好友需要我的模组"
       },
       "LAN": {
         "TITLE": "你网络中的游戏",
@@ -122,7 +143,8 @@
       },
       "INVITE": "邀请",
       "KICK": "踢出",
-      "BAN": "封禁"
+      "BAN": "封禁",
+      "IN_PARTY": "在你的队伍中"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "玩家列表",

@@ -1,3 +1,4 @@
+@use 'env';
 :host {
   position: relative;
   display: flex;
@@ -79,5 +80,56 @@ hr {
       border-radius: 2px;
       margin-left: 5%;
     }
+  }
+}
+
+// The Together panel's look
+:host {
+  color: env.$color-text;
+}
+
+.optional-info,
+ul {
+  color: env.$color-muted;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+ul {
+  margin: 0.3rem 0 0.8rem;
+  padding-left: 1.2rem;
+}
+
+.party-menu-button {
+  width: 100%;
+  min-height: 2.4rem;
+  margin: 0.4rem 0;
+  border-radius: env.$radius;
+  border: 1px solid env.$color-accent;
+  background: env.$color-accent;
+  color: #1a140a;
+  opacity: 1;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+
+  &:hover:not([disabled]) {
+    background: env.$color-accent-strong;
+  }
+
+  &[disabled] {
+    opacity: 0.4;
+  }
+}
+
+.user-action-button {
+  padding: 0.25rem 0.7rem;
+  border-radius: env.$radius;
+  border: 1px solid env.$color-line;
+  opacity: 1;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  &:hover:not([disabled]) {
+    border-color: env.$color-accent;
   }
 }

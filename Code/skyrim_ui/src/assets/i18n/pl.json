@@ -2,6 +2,22 @@
   "INFO": "Polska lokalizacja do Skyrim Together: Reborn! Wersja: 1.4.0. Autor:<strong>Nutyo</strong>",
 
   "COMPONENT": {
+    "HUB": {
+      "TITLE": "Skyrim Together",
+      "HOSTING": "Hostujesz",
+      "CONNECTED": "Połączono",
+      "OFFLINE": "Brak połączenia",
+      "REJOIN": "Dołącz ponownie",
+      "JOIN": "Dołącz do gry",
+      "JOIN_HINT": "Kod, adres lub w pobliżu",
+      "HOST": "Hostuj grę",
+      "HOST_HINT": "Graj w swoim świecie",
+      "PLAYERS": "Gracze",
+      "PLAYERS_HINT": "Kto jest, drużyna",
+      "INVITE_HINT": "Twój kod dołączenia",
+      "REVEAL_HINT": "Pokaż graczy w pobliżu",
+      "CANCEL_CONNECT": "Anuluj"
+    },
     "CHAT": {
       "SEND": "Wyślij",
       "MESSAGE": "Wiadomość",
@@ -30,15 +46,20 @@
         "OPEN": "Hostuj grę",
         "PASSWORD": "Hasło, które wpiszą twoi znajomi",
         "PASSWORD_PLACEHOLDER": "Zostaw puste, aby nie używać hasła",
-        "INFO": "Uruchamia serwer na tym komputerze i dołącza do niego. Znajomi łączą się przez twój adres IP, port 10578 i to hasło. Przez internet router zwykle sam otwiera port; jeśli nie, przekieruj port UDP 10578.",
-        "HOST_WORLD": "Znajomi wchodzą do mojego świata (moje zadania, oczyszczone lochy i martwe postacie)",
-        "REQUIRE_MODS": "Znajomi potrzebują moich modów, aby dołączyć (gra powie im, których brakuje)",
+        "INFO": "Uruchamia serwer na tym komputerze i dołącza. Znajomi dołączają twoim kodem (Zaproś) lub znajdują cię w sieci.",
+        "HOST_WORLD": "Przejmują twoje zadania, oczyszczone lochy i martwe postacie, i pojawiają się obok ciebie.",
+        "REQUIRE_MODS": "Komu brakuje twojego moda, dowie się, który zainstalować.",
         "START": "Hostuj",
         "BACK": "Wróć",
         "PRESET_STORY": "Fabuła w kooperacji",
         "PRESET_FREE_ROAM": "Swobodna gra",
         "PRESET_PVP": "PvP",
-        "PVP": "Gracze mogą się ranić (PvP)"
+        "PVP": "Gracze mogą się ranić.",
+        "PRESET_STORY_HINT": "Znajomi wchodzą do twojego świata i potrzebują twoich modów",
+        "PRESET_FREE_ROAM_HINT": "Każdy ma swój świat; twoje mody wymagane",
+        "PRESET_PVP_HINT": "Gracze mogą walczyć; dowolne mody",
+        "HOST_WORLD_TITLE": "Znajomi wchodzą do mojego świata",
+        "REQUIRE_MODS_TITLE": "Znajomi potrzebują moich modów"
       },
       "LAN": {
         "TITLE": "Gry w twojej sieci",
@@ -125,7 +146,8 @@
       },
       "INVITE": "Zaproś",
       "KICK": "Wyrzuć",
-      "BAN": "Zbanuj"
+      "BAN": "Zbanuj",
+      "IN_PARTY": "W twojej drużynie"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Lista Graczy",

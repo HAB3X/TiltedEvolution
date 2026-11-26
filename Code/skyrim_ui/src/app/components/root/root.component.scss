@@ -96,72 +96,175 @@
 }
 
 .app-root-controls {
-  @include gapped-vertical.gapped-vertical(env.$size-gap);
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
 
-  position: absolute;
-  left: env.$size-gap;
-  display: flex;
-  flex-direction: column;
-  width: 32vw;
-  bottom: env.$size-gap;
-}
-
-.app-root-menu,
-.app-root-chat {
-  flex: 0 0 auto;
-}
-
-.app-root-menu {
-  display: flex;
-  height: 4rem;
-  margin: 0 auto;
-
-  > button {
-    flex: 1 1 auto;
-    padding-top: 0;
-    padding-bottom: 0;
+  > * {
+    pointer-events: auto;
   }
 }
 
-.app-root-chat {
+// The Together panel
+.hub {
+  position: absolute;
+  top: 6vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(60rem, 62vw);
+  height: min(38rem, 58vh);
+  display: flex;
+  flex-direction: column;
+  color: env.$color-text;
+  background: env.$color-surface;
+  border: 1px solid env.$color-line;
+  border-radius: env.$radius * 2;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.hub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid env.$color-line;
+  background: linear-gradient(to bottom, rgba(212, 187, 132, 0.08), transparent);
+}
+
+.hub-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: normal;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: env.$color-accent;
+}
+
+.hub-state {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+
+  .hub-state-dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: env.$color-muted;
+  }
+
+  &[data-state='online'] .hub-state-dot {
+    background: env.$color-success;
+    box-shadow: 0 0 0.5rem env.$color-success;
+  }
+
+  &[data-state='connecting'] .hub-state-dot {
+    background: env.$color-accent;
+  }
+}
+
+.hub-body {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+}
+
+.hub-nav {
+  flex: 0 0 14rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1rem 0.8rem;
+  border-right: 1px solid env.$color-line;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.hub-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
   width: 100%;
+  padding: 0.65rem 0.8rem;
+  opacity: 1;
+  text-align: left;
+  text-transform: none;
+  border-radius: env.$radius;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: background env.$time-transition;
+
+  .hub-nav-label {
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: env.$color-text;
+  }
+
+  .hub-nav-hint {
+    font-size: 0.8rem;
+    color: env.$color-muted;
+    line-height: 1.2;
+  }
+
+  &:hover:not([disabled]) {
+    background: env.$color-surface-raised;
+  }
+
+  &.active {
+    background: rgba(212, 187, 132, 0.12);
+    border-left-color: env.$color-accent;
+
+    .hub-nav-label {
+      color: env.$color-accent-strong;
+    }
+  }
+
+  &[disabled] {
+    opacity: 0.45;
+  }
+}
+
+.hub-nav-rejoin {
+  border: 1px solid env.$color-accent;
+  margin-bottom: 0.4rem;
+
+  .hub-nav-label {
+    color: env.$color-accent-strong;
+  }
+}
+
+.hub-nav-spacer {
+  flex: 1 1 auto;
+}
+
+.hub-leave {
+  width: 100%;
+}
+
+.hub-page {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 1.2rem 1.5rem;
+  overflow-y: auto;
+}
+
+.app-root-chat {
+  position: absolute;
+  left: env.$size-gap;
+  bottom: env.$size-gap;
+  width: 32vw;
   height: 30vh;
   display: flex;
   flex-direction: column;
+  padding: 0.5rem;
+  background: env.$color-surface;
+  border: 1px solid env.$color-line;
+  border-radius: env.$radius * 2;
 
   > app-chat {
     margin: 0.1rem;
     flex: 1 1 auto;
-  }
-}
-
-// Note: due to how `-webkit-background-clip` renders clipped text (that's needed for
-// the cooldown effect), we need to apply a few workarounds to make it look just right. I'm sorry!
-
-.cooldown-supporting-text-normal {
-  color: mod.mod(env.$color-background, 0.8);
-  transition: color 0.3s linear;
-}
-
-.cooldown-supporting-text-animating {
-  color: mod.mod(env.$color-background, 0.3);
-}
-
-.text-cooldown-effect {
-  --cooldown-duration: 10s;
-  background: linear-gradient(
-    to left,
-    mod.mod(env.$color-background, 0.3) 50%,
-    mod.mod(env.$color-background, 1) 50%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  transition: background-position var(--cooldown-duration) linear;
-  color: transparent;
-  background-size: 200%;
-  background-position: 0%;
-
-  &.cooldown-active {
-    background-position: 100%;
   }
 }

@@ -8,107 +8,111 @@
     class="app-notification-popup"
   ></app-notification-popup-container>
   <app-notifications [@notifications]="!(active$ | async)"></app-notifications>
-  <div
-    [@controls]="active$ | async"
-    class="app-root-controls"
-    [class.background-element]="view$ | async"
-  >
-    <app-window border="strip" class="app-root-menu">
-      @if (!(connected$ | async) && !(connectionInProgress$ | async)) {
-        @if (lastSession$ | async; as session) {
-          <button data-style-ornament="inverted" (click)="rejoin()">
-            {{
-              (session.hosting
-                ? 'COMPONENT.ROOT.REHOST'
-                : 'COMPONENT.ROOT.REJOIN'
-              ) | transloco: { address: session.host + ':' + session.port }
-            }}
+
+  @let connected = connected$ | async;
+  @let connecting = connectionInProgress$ | async;
+  @let hosting = hosting$ | async;
+  @let session = lastSession$ | async;
+  @let page = currentPage((view$ | async) ?? null, !!connected);
+
+  <div [@controls]="active$ | async" class="app-root-controls">
+    <!-- The Together panel: one window, navigation on the left, the chosen page on the right -->
+    <section class="hub">
+      <header class="hub-header">
+        <h1 class="hub-title">{{ 'COMPONENT.HUB.TITLE' | transloco }}</h1>
+        <div class="hub-state" [attr.data-state]="connected ? 'online' : connecting ? 'connecting' : 'offline'">
+          <span class="hub-state-dot"></span>
+          @if (connected) {
+            {{ (hosting ? 'COMPONENT.HUB.HOSTING' : 'COMPONENT.HUB.CONNECTED') | transloco }}
+            @if (debugData$ | async; as debug) {
+              <span class="muted">· {{ debug.RTT }} ms</span>
+            }
+          } @else if (connecting) {
+            {{ 'COMPONENT.ROOT.CONNECTION_IN_PROGRESS' | transloco }}
+          } @else {
+            {{ 'COMPONENT.HUB.OFFLINE' | transloco }}
+          }
+        </div>
+      </header>
+
+      <div class="hub-body">
+        <nav class="hub-nav">
+          @if (!connected) {
+            @if (session && !connecting) {
+              <button class="hub-nav-item hub-nav-rejoin" (click)="rejoin()">
+                <span class="hub-nav-label">{{
+                  (session.hosting ? 'COMPONENT.ROOT.REHOST' : 'COMPONENT.HUB.REJOIN')
+                    | transloco
+                }}</span>
+                <span class="hub-nav-hint">{{ session.host }}:{{ session.port }}</span>
+              </button>
+            }
+            <button class="hub-nav-item" [class.active]="page === RootView.CONNECT" (click)="setView(RootView.CONNECT)">
+              <span class="hub-nav-label">{{ 'COMPONENT.HUB.JOIN' | transloco }}</span>
+              <span class="hub-nav-hint">{{ 'COMPONENT.HUB.JOIN_HINT' | transloco }}</span>
+            </button>
+            <button class="hub-nav-item" [class.active]="page === RootView.HOST" (click)="setView(RootView.HOST)">
+              <span class="hub-nav-label">{{ 'COMPONENT.HUB.HOST' | transloco }}</span>
+              <span class="hub-nav-hint">{{ 'COMPONENT.HUB.HOST_HINT' | transloco }}</span>
+            </button>
+          } @else {
+            <button class="hub-nav-item" [class.active]="page === RootView.PLAYER_MANAGER" (click)="setView(RootView.PLAYER_MANAGER)">
+              <span class="hub-nav-label">{{ 'COMPONENT.HUB.PLAYERS' | transloco }}</span>
+              <span class="hub-nav-hint">{{ 'COMPONENT.HUB.PLAYERS_HINT' | transloco }}</span>
+            </button>
+            @if (hosting) {
+              <button class="hub-nav-item" [class.active]="page === RootView.INVITE" (click)="setView(RootView.INVITE)">
+                <span class="hub-nav-label">{{ 'COMPONENT.ROOT.INVITE' | transloco }}</span>
+                <span class="hub-nav-hint">{{ 'COMPONENT.HUB.INVITE_HINT' | transloco }}</span>
+              </button>
+            }
+            <button class="hub-nav-item" [disabled]="revealingInProgress$" (click)="revealPlayers()">
+              <span class="hub-nav-label">{{ 'COMPONENT.ROOT.REVEAL_PLAYERS' | transloco }}</span>
+              <span class="hub-nav-hint">{{ 'COMPONENT.HUB.REVEAL_HINT' | transloco }}</span>
+            </button>
+          }
+          <button class="hub-nav-item" [class.active]="page === RootView.SETTINGS" (click)="setView(RootView.SETTINGS)">
+            <span class="hub-nav-label">{{ 'COMPONENT.ROOT.SETTINGS' | transloco }}</span>
           </button>
-        }
-        <button
-          data-style-ornament="inverted"
-          [attr.data-style-active]="(view$ | async) === RootView.CONNECT"
-          (click)="setView(RootView.CONNECT)"
-        >
-          {{ 'COMPONENT.ROOT.CONNECT' | transloco }}
-        </button>
-      }
-      @if (connected$ | async) {
-        <button
-          data-style-ornament="inverted"
-          [attr.data-style-active]="(view$ | async) === RootView.DISCONNECT"
-          (click)="setView(RootView.DISCONNECT)"
-        >
-          {{ 'COMPONENT.ROOT.DISCONNECT' | transloco }}
-        </button>
-        <!--
-        <button
-          data-style-ornament="inverted"
-          [attr.data-style-active]="(view | async) === RootView.RECONNECT"
-          (click)="reconnect()"
-          >
-          {{ 'COMPONENT.ROOT.RECONNECT' | transloco }}
-        </button>
-        -->
-        @if (hosting$ | async) {
-          <button
-            data-style-ornament="inverted"
-            [attr.data-style-active]="(view$ | async) === RootView.INVITE"
-            (click)="setView(RootView.INVITE)"
-          >
-            {{ 'COMPONENT.ROOT.INVITE' | transloco }}
-          </button>
-        }
-        <button
-          data-style-ornament="inverted"
-          [attr.data-style-active]="(view$ | async) === RootView.PLAYER_MANAGER"
-          (click)="setView(RootView.PLAYER_MANAGER)"
-        >
-          {{ 'COMPONENT.ROOT.PLAYER_MANAGER' | transloco }}
-        </button>
-        <button data-style-ornament="inverted" (click)="revealPlayers()">
-          <!-- See note in 'root.component.scss' for explanation -->
-          <div style="position: relative">
-            <span
-              class="cooldown-supporting-text-normal"
-              [class.cooldown-supporting-text-animating]="revealingInProgress$"
-            >
-              {{ 'COMPONENT.ROOT.REVEAL_PLAYERS' | transloco }}
-            </span>
-            <span
-              style="position: absolute; left: 0; top: 0"
-              class="text-cooldown-effect"
-              [class.cooldown-active]="revealingInProgress$"
-              [style.--cooldown-duration]="
-                revealingInProgress$ ? '10s' : '0.3s'
-              "
-            >
-              {{ 'COMPONENT.ROOT.REVEAL_PLAYERS' | transloco }}
-            </span>
-          </div>
-        </button>
-      }
-      <button
-        data-style-ornament="inverted"
-        [attr.data-style-active]="(view$ | async) === RootView.SETTINGS"
-        (click)="setView(RootView.SETTINGS)"
-      >
-        {{ 'COMPONENT.ROOT.SETTINGS' | transloco }}
-      </button>
-      @if (connectionInProgress$ | async) {
-        <button
-          data-style-ornament="inverted"
-          [attr.data-style-active]="(view$ | async) === RootView.DISCONNECT"
-          (click)="setView(RootView.DISCONNECT)"
-        >
-          {{ 'COMPONENT.ROOT.CONNECTION_IN_PROGRESS' | transloco }}
-        </button>
-      }
-    </app-window>
-    <app-window class="app-root-chat">
+
+          <div class="hub-nav-spacer"></div>
+          @if (connected || connecting) {
+            <button class="btn btn-danger hub-leave" (click)="setView(RootView.DISCONNECT)">
+              {{ (connecting && !connected ? 'COMPONENT.HUB.CANCEL_CONNECT' : 'COMPONENT.ROOT.DISCONNECT') | transloco }}
+            </button>
+          }
+        </nav>
+
+        <main class="hub-page">
+          @switch (page) {
+            @case (RootView.CONNECT) {
+              <app-connect mode="join" (done)="closeView()"></app-connect>
+            }
+            @case (RootView.HOST) {
+              <app-connect mode="host" (done)="closeView()"></app-connect>
+            }
+            @case (RootView.PLAYER_MANAGER) {
+              <app-player-manager (done)="closeView()"></app-player-manager>
+            }
+            @case (RootView.INVITE) {
+              <app-invite (done)="closeView()"></app-invite>
+            }
+            @case (RootView.SETTINGS) {
+              <app-settings
+                (done)="closeView()"
+                (settingsUpdated)="updateGroupPosition()"
+              ></app-settings>
+            }
+          }
+        </main>
+      </div>
+    </section>
+
+    <section class="app-root-chat">
       <app-chat #chat></app-chat>
-    </app-window>
+    </section>
   </div>
+
   <div [@fadeInOutActive]="active$ | async" class="app-root-popups">
     <app-loading></app-loading>
     @if (hostWorldOffer$ | async) {
@@ -117,11 +121,6 @@
       </app-popup>
     }
     @switch (view$ | async) {
-      @case (RootView.CONNECT) {
-        <app-popup>
-          <app-connect (done)="closeView()"></app-connect>
-        </app-popup>
-      }
       @case (RootView.CONNECT_PASSWORD) {
         <app-popup>
           <app-connect-password (done)="closeView()"></app-connect-password>
@@ -132,27 +131,9 @@
           <app-disconnect (done)="closeView()"></app-disconnect>
         </app-popup>
       }
-      @case (RootView.INVITE) {
-        <app-popup>
-          <app-invite (done)="closeView()"></app-invite>
-        </app-popup>
-      }
       @case (RootView.SERVER_LIST) {
         <app-popup data-popup="server">
           <app-server-list (done)="closeView()"></app-server-list>
-        </app-popup>
-      }
-      @case (RootView.SETTINGS) {
-        <app-popup data-popup="settings">
-          <app-settings
-            (done)="closeView()"
-            (settingsUpdated)="updateGroupPosition()"
-          ></app-settings>
-        </app-popup>
-      }
-      @case (RootView.PLAYER_MANAGER) {
-        <app-popup data-popup="playerManager">
-          <app-player-manager (done)="closeView()"></app-player-manager>
         </app-popup>
       }
     }

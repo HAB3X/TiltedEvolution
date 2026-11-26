@@ -1,170 +1,160 @@
 @if (hosting) {
-  <div class="container">
-    <div class="instructions">
-      <p>{{ 'COMPONENT.CONNECT.HOST.INFO' | transloco }}</p>
+  <!-- Host: pick a setup, set a password, start -->
+  <div class="page">
+    <div>
+      <h2 class="page-title">{{ 'COMPONENT.CONNECT.HOST.OPEN' | transloco }}</h2>
+      <p class="muted page-lead">{{ 'COMPONENT.CONNECT.HOST.INFO' | transloco }}</p>
     </div>
+
     <div class="presets">
-      @for (preset of ['STORY', 'FREE_ROAM', 'PVP']; track preset) {
-        <button (click)="applyPreset($any(preset))" data-style-ornament="simple">
-          {{ 'COMPONENT.CONNECT.HOST.PRESET_' + preset | transloco }}
+      @for (preset of presetNames; track preset) {
+        <button
+          class="preset"
+          [class.chosen]="activePreset === preset"
+          (click)="applyPreset(preset)"
+        >
+          <span class="preset-name">{{
+            'COMPONENT.CONNECT.HOST.PRESET_' + preset | transloco
+          }}</span>
+          <span class="preset-hint">{{
+            'COMPONENT.CONNECT.HOST.PRESET_' + preset + '_HINT' | transloco
+          }}</span>
         </button>
       }
     </div>
-    <label class="field-label" for="host-password">{{
-      'COMPONENT.CONNECT.HOST.PASSWORD' | transloco
-    }}</label>
-    <input
-      id="host-password"
-      type="text"
-      [placeholder]="'COMPONENT.CONNECT.HOST.PASSWORD_PLACEHOLDER' | transloco"
-      spellcheck="false"
-      [(ngModel)]="hostPassword"
-      (keydown.enter)="host()"
-    />
-    <div class="password-options">
-      <span>
+
+    <div class="field">
+      <label for="host-password">{{
+        'COMPONENT.CONNECT.HOST.PASSWORD' | transloco
+      }}</label>
+      <input
+        id="host-password"
+        type="text"
+        [placeholder]="'COMPONENT.CONNECT.HOST.PASSWORD_PLACEHOLDER' | transloco"
+        spellcheck="false"
+        [(ngModel)]="hostPassword"
+        (keydown.enter)="host()"
+      />
+    </div>
+
+    <div class="toggles">
+      <label class="toggle-row" for="host-world">
+        <span class="toggle-text">
+          <span class="toggle-title">{{ 'COMPONENT.CONNECT.HOST.HOST_WORLD_TITLE' | transloco }}</span>
+          <span class="toggle-hint">{{ 'COMPONENT.CONNECT.HOST.HOST_WORLD' | transloco }}</span>
+        </span>
         <input type="checkbox" id="host-world" [(ngModel)]="hostWorld" />
-        <label for="host-world">{{
-          'COMPONENT.CONNECT.HOST.HOST_WORLD' | transloco
-        }}</label>
-      </span>
-    </div>
-    <div class="password-options">
-      <span>
+      </label>
+      <label class="toggle-row" for="require-mods">
+        <span class="toggle-text">
+          <span class="toggle-title">{{ 'COMPONENT.CONNECT.HOST.REQUIRE_MODS_TITLE' | transloco }}</span>
+          <span class="toggle-hint">{{ 'COMPONENT.CONNECT.HOST.REQUIRE_MODS' | transloco }}</span>
+        </span>
         <input type="checkbox" id="require-mods" [(ngModel)]="requireMods" />
-        <label for="require-mods">{{
-          'COMPONENT.CONNECT.HOST.REQUIRE_MODS' | transloco
-        }}</label>
-      </span>
-    </div>
-    <div class="password-options">
-      <span>
+      </label>
+      <label class="toggle-row" for="host-pvp">
+        <span class="toggle-text">
+          <span class="toggle-title">PvP</span>
+          <span class="toggle-hint">{{ 'COMPONENT.CONNECT.HOST.PVP' | transloco }}</span>
+        </span>
         <input type="checkbox" id="host-pvp" [(ngModel)]="pvp" />
-        <label for="host-pvp">{{ 'COMPONENT.CONNECT.HOST.PVP' | transloco }}</label>
-      </span>
+      </label>
     </div>
-    <app-action-buttons>
-      <button
-        [disabled]="connecting"
-        (click)="host()"
-        data-style-ornament="simple"
-      >
+
+    <div class="actions">
+      <button class="btn btn-primary" [disabled]="connecting" (click)="host()">
         {{ 'COMPONENT.CONNECT.HOST.START' | transloco }}
       </button>
-      <button
-        [disabled]="connecting"
-        (click)="showHost(false)"
-        data-style-ornament="simple"
-      >
-        {{ 'COMPONENT.CONNECT.HOST.BACK' | transloco }}
-      </button>
-    </app-action-buttons>
+    </div>
   </div>
 } @else {
-  <div class="container">
-    <div class="instructions">
-      <p [innerHtml]="'COMPONENT.CONNECT.INFO.SERVER_ADDRESS' | transloco"></p>
-      <p class="warning">
-        {{ 'COMPONENT.CONNECT.INFO.HELGEN' | transloco }}
-      </p>
+  <!-- Join: a code or address on the left, games found nearby on the right -->
+  <div class="page">
+    <div>
+      <h2 class="page-title">{{ 'COMPONENT.HUB.JOIN' | transloco }}</h2>
+      <p class="muted page-lead" [innerHtml]="'COMPONENT.CONNECT.INFO.SERVER_ADDRESS' | transloco"></p>
     </div>
 
-    <input
-      #input
-      type="text"
-      [placeholder]="'COMPONENT.CONNECT.ADDRESS' | transloco"
-      (keydown.enter)="connect()"
-      [(ngModel)]="address"
-      spellcheck="false"
-    />
-    <input
-      #passwordInput
-      [type]="hidePassword ? 'password' : 'text'"
-      [placeholder]="'COMPONENT.CONNECT.PASSWORD' | transloco"
-      spellcheck="false"
-      [(ngModel)]="password"
-      (keydown.enter)="connect()"
-    />
-    <div class="password-options">
-      <span>
-        <input type="checkbox" id="save-password" [(ngModel)]="savePassword" />
-        <label for="save-password">{{
-          'COMPONENT.CONNECT.SAVE_PASSWORD' | transloco
-        }}</label>
-      </span>
-      <span>
-        <input type="checkbox" id="hide-password" [(ngModel)]="hidePassword" />
-        <label for="hide-password">{{
-          'COMPONENT.CONNECT.HIDE_PASSWORD' | transloco
-        }}</label>
-      </span>
-    </div>
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <label for="join-address">{{ 'COMPONENT.CONNECT.ADDRESS' | transloco }}</label>
+          <input
+            #input
+            id="join-address"
+            type="text"
+            placeholder="6BVJN-FJAAJ"
+            (keydown.enter)="connect()"
+            [(ngModel)]="address"
+            spellcheck="false"
+          />
+        </div>
+        <div class="field">
+          <label for="join-password">{{ 'COMPONENT.CONNECT.PASSWORD' | transloco }}</label>
+          <input
+            #passwordInput
+            id="join-password"
+            [type]="hidePassword ? 'password' : 'text'"
+            spellcheck="false"
+            [(ngModel)]="password"
+            (keydown.enter)="connect()"
+          />
+        </div>
+        <div class="checks">
+          <label>
+            <input type="checkbox" [(ngModel)]="savePassword" />
+            {{ 'COMPONENT.CONNECT.SAVE_PASSWORD' | transloco }}
+          </label>
+          <label>
+            <input type="checkbox" [(ngModel)]="hidePassword" />
+            {{ 'COMPONENT.CONNECT.HIDE_PASSWORD' | transloco }}
+          </label>
+        </div>
+        <button class="btn btn-primary join-button" [disabled]="connecting" (click)="connect()">
+          {{ 'COMPONENT.CONNECT.CONNECT' | transloco }}
+        </button>
+        <p class="warning">{{ 'COMPONENT.CONNECT.INFO.HELGEN' | transloco }}</p>
+      </div>
 
-    <app-action-buttons>
-      <button
-        [disabled]="connecting"
-        (click)="connect()"
-        data-style-ornament="simple"
-      >
-        {{ 'COMPONENT.CONNECT.CONNECT' | transloco }}
-      </button>
-      <button
-        [disabled]="connecting"
-        (click)="cancel()"
-        data-style-ornament="simple"
-      >
-        {{ 'COMPONENT.CONNECT.CANCEL' | transloco }}
-      </button>
-    </app-action-buttons>
-    <hr />
-    <div class="lan">
-      <div class="lan-header">
-        <span>{{ 'COMPONENT.CONNECT.LAN.TITLE' | transloco }}</span>
-        <button
-          [disabled]="(lanServers$ | async) === null"
-          (click)="searchLan()"
-          data-style-ornament="simple"
-        >
-          {{ 'COMPONENT.CONNECT.LAN.REFRESH' | transloco }}
+      <div class="column">
+        <div class="lan-header">
+          <h3 class="section-title">{{ 'COMPONENT.CONNECT.LAN.TITLE' | transloco }}</h3>
+          <button class="btn btn-secondary btn-small" [disabled]="(lanServers$ | async) === null" (click)="searchLan()">
+            {{ 'COMPONENT.CONNECT.LAN.REFRESH' | transloco }}
+          </button>
+        </div>
+        @let lanServers = lanServers$ | async;
+        <div class="lan-list">
+          @if (lanServers === null) {
+            <p class="muted">{{ 'COMPONENT.CONNECT.LAN.SEARCHING' | transloco }}</p>
+          } @else if (lanServers.length === 0) {
+            <p class="muted">{{ 'COMPONENT.CONNECT.LAN.NONE' | transloco }}</p>
+          } @else {
+            @for (server of lanServers; track server.address + server.port) {
+              <div class="lan-server">
+                <div class="lan-name">
+                  <span>{{ server.name }}</span>
+                  <span class="lan-tags">
+                    <span class="tag">{{ server.players }}/{{ server.maxPlayers }}</span>
+                    @if (server.hasPassword) {
+                      <span class="tag">{{ 'COMPONENT.CONNECT.LAN.PASSWORD' | transloco }}</span>
+                    }
+                    @if (server.hostWorld) {
+                      <span class="tag">{{ 'COMPONENT.CONNECT.LAN.HOST_WORLD' | transloco }}</span>
+                    }
+                  </span>
+                </div>
+                <button class="btn btn-secondary btn-small" [disabled]="connecting" (click)="joinLan(server)">
+                  {{ 'COMPONENT.CONNECT.LAN.JOIN' | transloco }}
+                </button>
+              </div>
+            }
+          }
+        </div>
+        <button class="btn btn-secondary" (click)="openServerList()">
+          {{ 'COMPONENT.CONNECT.PUBLIC_SERVERS' | transloco }}
         </button>
       </div>
-      @let lanServers = lanServers$ | async;
-      @if (lanServers === null) {
-        <p class="lan-empty">{{ 'COMPONENT.CONNECT.LAN.SEARCHING' | transloco }}</p>
-      } @else if (lanServers.length === 0) {
-        <p class="lan-empty">{{ 'COMPONENT.CONNECT.LAN.NONE' | transloco }}</p>
-      } @else {
-        @for (server of lanServers; track server.address + server.port) {
-          <div class="lan-server">
-            <span class="lan-name">
-              {{ server.name }}
-              <small>
-                {{ server.players }}/{{ server.maxPlayers }}
-                @if (server.hasPassword) {
-                  · {{ 'COMPONENT.CONNECT.LAN.PASSWORD' | transloco }}
-                }
-                @if (server.hostWorld) {
-                  · {{ 'COMPONENT.CONNECT.LAN.HOST_WORLD' | transloco }}
-                }
-              </small>
-            </span>
-            <button
-              [disabled]="connecting"
-              (click)="joinLan(server)"
-              data-style-ornament="simple"
-            >
-              {{ 'COMPONENT.CONNECT.LAN.JOIN' | transloco }}
-            </button>
-          </div>
-        }
-      }
     </div>
-    <hr />
-    <button (click)="openServerList()" data-style-ornament="simple">
-      {{ 'COMPONENT.CONNECT.PUBLIC_SERVERS' | transloco }}
-    </button>
-    <button (click)="showHost(true)" data-style-ornament="simple">
-      {{ 'COMPONENT.CONNECT.HOST.OPEN' | transloco }}
-    </button>
   </div>
 }

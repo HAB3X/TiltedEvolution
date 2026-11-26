@@ -4,7 +4,9 @@ import {
   ElementRef,
   EventEmitter,
   HostListener,
+  Input,
   OnDestroy,
+  OnInit,
   Output,
   ViewChild,
   ChangeDetectionStrategy,
@@ -26,7 +28,7 @@ import { decodeJoinCode } from '../../utils/join-code';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
-export class ConnectComponent implements OnDestroy, AfterViewInit {
+export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
   public address = '';
   public password = '';
   public savePassword = false;
@@ -55,6 +57,22 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
 
   /** Servers on the local network, null while searching. */
   public readonly lanServers$ = this.client.lanServersChange;
+
+  /** The Together panel's Join or Host page */
+  @Input() public set mode(mode: 'join' | 'host') {
+    this.hosting = mode === 'host';
+  }
+
+  /** The preset the boxes match, if any, to show it as chosen */
+  public get activePreset(): keyof ConnectComponent['presets'] | null {
+    const match = (Object.keys(this.presets) as (keyof ConnectComponent['presets'])[]).find(name => {
+      const preset = this.presets[name];
+      return preset.hostWorld === this.hostWorld && preset.requireMods === this.requireMods && preset.pvp === this.pvp;
+    });
+    return match ?? null;
+  }
+
+  public readonly presetNames = Object.keys(this.presets) as (keyof ConnectComponent['presets'])[];
 
   @Output() public done = new EventEmitter<void>();
 
@@ -124,10 +142,19 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
     void this.connect();
   }
 
+  public ngOnInit(): void {
+    // Before the first check: starting it after flips the Refresh button mid-check
+    if (!this.hosting) {
+      this.searchLan();
+    }
+  }
+
   public ngAfterViewInit(): void {
-    this.searchLan();
+    if (this.hosting) {
+      return;
+    }
     setTimeout(() => {
-      this.inputRef.nativeElement.focus();
+      this.inputRef?.nativeElement.focus();
     }, 100);
   }
 
@@ -171,11 +198,6 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
     );
   }
 
-  public showHost(hosting: boolean): void {
-    this.sound.play(Sound.Ok);
-    this.hosting = hosting;
-  }
-
   public host(): void {
     this.connecting = true;
     this.storeService.set('host_password', this.hostPassword);
@@ -184,11 +206,6 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
     this.storeService.set('host_pvp', String(this.pvp));
     this.sound.play(Sound.Ok);
     this.client.hostServer(this.hostPassword, this.hostWorld, this.requireMods, this.pvp);
-  }
-
-  public cancel(): void {
-    this.sound.play(Sound.Cancel);
-    this.done.next();
   }
 
   public openServerList(): void {
@@ -208,13 +225,11 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
   @HostListener('window:keydown.escape', ['$event'])
   // @ts-ignore
   private activate(event: KeyboardEvent): void {
+    // Escape closes an error box; the panel itself is a page, nothing to close
     if (this.errorService.getError()) {
       this.errorService.removeError();
-    } else {
-      this.done.next();
+      event.stopPropagation();
+      event.preventDefault();
     }
-
-    event.stopPropagation();
-    event.preventDefault();
   }
 }

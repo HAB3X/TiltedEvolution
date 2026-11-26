@@ -2,6 +2,22 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "HUB": {
+      "TITLE": "Skyrim Together",
+      "HOSTING": "Anfitrión",
+      "CONNECTED": "Conectado",
+      "OFFLINE": "Sin conexión",
+      "REJOIN": "Volver a unirse",
+      "JOIN": "Unirse a una partida",
+      "JOIN_HINT": "Código, dirección o cerca",
+      "HOST": "Hospedar partida",
+      "HOST_HINT": "Juega en tu mundo",
+      "PLAYERS": "Jugadores",
+      "PLAYERS_HINT": "Quién está, grupo",
+      "INVITE_HINT": "Tu código",
+      "REVEAL_HINT": "Mostrar jugadores cerca",
+      "CANCEL_CONNECT": "Cancelar"
+    },
     "CHAT": {
       "SEND": "Enviar",
       "MESSAGE": "Mensaje",
@@ -30,15 +46,20 @@
         "OPEN": "Hospedar partida",
         "PASSWORD": "Contraseña que escribirán tus amigos",
         "PASSWORD_PLACEHOLDER": "Déjalo vacío para no usar contraseña",
-        "INFO": "Inicia un servidor en este equipo y se une a él. Tus amigos se conectan con tu dirección IP, el puerto 10578 y esta contraseña. Por internet, el router suele abrir el puerto solo; si no, redirige el puerto UDP 10578.",
-        "HOST_WORLD": "Mis amigos entran en mi mundo (mis misiones, mazmorras despejadas y PNJ muertos)",
-        "REQUIRE_MODS": "Mis amigos necesitan mis mods para unirse (el juego les dice cuáles faltan)",
+        "INFO": "Inicia un servidor en este equipo y se une. Tus amigos entran con tu código (Invitar) o te encuentran en tu red.",
+        "HOST_WORLD": "Toman tus misiones, mazmorras despejadas y PNJ muertos, y aparecen a tu lado.",
+        "REQUIRE_MODS": "Quien no tenga uno de tus mods sabrá cuál instalar.",
         "START": "Hospedar",
         "BACK": "Volver",
         "PRESET_STORY": "Cooperativo de historia",
         "PRESET_FREE_ROAM": "Libre",
         "PRESET_PVP": "JcJ",
-        "PVP": "Los jugadores pueden herirse (JcJ)"
+        "PVP": "Los jugadores pueden herirse.",
+        "PRESET_STORY_HINT": "Tus amigos entran en tu mundo y necesitan tus mods",
+        "PRESET_FREE_ROAM_HINT": "Cada uno conserva su mundo; tus mods requeridos",
+        "PRESET_PVP_HINT": "Los jugadores pueden pelear; cualquier mod",
+        "HOST_WORLD_TITLE": "Mis amigos entran en mi mundo",
+        "REQUIRE_MODS_TITLE": "Mis amigos necesitan mis mods"
       },
       "LAN": {
         "TITLE": "Partidas en tu red",
@@ -122,7 +143,8 @@
       },
       "INVITE": "Invitar",
       "KICK": "Expulsar",
-      "BAN": "Vetar"
+      "BAN": "Vetar",
+      "IN_PARTY": "En tu grupo"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Lista de jugadores",
