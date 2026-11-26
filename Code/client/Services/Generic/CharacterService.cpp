@@ -2179,7 +2179,17 @@ void CharacterService::RunLocalUpdates() const noexcept
         // for the snapshot after it anyway, so sending actions along with that snapshot doesn't delay them
         AnimationSystem::SerializeActions(actionsMessage, localComponent, animationComponent);
 
-        if (!cIsFullSnapshot && pActor != pPlayer && !pActor->IsMount() && !pActor->IsInCombat())
+        const bool cIsPriority = pActor == pPlayer || pActor->IsMount();
+        if (!cIsFullSnapshot && !cIsPriority && !pActor->IsInCombat())
+            continue;
+
+        Movement movement;
+        AnimationSystem::SerializeMovement(m_world, pActor, movement);
+
+        // NPCs standing still stop being sent, but not while they act: their actions play on the snapshots' timeline.
+        // Players and mounts always go out, the horse's stop is timed by its snapshots, see InterpolationSystem.
+        const bool cHasActions = actionsMessage.Actions.count(localComponent.Id) != 0;
+        if (!localComponent.MovementFilter.ShouldSend(movement, movementMessage.Tick) && !cIsPriority && !cHasActions)
             continue;
 
         if (movementMessage.Updates.size() == cMaxActorsPerMovementMessage)
@@ -2188,7 +2198,7 @@ void CharacterService::RunLocalUpdates() const noexcept
             movementMessage.Updates.clear();
         }
 
-        AnimationSystem::SerializeMovement(m_world, pActor, movementMessage.Updates[localComponent.Id]);
+        movementMessage.Updates[localComponent.Id] = std::move(movement);
     }
 
     if (!actionsMessage.Actions.empty())
