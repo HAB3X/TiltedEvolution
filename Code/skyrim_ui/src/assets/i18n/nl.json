@@ -2,6 +2,23 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "Neergeslagen",
+      "IN_COMBAT": "In gevecht",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "N",
+        "NE": "NO",
+        "E": "O",
+        "SE": "ZO",
+        "S": "Z",
+        "SW": "ZW",
+        "W": "W",
+        "NW": "NW"
+      },
+      "ALERT_COMBAT": "{{name}} is in gevecht.",
+      "ALERT_DOWNED": "{{name}} is neergeslagen!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Host",

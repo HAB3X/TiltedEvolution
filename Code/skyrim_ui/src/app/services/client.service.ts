@@ -124,6 +124,12 @@ export class ClientService implements OnDestroy {
   /** Player health change. */
   public healthChange = new Subject<Player>();
 
+  /** A party member's magicka, stamina, combat and downed state. */
+  public vitalsChange = new Subject<{ playerId: number; magicka: number; stamina: number; inCombat: boolean; downed: boolean }>();
+
+  /** How far a loaded party member is, and which way. */
+  public distanceChange = new Subject<{ playerId: number; meters: number; direction: number }>();
+
   /** Player level change. */
   public levelChange = new Subject<Player>();
 
@@ -234,6 +240,8 @@ export class ClientService implements OnDestroy {
       this.onPlayerDisconnected.bind(this),
     );
     skyrimtogether.on('setHealth', this.onSetHealth.bind(this));
+    skyrimtogether.on('setVitals', this.onSetVitals.bind(this));
+    skyrimtogether.on('setPlayerDistance', this.onSetPlayerDistance.bind(this));
     skyrimtogether.on('setLevel', this.onSetLevel.bind(this));
     skyrimtogether.on('setCell', this.onSetCell.bind(this));
     skyrimtogether.on('setPlayer3dLoaded', this.onSetPlayer3dLoaded.bind(this));
@@ -289,6 +297,8 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('playerConnected');
     skyrimtogether.off('playerDisconnected');
     skyrimtogether.off('setHealth');
+    skyrimtogether.off('setVitals');
+    skyrimtogether.off('setPlayerDistance');
     skyrimtogether.off('setLevel');
     skyrimtogether.off('setCell');
     skyrimtogether.off('setPlayer3dLoaded');
@@ -712,6 +722,18 @@ export class ClientService implements OnDestroy {
   private onSetHealth(playerId: number, health: number) {
     this.zone.run(() => {
       this.healthChange.next(new Player({ id: playerId, health: health }));
+    });
+  }
+
+  private onSetVitals(playerId: number, magicka: number, stamina: number, inCombat: boolean, downed: boolean) {
+    this.zone.run(() => {
+      this.vitalsChange.next({ playerId, magicka, stamina, inCombat, downed });
+    });
+  }
+
+  private onSetPlayerDistance(playerId: number, meters: number, direction: number) {
+    this.zone.run(() => {
+      this.distanceChange.next({ playerId, meters, direction });
     });
   }
 

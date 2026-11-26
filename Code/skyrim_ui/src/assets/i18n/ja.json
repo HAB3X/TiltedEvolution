@@ -1,5 +1,22 @@
 {
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "ダウン",
+      "IN_COMBAT": "戦闘中",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "北",
+        "NE": "北東",
+        "E": "東",
+        "SE": "南東",
+        "S": "南",
+        "SW": "南西",
+        "W": "西",
+        "NW": "北西"
+      },
+      "ALERT_COMBAT": "{{name}}が戦闘中です。",
+      "ALERT_DOWNED": "{{name}}が倒れました！"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "ホスト中",

@@ -21,6 +21,8 @@ import { Player } from '../../models/player';
 import { ClientService } from '../../services/client.service';
 import { DestroyService } from '../../services/destroy.service';
 import { GroupService } from '../../services/group.service';
+import { compassKey } from '../../utils/party-bar';
+import { faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 
 interface GroupPosition {
   top?: string;
@@ -52,6 +54,8 @@ export class GroupComponent implements OnInit, OnDestroy {
     left: '0%',
   });
   public settings = this.settingService.settings;
+  public readonly faShieldHalved = faShieldHalved;
+  public readonly compassKey = compassKey;
 
   constructor(
     private readonly destroy$: DestroyService,

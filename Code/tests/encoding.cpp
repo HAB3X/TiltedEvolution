@@ -19,6 +19,7 @@
 #include <Structs/Movement.h>
 #include <Structs/ServerSettings.h>
 #include <QuestDesync.h>
+#include <PartyCompass.h>
 #include <WireProtocol.h>
 #include <RequiredMods.h>
 #include <Messages/ServerMessageFactory.h>
@@ -782,6 +783,47 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    GIVEN("RequestPlayerHealthUpdate with the party bar's vitals")
+    {
+        RequestPlayerHealthUpdate sendMessage, recvMessage;
+        sendMessage.Percentage = 42.5f;
+        sendMessage.Vitals = PartyVitals{.Magicka = 80, .Stamina = 5, .InCombat = true, .Downed = true};
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyPlayerHealthUpdate with the party bar's vitals")
+    {
+        NotifyPlayerHealthUpdate sendMessage, recvMessage;
+        sendMessage.PlayerId = 77;
+        sendMessage.Percentage = 100.f;
+        sendMessage.Vitals = PartyVitals{.Magicka = 100, .Stamina = 63, .InCombat = true, .Downed = false};
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
     GIVEN("RequestPartyTravel")
     {
         RequestPartyTravel sendMessage, recvMessage;
@@ -1173,6 +1215,29 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE(Serialization::ReadVarInt(reader) == 42);
     }
 
+    GIVEN("A health update without the party bar's vitals, laid out as v1.8.4 does")
+    {
+        NotifyPlayerHealthUpdate sent;
+        sent.PlayerId = 3;
+        sent.Percentage = 25.f;
+        sent.Vitals = PartyVitals{.Magicka = 50, .Stamina = 50, .InCombat = true, .Downed = true};
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 42);
+
+        Buffer::Reader reader(&buffer);
+        uint64_t opcode;
+        reader.ReadBits(opcode, 8);
+        NotifyPlayerHealthUpdate received;
+        received.DeserializeRaw(reader);
+        REQUIRE(received.PlayerId == 3);
+        REQUIRE(received.Percentage == 25.f);
+        REQUIRE(received.Vitals == PartyVitals{});
+        REQUIRE(Serialization::ReadVarInt(reader) == 42);
+    }
+
     GIVEN("A deleted actor is handed on")
     {
         RequestOwnershipTransfer sent;
@@ -1190,6 +1255,40 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         received.DeserializeRaw(reader);
         REQUIRE(received.ServerId == 7);
         REQUIRE(received.Reason == OwnershipReleaseReason::Relinquish);
+    }
+}
+
+TEST_CASE("Party compass", "[encoding.party_compass]")
+{
+    using namespace PartyCompass;
+
+    GIVEN("A spot in each direction, +Y north and +X east")
+    {
+        REQUIRE(Toward(0.f, 0.f, 0.f, 100.f) == kNorth);
+        REQUIRE(Toward(0.f, 0.f, 100.f, 100.f) == kNorthEast);
+        REQUIRE(Toward(0.f, 0.f, 100.f, 0.f) == kEast);
+        REQUIRE(Toward(0.f, 0.f, 100.f, -100.f) == kSouthEast);
+        REQUIRE(Toward(0.f, 0.f, 0.f, -100.f) == kSouth);
+        REQUIRE(Toward(0.f, 0.f, -100.f, -100.f) == kSouthWest);
+        REQUIRE(Toward(0.f, 0.f, -100.f, 0.f) == kWest);
+        REQUIRE(Toward(0.f, 0.f, -100.f, 100.f) == kNorthWest);
+        // Measured from the first spot, not the origin
+        REQUIRE(Toward(500.f, 500.f, 500.f, 400.f) == kSouth);
+    }
+
+    GIVEN("Bearings near a boundary go to the nearest point")
+    {
+        // 20 degrees east of north is still north, 25 is north-east
+        REQUIRE(Toward(0.f, 0.f, std::tan(0.349f) * 100.f, 100.f) == kNorth);
+        REQUIRE(Toward(0.f, 0.f, std::tan(0.436f) * 100.f, 100.f) == kNorthEast);
+        // Just west of south wraps to south, not to north-west
+        REQUIRE(Toward(0.f, 0.f, -1.f, -100.f) == kSouth);
+    }
+
+    GIVEN("Distances in metres")
+    {
+        REQUIRE(Distance(0.f, 0.f, 0.f, 3.f, 4.f, 12.f) == 13.f);
+        REQUIRE(ToMeters(7000.f) == Approx(99.96f));
     }
 }
 

@@ -1,5 +1,22 @@
 {
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "Повержен",
+      "IN_COMBAT": "В бою",
+      "DISTANCE": "{{meters}} м {{direction}}",
+      "DIRECTION": {
+        "N": "С",
+        "NE": "СВ",
+        "E": "В",
+        "SE": "ЮВ",
+        "S": "Ю",
+        "SW": "ЮЗ",
+        "W": "З",
+        "NW": "СЗ"
+      },
+      "ALERT_COMBAT": "{{name}} в бою.",
+      "ALERT_DOWNED": "{{name}} повержен!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Вы хост",

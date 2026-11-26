@@ -1,5 +1,22 @@
 {
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "쓰러짐",
+      "IN_COMBAT": "전투 중",
+      "DISTANCE": "{{meters}}m {{direction}}",
+      "DIRECTION": {
+        "N": "북",
+        "NE": "북동",
+        "E": "동",
+        "SE": "남동",
+        "S": "남",
+        "SW": "남서",
+        "W": "서",
+        "NW": "북서"
+      },
+      "ALERT_COMBAT": "{{name}} 님이 전투 중입니다.",
+      "ALERT_DOWNED": "{{name}} 님이 쓰러졌습니다!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "호스트 중",

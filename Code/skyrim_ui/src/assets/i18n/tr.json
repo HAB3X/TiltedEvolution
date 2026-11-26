@@ -1,5 +1,22 @@
 {
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "Yere düştü",
+      "IN_COMBAT": "Savaşta",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "K",
+        "NE": "KD",
+        "E": "D",
+        "SE": "GD",
+        "S": "G",
+        "SW": "GB",
+        "W": "B",
+        "NW": "KB"
+      },
+      "ALERT_COMBAT": "{{name}} savaşta.",
+      "ALERT_DOWNED": "{{name}} yere düştü!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Kurucusun",

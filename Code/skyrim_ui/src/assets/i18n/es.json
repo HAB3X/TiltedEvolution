@@ -2,6 +2,23 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "Abatido",
+      "IN_COMBAT": "En combate",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "N",
+        "NE": "NE",
+        "E": "E",
+        "SE": "SE",
+        "S": "S",
+        "SW": "SO",
+        "W": "O",
+        "NW": "NO"
+      },
+      "ALERT_COMBAT": "{{name}} está en combate.",
+      "ALERT_DOWNED": "¡{{name}} ha caído!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Anfitrión",

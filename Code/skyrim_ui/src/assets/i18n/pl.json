@@ -2,6 +2,23 @@
   "INFO": "Polska lokalizacja do Skyrim Together: Reborn! Wersja: 1.4.0. Autor:<strong>Nutyo</strong>",
 
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "Powalony",
+      "IN_COMBAT": "W walce",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "Pn",
+        "NE": "Pn-Wsch",
+        "E": "Wsch",
+        "SE": "Pd-Wsch",
+        "S": "Pd",
+        "SW": "Pd-Zach",
+        "W": "Zach",
+        "NW": "Pn-Zach"
+      },
+      "ALERT_COMBAT": "{{name}} walczy.",
+      "ALERT_DOWNED": "{{name}} padł!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Hostujesz",

@@ -70,6 +70,10 @@ declare namespace SkyrimTogetherTypes {
   ) => void;
 
   type SetHealthCallback = (playerId: number, health: number) => void;
+  /** A party member's bar beside their health: magicka and stamina in whole percents. */
+  type SetVitalsCallback = (playerId: number, magicka: number, stamina: number, inCombat: boolean, downed: boolean) => void;
+  /** How far a loaded party member is, in metres, and the compass point toward them (0 north, clockwise to 7). */
+  type SetPlayerDistanceCallback = (playerId: number, meters: number, direction: number) => void;
 
   type SetLevelCallback = (playerId: number, level: number) => void;
 
@@ -178,6 +182,10 @@ interface SkyrimTogether {
   ): void;
 
   on(event: 'setHealth', callback: SkyrimTogetherTypes.SetHealthCallback): void;
+
+  on(event: 'setVitals', callback: SkyrimTogetherTypes.SetVitalsCallback): void;
+
+  on(event: 'setPlayerDistance', callback: SkyrimTogetherTypes.SetPlayerDistanceCallback): void;
 
   /** Add listener to when one player change level in server. */
   on(event: 'setLevel', callback: SkyrimTogetherTypes.SetLevelCallback): void;
@@ -326,6 +334,10 @@ interface SkyrimTogether {
     event: 'setHealth',
     callback?: SkyrimTogetherTypes.SetHealthCallback,
   ): void;
+
+  off(event: 'setVitals', callback?: SkyrimTogetherTypes.SetVitalsCallback): void;
+
+  off(event: 'setPlayerDistance', callback?: SkyrimTogetherTypes.SetPlayerDistanceCallback): void;
 
   off(event: 'setLevel', callback?: SkyrimTogetherTypes.SetLevelCallback): void;
 

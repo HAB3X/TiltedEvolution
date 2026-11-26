@@ -1,5 +1,22 @@
 {
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "Downed",
+      "IN_COMBAT": "In combat",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "N",
+        "NE": "NE",
+        "E": "E",
+        "SE": "SE",
+        "S": "S",
+        "SW": "SW",
+        "W": "W",
+        "NW": "NW"
+      },
+      "ALERT_COMBAT": "{{name}} is in combat.",
+      "ALERT_DOWNED": "{{name}} is down!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Hosting",

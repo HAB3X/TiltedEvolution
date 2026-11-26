@@ -103,6 +103,10 @@ export class DebugHelperComponent implements OnInit {
     this.mockClientService.skyrimtogether.mockQuestUpdate();
   }
 
+  mockPartyVitals() {
+    this.mockClientService.skyrimtogether.mockPartyVitals();
+  }
+
   mockPartyTravel() {
     this.mockClientService.skyrimtogether.mockPartyTravel();
   }

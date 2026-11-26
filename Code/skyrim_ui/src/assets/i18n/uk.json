@@ -1,5 +1,22 @@
 {
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "Повалений",
+      "IN_COMBAT": "У бою",
+      "DISTANCE": "{{meters}} м {{direction}}",
+      "DIRECTION": {
+        "N": "Пн",
+        "NE": "ПнСх",
+        "E": "Сх",
+        "SE": "ПдСх",
+        "S": "Пд",
+        "SW": "ПдЗх",
+        "W": "Зх",
+        "NW": "ПнЗх"
+      },
+      "ALERT_COMBAT": "{{name}} у бою.",
+      "ALERT_DOWNED": "{{name}} повалений!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Ви хост",

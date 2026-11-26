@@ -15,6 +15,11 @@
             <div class="group-member-leader"></div>
           }
           <span class="member-name">{{ player.name }}</span>
+          @if (player.downed) {
+            <span class="group-member-state downed">{{ 'COMPONENT.PARTY_BAR.DOWNED' | transloco }}</span>
+          } @else if (player.inCombat) {
+            <fa-icon class="group-member-state combat" [icon]="faShieldHalved" [title]="'COMPONENT.PARTY_BAR.IN_COMBAT' | transloco"></fa-icon>
+          }
           @if (player.health !== undefined && player.isLoaded) {
             <div class="group-member-health">
               <div
@@ -23,6 +28,18 @@
               ></div>
             </div>
           }
+          @if (player.magicka !== undefined) {
+            <div class="group-member-vitals">
+              <div class="vital magicka"><div [style.width.%]="player.magicka"></div></div>
+              <div class="vital stamina"><div [style.width.%]="player.stamina"></div></div>
+            </div>
+          }
+          <div class="group-member-where">
+            {{ player.cellName }}
+            @if (player.isLoaded && player.distance !== undefined) {
+              · {{ 'COMPONENT.PARTY_BAR.DISTANCE' | transloco: { meters: player.distance, direction: ('COMPONENT.PARTY_BAR.DIRECTION.' + compassKey(player.direction) | transloco) } }}
+            }
+          </div>
         </div>
       }
     </div>

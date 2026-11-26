@@ -403,6 +403,19 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     this.emit('questUpdated');
   }
 
+  /** Every player's party bar: random magicka and stamina, distance and direction, and combat or downed in turn. */
+  mockPartyVitals() {
+    this.partyVitalsStep++;
+    for (const player of playerStore.query(getAllEntities())) {
+      const inCombat = this.partyVitalsStep % 3 !== 0;
+      const downed = this.partyVitalsStep % 3 === 2;
+      this.emit('setVitals', player.id, Math.floor(Math.random() * 101), Math.floor(Math.random() * 101), inCombat, downed);
+      this.emit('setPlayerDistance', player.id, Math.floor(Math.random() * 300), Math.floor(Math.random() * 8));
+    }
+  }
+
+  private partyVitalsStep = 0;
+
   mockPartyTravel() {
     this.emit('partyTravel', 'Lydia', 'Riverwood');
   }

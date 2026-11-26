@@ -102,6 +102,7 @@ void OverlayService::OnPlayerHealthUpdate(const PacketEvent<RequestPlayerHealthU
     NotifyPlayerHealthUpdate notify{};
     notify.PlayerId = acMessage.pPlayer->GetId();
     notify.Percentage = acMessage.Packet.Percentage;
+    notify.Vitals = acMessage.Packet.Vitals;
 
     GameServer::Get()->SendToParty(notify, acMessage.pPlayer->GetParty(), acMessage.GetSender());
 }

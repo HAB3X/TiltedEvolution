@@ -18,6 +18,18 @@ export class Player implements Friend {
   /** Current health. */
   health?: number;
 
+  /** Current magicka and stamina, whole percents; undefined until the server relays them. */
+  magicka?: number;
+  stamina?: number;
+
+  /** In combat, and bleeding out under the death system. */
+  inCombat = false;
+  downed = false;
+
+  /** Metres from the local player and the compass point toward them, while their actor is loaded here. */
+  distance?: number;
+  direction?: number;
+
   /** Level */
   level?: number;
 

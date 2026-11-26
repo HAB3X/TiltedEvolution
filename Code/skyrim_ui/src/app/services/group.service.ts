@@ -18,6 +18,9 @@ import { ErrorService } from './error.service';
 import { LoadingService } from './loading.service';
 import { PlayerListService } from './player-list.service';
 import { Sound, SoundService } from './sound.service';
+import { PopupNotificationService } from './popup-notification.service';
+import { partyAlerts } from '../utils/party-bar';
+import { faSkull } from '@fortawesome/free-solid-svg-icons';
 
 @Injectable({
   providedIn: 'root',
@@ -34,6 +37,8 @@ export class GroupService implements OnDestroy {
   private levelSubscription: Subscription;
   private cellSubscription: Subscription;
   private loadedSubscription: Subscription;
+  private vitalsSubscription: Subscription;
+  private distanceSubscription: Subscription;
 
   private isConnect = false;
 
@@ -45,6 +50,7 @@ export class GroupService implements OnDestroy {
     private readonly playerListService: PlayerListService,
     private readonly loadingService: LoadingService,
     private readonly translocoService: TranslocoService,
+    private readonly popupNotificationService: PopupNotificationService,
   ) {
     this.onDebug();
     this.onConnectionStateChanged();
@@ -55,6 +61,8 @@ export class GroupService implements OnDestroy {
     this.onLevelChange();
     this.onCellChange();
     this.onLoadedChange();
+    this.onVitalsChange();
+    this.onDistanceChange();
   }
 
   ngOnDestroy() {
@@ -67,6 +75,8 @@ export class GroupService implements OnDestroy {
     this.levelSubscription.unsubscribe();
     this.cellSubscription.unsubscribe();
     this.loadedSubscription.unsubscribe();
+    this.vitalsSubscription.unsubscribe();
+    this.distanceSubscription.unsubscribe();
   }
 
   private onDebug() {
@@ -222,6 +232,60 @@ export class GroupService implements OnDestroy {
             p.health = player.health;
           }
         }
+      },
+    );
+  }
+
+  /** The party bar's magicka, stamina and state, and its alerts when a member enters combat or goes down. */
+  private onVitalsChange() {
+    this.vitalsSubscription = this.clientService.vitalsChange.subscribe(
+      ({ playerId, magicka, stamina, inCombat, downed }) => {
+        const player = this.playerListService.getPlayerById(playerId);
+        if (!this.group.getValue() || !player) {
+          return;
+        }
+
+        // Before the first update the state is unknown, not calm
+        const previous =
+          player.magicka === undefined
+            ? undefined
+            : { inCombat: player.inCombat, downed: player.downed };
+        for (const alert of partyAlerts(previous, { inCombat, downed })) {
+          if (alert === 'combat') {
+            this.chatService.pushSystemMessage('COMPONENT.PARTY_BAR.ALERT_COMBAT', { name: player.name });
+          } else {
+            this.chatService.pushSystemMessage('COMPONENT.PARTY_BAR.ALERT_DOWNED', { name: player.name });
+            this.popupNotificationService.addMessage({
+              messageKey: 'COMPONENT.PARTY_BAR.ALERT_DOWNED',
+              messageParams: { name: player.name },
+              icon: faSkull,
+              duration: 8000,
+            });
+          }
+        }
+
+        player.magicka = magicka;
+        player.stamina = stamina;
+        player.inCombat = inCombat;
+        player.downed = downed;
+        this.updateGroup();
+      },
+    );
+  }
+
+  private onDistanceChange() {
+    this.distanceSubscription = this.clientService.distanceChange.subscribe(
+      ({ playerId, meters, direction }) => {
+        const player = this.playerListService.getPlayerById(playerId);
+        if (!this.group.getValue() || !player) {
+          return;
+        }
+        if (player.distance === meters && player.direction === direction) {
+          return;
+        }
+        player.distance = meters;
+        player.direction = direction;
+        this.updateGroup();
       },
     );
   }

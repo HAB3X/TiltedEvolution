@@ -2,6 +2,23 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "倒地",
+      "IN_COMBAT": "战斗中",
+      "DISTANCE": "{{meters}} 米 {{direction}}",
+      "DIRECTION": {
+        "N": "北",
+        "NE": "东北",
+        "E": "东",
+        "SE": "东南",
+        "S": "南",
+        "SW": "西南",
+        "W": "西",
+        "NW": "西北"
+      },
+      "ALERT_COMBAT": "{{name}} 正在战斗。",
+      "ALERT_DOWNED": "{{name}} 倒下了！"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "主持中",

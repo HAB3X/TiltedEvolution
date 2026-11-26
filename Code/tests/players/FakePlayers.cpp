@@ -29,6 +29,8 @@
 #include <Messages/NotifyQuestUpdate.h>
 #include <Messages/NotifyPartyTravel.h>
 #include <Messages/NotifyQuestDesync.h>
+#include <Messages/NotifyPlayerHealthUpdate.h>
+#include <Messages/RequestPlayerHealthUpdate.h>
 #include <Messages/RequestQuestStages.h>
 #include <Messages/PartyCreateRequest.h>
 #include <Messages/RequestPartyTravel.h>
@@ -149,6 +151,7 @@ struct FakePlayer final : Client
         case kNotifyQuestUpdate: QuestUpdates.push_back(*static_cast<NotifyQuestUpdate*>(pMessage.get())); break;
         case kNotifyPartyTravel: Travel = *static_cast<NotifyPartyTravel*>(pMessage.get()); break;
         case kNotifyQuestDesync: Desyncs.push_back(*static_cast<NotifyQuestDesync*>(pMessage.get())); break;
+        case kNotifyPlayerHealthUpdate: Health = *static_cast<NotifyPlayerHealthUpdate*>(pMessage.get()); break;
         default: break;
         }
     }
@@ -178,6 +181,7 @@ struct FakePlayer final : Client
     std::vector<NotifyQuestUpdate> QuestUpdates;
     std::optional<NotifyPartyTravel> Travel;
     std::vector<NotifyQuestDesync> Desyncs;
+    std::optional<NotifyPlayerHealthUpdate> Health;
 };
 
 // Runs the player until the condition holds or the time is up
@@ -621,6 +625,62 @@ int RunDesyncMember(const std::string& acEndpoint, const std::string& acPassword
     return s_failures ? 1 : 0;
 }
 
+// Party bar: each member's health update carries their magicka, stamina, combat and downed state to the other
+RequestPlayerHealthUpdate BarUpdate(float aHealth, PartyVitals aVitals)
+{
+    RequestPlayerHealthUpdate update;
+    update.Percentage = aHealth;
+    update.Vitals = aVitals;
+    return update;
+}
+
+bool IsBarUpdate(const std::optional<NotifyPlayerHealthUpdate>& acHealth, uint32_t aPlayerId, const RequestPlayerHealthUpdate& acSent)
+{
+    return acHealth && acHealth->PlayerId == aPlayerId && acHealth->Percentage == acSent.Percentage && acHealth->Vitals == acSent.Vitals;
+}
+
+std::string DescribeBar(const std::optional<NotifyPlayerHealthUpdate>& acHealth)
+{
+    if (!acHealth)
+        return "nothing";
+    return "player " + std::to_string(acHealth->PlayerId) + ": " + std::to_string(acHealth->Percentage) + "% health, " + std::to_string(acHealth->Vitals.Magicka) +
+           "% magicka, " + std::to_string(acHealth->Vitals.Stamina) + "% stamina, combat " + std::to_string(acHealth->Vitals.InCombat) + ", downed " +
+           std::to_string(acHealth->Vitals.Downed);
+}
+
+int RunBarLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeBarLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("bar leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("bar leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    RunUntil(leader, [] { return false; }, 2s);
+
+    leader.Send(BarUpdate(90.f, PartyVitals{.Magicka = 40, .Stamina = 75, .InCombat = true, .Downed = false}));
+    const RequestPlayerHealthUpdate cExpected = BarUpdate(12.5f, PartyVitals{.Magicka = 3, .Stamina = 100, .InCombat = true, .Downed = true});
+    const bool cGotBar = RunUntil(leader, [&] { return IsBarUpdate(leader.Health, leader.JoinedIds.front(), cExpected); }, 20s);
+    Check("gets the member's bar: health, magicka, stamina, in combat and downed", cGotBar, DescribeBar(leader.Health));
+    RunUntil(leader, [] { return false; }, 3s);
+    return s_failures ? 1 : 0;
+}
+
+int RunBarMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeBarMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("bar member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    const RequestPlayerHealthUpdate cExpected = BarUpdate(90.f, PartyVitals{.Magicka = 40, .Stamina = 75, .InCombat = true, .Downed = false});
+    const bool cGotBar = RunUntil(member, [&] { return member.Party && IsBarUpdate(member.Health, member.Party->LeaderPlayerId, cExpected); }, 20s);
+    Check("gets the leader's bar", cGotBar, DescribeBar(member.Health));
+
+    member.Send(BarUpdate(12.5f, PartyVitals{.Magicka = 3, .Stamina = 100, .InCombat = true, .Downed = true}));
+    RunUntil(member, [] { return false; }, 3s);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -631,6 +691,7 @@ int RunDesyncMember(const std::string& acEndpoint, const std::string& acPassword
 // FakePlayers.exe questleader|questmember [address:port] [password]: start the leader first (sSharedQuestTypes=Main,Misc)
 // FakePlayers.exe travelleader|travelmember [address:port] [password]: start the leader first
 // FakePlayers.exe desyncleader|desyncmember [address:port] [password]: start the leader first
+// FakePlayers.exe barleader|barmember [address:port] [password]: start the leader first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -672,7 +733,11 @@ int main(int argc, char** argv)
         return RunDesyncLeader(cEndpoint, cPassword);
     if (cRole == "desyncmember")
         return RunDesyncMember(cEndpoint, cPassword);
+    if (cRole == "barleader")
+        return RunBarLeader(cEndpoint, cPassword);
+    if (cRole == "barmember")
+        return RunBarMember(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember [address:port] [password]\n");
     return 2;
 }

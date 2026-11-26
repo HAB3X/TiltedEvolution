@@ -1,5 +1,22 @@
 {
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "Sražen",
+      "IN_COMBAT": "V boji",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "S",
+        "NE": "SV",
+        "E": "V",
+        "SE": "JV",
+        "S": "J",
+        "SW": "JZ",
+        "W": "Z",
+        "NW": "SZ"
+      },
+      "ALERT_COMBAT": "{{name}} je v boji.",
+      "ALERT_DOWNED": "{{name}} je na zemi!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Hostuješ",

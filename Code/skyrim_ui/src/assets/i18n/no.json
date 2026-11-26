@@ -1,5 +1,22 @@
 {
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "Slått ned",
+      "IN_COMBAT": "I kamp",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "N",
+        "NE": "NØ",
+        "E": "Ø",
+        "SE": "SØ",
+        "S": "S",
+        "SW": "SV",
+        "W": "V",
+        "NW": "NV"
+      },
+      "ALERT_COMBAT": "{{name}} er i kamp.",
+      "ALERT_DOWNED": "{{name}} er slått ned!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Vert",

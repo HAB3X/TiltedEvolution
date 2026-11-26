@@ -1,5 +1,22 @@
 {
   "COMPONENT": {
+    "PARTY_BAR": {
+      "DOWNED": "Nedslagen",
+      "IN_COMBAT": "I strid",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "N",
+        "NE": "NO",
+        "E": "O",
+        "SE": "SO",
+        "S": "S",
+        "SW": "SV",
+        "W": "V",
+        "NW": "NV"
+      },
+      "ALERT_COMBAT": "{{name}} är i strid.",
+      "ALERT_DOWNED": "{{name}} är nedslagen!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Värd",
