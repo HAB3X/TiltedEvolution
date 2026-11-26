@@ -5,7 +5,10 @@
 
 struct TESQuest;
 
-// Layouts from CommonLibSSE (RE/B/BGSBaseAlias.h, RE/E/ExtraAliasInstanceArray.h)
+// Layouts from CommonLibSSE (RE/B/BGSBaseAlias.h, RE/E/ExtraAliasInstanceArray.h). GetQuestObjectQuest walks the
+// aliases as the game's own check does (decompiled 1.6.1179 at 0x140182f70, called by ExtraDataList::HasQuestObjectAlias,
+// ID 12052): read lock at +0x28, array at +0x10 with its length at +0x20, each instance's alias at +0x08 and its flags'
+// bit 2 (kQuestObject) at +0x1C.
 struct BGSBaseAlias
 {
     enum Flags : uint32_t

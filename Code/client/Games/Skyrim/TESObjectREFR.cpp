@@ -10,6 +10,7 @@
 #include <Services/PartyService.h>
 #include <Services/QuestService.h>
 #include <ExtraData/ExtraAliasInstanceArray.h>
+#include <ExtraData/ExtraReferenceHandle.h>
 #include <Forms/TESQuest.h>
 #include <Services/PapyrusService.h>
 #include <Events/ActivateEvent.h>
@@ -553,7 +554,16 @@ void TESObjectREFR::GetItemFromExtraData(Inventory::Entry& arEntry, ExtraDataLis
     arEntry.IsQuestItem = apExtraDataList->HasQuestObjectAlias();
     if (arEntry.IsQuestItem)
     {
-        auto* pAliases = Cast<ExtraAliasInstanceArray>(apExtraDataList->GetByType(ExtraDataType::AliasInstanceArray));
+        // Where HasQuestObjectAlias looks (decompiled 1.6.1179 at 0x14016d5d0, ID 12052): the aliases of the reference
+        // the entry stands for when that reference is flagged deleted (picked up), else the entry's own
+        ExtraDataList* pAliasList = apExtraDataList;
+        if (auto* pLink = Cast<ExtraReferenceHandle>(apExtraDataList->GetByType(ExtraDataType::ReferenceHandle)))
+        {
+            TESObjectREFR* pReference = TESObjectREFR::GetByHandle(pLink->handle);
+            if (pReference && pReference->IsDeleted())
+                pAliasList = pReference->GetExtraDataList();
+        }
+        auto* pAliases = Cast<ExtraAliasInstanceArray>(pAliasList->GetByType(ExtraDataType::AliasInstanceArray));
         if (TESQuest* pQuest = pAliases ? pAliases->GetQuestObjectQuest() : nullptr)
             modSystem.GetServerModId(pQuest->formID, arEntry.QuestId);
     }

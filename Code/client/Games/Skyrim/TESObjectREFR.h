@@ -235,3 +235,5 @@ struct TESObjectREFR : TESForm
 static_assert(sizeof(TESObjectREFR) == 0xA0);
 static_assert(offsetof(TESObjectREFR, parentCell) == 0x60);
 static_assert(offsetof(TESObjectREFR, loadedState) == 0x68);
+// Decompiled 1.6.1179 at 0x14016d5d0 (ID 12052) reads a reference's extra data at +0x70
+static_assert(offsetof(TESObjectREFR, extraData) == 0x70);
