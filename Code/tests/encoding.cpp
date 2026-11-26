@@ -17,6 +17,7 @@
 #include <Messages/ClientMessageFactory.h>
 #include <Messages/RequestOwnershipTransfer.h>
 #include <Structs/Movement.h>
+#include <Structs/ObjectData.h>
 #include <Structs/ServerSettings.h>
 #include <QuestDesync.h>
 #include <WireProtocol.h>
@@ -208,6 +209,37 @@ TEST_CASE("Static structures", "[encoding.static]")
         REQUIRE(SharedQuests::IsShared(cMask, SharedQuests::kNone));
         REQUIRE_FALSE(SharedQuests::IsShared(cMask, SharedQuests::kDaedric));
         REQUIRE_FALSE(SharedQuests::IsShared(cMask, 200));
+    }
+}
+
+TEST_CASE("Door state", "[encoding.door_state]")
+{
+    GIVEN("Where a door is headed and where activating it takes it")
+    {
+        REQUIRE(ObjectData::SettledDoorState(ObjectData::kDoorOpening) == ObjectData::kDoorOpen);
+        REQUIRE(ObjectData::SettledDoorState(ObjectData::kDoorClosing) == ObjectData::kDoorClosed);
+        REQUIRE(ObjectData::DoorStateAfterActivation(ObjectData::kDoorOpening) == ObjectData::kDoorClosed);
+        REQUIRE(ObjectData::DoorStateAfterActivation(ObjectData::kDoorClosed) == ObjectData::kDoorOpen);
+        REQUIRE(ObjectData::DoorStateAfterActivation(ObjectData::kNotADoor) == ObjectData::kNotADoor);
+    }
+
+    GIVEN("An object's door state crosses the wire")
+    {
+        ObjectData sent;
+        sent.Id = GameId(0, 0x1234);
+        sent.IsContainer = true;
+        sent.DoorState = ObjectData::kDoorOpen;
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 42);
+
+        Buffer::Reader reader(&buffer);
+        ObjectData received;
+        received.Deserialize(reader);
+        REQUIRE(received == sent);
+        REQUIRE(Serialization::ReadVarInt(reader) == 42);
     }
 }
 
@@ -1170,6 +1202,25 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         received.Deserialize(reader);
         REQUIRE(received.Position == sent.Position);
         REQUIRE_FALSE(received.HasLookAt);
+        REQUIRE(Serialization::ReadVarInt(reader) == 42);
+    }
+
+    GIVEN("Objects without their door state")
+    {
+        ObjectData sent;
+        sent.Id = GameId(0, 0x1234);
+        sent.DoorState = ObjectData::kDoorOpen;
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 42);
+
+        Buffer::Reader reader(&buffer);
+        ObjectData received;
+        received.Deserialize(reader);
+        REQUIRE(received.Id == sent.Id);
+        REQUIRE(received.DoorState == ObjectData::kNotADoor);
         REQUIRE(Serialization::ReadVarInt(reader) == 42);
     }
 

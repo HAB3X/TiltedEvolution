@@ -5,6 +5,7 @@
 #endif
 
 #include <Structs/LockData.h>
+#include <Structs/ObjectData.h>
 #include <Game/Player.h>
 
 struct ObjectComponent
@@ -15,4 +16,6 @@ struct ObjectComponent
     bool IsContainer{};
     // Players whose local copy of a storage container has already been merged into the server state.
     TiltedPhoques::Set<String> MergedPlayers{};
+    // Doors: open or closed (ObjectData::SettledDoorState), kept while anyone is in the cell
+    uint8_t DoorState{ObjectData::kNotADoor};
 };

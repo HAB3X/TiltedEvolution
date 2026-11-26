@@ -203,6 +203,8 @@ struct TESObjectREFR : TESForm
     const float GetHeight() noexcept;
     void EnableImpl() noexcept;
     OpenState GetOpenState() noexcept;
+    // Opens or closes a door without activating it (no scripts run); aSnap skips the animation
+    void SetOpenState(bool aOpen, bool aSnap) noexcept;
 
     Inventory GetInventory() const noexcept;
     Inventory GetInventory(std::function<bool(TESForm&)> aFilter) const noexcept;

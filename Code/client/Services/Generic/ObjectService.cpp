@@ -182,6 +182,9 @@ void ObjectService::OnCellChange(const CellChangeEvent& acEvent) noexcept
             objectData.CurrentLockData.LockLevel = pLock->lockLevel;
         }
 
+        if (pObject->baseForm->formType == FormType::Door)
+            objectData.DoorState = ObjectData::SettledDoorState(pObject->GetOpenState());
+
         if (pObject->baseForm->formType == FormType::Container)
         {
             objectData.CurrentInventory = pObject->GetInventory();
@@ -226,6 +229,14 @@ void ObjectService::OnAssignObjectsResponse(const AssignObjectsResponse& acMessa
             pLock->lockLevel = objectData.CurrentLockData.LockLevel;
             pLock->SetLock(objectData.CurrentLockData.IsLocked);
             pObject->LockChange();
+        }
+
+        // Doors the players already in the cell opened or closed
+        if (pObject->baseForm->formType == FormType::Door && objectData.DoorState != ObjectData::kNotADoor &&
+            ObjectData::SettledDoorState(pObject->GetOpenState()) != objectData.DoorState)
+        {
+            spdlog::info("Door {:X} set {} as the players in the cell left it", pObject->formID, objectData.DoorState == ObjectData::kDoorOpen ? "open" : "closed");
+            pObject->SetOpenState(objectData.DoorState == ObjectData::kDoorOpen, true);
         }
 
         if (pObject->baseForm->formType == FormType::Container)

@@ -19,11 +19,15 @@
 #include <WireProtocol.h>
 #include <Messages/AssignCharacterRequest.h>
 #include <Messages/AssignCharacterResponse.h>
+#include <Messages/AssignObjectsRequest.h>
+#include <Messages/AssignObjectsResponse.h>
+#include <Messages/ActivateRequest.h>
 #include <Messages/AuthenticationRequest.h>
 #include <Messages/AuthenticationResponse.h>
 #include <Messages/ClientMessageFactory.h>
 #include <Messages/ClientReferencesMoveRequest.h>
 #include <Messages/EnterExteriorCellRequest.h>
+#include <Messages/EnterInteriorCellRequest.h>
 #include <Messages/HostWorldStateRequest.h>
 #include <Messages/NotifyHostWorldRequested.h>
 #include <Messages/NotifyHostWorldState.h>
@@ -161,6 +165,7 @@ struct FakePlayer final : Client
             AssignedIds[pResponse->Cookie] = pResponse->ServerId;
             break;
         }
+        case kAssignObjectsResponse: Objects = *static_cast<AssignObjectsResponse*>(pMessage.get()); break;
         case kServerReferencesMoveRequest:
             MovementBytes += aSize;
             for (const auto& [cId, cMovement] : static_cast<ServerReferencesMoveRequest*>(pMessage.get())->Updates)
@@ -200,6 +205,7 @@ struct FakePlayer final : Client
     // Movement relayed to this player, and the bytes it took
     std::vector<Movement> RelayedMovements;
     size_t MovementBytes = 0;
+    std::optional<AssignObjectsResponse> Objects;
 };
 
 // Runs the player until the condition holds or the time is up
@@ -752,6 +758,61 @@ int RunCrowdWatcher(const std::string& acEndpoint, const std::string& acPassword
     return s_failures ? 1 : 0;
 }
 
+// Door state: the first player opens a door, a player entering the cell later is told it is open
+const GameId kDoorCell{0, 0x16BDF};
+const GameId kDoor{0, 0x16C01};
+
+AssignObjectsRequest ClosedDoorIn(const GameId acCell)
+{
+    AssignObjectsRequest request;
+    ObjectData door;
+    door.Id = kDoor;
+    door.CellId = acCell;
+    door.DoorState = ObjectData::kDoorClosed;
+    request.Objects.push_back(door);
+    return request;
+}
+
+void EnterDoorCell(FakePlayer& aPlayer)
+{
+    EnterInteriorCellRequest enter;
+    enter.CellId = kDoorCell;
+    aPlayer.Send(enter);
+}
+
+int RunDoorFirst(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer first("FakeDoorFirst", acPassword);
+    first.Connect(acEndpoint);
+    Check("door opener logs in", RunUntil(first, [&] { return first.LoggedIn; }));
+    EnterDoorCell(first);
+    first.Send(ClosedDoorIn(kDoorCell));
+    Check("is the first to see the door", RunUntil(first, [&] { return first.Objects && first.Objects->Objects.size() == 1 && first.Objects->Objects[0].IsSenderFirst; }));
+
+    ActivateRequest open;
+    open.Id = kDoor;
+    open.CellId = kDoorCell;
+    open.PreActivationOpenState = ObjectData::kDoorClosed;
+    first.Send(open);
+    RunUntil(first, [] { return false; }, 15s);
+    return s_failures ? 1 : 0;
+}
+
+int RunDoorLater(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer later("FakeDoorLater", acPassword);
+    later.Connect(acEndpoint);
+    Check("later player logs in", RunUntil(later, [&] { return later.LoggedIn; }));
+    EnterDoorCell(later);
+    later.Send(ClosedDoorIn(kDoorCell));
+    Check("is told about the door", RunUntil(later, [&] { return later.Objects && later.Objects->Objects.size() == 1; }));
+    const auto* pDoor = later.Objects && !later.Objects->Objects.empty() ? &later.Objects->Objects[0] : nullptr;
+    Check("the door is open, as the first player left it", pDoor && !pDoor->IsSenderFirst && pDoor->DoorState == ObjectData::kDoorOpen,
+          pDoor ? "state " + std::to_string(pDoor->DoorState) : "");
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -763,6 +824,7 @@ int RunCrowdWatcher(const std::string& acEndpoint, const std::string& acPassword
 // FakePlayers.exe travelleader|travelmember [address:port] [password]: start the leader first
 // FakePlayers.exe desyncleader|desyncmember [address:port] [password]: start the leader first
 // FakePlayers.exe crowdowner|crowdwatcher [address:port] [password]: start the owner first
+// FakePlayers.exe doorfirst|doorlater [address:port] [password]: start the first one first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -808,7 +870,11 @@ int main(int argc, char** argv)
         return RunCrowdOwner(cEndpoint, cPassword);
     if (cRole == "crowdwatcher")
         return RunCrowdWatcher(cEndpoint, cPassword);
+    if (cRole == "doorfirst")
+        return RunDoorFirst(cEndpoint, cPassword);
+    if (cRole == "doorlater")
+        return RunDoorLater(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|crowdowner|crowdwatcher [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|crowdowner|crowdwatcher|doorfirst|doorlater [address:port] [password]\n");
     return 2;
 }

@@ -402,6 +402,16 @@ TESObjectREFR::OpenState TESObjectREFR::GetOpenState() noexcept
     return s_pGetOpenState(this);
 }
 
+void TESObjectREFR::SetOpenState(const bool aOpen, const bool aSnap) noexcept
+{
+    // BGSOpenCloseForm::SetOpenState(TESObjectREFR*, bool, bool): CommonLibSSE src/RE/B/BGSOpenCloseForm.cpp,
+    // RELOCATION_ID(14179, 14287)
+    using TSetOpenState = void(TESObjectREFR*, bool, bool);
+    POINTER_SKYRIMSE(TSetOpenState, s_setOpenState, 14287);
+
+    s_setOpenState.Get()(this, aOpen, aSnap);
+}
+
 ExtraContainerChanges::Data* TESObjectREFR::GetContainerChanges() const noexcept
 {
     TP_THIS_FUNCTION(TGetContainterChanges, ExtraContainerChanges::Data*, const TESObjectREFR);

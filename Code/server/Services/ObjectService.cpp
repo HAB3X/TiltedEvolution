@@ -91,6 +91,9 @@ void ObjectService::OnAssignObjectsRequest(const PacketEvent<AssignObjectsReques
             auto& objectComponent = view.get<ObjectComponent>(*iter);
             objectData.CurrentLockData = objectComponent.CurrentLockData;
             objectComponent.IsContainer |= object.IsContainer;
+            if (objectComponent.DoorState == ObjectData::kNotADoor)
+                objectComponent.DoorState = object.DoorState;
+            objectData.DoorState = objectComponent.DoorState;
 
             auto& inventoryComponent = view.get<InventoryComponent>(*iter);
 
@@ -127,6 +130,7 @@ void ObjectService::OnAssignObjectsRequest(const PacketEvent<AssignObjectsReques
             auto& objectComponent = m_world.emplace<ObjectComponent>(cEntity);
             objectComponent.CurrentLockData = object.CurrentLockData;
             objectComponent.IsContainer = object.IsContainer;
+            objectComponent.DoorState = object.DoorState;
             if (object.MergeInventory)
                 objectComponent.MergedPlayers.insert(acMessage.pPlayer->GetUsername());
 
@@ -153,6 +157,15 @@ void ObjectService::OnActivate(const PacketEvent<ActivateRequest>& acMessage) co
     notifyActivate.Id = acMessage.Packet.Id;
     notifyActivate.ActivatorId = acMessage.Packet.ActivatorId;
     notifyActivate.PreActivationOpenState = acMessage.Packet.PreActivationOpenState;
+
+    // Remembered for players who enter the cell later
+    if (const uint8_t cDoorState = ObjectData::DoorStateAfterActivation(acMessage.Packet.PreActivationOpenState); cDoorState != ObjectData::kNotADoor)
+    {
+        auto objectView = m_world.view<FormIdComponent, ObjectComponent>();
+        const auto iter = std::find_if(objectView.begin(), objectView.end(), [objectView, id = acMessage.Packet.Id](auto entity) { return objectView.get<FormIdComponent>(entity).Id == id; });
+        if (iter != objectView.end())
+            objectView.get<ObjectComponent>(*iter).DoorState = cDoorState;
+    }
 
     for (auto pPlayer : m_world.GetPlayerManager())
     {
