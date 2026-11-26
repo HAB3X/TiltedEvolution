@@ -45,6 +45,9 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
   public pauseInMenus = false;
   /** Hosting for the regular Skyrim Together: the Plus-only options are off */
   public classic = false;
+  /** A relay friends join through when the router can't be opened (address:port), and its password */
+  public relay = '';
+  public relayPassword = '';
 
   /** One click setups for the host form */
   public readonly presets = {
@@ -219,6 +222,8 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
       pvp: this.pvp,
       pauseInMenus: this.pauseInMenus,
       classic: this.classic,
+      relay: this.classic ? '' : this.relay.trim(),
+      relayPassword: this.relayPassword,
     });
   }
 

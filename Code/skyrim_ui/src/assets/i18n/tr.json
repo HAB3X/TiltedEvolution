@@ -70,7 +70,11 @@
         "PAUSE": "Tüm oyuncular envanter ya da harita gibi bir menüdeyken dünya duraklar.",
         "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun",
         "MODS_REQUIRED": "Arkadaşlarının ihtiyaç duyduğu modlar: {{count}}",
-        "MODS_REQUIRED_NONE": "Oyunun kendi dosyaları dışında modun yok, bu yüzden arkadaşlarının mod ihtiyacı yok."
+        "MODS_REQUIRED_NONE": "Oyunun kendi dosyaları dışında modun yok, bu yüzden arkadaşlarının mod ihtiyacı yok.",
+        "RELAY_TITLE": "Röle, yönlendiriciniz açılamıyorsa",
+        "RELAY_HINT": "Ağınızın dışındaki arkadaşlarınız size ulaşamıyorsa (UPnP yoksa ya da sağlayıcınız tek bir genel adresi müşteriler arasında paylaştırıyorsa) bir röle üzerinden katılabilirler: herkesin ulaşabildiği bir makinede çalışan SkyrimTogetherRelay. Yalnızca yönlendirici bağlantı noktası açılamadığında kullanılır. Kullanmamak için boş bırakın.",
+        "RELAY_ADDRESS": "Röle adresi (adres:bağlantı noktası)",
+        "RELAY_PASSWORD": "Röle parolası, varsa"
       },
       "LAN": {
         "TITLE": "Ağındaki oyunlar",

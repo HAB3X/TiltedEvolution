@@ -79,7 +79,11 @@
         "PAUSE": "The world pauses while every player is in a menu, like the inventory or the map.",
         "REQUIRE_MODS_TITLE": "Friends need my mods",
         "MODS_REQUIRED": "Mods friends need: {{count}}",
-        "MODS_REQUIRED_NONE": "You have no mods besides the game's own, so friends need none."
+        "MODS_REQUIRED_NONE": "You have no mods besides the game's own, so friends need none.",
+        "RELAY_TITLE": "Relay, for when your router can't be opened",
+        "RELAY_HINT": "If friends outside your network can't reach you (no UPnP, or your provider shares one public address between customers), they can join through a relay: SkyrimTogetherRelay running on a machine everyone can reach. It's only used when the router port can't be opened. Leave it empty to go without.",
+        "RELAY_ADDRESS": "Relay address (address:port)",
+        "RELAY_PASSWORD": "Relay password, if it has one"
       },
       "ERROR": {
         "CONNECTION": "Could not connect to the specified server. Please make sure you've entered the correct address and that you're not experiencing network issues",

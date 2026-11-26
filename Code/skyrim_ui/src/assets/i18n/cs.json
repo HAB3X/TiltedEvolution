@@ -68,7 +68,11 @@
         "PAUSE": "Svět se pozastaví, dokud jsou všichni hráči v nabídce, třeba v inventáři nebo na mapě.",
         "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody",
         "MODS_REQUIRED": "Módy, které přátelé potřebují: {{count}}",
-        "MODS_REQUIRED_NONE": "Kromě vlastních souborů hry nemáte žádné módy, přátelé tedy žádné nepotřebují."
+        "MODS_REQUIRED_NONE": "Kromě vlastních souborů hry nemáte žádné módy, přátelé tedy žádné nepotřebují.",
+        "RELAY_TITLE": "Relay pro případ, že router nejde otevřít",
+        "RELAY_HINT": "Pokud se k vám přátelé mimo vaši síť nedostanou (bez UPnP, nebo poskytovatel sdílí jednu veřejnou adresu mezi zákazníky), mohou se připojit přes relay: SkyrimTogetherRelay spuštěný na počítači, ke kterému se dostanou všichni. Použije se jen tehdy, když port na routeru nejde otevřít. Nechte prázdné, pokud ho nechcete.",
+        "RELAY_ADDRESS": "Adresa relaye (adresa:port)",
+        "RELAY_PASSWORD": "Heslo relaye, pokud nějaké má"
       },
       "LAN": {
         "TITLE": "Hry ve tvé síti",

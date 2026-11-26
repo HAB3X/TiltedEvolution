@@ -69,7 +69,11 @@
         "PAUSE": "Le monde se met en pause tant que tous les joueurs sont dans un menu, comme l'inventaire ou la carte.",
         "REQUIRE_MODS_TITLE": "Mes amis ont besoin de mes mods",
         "MODS_REQUIRED": "Mods requis pour vos amis : {{count}}",
-        "MODS_REQUIRED_NONE": "Vous n'avez aucun mod en dehors des fichiers du jeu, vos amis n'en ont donc besoin d'aucun."
+        "MODS_REQUIRED_NONE": "Vous n'avez aucun mod en dehors des fichiers du jeu, vos amis n'en ont donc besoin d'aucun.",
+        "RELAY_TITLE": "Relais, si votre routeur ne peut pas être ouvert",
+        "RELAY_HINT": "Si vos amis hors de votre réseau ne peuvent pas vous joindre (pas d'UPnP, ou votre fournisseur partage une adresse publique entre clients), ils peuvent passer par un relais : SkyrimTogetherRelay lancé sur une machine que tout le monde peut joindre. Il ne sert que si le port du routeur ne peut pas être ouvert. Laissez vide pour vous en passer.",
+        "RELAY_ADDRESS": "Adresse du relais (adresse:port)",
+        "RELAY_PASSWORD": "Mot de passe du relais, s'il en a un"
       },
       "LAN": {
         "TITLE": "Parties sur votre réseau",

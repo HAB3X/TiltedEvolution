@@ -68,7 +68,11 @@
         "PAUSE": "Verden pauses mens alle spillerne er i en meny, som inventaret eller kartet.",
         "REQUIRE_MODS_TITLE": "Venner trenger modene mine",
         "MODS_REQUIRED": "Spillendringer vennene trenger: {{count}}",
-        "MODS_REQUIRED_NONE": "Du har ingen spillendringer utover spillets egne, så vennene trenger ingen."
+        "MODS_REQUIRED_NONE": "Du har ingen spillendringer utover spillets egne, så vennene trenger ingen.",
+        "RELAY_TITLE": "Relé, når ruteren din ikke kan åpnes",
+        "RELAY_HINT": "Hvis venner utenfor nettverket ditt ikke når deg (ingen UPnP, eller leverandøren deler én offentlig adresse mellom kunder), kan de bli med via et relé: SkyrimTogetherRelay som kjører på en maskin alle kan nå. Det brukes bare når porten på ruteren ikke kan åpnes. La feltet stå tomt for å klare deg uten.",
+        "RELAY_ADDRESS": "Reléadresse (adresse:port)",
+        "RELAY_PASSWORD": "Relépassord, hvis det har et"
       },
       "LAN": {
         "TITLE": "Spill på nettverket ditt",

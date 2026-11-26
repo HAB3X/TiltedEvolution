@@ -407,6 +407,8 @@ interface SkyrimTogether {
    * @param pvp Whether players can hurt each other.
    * @param pauseInMenus Whether the world pauses while every player is in a menu.
    * @param classic Whether to run the official-protocol server instead, which the regular Skyrim Together can join.
+   * @param relay A relay (SkyrimTogetherRelay) friends join through when the router can't be opened, address:port; empty for none.
+   * @param relayPassword That relay's password.
    */
   hostServer(
     password: string,
@@ -415,6 +417,8 @@ interface SkyrimTogether {
     pvp: boolean,
     pauseInMenus: boolean,
     classic: boolean,
+    relay: string,
+    relayPassword: string,
   ): void;
 
   /**

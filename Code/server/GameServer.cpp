@@ -11,6 +11,7 @@
 #include <Windows.h>
 #endif
 #include <PortMapper.h>
+#include <RelayClient.h>
 #include <Packet.hpp>
 
 #include <Events/CharacterRemoveEvent.h>
@@ -43,6 +44,8 @@ Console::Setting bPremiumTickrate{"GameServer:bPremiumMode", "Server tick rate: 
 Console::Setting bLanDiscovery{"GameServer:bLanDiscovery", "Lets players on the same network find this server in Connect, Local games (UDP port 10579)", true};
 Console::Setting uStopWithProcess{"GameServer:uStopWithProcess", "Id of a process the server shuts down with, when it exits (the game that hosts it sets this)", 0u};
 Console::Setting bUPnP{"GameServer:bUPnP", "Opens the server's UDP port on the router with UPnP while it runs, so friends outside your network can join without forwarding it by hand", true};
+Console::StringSetting sRelay{"GameServer:sRelay", "A relay friends join through when the router port can't be opened (no UPnP, or carrier-grade NAT), as address:port of a machine running SkyrimTogetherRelay. Empty: none", ""};
+Console::StringSetting sRelayPassword{"GameServer:sRelayPassword", "The password of the relay in sRelay, if it has one", ""};
 Console::StringSetting sServerName{"GameServer:sServerName", "Name that shows up in the server list", "Dedicated Together Server"};
 Console::StringSetting sAdminPassword{"GameServer:sAdminPassword", "Password for server admins. Joining with it gives admin rights. Leave empty to disable", ""};
 Console::StringSetting sPassword{"GameServer:sPassword", "Password players need to join the server. Leave empty to let anyone join", ""};
@@ -219,8 +222,18 @@ GameServer::GameServer(Console::ConsoleRegistry& aConsole) noexcept
     LoadBans();
     if (bLanDiscovery)
         m_pLanDiscovery = MakeUnique<LanDiscoveryResponder>();
+    // The relay is the way in when the router can't be opened
+    if (*sRelay.value())
+        m_pRelay = MakeUnique<RelayClient>(sRelay.value(), sRelayPassword.value(), GetPort());
     if (bUPnP)
-        m_pPortMapper = MakeUnique<PortMapper>(GetPort());
+        m_pPortMapper = MakeUnique<PortMapper>(GetPort(),
+                                               [pRelay = m_pRelay.get()]()
+                                               {
+                                                   if (pRelay)
+                                                       pRelay->Start();
+                                               });
+    else if (m_pRelay)
+        m_pRelay->Start();
     WatchParentProcess();
     spdlog::info("Server {} started on port {}", BUILD_COMMIT, GetPort());
     UpdateTitle();
@@ -1000,6 +1013,12 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
 
     char remoteAddress[48]{};
     info.m_addrRemote.ToString(remoteAddress, 48, false);
+    // A friend joining through the relay reaches the game from a loopback socket: they are who the relay saw
+    if (m_pRelay && info.m_addrRemote.IsLocalHost())
+    {
+        if (const auto cPublic = m_pRelay->PublicAddressOf(info.m_addrRemote.m_port))
+            std::snprintf(remoteAddress, sizeof(remoteAddress), "%s", cPublic->c_str());
+    }
     const bool cBanned = m_bannedAddresses.contains(remoteAddress);
 
     // BUILD_COMMIT stays the same across our builds, the launcher passes the id of its package instead.

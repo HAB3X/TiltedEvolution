@@ -69,7 +69,11 @@
         "PAUSE": "Świat zatrzymuje się, gdy wszyscy gracze są w menu, np. w ekwipunku lub na mapie.",
         "REQUIRE_MODS_TITLE": "Znajomi potrzebują moich modów",
         "MODS_REQUIRED": "Mody potrzebne znajomym: {{count}}",
-        "MODS_REQUIRED_NONE": "Nie masz modów poza plikami samej gry, więc znajomi nie potrzebują żadnych."
+        "MODS_REQUIRED_NONE": "Nie masz modów poza plikami samej gry, więc znajomi nie potrzebują żadnych.",
+        "RELAY_TITLE": "Przekaźnik, gdy routera nie da się otworzyć",
+        "RELAY_HINT": "Jeśli znajomi spoza twojej sieci nie mogą się z tobą połączyć (brak UPnP albo dostawca dzieli jeden publiczny adres między klientów), mogą dołączyć przez przekaźnik: SkyrimTogetherRelay uruchomiony na komputerze, do którego wszyscy mają dostęp. Jest używany tylko wtedy, gdy portu na routerze nie da się otworzyć. Zostaw puste, aby obejść się bez niego.",
+        "RELAY_ADDRESS": "Adres przekaźnika (adres:port)",
+        "RELAY_PASSWORD": "Hasło przekaźnika, jeśli je ma"
       },
       "LAN": {
         "TITLE": "Gry w twojej sieci",

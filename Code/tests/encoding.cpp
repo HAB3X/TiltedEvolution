@@ -20,6 +20,7 @@
 #include <Structs/ServerSettings.h>
 #include <WireProtocol.h>
 #include <RequiredMods.h>
+#include <Relay.h>
 #include <Messages/ServerMessageFactory.h>
 #include <Structs/Vector2_NetQuantize.h>
 
@@ -1102,5 +1103,61 @@ TEST_CASE("Required mods lists", "[encoding.required_mods]")
         REQUIRE(RequiredMods::Compare(cListed, player({{"Sized.esp", 100}, {"Plain.esp", 1}, {"Gone.esp", 5}, {"Extra.esp", 9}})).Empty());
         // A size the player's game couldn't read isn't refused
         REQUIRE(RequiredMods::Compare(cListed, player({{"Sized.esp", 0}, {"Plain.esp", 1}, {"Gone.esp", 5}})).Empty());
+    }
+}
+
+TEST_CASE("Relay messages", "[encoding.relay]")
+{
+    using Relay::Message;
+    using Relay::Type;
+    auto roundTrip = [](const Message& acSent)
+    {
+        const std::string cBytes = acSent.Serialize();
+        return Message::Parse(cBytes.data(), cBytes.size());
+    };
+
+    GIVEN("Each kind of message")
+    {
+        Message allocate{Type::Allocate};
+        allocate.Text = "secret";
+        REQUIRE(roundTrip(allocate)->Text == "secret");
+
+        Message allocated{Type::Allocated};
+        allocated.Port = 10601;
+        REQUIRE(roundTrip(allocated)->Port == 10601);
+
+        Message data{Type::Data};
+        data.PeerId = 0x01020304;
+        data.PeerAddress = 0xC0A80105;
+        data.PeerPort = 54321;
+        data.Payload = std::string("\0game\xFFpacket", 12);
+        const auto cData = roundTrip(data);
+        REQUIRE(cData);
+        REQUIRE(cData->Kind == Type::Data);
+        REQUIRE(cData->PeerId == 0x01020304);
+        REQUIRE(cData->PeerAddress == 0xC0A80105);
+        REQUIRE(cData->PeerPort == 54321);
+        REQUIRE(cData->Payload == data.Payload);
+
+        Message closed{Type::PeerClosed};
+        closed.PeerId = 7;
+        REQUIRE(roundTrip(closed)->PeerId == 7);
+        REQUIRE(roundTrip(Message{Type::Keepalive})->Kind == Type::Keepalive);
+    }
+
+    GIVEN("Anything else")
+    {
+        const std::string cAllocated = [] { Message m{Type::Allocated}; m.Port = 5; return m.Serialize(); }();
+        REQUIRE_FALSE(Message::Parse(cAllocated.data(), cAllocated.size() - 1));
+        REQUIRE_FALSE(Message::Parse("STRZ\x01\x05", 6));
+        REQUIRE_FALSE(Message::Parse("STRY\x02\x05", 6));
+        REQUIRE_FALSE(Message::Parse("STRY\x01\x63", 6));
+        REQUIRE_FALSE(Message::Parse("STRY\x01\x05x", 7));
+        // A length byte longer than the text
+        REQUIRE_FALSE(Message::Parse("STRY\x01\x01\x09" "abc", 10));
+        Message huge{Type::Data};
+        huge.Payload.assign(Relay::kMaxPayload + 1, 'x');
+        const std::string cHuge = huge.Serialize();
+        REQUIRE_FALSE(Message::Parse(cHuge.data(), cHuge.size()));
     }
 }

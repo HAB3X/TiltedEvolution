@@ -70,7 +70,11 @@
         "PAUSE": "Världen pausas medan alla spelare är i en meny, som inventariet eller kartan.",
         "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar",
         "MODS_REQUIRED": "Mods som vännerna behöver: {{count}}",
-        "MODS_REQUIRED_NONE": "Du har inga mods utöver spelets egna, så vännerna behöver inga."
+        "MODS_REQUIRED_NONE": "Du har inga mods utöver spelets egna, så vännerna behöver inga.",
+        "RELAY_TITLE": "Relä, för när din router inte går att öppna",
+        "RELAY_HINT": "Om vänner utanför ditt nätverk inte når dig (ingen UPnP, eller din leverantör delar en publik adress mellan kunder) kan de ansluta via ett relä: SkyrimTogetherRelay som körs på en dator alla når. Det används bara när porten i routern inte går att öppna. Lämna tomt för att klara dig utan.",
+        "RELAY_ADDRESS": "Reläadress (adress:port)",
+        "RELAY_PASSWORD": "Relälösenord, om det har ett"
       },
       "LAN": {
         "TITLE": "Spel i ditt nätverk",

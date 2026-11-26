@@ -147,7 +147,9 @@ bool LocalServerService::Start(const HostSettings& acSettings) noexcept
     {
         written = written && WritePrivateProfileStringW(L"Gameplay", L"bHostWorld", Bool(acSettings.HostWorld), cIni.c_str()) &&
                   WritePrivateProfileStringW(L"ModPolicy", L"bRequireMods", Bool(acSettings.RequireMods), cIni.c_str()) &&
-                  WritePrivateProfileStringW(L"Gameplay", L"bPauseWhenAllInMenus", Bool(acSettings.PauseInMenus), cIni.c_str());
+                  WritePrivateProfileStringW(L"Gameplay", L"bPauseWhenAllInMenus", Bool(acSettings.PauseInMenus), cIni.c_str()) &&
+                  WritePrivateProfileStringW(L"GameServer", L"sRelay", Widen(acSettings.Relay).c_str(), cIni.c_str()) &&
+                  WritePrivateProfileStringW(L"GameServer", L"sRelayPassword", Widen(acSettings.RelayPassword).c_str(), cIni.c_str());
     }
     if (!written)
     {

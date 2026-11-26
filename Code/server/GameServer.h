@@ -25,6 +25,7 @@ class ConsoleRegistry;
 
 struct LanDiscoveryResponder;
 struct PortMapper;
+struct RelayClient;
 
 struct GameServer final : Server
 {
@@ -131,6 +132,9 @@ private:
 
     UniquePtr<World> m_pWorld;
     UniquePtr<LanDiscoveryResponder> m_pLanDiscovery;
+    // GameServer:sRelay; started when the router can't be opened. Declared before m_pPortMapper, whose thread can start
+    // it, so that it outlives it
+    UniquePtr<RelayClient> m_pRelay;
     UniquePtr<PortMapper> m_pPortMapper;
     // ModPolicy:bRequireMods: the mods every player needs, from RequiredMods::kFileName
     std::vector<RequiredMods::Listed> m_requiredMods;

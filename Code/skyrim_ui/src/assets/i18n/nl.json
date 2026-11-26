@@ -69,7 +69,11 @@
         "PAUSE": "De wereld pauzeert zolang alle spelers in een menu zitten, zoals de inventaris of de kaart.",
         "REQUIRE_MODS_TITLE": "Vrienden hebben mijn mods nodig",
         "MODS_REQUIRED": "Mods die vrienden nodig hebben: {{count}}",
-        "MODS_REQUIRED_NONE": "Je hebt geen mods naast die van het spel zelf, dus vrienden hebben er geen nodig."
+        "MODS_REQUIRED_NONE": "Je hebt geen mods naast die van het spel zelf, dus vrienden hebben er geen nodig.",
+        "RELAY_TITLE": "Relay, voor als je router niet open kan",
+        "RELAY_HINT": "Als vrienden buiten je netwerk je niet kunnen bereiken (geen UPnP, of je provider deelt één publiek adres tussen klanten), kunnen ze via een relay meedoen: SkyrimTogetherRelay op een machine die iedereen kan bereiken. Hij wordt alleen gebruikt als de routerpoort niet open kan. Laat leeg om zonder te spelen.",
+        "RELAY_ADDRESS": "Relay-adres (adres:poort)",
+        "RELAY_PASSWORD": "Relay-wachtwoord, als het er een heeft"
       },
       "LAN": {
         "TITLE": "Spellen in je netwerk",

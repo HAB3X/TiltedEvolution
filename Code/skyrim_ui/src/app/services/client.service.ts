@@ -41,6 +41,9 @@ export interface HostOptions {
   pauseInMenus: boolean;
   /** An official-protocol server that the regular Skyrim Together can join; the Plus-only options are off */
   classic: boolean;
+  /** A relay (SkyrimTogetherRelay) friends join through when the router can't be opened, address:port; empty for none */
+  relay: string;
+  relayPassword: string;
 }
 
 /** A server on the local network, as it answered a search. */
@@ -350,6 +353,8 @@ export class ClientService implements OnDestroy {
       pvp: this.storeService.getBool('host_pvp', false),
       pauseInMenus: this.storeService.getBool('host_pause_in_menus', false),
       classic: this.storeService.getBool('host_classic', false),
+      relay: this.storeService.get('host_relay', ''),
+      relayPassword: this.storeService.get('host_relay_password', ''),
     };
   }
 
@@ -361,6 +366,8 @@ export class ClientService implements OnDestroy {
     this.storeService.set('host_pvp', String(options.pvp));
     this.storeService.set('host_pause_in_menus', String(options.pauseInMenus));
     this.storeService.set('host_classic', String(options.classic));
+    this.storeService.set('host_relay', options.relay);
+    this.storeService.set('host_relay_password', options.relayPassword);
     skyrimtogether.hostServer(
       password,
       options.hostWorld,
@@ -368,6 +375,8 @@ export class ClientService implements OnDestroy {
       options.pvp,
       options.pauseInMenus,
       options.classic,
+      options.relay,
+      options.relayPassword,
     );
     this.hostingChange.next(true);
     this.isConnectionInProgressChange.next(true);

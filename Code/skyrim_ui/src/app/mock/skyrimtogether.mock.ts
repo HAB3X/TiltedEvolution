@@ -99,7 +99,10 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     pvp: boolean,
     pauseInMenus: boolean,
     classic: boolean,
+    relay: string,
+    relayPassword: string,
   ): void {
+    console.log(`host${relay ? ` through the relay ${relay}` : ''}`);
     this.connect('127.0.0.1', 10578, password);
     setTimeout(() => this.emit('hostAddress', '203.0.113.7:10578'), 1000);
   }

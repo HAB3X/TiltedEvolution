@@ -68,7 +68,11 @@
         "PAUSE": "Die Welt pausiert, solange alle Spieler in einem Menü sind, etwa Inventar oder Karte.",
         "REQUIRE_MODS_TITLE": "Freunde brauchen meine Mods",
         "MODS_REQUIRED": "Mods, die Freunde brauchen: {{count}}",
-        "MODS_REQUIRED_NONE": "Du hast keine Mods außer den Dateien des Spiels, also brauchen Freunde keine."
+        "MODS_REQUIRED_NONE": "Du hast keine Mods außer den Dateien des Spiels, also brauchen Freunde keine.",
+        "RELAY_TITLE": "Relay, falls dein Router sich nicht öffnen lässt",
+        "RELAY_HINT": "Wenn Freunde außerhalb deines Netzwerks dich nicht erreichen (kein UPnP, oder dein Anbieter teilt eine öffentliche Adresse zwischen Kunden), können sie über ein Relay beitreten: SkyrimTogetherRelay auf einem Rechner, den alle erreichen. Es wird nur genutzt, wenn sich der Router-Port nicht öffnen lässt. Leer lassen, um ohne zu spielen.",
+        "RELAY_ADDRESS": "Relay-Adresse (Adresse:Port)",
+        "RELAY_PASSWORD": "Relay-Passwort, falls es eines hat"
       },
       "LAN": {
         "TITLE": "Spiele in deinem Netzwerk",

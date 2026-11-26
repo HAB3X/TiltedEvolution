@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstdio>
 #include <optional>
 
 namespace
@@ -32,6 +33,17 @@ using Socket = int;
 constexpr Socket kNoSocket = -1;
 void CloseSocket(Socket aSocket) { close(aSocket); }
 #endif
+
+// A private (RFC 1918) or carrier-grade NAT (RFC 6598, 100.64.0.0/10) IPv4 address, as a router reports its
+// external address when it sits behind another NAT
+bool IsBehindAnotherNetwork(const std::string& acAddress)
+{
+    unsigned a = 0, b = 0, c = 0, d = 0;
+    char end = 0;
+    if (std::sscanf(acAddress.c_str(), "%u.%u.%u.%u%c", &a, &b, &c, &d, &end) != 4)
+        return false;
+    return a == 10 || (a == 172 && b >= 16 && b <= 31) || (a == 192 && b == 168) || (a == 100 && b >= 64 && b <= 127);
+}
 
 std::string Lower(std::string aText)
 {
@@ -156,10 +168,15 @@ std::string LocalAddressTowards(const std::string& acHost, int aPort)
 }
 } // namespace
 
-PortMapper::PortMapper(uint16_t aPort) noexcept
+PortMapper::PortMapper(uint16_t aPort, std::function<void()> aOnUnreachable) noexcept
     : m_port(aPort)
 {
-    m_thread = std::thread([this]() { Run(); });
+    m_thread = std::thread(
+        [this, onUnreachable = std::move(aOnUnreachable)]()
+        {
+            if (!Run() && onUnreachable)
+                onUnreachable();
+        });
 }
 
 PortMapper::~PortMapper() noexcept
@@ -259,13 +276,13 @@ bool PortMapper::Soap(const Router& acRouter, const std::string& acAction, const
     return cResult->status == 200;
 }
 
-void PortMapper::Run() noexcept
+bool PortMapper::Run() noexcept
 {
     std::string error;
     if (!FindRouter(m_router, error))
     {
         spdlog::warn("[Host] Router port not opened: {}. Friends outside your network need UDP port {} forwarded to this computer on your router.", error, m_port);
-        return;
+        return false;
     }
 
     // A day, so the router closes it by itself if the server is killed before it can; then without expiry for the
@@ -286,7 +303,7 @@ void PortMapper::Run() noexcept
         const std::string cCode = XmlValue(response, "errorDescription").value_or(XmlValue(response, "errorCode").value_or(response.substr(0, 80)));
         spdlog::warn("[Host] Router port not opened: the router said \"{}\". Friends outside your network need UDP port {} forwarded to {} on your router.", cCode, m_port,
                      m_router.LocalAddress);
-        return;
+        return false;
     }
     m_mapped = true;
 
@@ -294,9 +311,17 @@ void PortMapper::Run() noexcept
     {
         if (const auto cAddress = XmlValue(response, "NewExternalIPAddress"); cAddress && !cAddress->empty())
         {
+            if (IsBehindAnotherNetwork(*cAddress))
+            {
+                spdlog::warn("[Host] UDP port {} opened on the router, but the router's own address {} is private: your internet provider or another router "
+                             "shares one public address between customers (carrier-grade NAT), so friends outside can't reach it.",
+                             m_port, *cAddress);
+                return false;
+            }
             spdlog::info("[Host] Public address: {}:{} (UDP port {} opened on the router)", *cAddress, m_port, m_port);
-            return;
+            return true;
         }
     }
     spdlog::info("[Host] UDP port {} opened on the router; it didn't say this network's public address", m_port);
+    return true;
 }

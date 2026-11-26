@@ -69,7 +69,11 @@
         "PAUSE": "El mundo se pausa mientras todos los jugadores están en un menú, como el inventario o el mapa.",
         "REQUIRE_MODS_TITLE": "Mis amigos necesitan mis mods",
         "MODS_REQUIRED": "Mods que necesitan tus amigos: {{count}}",
-        "MODS_REQUIRED_NONE": "No tienes mods aparte de los del propio juego, así que tus amigos no necesitan ninguno."
+        "MODS_REQUIRED_NONE": "No tienes mods aparte de los del propio juego, así que tus amigos no necesitan ninguno.",
+        "RELAY_TITLE": "Relé, por si no se puede abrir tu router",
+        "RELAY_HINT": "Si tus amigos de fuera de tu red no pueden llegar a ti (sin UPnP, o tu proveedor comparte una dirección pública entre clientes), pueden unirse a través de un relé: SkyrimTogetherRelay ejecutándose en una máquina a la que todos lleguen. Solo se usa cuando no se puede abrir el puerto del router. Déjalo vacío para no usarlo.",
+        "RELAY_ADDRESS": "Dirección del relé (dirección:puerto)",
+        "RELAY_PASSWORD": "Contraseña del relé, si tiene"
       },
       "LAN": {
         "TITLE": "Partidas en tu red",

@@ -69,7 +69,11 @@
         "PAUSE": "所有玩家都在菜单（如物品栏或地图）中时，世界会暂停。",
         "REQUIRE_MODS_TITLE": "好友需要我的模组",
         "MODS_REQUIRED": "好友需要的模组：{{count}}",
-        "MODS_REQUIRED_NONE": "除游戏自带文件外你没有其他模组，因此好友无需任何模组。"
+        "MODS_REQUIRED_NONE": "除游戏自带文件外你没有其他模组，因此好友无需任何模组。",
+        "RELAY_TITLE": "中继（无法打开路由器端口时）",
+        "RELAY_HINT": "如果你网络外的好友无法连接你（没有 UPnP，或运营商让多个用户共用一个公网地址），他们可以通过中继加入：中继是在所有人都能访问的机器上运行的 SkyrimTogetherRelay。只有在无法打开路由器端口时才会使用。不需要就留空。",
+        "RELAY_ADDRESS": "中继地址（地址:端口）",
+        "RELAY_PASSWORD": "中继密码（如有）"
       },
       "LAN": {
         "TITLE": "你网络中的游戏",
