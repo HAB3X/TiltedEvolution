@@ -350,41 +350,31 @@ void GameServer::Ban(const Player& acPlayer)
 namespace
 {
 // The plugins listed in a mods file, without the game's own; empty when it can't be read
-Vector<String> ReadModList(const char* apPath, bool& aRead)
+std::vector<RequiredMods::Listed> ReadModList(const char* apPath, bool& aRead)
 {
-    Vector<String> mods;
+    std::vector<RequiredMods::Listed> mods;
     std::ifstream file(apPath);
     aRead = static_cast<bool>(file);
     for (std::string line; std::getline(file, line);)
     {
-        if (!line.empty() && line.back() == '\r')
-            line.pop_back();
-        if (!line.empty() && !RequiredMods::IsGamePlugin(line))
-            mods.push_back(line.c_str());
+        if (line.empty() || line == "\r")
+            continue;
+        const auto cMod = RequiredMods::ParseLine(line);
+        if (!cMod)
+            spdlog::error("{}: can't read the line \"{}\" (expected a plugin's file name, optionally followed by {}<its size in bytes>); it isn't checked", apPath,
+                          line, RequiredMods::kSizeSeparator);
+        else if (!RequiredMods::IsGamePlugin(cMod->Name))
+            mods.push_back(*cMod);
     }
     return mods;
 }
 
-String JoinNames(const Vector<String>& acNames)
+String JoinNames(const std::vector<RequiredMods::Listed>& acMods)
 {
     String list;
-    for (const String& cName : acNames)
-        list += (list.empty() ? "" : ", ") + cName;
+    for (const RequiredMods::Listed& cMod : acMods)
+        list += (list.empty() ? "" : ", ") + String(cMod.Name.c_str());
     return list;
-}
-
-// The listed mods the player doesn't have
-Vector<String> MissingMods(const Vector<String>& acListed, const Mods& acPlayerMods)
-{
-    Vector<String> missing;
-    for (const String& cListed : acListed)
-    {
-        const bool cHas = std::any_of(acPlayerMods.ModList.begin(), acPlayerMods.ModList.end(),
-                                      [&](const Mods::Entry& acMod) { return RequiredMods::Lower(acMod.Filename.c_str()) == RequiredMods::Lower(cListed.c_str()); });
-        if (!cHas)
-            missing.push_back(cListed);
-    }
-    return missing;
 }
 } // namespace
 
@@ -1079,21 +1069,27 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
 
         if (!IsMoPoActive() && !m_requiredMods.empty())
         {
-            Mods missing;
-            for (const String& cRequired : MissingMods(m_requiredMods, acRequest->UserMods))
+            if (const auto cMismatch = RequiredMods::Compare(m_requiredMods, acRequest->UserMods.ModList); !cMismatch.Empty())
             {
-                // Id 0: a mod to install, in the client's list of mods that don't match
-                Mods::Entry entry;
-                entry.Filename = cRequired;
-                entry.Id = 0;
-                missing.ModList.push_back(entry);
-            }
+                // Id 0: a mod to install, in the client's list of mods that don't match; a file size: the host's,
+                // when the player has another version (see Mods::Entry::FileSize)
+                auto refuse = [&](const RequiredMods::Listed& acMod, uint32_t aHostSize)
+                {
+                    Mods::Entry entry;
+                    entry.Filename = acMod.Name.c_str();
+                    entry.Id = 0;
+                    entry.IsLite = false;
+                    entry.FileSize = aHostSize;
+                    serverResponse.UserMods.ModList.push_back(entry);
+                };
+                for (const RequiredMods::Listed& cMod : cMismatch.Missing)
+                    refuse(cMod, 0);
+                for (const RequiredMods::Listed& cMod : cMismatch.DifferentVersion)
+                    refuse(cMod, cMod.FileSize);
 
-            if (!missing.ModList.empty())
-            {
-                spdlog::info("Refusing {} ({:x}), who is missing {} of the host's mods: {}", acRequest->Username.c_str(), aConnectionId, missing.ModList.size(),
-                             PrettyPrintModList(missing.ModList).c_str());
-                serverResponse.UserMods.ModList = std::move(missing.ModList);
+                spdlog::info("Refusing {} ({:x}), who is missing {} of the host's mods ({}) and has another version of {} ({})", acRequest->Username.c_str(), aConnectionId,
+                             cMismatch.Missing.size(), JoinNames(cMismatch.Missing).c_str(), cMismatch.DifferentVersion.size(),
+                             JoinNames(cMismatch.DifferentVersion).c_str());
                 sendKick(RT::kModsMismatch);
                 return;
             }
@@ -1195,7 +1191,7 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
         serverResponse.Type = AuthenticationResponse::ResponseType::kAccepted;
         Send(aConnectionId, serverResponse);
 
-        if (const auto cMissing = MissingMods(m_recommendedMods, acRequest->UserMods); !cMissing.empty())
+        if (const auto cMissing = RequiredMods::Compare(m_recommendedMods, acRequest->UserMods.ModList).Missing; !cMissing.empty())
         {
             NotifyChatMessageBroadcast recommend;
             recommend.MessageType = kSystemMessage;

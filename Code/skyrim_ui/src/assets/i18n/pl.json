@@ -243,6 +243,7 @@
         "MODS_MISMATCH": "Ten Serwer Ma włączoną modpolicy {{mods}}",
         "MODS_MISMATCH_REMOVE": "Usuń następujące mody aby dołączyć:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Zainstaluj następujące mody abyś mógł dołączyć:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Masz inną wersję tych modów niż gospodarz. Zainstaluj wersję gospodarza, aby dołączyć:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Ten serwer nie pozwala na mody {{mods}}. Usuń je by dołończyć.",
         "WRONG_PASSWORD": "Hasło które wpisałeś jest niepoprawne.",
         "NO_REASON": "Serwer odmówił połączenia brak powodu.",

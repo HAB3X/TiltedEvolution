@@ -83,7 +83,7 @@ bool LocalServerService::WriteRequiredMods() const noexcept
     {
         if (pMod->IsLoaded() && !RequiredMods::IsGamePlugin(pMod->filename))
         {
-            file << pMod->filename << '\n';
+            file << RequiredMods::FormatLine(pMod->filename, pMod->GetFileSize()) << '\n';
             ++count;
         }
     }

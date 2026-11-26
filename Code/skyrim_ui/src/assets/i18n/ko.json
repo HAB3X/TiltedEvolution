@@ -239,6 +239,7 @@
         "MODS_MISMATCH": "이 서버에는 ModPolicy가 활성화되어 있습니다. {{mods}}",
         "MODS_MISMATCH_REMOVE": "참가하려면 다음 모드를 제거하세요:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "참가하려면 다음 모드를 설치하세요:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "다음 모드의 버전이 호스트와 다릅니다. 참가하려면 호스트와 같은 버전을 설치하세요:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "이 서버는 {{mods}}를 허용하지 않습니다. 가입하려면 해당 항목을 삭제하세요.",
         "WRONG_PASSWORD": "입력한 암호가 올바르지 않습니다.",
         "NO_REASON": "서버가 이유 없이 연결을 거부했습니다.",

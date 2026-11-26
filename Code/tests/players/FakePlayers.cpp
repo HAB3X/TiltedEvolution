@@ -37,6 +37,7 @@
 #include <chrono>
 #include <cstdio>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <string>
 #include <thread>
@@ -81,11 +82,13 @@ struct FakePlayer final : Client
         request.Token = m_password.c_str();
         request.Username = m_name.c_str();
         request.Level = 1;
-        for (const std::string& cMod : PluginNames)
+        for (const Plugin& cMod : Plugins)
         {
             Mods::Entry entry;
-            entry.Filename = cMod.c_str();
+            entry.Filename = cMod.Name.c_str();
             entry.Id = static_cast<uint16_t>(request.UserMods.ModList.size());
+            entry.IsLite = false;
+            entry.FileSize = cMod.FileSize;
             request.UserMods.ModList.push_back(entry);
         }
         Send(request);
@@ -116,7 +119,7 @@ struct FakePlayer final : Client
             for (const auto& cMod : pResponse->UserMods.ModList)
             {
                 if (!LoggedIn)
-                    RefusedMods.push_back(cMod.Filename.c_str());
+                    (cMod.FileSize != 0 ? RefusedVersions : RefusedMods).push_back(cMod.Filename.c_str());
             }
             Settings = pResponse->Settings;
             ServerVersion = pResponse->Version.c_str();
@@ -141,10 +144,16 @@ struct FakePlayer final : Client
 
     std::string m_name, m_password;
     bool LoggedIn = false, Disconnected = false;
+    struct Plugin
+    {
+        std::string Name;
+        uint32_t FileSize = 0;
+    };
     // The plugins this player says it has loaded
-    std::vector<std::string> PluginNames;
+    std::vector<Plugin> Plugins;
     std::optional<AuthenticationResponse::ResponseType> Refusal;
-    std::vector<std::string> RefusedMods;
+    // In a refusal: the mods to install, and those the player has another version of
+    std::vector<std::string> RefusedMods, RefusedVersions;
     ServerSettings Settings{};
     std::string ServerVersion;
     std::vector<std::string> JoinedNames;
@@ -290,7 +299,7 @@ int RunRequiredMods(const std::string& acEndpoint, const std::string& acPassword
 {
     {
         FakePlayer without("FakeNoMods", acPassword);
-        without.PluginNames = {"Skyrim.esm"};
+        without.Plugins = {{"Skyrim.esm"}};
         without.Connect(acEndpoint);
         Check("a player without the host's mods is refused", RunUntil(without, [&] { return without.Refusal.has_value(); }) &&
                                                                   without.Refusal == AuthenticationResponse::ResponseType::kModsMismatch);
@@ -301,13 +310,55 @@ int RunRequiredMods(const std::string& acEndpoint, const std::string& acPassword
     }
     {
         FakePlayer with("FakeWithMods", acPassword);
-        with.PluginNames = {"Skyrim.esm", "SomeMod.esp", "ExtraMod.esp"};
+        with.Plugins = {{"Skyrim.esm"}, {"SomeMod.esp"}, {"ExtraMod.esp"}};
         with.Connect(acEndpoint);
         Check("a player with them (and an extra mod) gets in", RunUntil(with, [&] { return with.LoggedIn; }));
         // The server also recommends NiceToHave.esp, which this player lacks
         Check("and is told about the recommended mod they lack", RunUntil(with, [&] { return with.Chat.has_value(); }, 5s) &&
                                                                      std::string(with.Chat->ChatMessage.c_str()).find("NiceToHave.esp") != std::string::npos,
               with.Chat ? with.Chat->ChatMessage.c_str() : "no message");
+    }
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+std::string JoinNames(const std::vector<std::string>& acNames)
+{
+    std::string list;
+    for (const auto& cName : acNames)
+        list += (list.empty() ? "" : ", ") + cName;
+    return list;
+}
+
+// A server requiring mods with their sizes (ModPolicy:bRequireMods), whose list is "Sized.esp|12345" and a plain
+// "Plain.esp": another size of Sized.esp is refused as a different version, a missing Plain.esp as missing, and the
+// right size with any size of Plain.esp gets in. One player at a time, so one process works.
+int RunModVersions(const std::string& acEndpoint, const std::string& acPassword)
+{
+    using RT = AuthenticationResponse::ResponseType;
+    auto login = [&](const char* apName, std::vector<FakePlayer::Plugin> aPlugins)
+    {
+        auto pPlayer = std::make_unique<FakePlayer>(apName, acPassword);
+        pPlayer->Plugins = std::move(aPlugins);
+        pPlayer->Connect(acEndpoint);
+        RunUntil(*pPlayer, [&] { return pPlayer->LoggedIn || pPlayer->Refusal.has_value(); });
+        return pPlayer;
+    };
+    {
+        const auto cpOld = login("FakeOldVersion", {{"Skyrim.esm", 250}, {"Sized.esp", 999}, {"Plain.esp", 10}});
+        Check("a player with another version of a mod is refused", cpOld->Refusal == RT::kModsMismatch);
+        Check("and told that mod is a different version", cpOld->RefusedVersions == std::vector<std::string>{"Sized.esp"} && cpOld->RefusedMods.empty(),
+              "versions: " + JoinNames(cpOld->RefusedVersions) + "; missing: " + JoinNames(cpOld->RefusedMods));
+    }
+    {
+        const auto cpMissing = login("FakeMissingPlain", {{"Sized.esp", 12345}});
+        Check("a player missing a plain-name mod is refused", cpMissing->Refusal == RT::kModsMismatch);
+        Check("and told it's missing, not a different version", cpMissing->RefusedMods == std::vector<std::string>{"Plain.esp"} && cpMissing->RefusedVersions.empty(),
+              "versions: " + JoinNames(cpMissing->RefusedVersions) + "; missing: " + JoinNames(cpMissing->RefusedMods));
+    }
+    {
+        const auto cpSame = login("FakeSameVersion", {{"Sized.esp", 12345}, {"Plain.esp", 777}});
+        Check("a player with the same size (and any size of the plain-name mod) gets in", cpSame->LoggedIn);
     }
     std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
     return s_failures ? 1 : 0;
@@ -397,6 +448,7 @@ int RunSoak(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
 // FakePlayers.exe parent <server folder>: starts the server as the game would, and exits after 15 seconds
 // FakePlayers.exe mods [address:port] [password]: against a server requiring SomeMod.esp
+// FakePlayers.exe modversions [address:port] [password]: against a server requiring Sized.esp|12345 and Plain.esp
 // FakePlayers.exe listen184|talk184 [address:port] [password]: the same against an official v1.8.4 server
 int main(int argc, char** argv)
 {
@@ -421,11 +473,13 @@ int main(int argc, char** argv)
         return RunParent(cEndpoint);
     if (cRole == "mods")
         return RunRequiredMods(cEndpoint, cPassword);
+    if (cRole == "modversions")
+        return RunModVersions(cEndpoint, cPassword);
     if (cRole == "listen184")
         return RunOfficialListener(cEndpoint, cPassword);
     if (cRole == "talk184")
         return RunOfficialTalker(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|mods|listen184|talk184 [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|mods|modversions|listen184|talk184 [address:port] [password]\n");
     return 2;
 }

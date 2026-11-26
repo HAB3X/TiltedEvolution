@@ -247,6 +247,7 @@
         "MODS_MISMATCH": "This server needs the same mods as its host.{{mods}}",
         "MODS_MISMATCH_REMOVE": "Please remove the following mods to join:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Please install the following mods to join:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Your version of these mods differs from the host's. Please install the host's version to join:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "This server disallows {{mods}}. Please remove them to join.",
         "WRONG_PASSWORD": "The password you entered is incorrect.",
         "NO_REASON": "The server refused connection without reason.",

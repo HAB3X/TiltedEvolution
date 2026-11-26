@@ -3,6 +3,7 @@
 #include <TiltedCore/Buffer.hpp>
 #include <TiltedCore/Serialization.hpp>
 
+#include <cstring>
 #include <optional>
 
 #include <glm/vec2.hpp>
@@ -18,6 +19,7 @@
 #include <Structs/Movement.h>
 #include <Structs/ServerSettings.h>
 #include <WireProtocol.h>
+#include <RequiredMods.h>
 #include <Messages/ServerMessageFactory.h>
 #include <Structs/Vector2_NetQuantize.h>
 
@@ -274,6 +276,26 @@ TEST_CASE("Differential structures", "[encoding.differential]")
         Buffer::Reader reader(&buff);
         recvMods.Deserialize(reader);
 
+        REQUIRE(sendMods == recvMods);
+    }
+
+    GIVEN("Mods with their plugin sizes")
+    {
+        Mods sendMods, recvMods;
+        sendMods.ModList.push_back({"SomeMod.esp", 3, false, 12345});
+        sendMods.ModList.push_back({"Big.esm", 4, false, 0xFFFFFFFF});
+        sendMods.ModList.push_back({"Unknown.esl", 5, true, 0});
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMods.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+        recvMods.Deserialize(reader);
+
+        REQUIRE(recvMods.ModList.size() == 3);
+        REQUIRE(recvMods.ModList[0].FileSize == 12345);
+        REQUIRE(recvMods.ModList[1].FileSize == 0xFFFFFFFF);
         REQUIRE(sendMods == recvMods);
     }
 
@@ -876,6 +898,39 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE(Serialization::ReadVarInt(reader) == 1234567);
     }
 
+    GIVEN("Mods without their plugin sizes, laid out as v1.8.4 does")
+    {
+        Mods sent;
+        sent.ModList.push_back({"SomeMod.esp", 3, true, 12345});
+
+        // Zeroed, so the comparison below doesn't see leftover bits after the last one written
+        Buffer buffer(1000);
+        std::memset(buffer.GetWriteData(), 0, buffer.GetSize());
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 42);
+
+        // v1.8.4's layout: a 13-bit count, then each mod's 16-bit id, lite flag and file name
+        Buffer expected(1000);
+        std::memset(expected.GetWriteData(), 0, expected.GetSize());
+        Buffer::Writer expectedWriter(&expected);
+        expectedWriter.WriteBits(1, 13);
+        expectedWriter.WriteBits(3, 16);
+        Serialization::WriteBool(expectedWriter, true);
+        Serialization::WriteString(expectedWriter, "SomeMod.esp");
+        Serialization::WriteVarInt(expectedWriter, 42);
+        REQUIRE(writer.Size() == expectedWriter.Size());
+        REQUIRE(std::memcmp(buffer.GetData(), expected.GetData(), writer.Size()) == 0);
+
+        Buffer::Reader reader(&buffer);
+        Mods received;
+        received.Deserialize(reader);
+        REQUIRE(received.ModList.size() == 1);
+        REQUIRE(received.ModList[0].Filename == "SomeMod.esp");
+        REQUIRE(received.ModList[0].FileSize == 0);
+        REQUIRE(Serialization::ReadVarInt(reader) == 42);
+    }
+
     GIVEN("Movement without where the actor looks")
     {
         Movement sent;
@@ -913,5 +968,48 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         received.DeserializeRaw(reader);
         REQUIRE(received.ServerId == 7);
         REQUIRE(received.Reason == OwnershipReleaseReason::Relinquish);
+    }
+}
+
+TEST_CASE("Required mods lists", "[encoding.required_mods]")
+{
+    using RequiredMods::Listed;
+
+    GIVEN("Lines of a mods file")
+    {
+        REQUIRE(RequiredMods::ParseLine("SomeMod.esp") == Listed{"SomeMod.esp", 0});
+        REQUIRE(RequiredMods::ParseLine("SomeMod.esp|12345") == Listed{"SomeMod.esp", 12345});
+        REQUIRE(RequiredMods::ParseLine("SomeMod.esp|12345\r") == Listed{"SomeMod.esp", 12345});
+        REQUIRE(RequiredMods::ParseLine("SomeMod.esp\r") == Listed{"SomeMod.esp", 0});
+        REQUIRE_FALSE(RequiredMods::ParseLine("SomeMod.esp|big").has_value());
+        REQUIRE_FALSE(RequiredMods::ParseLine("SomeMod.esp|12x").has_value());
+        REQUIRE_FALSE(RequiredMods::ParseLine("SomeMod.esp|").has_value());
+        REQUIRE_FALSE(RequiredMods::ParseLine("|12345").has_value());
+        REQUIRE_FALSE(RequiredMods::ParseLine("").has_value());
+
+        REQUIRE(RequiredMods::FormatLine("SomeMod.esp", 12345) == "SomeMod.esp|12345");
+        REQUIRE(RequiredMods::FormatLine("SomeMod.esp", 0) == "SomeMod.esp");
+        REQUIRE(RequiredMods::ParseLine(RequiredMods::FormatLine("A B.esp", 7)) == Listed{"A B.esp", 7});
+    }
+
+    GIVEN("A player's mods compared with the listed ones")
+    {
+        const std::vector<Listed> cListed{{"Sized.esp", 100}, {"Plain.esp", 0}, {"Gone.esp", 5}};
+        auto player = [](std::initializer_list<std::pair<const char*, uint32_t>> aMods)
+        {
+            Vector<Mods::Entry> mods;
+            for (const auto& [cpName, cSize] : aMods)
+                mods.push_back({cpName, 0, false, cSize});
+            return mods;
+        };
+
+        const auto cMismatch = RequiredMods::Compare(cListed, player({{"sized.ESP", 99}, {"Plain.esp", 1234}}));
+        REQUIRE(cMismatch.Missing == std::vector<Listed>{{"Gone.esp", 5}});
+        REQUIRE(cMismatch.DifferentVersion == std::vector<Listed>{{"Sized.esp", 100}});
+        REQUIRE_FALSE(cMismatch.Empty());
+
+        REQUIRE(RequiredMods::Compare(cListed, player({{"Sized.esp", 100}, {"Plain.esp", 1}, {"Gone.esp", 5}, {"Extra.esp", 9}})).Empty());
+        // A size the player's game couldn't read isn't refused
+        REQUIRE(RequiredMods::Compare(cListed, player({{"Sized.esp", 0}, {"Plain.esp", 1}, {"Gone.esp", 5}})).Empty());
     }
 }

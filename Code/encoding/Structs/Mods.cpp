@@ -1,5 +1,6 @@
 #include <Structs/Mods.h>
 #include <TiltedCore/Serialization.hpp>
+#include <WireProtocol.h>
 #include <algorithm>
 
 using TiltedPhoques::Serialization;
@@ -24,6 +25,9 @@ void Mods::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noexcept
         aWriter.WriteBits(entry.Id, 16);
         Serialization::WriteBool(aWriter, entry.IsLite);
         Serialization::WriteString(aWriter, entry.Filename);
+        // Official v1.8.4 doesn't know mod versions
+        if (!Wire::IsOfficial184())
+            Serialization::WriteVarInt(aWriter, entry.FileSize);
     }
 }
 
@@ -40,5 +44,6 @@ void Mods::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcept
         ModList[i].Id = data & 0xFFFF;
         ModList[i].IsLite = Serialization::ReadBool(aReader);
         ModList[i].Filename = Serialization::ReadString(aReader);
+        ModList[i].FileSize = Wire::IsOfficial184() ? 0 : Serialization::ReadVarInt(aReader) & 0xFFFFFFFF;
     }
 }

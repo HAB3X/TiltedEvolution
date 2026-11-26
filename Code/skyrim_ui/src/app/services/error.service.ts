@@ -25,7 +25,10 @@ export interface WrongVersionErrorEvent extends ErrorEvent {
 
 export interface ModsMismatchErrorEvent extends ErrorEvent {
   error: 'mods_mismatch';
-  data: { mods: [filename: string, id: string][] };
+  // id '0': a mod the server needs; differentVersion: the player has it, but not the host's version
+  data: {
+    mods: [filename: string, id: string, differentVersion?: boolean][];
+  };
 }
 
 export interface ClientModsDisallowedErrorEvent extends ErrorEvent {
@@ -66,7 +69,7 @@ export class ErrorService {
         case 'mods_mismatch':
           let mods = '';
           const install = error.data.mods
-            .filter(mod => mod[1] === '0')
+            .filter(mod => mod[1] === '0' && !mod[2])
             .map(mod => mod[0]);
           if (install.length > 0) {
             mods += '\n\n<hr>\n';
@@ -74,6 +77,18 @@ export class ErrorService {
               this.translocoService.selectTranslate(
                 'SERVICE.ERROR.ERRORS.MODS_MISMATCH_INSTALL',
                 { mods: `<strong>${install.join(', ')}</strong>` },
+              ),
+            );
+          }
+          const version = error.data.mods
+            .filter(mod => mod[2])
+            .map(mod => mod[0]);
+          if (version.length > 0) {
+            mods += '\n\n<hr>\n';
+            mods += await firstValueFrom(
+              this.translocoService.selectTranslate(
+                'SERVICE.ERROR.ERRORS.MODS_MISMATCH_VERSION',
+                { mods: `<strong>${version.join(', ')}</strong>` },
               ),
             );
           }

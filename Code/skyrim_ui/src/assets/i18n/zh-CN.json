@@ -234,6 +234,7 @@
         "MODS_MISMATCH": "该服务器启用了模组管理策略。{{mods}}",
         "MODS_MISMATCH_REMOVE": "欲加入该服务器，请移除以下模组：\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "欲加入该服务器，请安装以下模组：\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "你的以下模组版本与主机不同。欲加入该服务器，请安装与主机相同的版本：\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "该服务器禁止以下模组：{{mods}}。将其移除以加入服务器。",
         "WRONG_PASSWORD": "您输入的密码不正确。",
         "NO_REASON": "服务器无故拒绝了连接。",

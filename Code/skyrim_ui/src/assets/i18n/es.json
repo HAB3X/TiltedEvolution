@@ -235,6 +235,7 @@
         "MODS_MISMATCH": "Este servidor tiene ModPolicy activado. {{mods}}",
         "MODS_MISMATCH_REMOVE": "Por favor, elimina los siguientes mods para poder unirte:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Por favor, instala los siguientes mods para unirte:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Tienes una versión de estos mods distinta a la del anfitrión. Por favor, instala la versión del anfitrión para unirte:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Este servidor no permite {{mods}}. Por favor, elimínalos para poder unirte.",
         "WRONG_PASSWORD": "La contraseña que has introducido es incorrecta.",
         "NO_REASON": "El servidor ha rechazado la conexión sin razón.",

@@ -241,6 +241,7 @@ void TransportService::SendAuthenticationRequest()
         entry.Id = pMod->GetId();
         entry.IsLite = pMod->IsLite();
         entry.Filename = pMod->filename;
+        entry.FileSize = pMod->GetFileSize();
     }
 
     auto& modSystem = m_world.GetModSystem();
@@ -389,7 +390,8 @@ void TransportService::HandleAuthenticationResponse(const AuthenticationResponse
         {
             if (!first)
                 ErrorInfo += ",";
-            ErrorInfo += fmt::format("[\"{}\",\"{}\"]", m.Filename.c_str(), m.Id);
+            // A file size in a refusal is the host's: the player has another version of that mod
+            ErrorInfo += fmt::format("[\"{}\",\"{}\",{}]", m.Filename.c_str(), m.Id, m.FileSize != 0);
             first = false;
         }
         ErrorInfo += "]}";

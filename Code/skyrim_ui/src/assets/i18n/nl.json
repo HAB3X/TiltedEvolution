@@ -217,6 +217,7 @@
         "MODS_MISMATCH": "Deze server heeft een modbeleid (ModPolicy) toegepast.{{mods}}.",
         "MODS_MISMATCH_REMOVE": "Verwijder de volgende mods om deel te nemen:\n{{mods}}.",
         "MODS_MISMATCH_INSTALL": "Installeer de volgende mods om deel te nemen:\n{{mods}}.",
+        "MODS_MISMATCH_VERSION": "Je hebt een andere versie van deze mods dan de host. Installeer de versie van de host om deel te nemen:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Deze server staat de volgende mods niet toe {{mods}}. Verwijder ze om deel te nemen.",
         "WRONG_PASSWORD": "Het ingevoerde wachtwoord is incorrect.",
         "NO_REASON": "De server heeft de verbinding zonder reden geweigerd.",

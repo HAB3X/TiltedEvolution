@@ -246,6 +246,7 @@
         "MODS_MISMATCH": "Servern har ModPolicy aktiverad.{{mods}}",
         "MODS_MISMATCH_REMOVE": "Ta bort följande mods för att ansluta:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Installera följande mods för att ansluta:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Du har en annan version av dessa mods än värden. Installera värdens version för att ansluta:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Servern tillåter inte {{mods}}. Ta bort dem för att ansluta.",
         "WRONG_PASSWORD": "Lösenordet du angav är inkorrekt.",
         "NO_REASON": "Servern nekade din anslutning utan känd anledning.",

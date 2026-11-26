@@ -2,6 +2,7 @@
 
 #include <Messages/AuthenticationRequest.h>
 #include <Messages/Message.h>
+#include <RequiredMods.h>
 #include <World.h>
 
 using TiltedPhoques::ConnectionId_t;
@@ -132,9 +133,9 @@ private:
     UniquePtr<LanDiscoveryResponder> m_pLanDiscovery;
     UniquePtr<PortMapper> m_pPortMapper;
     // ModPolicy:bRequireMods: the mods every player needs, from RequiredMods::kFileName
-    Vector<String> m_requiredMods;
+    std::vector<RequiredMods::Listed> m_requiredMods;
     // RequiredMods::kRecommendedFileName: mods players are told about, never refused for
-    Vector<String> m_recommendedMods;
+    std::vector<RequiredMods::Listed> m_recommendedMods;
     // Addresses refused at login, from config/bans.txt
     TiltedPhoques::Set<String> m_bannedAddresses;
     void* m_parentProcess{};

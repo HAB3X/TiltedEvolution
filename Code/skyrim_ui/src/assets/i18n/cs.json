@@ -239,6 +239,7 @@
         "MODS_MISMATCH": "Tento server má povolenou ModPolicy.{{mods}}",
         "MODS_MISMATCH_REMOVE": "Chcete-li se připojit, odstraňte prosím následující módy:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Pro připojení si prosím nainstalujte následující módy:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Tyto módy máte v jiné verzi než hostitel. Pro připojení si prosím nainstalujte hostitelovu verzi:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Tento server zakazuje {{mods}}. Chcete-li se připojit, odstraňte je prosím.",
         "WRONG_PASSWORD": "Zadané heslo je chybné.",
         "NO_REASON": "Server odmítl připojení bez udání důvodu.",
