@@ -290,6 +290,24 @@ TEST_CASE("Differential structures", "[encoding.differential]")
 
             REQUIRE(sendAction == recvAction);
         }
+
+        {
+            // A target sent as a server id keeps its flag next to the action type's own bits
+            Buffer buff(1000);
+            Buffer::Writer writer(&buff);
+
+            sendAction.TargetId = 7;
+            sendAction.Type = 4 | ActionEvent::kTargetIsServerId;
+
+            sendAction.GenerateDifferential(recvAction, writer);
+
+            Buffer::Reader reader(&buff);
+            recvAction.ApplyDifferential(reader);
+
+            REQUIRE(sendAction == recvAction);
+            REQUIRE((recvAction.Type & 0x3) == 0);
+            REQUIRE((recvAction.Type & 0x4) != 0);
+        }
     }
 
     GIVEN("A single cached event name")

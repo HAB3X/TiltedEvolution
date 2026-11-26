@@ -2177,7 +2177,7 @@ void CharacterService::RunLocalUpdates() const noexcept
 
         // Remote clients play actions on the same timeline as movement, by the time playback reaches an action it waits
         // for the snapshot after it anyway, so sending actions along with that snapshot doesn't delay them
-        AnimationSystem::SerializeActions(actionsMessage, localComponent, animationComponent);
+        AnimationSystem::SerializeActions(m_world, actionsMessage, localComponent, animationComponent);
 
         if (!cIsFullSnapshot && pActor != pPlayer && !pActor->IsMount() && !pActor->IsInCombat())
             continue;

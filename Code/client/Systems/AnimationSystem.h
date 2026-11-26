@@ -61,7 +61,8 @@ struct AnimationSystem
      * @param localComponent The local component of the actor, gives the server id and tracks the latest action.
      * @param animationComponent The local animation component of the actor holding the pending actions.
      */
-    static void SerializeActions(RequestActionEvents& aMessage, LocalComponent& localComponent, LocalAnimationComponent& animationComponent) noexcept;
+    // Moves the actor's new actions into the message, their synced actor targets as server ids (kTargetIsServerId)
+    static void SerializeActions(World& aWorld, RequestActionEvents& aMessage, LocalComponent& localComponent, LocalAnimationComponent& animationComponent) noexcept;
     /**
      * @brief Serializes the actions to-be-sent.
      *
