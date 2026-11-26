@@ -27,6 +27,7 @@ Player::Player(Player&& aRhs) noexcept
     , m_party{std::exchange(aRhs.m_party, {})}
     , m_questLog{std::exchange(aRhs.m_questLog, {})}
     , m_cell{std::exchange(aRhs.m_cell, {})}
+    , m_bounties{std::exchange(aRhs.m_bounties, {})}
 {
 }
 
@@ -88,6 +89,20 @@ void Player::SetStringCacheId(uint32_t aStringCacheId) noexcept
 void Player::SetLevel(uint16_t aLevel) noexcept
 {
     m_level = aLevel;
+}
+
+uint32_t Player::GetBounty(const GameId& acCrimeFaction) const noexcept
+{
+    const auto cIt = m_bounties.find(acCrimeFaction);
+    return cIt != m_bounties.end() ? cIt->second : 0;
+}
+
+void Player::SetBounty(const GameId& acCrimeFaction, const uint32_t aBounty) noexcept
+{
+    if (aBounty == 0)
+        m_bounties.erase(acCrimeFaction);
+    else
+        m_bounties[acCrimeFaction] = aBounty;
 }
 
 void Player::SetCellComponent(const CellIdComponent& aCellComponent) noexcept

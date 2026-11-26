@@ -4,6 +4,8 @@
 #error Include Components.h instead
 #endif
 
+#include <Structs/GameId.h>
+
 struct Player;
 struct OwnerComponent
 {
@@ -25,4 +27,8 @@ struct OwnerComponent
     Player* pOwner;
     uint32_t OwnershipEpoch;
     Vector<const Player*> InvalidOwners{};
+    // A guard whose owner holds it for their own crime (RequestCrimeAuthority): only that owner's game knows the bounty,
+    // so nobody else may claim the guard until that player's bounty with CrimeFaction is gone. Always the owner or null.
+    const Player* pCrimeHolder{};
+    GameId CrimeFaction{};
 };

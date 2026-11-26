@@ -25,6 +25,9 @@ struct Player
     // As the player's party bar last reported it (RequestPlayerHealthUpdate)
     [[nodiscard]] bool IsInCombat() const noexcept { return m_inCombat; }
     void SetInCombat(bool aInCombat) noexcept { m_inCombat = aInCombat; }
+    // The player's bounty with a crime faction, as their game last reported it (RequestCrimeAuthority)
+    [[nodiscard]] uint32_t GetBounty(const GameId& acCrimeFaction) const noexcept;
+    void SetBounty(const GameId& acCrimeFaction, uint32_t aBounty) noexcept;
 
     [[nodiscard]] CellIdComponent& GetCellComponent() noexcept;
     [[nodiscard]] const CellIdComponent& GetCellComponent() const noexcept;
@@ -64,4 +67,5 @@ private:
     uint32_t m_stringCacheId{0};
     uint16_t m_level{0};
     bool m_inCombat{false};
+    Map<GameId, uint32_t> m_bounties;
 };

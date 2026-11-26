@@ -19,6 +19,7 @@ struct RequestOwnershipTransfer;
 struct CharacterRemoveEvent;
 struct CharacterExteriorCellChangeEvent;
 struct RequestOwnershipClaim;
+struct RequestCrimeAuthority;
 struct OwnershipTransferEvent;
 struct MountRequest;
 struct NewPackageRequest;
@@ -51,7 +52,10 @@ protected:
         LeaderClaim,
         Mount,
         Relinquish,
-        OwnerUnavailable
+        OwnerUnavailable,
+        // A player's game takes a guard to deal with that player's crime, and hands it back once the bounty is gone
+        CrimeAuthority,
+        CrimeAuthorityEnded
     };
 
     void OnUpdate(const UpdateEvent& acEvent) const noexcept;
@@ -61,6 +65,7 @@ protected:
     void OnOwnershipTransferRequest(const PacketEvent<RequestOwnershipTransfer>& acMessage) const noexcept;
     void OnOwnershipTransferEvent(const OwnershipTransferEvent& acEvent) const noexcept;
     void OnOwnershipClaimRequest(const PacketEvent<RequestOwnershipClaim>& acMessage) const noexcept;
+    void OnCrimeAuthorityRequest(const PacketEvent<RequestCrimeAuthority>& acMessage) const noexcept;
     void OnCharacterRemoveEvent(const CharacterRemoveEvent& acEvent) const noexcept;
     void OnCharacterSpawned(const CharacterSpawnedEvent& acEvent) const noexcept;
     void OnReferencesMoveRequest(const PacketEvent<ClientReferencesMoveRequest>& acMessage) const noexcept;
@@ -80,6 +85,8 @@ protected:
     bool CanClaimOwnership(Player* apPlayer, entt::entity aEntity, uint32_t aExpectedOwnershipEpoch, OwnershipTransferReason aReason) const noexcept;
     bool TransferOwnership(Player* apPlayer, entt::entity aEntity, OwnershipTransferReason aReason, bool aResetInvalidOwners = true) const noexcept;
     void TransferToNextOwner(entt::entity aEntity, OwnershipTransferReason aReason) const noexcept;
+    // Releases the guards apPlayer holds for their crime against aCrimeFaction, back to their party leader when near
+    void EndCrimeAuthority(Player* apPlayer, const GameId& acCrimeFaction) const noexcept;
     ActorData BuildActorData(const entt::entity acEntity) const noexcept;
 
     void ProcessFactionsChanges() const noexcept;
@@ -98,6 +105,7 @@ private:
     entt::scoped_connection m_transferOwnershipConnection;
     entt::scoped_connection m_ownershipTransferEventConnection;
     entt::scoped_connection m_claimOwnershipConnection;
+    entt::scoped_connection m_crimeAuthorityConnection;
     entt::scoped_connection m_removeCharacterConnection;
     entt::scoped_connection m_characterSpawnedConnection;
     entt::scoped_connection m_referenceMovementSnapshotConnection;

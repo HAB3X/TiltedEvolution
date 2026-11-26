@@ -998,6 +998,27 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    GIVEN("RequestCrimeAuthority")
+    {
+        RequestCrimeAuthority sendMessage, recvMessage;
+        sendMessage.Faction = GameId(0, 0x267EA);
+        sendMessage.Bounty = 1040;
+        sendMessage.Guards = {{0x1234, 3}, {0x40000, 70000}};
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
     GIVEN("RequestPartyPing")
     {
         RequestPartyPing sendMessage, recvMessage;
@@ -1487,6 +1508,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestPartyQuestSharing).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestQuestShare).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestQuestShareAnswer).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestCrimeAuthority).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyPartyQuestSharing).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyQuestShareOffer).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyQuestCatchUp).has_value());

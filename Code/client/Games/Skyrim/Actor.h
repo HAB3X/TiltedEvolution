@@ -61,7 +61,10 @@ struct Actor : TESObjectREFR
     virtual void sub_B5();
     virtual void sub_B6();
     virtual void sub_B7();
-    virtual void sub_B8();
+    // The bounty (violent plus non-violent crime gold) with a crime faction; only the player keeps any.
+    // PlayerCharacter's slot 0xB8 (vtable ID 208040) in 1.6.1179 is 0x140748780: looks the faction up in the player's
+    // crime gold map at 0x3E8-0x410 and adds both halves; CommonLibSSE Actor::GetCrimeGoldValue // 0B8 agrees.
+    virtual uint32_t GetCrimeGoldValue(const TESFaction* apFaction) const;
     virtual void sub_B9();
     virtual void sub_BA();
     virtual void PayFine(TESFaction* apFaction, bool aGoToJail, bool aRemoveStolenItems);
@@ -211,6 +214,11 @@ struct Actor : TESObjectREFR
     [[nodiscard]] bool HasPerk(uint32_t aPerkFormId) const noexcept;
     [[nodiscard]] uint8_t GetPerkRank(uint32_t aPerkFormId) const noexcept;
     [[nodiscard]] bool IsVampireLord() const noexcept;
+    // The faction whose crimes this actor reports and punishes (a hold's), or null (commanded actors have none)
+    [[nodiscard]] TESFaction* GetCrimeFaction() const noexcept;
+    // Guards arrest and attack those with a bounty with their crime faction. The Papyrus native IsGuard
+    // (registered next to the "IsGuard" string, body 0x1409f6f50 in 1.6.1179) reads bit 30 of the flags at 0xE8.
+    [[nodiscard]] bool IsGuard() const noexcept { return (flags1 >> 30) & 1; }
 
     // Setters
     void SetSpeed(float aSpeed) noexcept;

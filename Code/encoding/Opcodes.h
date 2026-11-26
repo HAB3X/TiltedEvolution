@@ -75,6 +75,7 @@ enum ClientOpcode : unsigned char
     kRequestPartyQuestSharing,
     kRequestQuestShare,
     kRequestQuestShareAnswer,
+    kRequestCrimeAuthority,
     kClientOpcodeMax
 };
 

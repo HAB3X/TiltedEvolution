@@ -26,6 +26,7 @@
 #include <Messages/RequestOwnershipTransfer.h>
 #include <Messages/NotifyOwnershipTransfer.h>
 #include <Messages/RequestOwnershipClaim.h>
+#include <Messages/RequestCrimeAuthority.h>
 #include <Messages/MountRequest.h>
 #include <Messages/NotifyMount.h>
 #include <Messages/NewPackageRequest.h>
@@ -73,6 +74,7 @@ CharacterService::CharacterService(World& aWorld, entt::dispatcher& aDispatcher)
     , m_transferOwnershipConnection(aDispatcher.sink<PacketEvent<RequestOwnershipTransfer>>().connect<&CharacterService::OnOwnershipTransferRequest>(this))
     , m_ownershipTransferEventConnection(aDispatcher.sink<OwnershipTransferEvent>().connect<&CharacterService::OnOwnershipTransferEvent>(this))
     , m_claimOwnershipConnection(aDispatcher.sink<PacketEvent<RequestOwnershipClaim>>().connect<&CharacterService::OnOwnershipClaimRequest>(this))
+    , m_crimeAuthorityConnection(aDispatcher.sink<PacketEvent<RequestCrimeAuthority>>().connect<&CharacterService::OnCrimeAuthorityRequest>(this))
     , m_removeCharacterConnection(aDispatcher.sink<CharacterRemoveEvent>().connect<&CharacterService::OnCharacterRemoveEvent>(this))
     , m_characterSpawnedConnection(aDispatcher.sink<CharacterSpawnedEvent>().connect<&CharacterService::OnCharacterSpawned>(this))
     , m_referenceMovementSnapshotConnection(aDispatcher.sink<PacketEvent<ClientReferencesMoveRequest>>().connect<&CharacterService::OnReferencesMoveRequest>(this))
@@ -471,6 +473,74 @@ void CharacterService::OnOwnershipClaimRequest(const PacketEvent<RequestOwnershi
     }
 
     TransferOwnership(acMessage.pPlayer, cEntity, OwnershipTransferReason::LeaderClaim);
+}
+
+void CharacterService::OnCrimeAuthorityRequest(const PacketEvent<RequestCrimeAuthority>& acMessage) const noexcept
+{
+    const auto& message = acMessage.Packet;
+    Player* const pPlayer = acMessage.pPlayer;
+    pPlayer->SetBounty(message.Faction, message.Bounty);
+
+    if (message.Bounty == 0)
+    {
+        EndCrimeAuthority(pPlayer, message.Faction);
+        return;
+    }
+
+    const auto view = m_world.view<OwnerComponent, CharacterComponent, CellIdComponent, FormIdComponent>();
+    for (const RequestCrimeAuthority::Guard& cGuard : message.Guards)
+    {
+        const auto it = view.find(static_cast<entt::entity>(cGuard.ServerId));
+        if (it == view.end())
+            continue;
+
+        auto& ownerComponent = view.get<OwnerComponent>(*it);
+        const auto& characterComponent = view.get<CharacterComponent>(*it);
+        const auto refuse = [&](const char* apReason) { spdlog::debug("Player {:X} can't take guard {:X} for their crime: {}", pPlayer->GetId(), cGuard.ServerId, apReason); };
+
+        if (characterComponent.IsPlayer() || characterComponent.IsMount() || characterComponent.IsPlayerSummon())
+            refuse("not a guard");
+        else if (ownerComponent.pCrimeHolder && ownerComponent.pCrimeHolder != pPlayer)
+            refuse("another player's crime holds it");
+        else if (!pPlayer->GetCellComponent().IsInRange(view.get<CellIdComponent>(*it), characterComponent.IsDragon()))
+            refuse("out of range");
+        else if (ownerComponent.GetOwner() == pPlayer)
+        {
+            // Already this player's: keep it from being claimed away while the bounty lasts
+            ownerComponent.pCrimeHolder = pPlayer;
+            ownerComponent.CrimeFaction = message.Faction;
+        }
+        else if (ownerComponent.OwnershipEpoch != cGuard.ExpectedOwnershipEpoch)
+            refuse("the ownership epoch is stale");
+        else if (TransferOwnership(pPlayer, *it, OwnershipTransferReason::CrimeAuthority))
+        {
+            ownerComponent.pCrimeHolder = pPlayer;
+            ownerComponent.CrimeFaction = message.Faction;
+            spdlog::info("Player {:X} with a bounty of {} takes guard {:X} for their crime", pPlayer->GetId(), message.Bounty, cGuard.ServerId);
+        }
+    }
+}
+
+void CharacterService::EndCrimeAuthority(Player* apPlayer, const GameId& acCrimeFaction) const noexcept
+{
+    auto& partyService = m_world.GetPartyService();
+    Player* pLeader = nullptr;
+    if (const PartyService::Party* pParty = partyService.GetPlayerParty(apPlayer))
+        pLeader = m_world.GetPlayerManager().GetById(pParty->LeaderPlayerId);
+
+    const auto view = m_world.view<OwnerComponent, CharacterComponent, CellIdComponent>();
+    for (const auto cEntity : view)
+    {
+        auto& ownerComponent = view.get<OwnerComponent>(cEntity);
+        if (ownerComponent.pCrimeHolder != apPlayer || ownerComponent.CrimeFaction != acCrimeFaction)
+            continue;
+
+        ownerComponent.pCrimeHolder = nullptr;
+        // The party leader hosts the party's NPCs (CanClaimOwnership): the guard goes back to them
+        if (pLeader && pLeader != apPlayer && pLeader->GetCellComponent().IsInRange(view.get<CellIdComponent>(cEntity), view.get<CharacterComponent>(cEntity).IsDragon()))
+            TransferOwnership(pLeader, cEntity, OwnershipTransferReason::CrimeAuthorityEnded);
+        spdlog::info("Player {:X}'s bounty is gone: guard {:X} is free", apPlayer->GetId(), World::ToInteger(cEntity));
+    }
 }
 
 void CharacterService::OnCharacterSpawned(const CharacterSpawnedEvent& acEvent) const noexcept
@@ -918,6 +988,10 @@ const char* CharacterService::GetOwnershipTransferReasonName(const OwnershipTran
         return "owner relinquished control";
     case OwnershipTransferReason::OwnerUnavailable:
         return "owner became unavailable";
+    case OwnershipTransferReason::CrimeAuthority:
+        return "a player's crime";
+    case OwnershipTransferReason::CrimeAuthorityEnded:
+        return "a player's bounty is gone";
     }
 
     return "unknown reason";
@@ -954,6 +1028,10 @@ bool CharacterService::CanClaimOwnership(Player* apPlayer, const entt::entity aE
 
     if (!pCurrentOwner || pCurrentOwner == apPlayer)
         return reject("the player already owns the actor");
+
+    // Only the offender's game knows their bounty, so taking the guard would make it ignore their crime
+    if (ownerComponent.pCrimeHolder)
+        return reject("the owner holds the guard for their own crime");
 
     if (characterComponent.IsMount() || characterComponent.IsPlayer())
         return reject("the actor cannot be claimed");
@@ -1013,6 +1091,7 @@ bool CharacterService::TransferOwnership(Player* apPlayer, const entt::entity aE
 
     ownerComponent.SetOwner(apPlayer);
     ownerComponent.OwnershipEpoch = newEpoch;
+    ownerComponent.pCrimeHolder = nullptr;
     if (aResetInvalidOwners)
         ownerComponent.InvalidOwners.clear();
 

@@ -37,6 +37,9 @@
 #include <Messages/NotifyPartyInfo.h>
 #include <Messages/NotifyPartyInvite.h>
 #include <Messages/NotifyLootRefused.h>
+#include <Messages/NotifyOwnershipTransfer.h>
+#include <Messages/RequestCrimeAuthority.h>
+#include <Messages/RequestOwnershipClaim.h>
 #include <Messages/CharacterSpawnRequest.h>
 #include <Messages/NotifyInventoryChanges.h>
 #include <Messages/NotifyPartyJoined.h>
@@ -214,6 +217,7 @@ struct FakePlayer final : Client
             break;
         }
         case kNotifyLootRefused: LootRefusals.push_back(*static_cast<NotifyLootRefused*>(pMessage.get())); break;
+        case kNotifyOwnershipTransfer: OwnershipTransfers.push_back(*static_cast<NotifyOwnershipTransfer*>(pMessage.get())); break;
         case kCharacterSpawnRequest:
         {
             const auto* pSpawn = static_cast<CharacterSpawnRequest*>(pMessage.get());
@@ -293,6 +297,18 @@ struct FakePlayer final : Client
     std::vector<Movement> RelayedMovements;
     size_t MovementBytes = 0;
     std::vector<NotifyLootRefused> LootRefusals;
+    std::vector<NotifyOwnershipTransfer> OwnershipTransfers;
+
+    // The last transfer of this actor to this player, if any came since aFrom
+    const NotifyOwnershipTransfer* FindTransfer(uint32_t aServerId, uint32_t aOwnerPlayerId, size_t aFrom = 0) const
+    {
+        for (size_t i = OwnershipTransfers.size(); i > aFrom; --i)
+        {
+            if (OwnershipTransfers[i - 1].ServerId == aServerId && OwnershipTransfers[i - 1].OwnerPlayerId == aOwnerPlayerId)
+                return &OwnershipTransfers[i - 1];
+        }
+        return nullptr;
+    }
     // Characters the server spawned for this player, by server id
     std::map<uint32_t, CharacterSpawnRequest> Spawns;
     std::vector<NotifyInventoryChanges> InventoryChanges;
@@ -1777,6 +1793,103 @@ int RunCorpseLooter(const std::string& acEndpoint, const std::string& acPassword
     return s_failures ? 1 : 0;
 }
 
+// Crime authority: the leader runs a guard; the member, once they have a bounty with the guard's crime faction, gets
+// the guard (their game knows the bounty), the leader can't take it back meanwhile, and paying it hands it back
+constexpr uint32_t kGuardCookie = 0x3000;
+constexpr float kGuardX = 650.f;
+const GameId kWhiterunCrime{0, 0x267EA};
+
+int RunCrimeLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeCrimeLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("crime leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("crime leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("crime leader gets its character", AssignAt(leader, 1, GameId(0, 0x14), kGuardX).has_value());
+    EnterRelayCell(leader, kGuardX);
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    // The member enters the cell, then is sent the guard
+    RunUntil(leader, [] { return false; }, 3s);
+    const auto cGuard = AssignAt(leader, kGuardCookie, GameId(0, kGuardCookie), kGuardX + 100.f);
+    Check("runs the guard", cGuard.has_value() && leader.Party);
+    if (!cGuard || leader.JoinedIds.empty())
+        return 1;
+    const uint32_t cMember = leader.JoinedIds.front();
+
+    const bool cTaken = RunUntil(leader, [&] { return leader.FindTransfer(*cGuard, cMember) != nullptr; }, 30s);
+    Check("the member's bounty takes the guard to the member's game", cTaken);
+    if (!cTaken)
+        return 1;
+
+    RequestOwnershipClaim claim;
+    claim.ServerId = *cGuard;
+    claim.ExpectedOwnershipEpoch = leader.FindTransfer(*cGuard, cMember)->OwnershipEpoch;
+    const size_t cBeforeClaim = leader.OwnershipTransfers.size();
+    leader.Send(claim);
+    RunUntil(leader, [] { return false; }, 2s);
+    Check("the leader can't claim the guard while the member's bounty lasts", leader.FindTransfer(*cGuard, leader.PlayerId, cBeforeClaim) == nullptr);
+
+    const bool cBack = RunUntil(leader, [&] { return leader.FindTransfer(*cGuard, leader.PlayerId, cBeforeClaim) != nullptr; }, 20s);
+    Check("the guard comes back to the leader once the member's bounty is paid", cBack);
+    RunUntil(leader, [] { return false; }, 2s);
+    return s_failures ? 1 : 0;
+}
+
+int RunCrimeMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeCrimeMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("crime member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    Check("crime member gets its character", AssignAt(member, 1, GameId(0, 0x14), kGuardX + 50.f).has_value());
+    EnterRelayCell(member, kGuardX + 50.f);
+
+    const CharacterSpawnRequest* pGuard = nullptr;
+    const bool cSeen = RunUntil(
+        member,
+        [&]
+        {
+            for (const auto& [cId, cSpawn] : member.Spawns)
+            {
+                if (!cSpawn.IsPlayer)
+                    pGuard = &cSpawn;
+            }
+            return pGuard != nullptr;
+        },
+        30s);
+    Check("is sent the leader's guard", cSeen);
+    if (!cSeen)
+        return 1;
+    const CharacterSpawnRequest cGuard = *pGuard;
+
+    RequestCrimeAuthority innocent;
+    innocent.Faction = kWhiterunCrime;
+    innocent.Bounty = 0;
+    innocent.Guards.push_back({cGuard.ServerId, cGuard.OwnershipEpoch});
+    member.Send(innocent);
+    RunUntil(member, [] { return false; }, 2s);
+    Check("without a bounty, a bystander doesn't get the guard", member.FindTransfer(cGuard.ServerId, member.PlayerId) == nullptr);
+
+    RequestCrimeAuthority wanted = innocent;
+    wanted.Bounty = 40;
+    member.Send(wanted);
+    const bool cGot = RunUntil(member, [&] { return member.FindTransfer(cGuard.ServerId, member.PlayerId) != nullptr; });
+    Check("with a bounty, the guard is run by this player's game", cGot);
+
+    const size_t cAfterGrant = member.OwnershipTransfers.size();
+    RunUntil(member, [] { return false; }, 5s);
+    Check("keeps the guard while the bounty lasts", cGot && member.OwnershipTransfers.size() == cAfterGrant,
+          std::to_string(member.OwnershipTransfers.size() - cAfterGrant) + " transfers since");
+
+    RequestCrimeAuthority paid = innocent;
+    paid.Guards.clear();
+    member.Send(paid);
+    const bool cHandedBack = RunUntil(member, [&] { return member.Party && member.FindTransfer(cGuard.ServerId, member.Party->LeaderPlayerId, cAfterGrant) != nullptr; });
+    Check("paying the bounty hands the guard back to the leader", cHandedBack);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -1805,6 +1918,7 @@ int RunCorpseLooter(const std::string& acEndpoint, const std::string& acPassword
 // FakePlayers.exe ownlootfirst|ownlootsecond [address:port] [password]: start the first one first (bPerPlayerLoot=true)
 // FakePlayers.exe shareleader|sharemember [address:port] [password]: start the leader first (sSharedQuestTypes=Main)
 // FakePlayers.exe catchupleader|catchupmember [address:port] [password]: start the leader first
+// FakePlayers.exe crimeleader|crimemember [address:port] [password]: start the leader first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -1914,8 +2028,12 @@ int main(int argc, char** argv)
         return RunShareMember(cEndpoint, cPassword);
     if (cRole == "catchupleader")
         return RunCatchUpLeader(cEndpoint, cPassword);
+    if (cRole == "crimeleader")
+        return RunCrimeLeader(cEndpoint, cPassword);
+    if (cRole == "crimemember")
+        return RunCrimeMember(cEndpoint, cPassword);
     if (cRole == "catchupmember")
         return RunCatchUpMember(cEndpoint, cPassword);
-    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|crimeleader|crimemember|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
     return 2;
 }

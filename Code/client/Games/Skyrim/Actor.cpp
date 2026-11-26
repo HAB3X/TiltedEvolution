@@ -334,6 +334,16 @@ bool Actor::IsInCombat() const noexcept
     return s_pIsInCombat(this);
 }
 
+TESFaction* Actor::GetCrimeFaction() const noexcept
+{
+    // Actor::GetCrimeFaction, ID 37380 (0x14066e1b0 in 1.6.1179, the target of the Papyrus native GetCrimeFaction):
+    // null for a commanded actor (bit 0 of 0x206), else ExtraFactionChanges' crime faction override (+0x28, or
+    // none when +0x30 is set), else the base TESNPC's crime faction at 0x230. Also in 1.7.104 (0x14067ea40).
+    TP_THIS_FUNCTION(TGetCrimeFaction, TESFaction*, const Actor);
+    POINTER_SKYRIMSE(TGetCrimeFaction, s_getCrimeFaction, 37380);
+    return TiltedPhoques::ThisCall(s_getCrimeFaction, this);
+}
+
 Actor* Actor::GetCombatTarget() const noexcept
 {
     PAPYRUS_FUNCTION(Actor*, Actor, GetCombatTarget);
