@@ -25,3 +25,14 @@ target("TPTests")
         "glm",
         "entt",
         "gamenetworkingsockets")
+
+target("FakePlayers")
+    set_kind("binary")
+    set_group("Tests")
+    add_includedirs("../encoding", "../../Libraries/TiltedConnect/Code/connect/include")
+    add_files("players/FakePlayers.cpp")
+    add_deps("SkyrimEncoding", "TiltedConnect", "CommonLib")
+    add_packages("tiltedcore", "hopscotch-map", "mimalloc", "glm", "entt", "gamenetworkingsockets")
+    if is_plat("windows") then
+        add_syslinks("ws2_32")
+    end
