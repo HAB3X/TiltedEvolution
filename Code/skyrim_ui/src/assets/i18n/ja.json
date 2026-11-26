@@ -1,5 +1,9 @@
 {
   "COMPONENT": {
+    "PARTY_MOVES": {
+      "GO_TO": "会いに行く",
+      "SUMMON": "呼び寄せる"
+    },
     "IMMERSION": {
       "HEADER": "画面上の表示",
       "IMMERSIVE_MODE": "没入モード",
@@ -283,6 +287,15 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}}があなたを呼んでいます。行きますか？",
+      "NOT_IN_PARTY": "{{name}}はパーティーにいません。",
+      "IN_COMBAT": "戦闘中はできません。",
+      "COOLDOWN": "次の移動まで{{seconds}}秒お待ちください。",
+      "DECLINED": "{{name}}が断りました。",
+      "UNAVAILABLE": "{{name}}に今は移動できません。",
+      "UNKNOWN": "移動できませんでした。"
+    },
     "PARTY_DOOR": {
       "QUESTION": "{{member}}について{{place}}へ行きますか？",
       "QUESTION_NO_PLACE": "{{member}}が扉を通りました。ついて行きますか？"

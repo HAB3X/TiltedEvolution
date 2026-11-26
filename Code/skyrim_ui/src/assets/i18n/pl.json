@@ -2,6 +2,10 @@
   "INFO": "Polska lokalizacja do Skyrim Together: Reborn! Wersja: 1.4.0. Autor:<strong>Nutyo</strong>",
 
   "COMPONENT": {
+    "PARTY_MOVES": {
+      "GO_TO": "Idź do",
+      "SUMMON": "Przywołaj"
+    },
     "IMMERSION": {
       "HEADER": "Elementy na ekranie",
       "IMMERSIVE_MODE": "Tryb immersji",
@@ -287,6 +291,15 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} prosi, byś do niego dołączył. Iść?",
+      "NOT_IN_PARTY": "{{name}} nie jest w twojej drużynie.",
+      "IN_COMBAT": "Nie podczas walki.",
+      "COOLDOWN": "Odczekaj {{seconds}} s przed kolejnym przeniesieniem.",
+      "DECLINED": "{{name}} odmawia.",
+      "UNAVAILABLE": "Nie można teraz dotrzeć do {{name}}.",
+      "UNKNOWN": "Przeniesienie się nie udało."
+    },
     "PARTY_DOOR": {
       "QUESTION": "Podążyć za {{member}} do miejsca {{place}}?",
       "QUESTION_NO_PLACE": "{{member}} przeszedł przez drzwi. Podążyć?"

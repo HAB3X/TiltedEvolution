@@ -1,5 +1,9 @@
 {
   "COMPONENT": {
+    "PARTY_MOVES": {
+      "GO_TO": "До гравця",
+      "SUMMON": "Покликати"
+    },
     "IMMERSION": {
       "HEADER": "Елементи на екрані",
       "IMMERSIVE_MODE": "Режим занурення",
@@ -289,6 +293,15 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} кличе вас до себе. Іти?",
+      "NOT_IN_PARTY": "{{name}} не у вашому загоні.",
+      "IN_COMBAT": "Не під час бою.",
+      "COOLDOWN": "Зачекайте {{seconds}} с до наступного переміщення.",
+      "DECLINED": "{{name}} відмовляється.",
+      "UNAVAILABLE": "Зараз неможливо переміститися до {{name}}.",
+      "UNKNOWN": "Переміщення не відбулося."
+    },
     "PARTY_DOOR": {
       "QUESTION": "Піти за {{member}} у {{place}}?",
       "QUESTION_NO_PLACE": "{{member}} пройшов крізь двері. Піти слідом?"

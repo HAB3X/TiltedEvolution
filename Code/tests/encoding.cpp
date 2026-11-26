@@ -20,6 +20,7 @@
 #include <Structs/ServerSettings.h>
 #include <QuestDesync.h>
 #include <PartyCompass.h>
+#include <PartyTeleport.h>
 #include <WireProtocol.h>
 #include <RequiredMods.h>
 #include <Messages/ServerMessageFactory.h>
@@ -913,6 +914,86 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    GIVEN("RequestPartySummon")
+    {
+        RequestPartySummon sendMessage, recvMessage;
+        sendMessage.PlayerId = 12;
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyPartySummon")
+    {
+        NotifyPartySummon sendMessage, recvMessage;
+        sendMessage.PlayerId = 3;
+        sendMessage.PlayerName = "Lydia";
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("RequestPartySummonAnswer")
+    {
+        RequestPartySummonAnswer sendMessage, recvMessage;
+        sendMessage.PlayerId = 3;
+        sendMessage.Accept = true;
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyPartyTeleportRefused")
+    {
+        NotifyPartyTeleportRefused sendMessage, recvMessage;
+        sendMessage.Reason = 3;
+        sendMessage.PlayerName = "Lydia";
+        sendMessage.SecondsLeft = 17;
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
     GIVEN("RequestPartyTravel")
     {
         RequestPartyTravel sendMessage, recvMessage;
@@ -1225,6 +1306,8 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestQuestStages).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestPartyPing).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestPartyDoor).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestPartySummon).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestPartySummonAnswer).has_value());
         REQUIRE_FALSE(Wire::FromWire(55).has_value());
     }
 
@@ -1381,6 +1464,20 @@ TEST_CASE("Party compass", "[encoding.party_compass]")
         REQUIRE(Distance(0.f, 0.f, 0.f, 3.f, 4.f, 12.f) == 13.f);
         REQUIRE(ToMeters(7000.f) == Approx(99.96f));
     }
+}
+
+TEST_CASE("Party teleports", "[encoding.party_teleport]")
+{
+    using namespace PartyTeleport;
+    using namespace std::chrono_literals;
+
+    REQUIRE(Check(true, false, 31s, 30s) == kAllowed);
+    REQUIRE(Check(true, false, 30s, 30s) == kAllowed);
+    REQUIRE(Check(false, false, 31s, 30s) == kNotInParty);
+    REQUIRE(Check(true, true, 31s, 30s) == kInCombat);
+    REQUIRE(Check(true, false, 29s, 30s) == kCooldown);
+    // Not in the party comes first: it says the most
+    REQUIRE(Check(false, true, 1s, 30s) == kNotInParty);
 }
 
 TEST_CASE("Required mods lists", "[encoding.required_mods]")

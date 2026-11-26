@@ -1,5 +1,9 @@
 {
   "COMPONENT": {
+    "PARTY_MOVES": {
+      "GO_TO": "Gå til",
+      "SUMMON": "Tilkall"
+    },
     "IMMERSION": {
       "HEADER": "Elementer på skjermen",
       "IMMERSIVE_MODE": "Oppslukende modus",
@@ -283,6 +287,15 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} ber deg komme til seg. Gå?",
+      "NOT_IN_PARTY": "{{name}} er ikke i gruppen din.",
+      "IN_COMBAT": "Ikke under kamp.",
+      "COOLDOWN": "Vent {{seconds}} s før du flytter igjen.",
+      "DECLINED": "{{name}} takket nei.",
+      "UNAVAILABLE": "{{name}} kan ikke nås akkurat nå.",
+      "UNKNOWN": "Flyttingen skjedde ikke."
+    },
     "PARTY_DOOR": {
       "QUESTION": "Følge {{member}} inn i {{place}}?",
       "QUESTION_NO_PLACE": "{{member}} gikk gjennom en dør. Følge etter?"

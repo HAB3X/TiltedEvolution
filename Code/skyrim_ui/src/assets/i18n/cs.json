@@ -1,5 +1,9 @@
 {
   "COMPONENT": {
+    "PARTY_MOVES": {
+      "GO_TO": "Jít k",
+      "SUMMON": "Přivolat"
+    },
     "IMMERSION": {
       "HEADER": "Prvky na obrazovce",
       "IMMERSIVE_MODE": "Imerzivní režim",
@@ -283,6 +287,15 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} tě žádá, abys za ním přišel. Jít?",
+      "NOT_IN_PARTY": "{{name}} není ve tvé družině.",
+      "IN_COMBAT": "Ne během boje.",
+      "COOLDOWN": "Počkej {{seconds}} s, než se znovu přesuneš.",
+      "DECLINED": "{{name}} odmítl(a).",
+      "UNAVAILABLE": "{{name}} teď není k zastižení.",
+      "UNKNOWN": "Přesun se neuskutečnil."
+    },
     "PARTY_DOOR": {
       "QUESTION": "Následovat {{member}} do místa {{place}}?",
       "QUESTION_NO_PLACE": "{{member}} prošel(a) dveřmi. Následovat?"

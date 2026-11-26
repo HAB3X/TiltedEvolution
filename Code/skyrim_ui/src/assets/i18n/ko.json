@@ -1,5 +1,9 @@
 {
   "COMPONENT": {
+    "PARTY_MOVES": {
+      "GO_TO": "찾아가기",
+      "SUMMON": "부르기"
+    },
     "IMMERSION": {
       "HEADER": "화면 요소",
       "IMMERSIVE_MODE": "몰입 모드",
@@ -283,6 +287,15 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} 님이 당신을 부릅니다. 가시겠습니까?",
+      "NOT_IN_PARTY": "{{name}} 님은 파티에 없습니다.",
+      "IN_COMBAT": "전투 중에는 할 수 없습니다.",
+      "COOLDOWN": "다시 이동하려면 {{seconds}}초 기다리세요.",
+      "DECLINED": "{{name}} 님이 거절했습니다.",
+      "UNAVAILABLE": "지금은 {{name}} 님에게 갈 수 없습니다.",
+      "UNKNOWN": "이동하지 못했습니다."
+    },
     "PARTY_DOOR": {
       "QUESTION": "{{member}} 님을 따라 {{place}}(으)로 가시겠습니까?",
       "QUESTION_NO_PLACE": "{{member}} 님이 문을 지나갔습니다. 따라가시겠습니까?"

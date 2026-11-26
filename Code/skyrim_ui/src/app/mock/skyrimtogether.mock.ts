@@ -439,6 +439,23 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     this.emit('questDesync', 'Lydia', true, 'Bleak Falls Barrow, The Golden Claw, Dragon Rising, The Way of the Voice, Diplomatic Immunity', 3);
   }
 
+  summonPlayer(playerId: number): void {
+    const player = playerStore.query(getEntity(playerId));
+    // The mock player declines every other time
+    this.summonsDeclined = !this.summonsDeclined;
+    setTimeout(() => this.emit('partyTeleportRefused', this.summonsDeclined ? 4 : 3, player?.name ?? '', 17), 500);
+  }
+
+  private summonsDeclined = false;
+
+  answerPartySummon(summonerId: number, accept: boolean): void {
+    console.log(`summons from ${summonerId}: ${accept ? 'go' : 'stay'}`);
+  }
+
+  mockPartySummon() {
+    this.emit('partySummon', 2, 'Lydia');
+  }
+
   mockPartyDoor() {
     this.emit('partyDoor', 'Lydia', 'Bleak Falls Barrow');
   }

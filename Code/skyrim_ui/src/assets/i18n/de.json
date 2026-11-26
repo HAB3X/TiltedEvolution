@@ -1,5 +1,9 @@
 {
   "COMPONENT": {
+    "PARTY_MOVES": {
+      "GO_TO": "Hingehen",
+      "SUMMON": "Herbeirufen"
+    },
     "IMMERSION": {
       "HEADER": "Bildschirmelemente",
       "IMMERSIVE_MODE": "Immersiver Modus",
@@ -287,6 +291,15 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} bittet dich zu sich. Hingehen?",
+      "NOT_IN_PARTY": "{{name}} ist nicht in deiner Gruppe.",
+      "IN_COMBAT": "Nicht während eines Kampfes.",
+      "COOLDOWN": "Warte {{seconds}} s bis zum nächsten Wechsel.",
+      "DECLINED": "{{name}} hat abgelehnt.",
+      "UNAVAILABLE": "{{name}} ist gerade nicht erreichbar.",
+      "UNKNOWN": "Der Wechsel hat nicht geklappt."
+    },
     "PARTY_DOOR": {
       "QUESTION": "{{member}} nach {{place}} folgen?",
       "QUESTION_NO_PLACE": "{{member}} ist durch eine Tür gegangen. Folgen?"

@@ -2,6 +2,10 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "PARTY_MOVES": {
+      "GO_TO": "前往",
+      "SUMMON": "召唤"
+    },
     "IMMERSION": {
       "HEADER": "屏幕元素",
       "IMMERSIVE_MODE": "沉浸模式",
@@ -278,6 +282,15 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} 请你过去。要去吗？",
+      "NOT_IN_PARTY": "{{name}} 不在你的队伍中。",
+      "IN_COMBAT": "战斗中无法这样做。",
+      "COOLDOWN": "请等待 {{seconds}} 秒后再移动。",
+      "DECLINED": "{{name}} 拒绝了。",
+      "UNAVAILABLE": "现在无法前往 {{name}} 处。",
+      "UNKNOWN": "移动没有成功。"
+    },
     "PARTY_DOOR": {
       "QUESTION": "跟随{{member}}进入{{place}}？",
       "QUESTION_NO_PLACE": "{{member}}穿过了一扇门。要跟随吗？"

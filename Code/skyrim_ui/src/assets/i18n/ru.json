@@ -1,5 +1,9 @@
 {
   "COMPONENT": {
+    "PARTY_MOVES": {
+      "GO_TO": "К игроку",
+      "SUMMON": "Призвать"
+    },
     "IMMERSION": {
       "HEADER": "Элементы на экране",
       "IMMERSIVE_MODE": "Режим погружения",
@@ -289,6 +293,15 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} зовёт вас к себе. Идти?",
+      "NOT_IN_PARTY": "{{name}} не в вашей группе.",
+      "IN_COMBAT": "Не во время боя.",
+      "COOLDOWN": "Подождите {{seconds}} с до следующего перемещения.",
+      "DECLINED": "{{name}} отказывается.",
+      "UNAVAILABLE": "Сейчас нельзя переместиться к {{name}}.",
+      "UNKNOWN": "Перемещение не состоялось."
+    },
     "PARTY_DOOR": {
       "QUESTION": "Последовать за {{member}} в {{place}}?",
       "QUESTION_NO_PLACE": "{{member}} прошёл через дверь. Последовать?"

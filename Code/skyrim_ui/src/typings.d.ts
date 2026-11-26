@@ -257,6 +257,12 @@ interface SkyrimTogether {
   /** A party member went through a load door; place is empty when the game had no name for it. */
   on(event: 'partyDoor', callback: (member: string, place: string) => void): void;
 
+  /** A party member asks this player to come to them. */
+  on(event: 'partySummon', callback: (summonerId: number, summoner: string) => void): void;
+
+  /** A go-to or summons was refused: reason (PartyTeleport::Refusal), the other player, seconds left of a cooldown. */
+  on(event: 'partyTeleportRefused', callback: (reason: number, player: string, secondsLeft: number) => void): void;
+
   /** A party ping: who (empty for this player), what (empty for their spot), metres away (-1 elsewhere), direction, place. */
   on(event: 'partyPing', callback: (player: string, target: string, meters: number, direction: number, place: string) => void): void;
 
@@ -416,6 +422,10 @@ interface SkyrimTogether {
 
   off(event: 'partyDoor', callback?: (member: string, place: string) => void): void;
 
+  off(event: 'partySummon', callback?: (summonerId: number, summoner: string) => void): void;
+
+  off(event: 'partyTeleportRefused', callback?: (reason: number, player: string, secondsLeft: number) => void): void;
+
   off(event: 'partyPing', callback?: (player: string, target: string, meters: number, direction: number, place: string) => void): void;
 
   off(event: 'questDesync', callback?: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
@@ -495,6 +505,12 @@ interface SkyrimTogether {
    * A party member's answer to another's load door (the partyDoor event): yes moves them to where the door leads.
    */
   answerPartyDoor(follow: boolean): void;
+
+  /** Ask a party member to come to this player; they are asked first. */
+  summonPlayer(playerId: number): void;
+
+  /** This player's answer to a party member's summons (the partySummon event). */
+  answerPartySummon(summonerId: number, accept: boolean): void;
 
   /** Whether other players' pings set a waypoint in this game. */
   setPingMarkers(enabled: boolean): void;

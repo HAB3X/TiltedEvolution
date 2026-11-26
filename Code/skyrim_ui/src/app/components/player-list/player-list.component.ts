@@ -63,6 +63,16 @@ export class PlayerListComponent {
     this.clientService.moderatePlayer(playerId, ban);
   }
 
+  /** Go to a party member; the server refuses in combat, outside the party or during the cooldown. */
+  public goTo(playerId: number) {
+    this.clientService.teleportToPlayer(playerId);
+  }
+
+  /** Ask a party member to come here; they're asked first. */
+  public summon(playerId: number) {
+    this.clientService.summonPlayer(playerId);
+  }
+
   public sendPartyInvite(inviteeId: number) {
     this.playerListService.sendPartyInvite(inviteeId);
   }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   faDoorOpen,
   faHandshakeSimple,
+  faPersonWalkingArrowRight,
   faRoute,
   faUserGroup,
 } from '@fortawesome/free-solid-svg-icons';
@@ -60,6 +61,20 @@ export class PopupNotificationService {
       messageKey: place ? 'SERVICE.PARTY_DOOR.QUESTION' : 'SERVICE.PARTY_DOOR.QUESTION_NO_PLACE',
       messageParams: { member, place },
       icon: faDoorOpen,
+      duration: 30000,
+      actions: [
+        { nameKey: 'SERVICE.TRAVEL_TOGETHER.YES', callback: () => answer(true) },
+        { nameKey: 'SERVICE.TRAVEL_TOGETHER.NO', callback: () => answer(false) },
+      ],
+    });
+  }
+
+  /** A party member asks this player to come to them. Goes away after 30 seconds, as long as the server waits. */
+  public addPartySummon(summoner: string, answer: (accept: boolean) => void) {
+    this.addMessage({
+      messageKey: 'SERVICE.PARTY_TELEPORT.SUMMONED',
+      messageParams: { name: summoner },
+      icon: faPersonWalkingArrowRight,
       duration: 30000,
       actions: [
         { nameKey: 'SERVICE.TRAVEL_TOGETHER.YES', callback: () => answer(true) },

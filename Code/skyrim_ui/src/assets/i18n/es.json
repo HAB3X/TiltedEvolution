@@ -2,6 +2,10 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "PARTY_MOVES": {
+      "GO_TO": "Ir",
+      "SUMMON": "Invocar"
+    },
     "IMMERSION": {
       "HEADER": "Elementos en pantalla",
       "IMMERSIVE_MODE": "Modo inmersivo",
@@ -279,6 +283,15 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} te pide que vayas con él. ¿Ir?",
+      "NOT_IN_PARTY": "{{name}} no está en tu grupo.",
+      "IN_COMBAT": "No durante un combate.",
+      "COOLDOWN": "Espera {{seconds}} s antes de volver a moverte.",
+      "DECLINED": "{{name}} ha rechazado.",
+      "UNAVAILABLE": "No se puede llegar a {{name}} ahora mismo.",
+      "UNKNOWN": "El traslado no se ha hecho."
+    },
     "PARTY_DOOR": {
       "QUESTION": "¿Seguir a {{member}} a {{place}}?",
       "QUESTION_NO_PLACE": "{{member}} ha cruzado una puerta. ¿Seguirle?"

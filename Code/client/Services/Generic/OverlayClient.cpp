@@ -73,6 +73,17 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             const bool enabled = eventArgs->GetBool(0);
             World::Get().GetRunner().Queue([enabled]() { World::Get().ctx().at<MapService>().SetPingMarkersEnabled(enabled); });
         }
+        else if (eventName == "summonPlayer")
+        {
+            const uint32_t playerId = eventArgs->GetInt(0);
+            World::Get().GetRunner().Queue([playerId]() { World::Get().ctx().at<TravelTogetherService>().Summon(playerId); });
+        }
+        else if (eventName == "answerPartySummon")
+        {
+            const uint32_t summonerId = eventArgs->GetInt(0);
+            const bool accept = eventArgs->GetBool(1);
+            World::Get().GetRunner().Queue([summonerId, accept]() { World::Get().ctx().at<TravelTogetherService>().AnswerSummon(summonerId, accept); });
+        }
         else if (eventName == "answerPartyDoor")
         {
             const bool follow = eventArgs->GetBool(0);

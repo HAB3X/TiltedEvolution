@@ -10,6 +10,10 @@
 #include <Messages/TeleportCommandRequest.h>
 #include <Messages/NotifyPartyDoor.h>
 #include <Messages/RequestPartyDoor.h>
+#include <Messages/NotifyPartySummon.h>
+#include <Messages/NotifyPartyTeleportRefused.h>
+#include <Messages/RequestPartySummon.h>
+#include <Messages/RequestPartySummonAnswer.h>
 #include <Services/CommandService.h>
 
 #include <OverlayApp.hpp>
@@ -43,6 +47,8 @@ TravelTogetherService::TravelTogetherService(World& aWorld, entt::dispatcher& aD
 {
     m_partyTravelConnection = aDispatcher.sink<NotifyPartyTravel>().connect<&TravelTogetherService::OnPartyTravel>(this);
     m_partyDoorConnection = aDispatcher.sink<NotifyPartyDoor>().connect<&TravelTogetherService::OnPartyDoor>(this);
+    m_partySummonConnection = aDispatcher.sink<NotifyPartySummon>().connect<&TravelTogetherService::OnPartySummon>(this);
+    m_teleportRefusedConnection = aDispatcher.sink<NotifyPartyTeleportRefused>().connect<&TravelTogetherService::OnTeleportRefused>(this);
 
     // The game sends this when the player arrives from a fast travel (the map or a carriage), not for teleports such
     // as the one a member who says yes takes, so a member following never offers a trip of their own
@@ -154,4 +160,39 @@ void TravelTogetherService::AnswerDoor(bool aFollow) noexcept
     if (aFollow)
         m_world.ctx().at<CommandService>().MoveTo(*m_offeredDoor);
     m_offeredDoor.reset();
+}
+
+void TravelTogetherService::Summon(uint32_t aPlayerId) const noexcept
+{
+    RequestPartySummon request;
+    request.PlayerId = aPlayerId;
+    m_transport.Send(request);
+}
+
+void TravelTogetherService::OnPartySummon(const NotifyPartySummon& acMessage) const noexcept
+{
+    spdlog::info("[TravelTogether]: {} summons this player", acMessage.PlayerName.c_str());
+    auto pArguments = CefListValue::Create();
+    pArguments->SetInt(0, acMessage.PlayerId);
+    pArguments->SetString(1, acMessage.PlayerName.c_str());
+    m_world.GetOverlayService().GetOverlayApp()->ExecuteAsync("partySummon", pArguments);
+}
+
+void TravelTogetherService::AnswerSummon(uint32_t aSummonerId, bool aAccept) const noexcept
+{
+    // The server moves this player on yes (NotifyTeleport), after checking the party and combat again
+    RequestPartySummonAnswer answer;
+    answer.PlayerId = aSummonerId;
+    answer.Accept = aAccept;
+    m_transport.Send(answer);
+}
+
+void TravelTogetherService::OnTeleportRefused(const NotifyPartyTeleportRefused& acMessage) const noexcept
+{
+    spdlog::info("[TravelTogether]: move with {} refused, reason {}", acMessage.PlayerName.c_str(), acMessage.Reason);
+    auto pArguments = CefListValue::Create();
+    pArguments->SetInt(0, acMessage.Reason);
+    pArguments->SetString(1, acMessage.PlayerName.c_str());
+    pArguments->SetInt(2, acMessage.SecondsLeft);
+    m_world.GetOverlayService().GetOverlayApp()->ExecuteAsync("partyTeleportRefused", pArguments);
 }

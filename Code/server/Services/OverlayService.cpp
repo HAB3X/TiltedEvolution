@@ -76,6 +76,7 @@ void OverlayService::OnPlayerHealthUpdate(const PacketEvent<RequestPlayerHealthU
     notify.PlayerId = acMessage.pPlayer->GetId();
     notify.Percentage = acMessage.Packet.Percentage;
     notify.Vitals = acMessage.Packet.Vitals;
+    acMessage.pPlayer->SetInCombat(acMessage.Packet.Vitals.InCombat);
 
     GameServer::Get()->SendToParty(notify, acMessage.pPlayer->GetParty(), acMessage.GetSender());
 }

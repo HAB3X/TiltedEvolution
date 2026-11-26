@@ -1,5 +1,5 @@
 // Party bar alerts and directions: node tests/party-bar.test.mts (pnpm test:unit)
-import { compassKey, partyAlerts, pingKeys } from '../src/app/utils/party-bar.ts';
+import { compassKey, partyAlerts, pingKeys, teleportRefusalKey } from '../src/app/utils/party-bar.ts';
 let fails = 0;
 const check = (name: string, ok: boolean) => { if (!ok) { fails++; console.log('FAIL', name); } };
 const calm = { inCombat: false, downed: false };
@@ -17,4 +17,6 @@ check('a ping in another place', JSON.stringify(pingKeys({ ...ping, meters: -1 }
 check('a spot pinged by a member', JSON.stringify(pingKeys({ ...ping, target: '' })) === JSON.stringify({ line: 'NEAR', spot: 'THEIR_SPOT' }));
 check('my own ping', JSON.stringify(pingKeys({ ...ping, player: '', meters: 0 })) === JSON.stringify({ line: 'SELF' }));
 check('my own spot', JSON.stringify(pingKeys({ ...ping, player: '', target: '', meters: 0 })) === JSON.stringify({ line: 'SELF', spot: 'YOUR_SPOT' }));
+check('refusals by the client\'s numbers', [1, 2, 3, 4, 5].map(teleportRefusalKey).join() === 'NOT_IN_PARTY,IN_COMBAT,COOLDOWN,DECLINED,UNAVAILABLE');
+check('a refusal this UI doesn\'t know', teleportRefusalKey(9) === 'UNKNOWN');
 console.log(fails ? `${fails} failed` : 'all passed'); process.exit(fails ? 1 : 0);

@@ -1,5 +1,9 @@
 {
   "COMPONENT": {
+    "PARTY_MOVES": {
+      "GO_TO": "Go to",
+      "SUMMON": "Summon"
+    },
     "IMMERSION": {
       "HEADER": "On-screen elements",
       "IMMERSIVE_MODE": "Immersive mode",
@@ -290,6 +294,15 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} asks you to come to them. Go?",
+      "NOT_IN_PARTY": "{{name}} isn't in your party.",
+      "IN_COMBAT": "Not while in combat.",
+      "COOLDOWN": "Wait {{seconds}} s before moving again.",
+      "DECLINED": "{{name}} declined.",
+      "UNAVAILABLE": "{{name}} can't be reached right now.",
+      "UNKNOWN": "That move didn't happen."
+    },
     "PARTY_DOOR": {
       "QUESTION": "Follow {{member}} into {{place}}?",
       "QUESTION_NO_PLACE": "{{member}} went through a door. Follow them?"

@@ -53,3 +53,19 @@ export function pingKeys(ping: Ping): { line: string; spot?: string } {
   }
   return { line, spot: ping.player ? 'THEIR_SPOT' : 'YOUR_SPOT' };
 }
+
+/** The client's PartyTeleport::Refusal values, in order. */
+const teleportRefusalKeys = [
+  // kAllowed is never sent
+  'UNKNOWN',
+  'NOT_IN_PARTY',
+  'IN_COMBAT',
+  'COOLDOWN',
+  'DECLINED',
+  'UNAVAILABLE',
+];
+
+/** The chat line (SERVICE.PARTY_TELEPORT.<key>) for a refused go-to or summons; UNKNOWN for a reason this UI doesn't know. */
+export function teleportRefusalKey(reason: number): string {
+  return teleportRefusalKeys[reason] ?? 'UNKNOWN';
+}

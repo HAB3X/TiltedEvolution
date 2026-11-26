@@ -14,6 +14,14 @@
           </span>
         </div>
         <div class="player-actions">
+          @if (player.isMember) {
+            <button class="btn btn-secondary btn-small" (click)="goTo(player.id)">
+              {{ 'COMPONENT.PARTY_MOVES.GO_TO' | transloco }}
+            </button>
+            <button class="btn btn-secondary btn-small" (click)="summon(player.id)">
+              {{ 'COMPONENT.PARTY_MOVES.SUMMON' | transloco }}
+            </button>
+          }
           @if (!player.isMember && (isPartyLeader$ | async)) {
             <button class="btn btn-secondary btn-small" [disabled]="player.hasBeenInvited" (click)="sendPartyInvite(player.id)">
               {{ 'COMPONENT.PARTY_LIST.INVITE' | transloco }}

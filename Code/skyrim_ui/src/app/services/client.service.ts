@@ -120,6 +120,12 @@ export class ClientService implements OnDestroy {
   /** A party member went through a load door, see answerPartyDoor. */
   public partyDoorChange = new Subject<{ member: string; place: string }>();
 
+  /** A party member asks this player to come to them, see answerPartySummon. */
+  public partySummonChange = new Subject<{ summonerId: number; summoner: string }>();
+
+  /** A go-to or summons was refused. */
+  public partyTeleportRefusedChange = new Subject<{ reason: number; player: string; secondsLeft: number }>();
+
   /** A party member, or this player, pinged a spot or a target. */
   public partyPingChange = new Subject<Ping>();
 
@@ -163,6 +169,16 @@ export class ClientService implements OnDestroy {
   /** Whether to follow a party member through their load door, after partyDoorChange. */
   public answerPartyDoor(follow: boolean): void {
     skyrimtogether.answerPartyDoor(follow);
+  }
+
+  /** Ask a party member to come to this player. */
+  public summonPlayer(playerId: number): void {
+    skyrimtogether.summonPlayer(playerId);
+  }
+
+  /** Whether to go to the party member who summoned this player, after partySummonChange. */
+  public answerPartySummon(summonerId: number, accept: boolean): void {
+    skyrimtogether.answerPartySummon(summonerId, accept);
   }
 
   /** The joiner's answer to the host world offer. */
@@ -297,6 +313,8 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('questUpdated', this.onQuestUpdated.bind(this));
     skyrimtogether.on('partyTravel', this.onPartyTravel.bind(this));
     skyrimtogether.on('partyDoor', this.onPartyDoor.bind(this));
+    skyrimtogether.on('partySummon', this.onPartySummon.bind(this));
+    skyrimtogether.on('partyTeleportRefused', this.onPartyTeleportRefused.bind(this));
     skyrimtogether.on('partyPing', this.onPartyPing.bind(this));
     skyrimtogether.on('questDesync', this.onQuestDesync.bind(this));
   }
@@ -342,6 +360,8 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('questUpdated');
     skyrimtogether.off('partyTravel');
     skyrimtogether.off('partyDoor');
+    skyrimtogether.off('partySummon');
+    skyrimtogether.off('partyTeleportRefused');
     skyrimtogether.off('partyPing');
     skyrimtogether.off('questDesync');
   }
@@ -955,6 +975,18 @@ export class ClientService implements OnDestroy {
   private onPartyPing(player: string, target: string, meters: number, direction: number, place: string) {
     this.zone.run(() => {
       this.partyPingChange.next({ player, target, meters, direction, place });
+    });
+  }
+
+  private onPartySummon(summonerId: number, summoner: string) {
+    this.zone.run(() => {
+      this.partySummonChange.next({ summonerId, summoner });
+    });
+  }
+
+  private onPartyTeleportRefused(reason: number, player: string, secondsLeft: number) {
+    this.zone.run(() => {
+      this.partyTeleportRefusedChange.next({ reason, player, secondsLeft });
     });
   }
 
