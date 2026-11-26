@@ -11,6 +11,7 @@ struct RenderSystemD3D11;
 struct D3D11RenderProvider;
 struct FormIdComponent;
 struct World;
+struct GameId;
 struct Actor;
 struct UpdateEvent;
 struct ConnectedEvent;
@@ -69,6 +70,10 @@ struct OverlayService
     // The text as a JSON string literal, for event arguments the overlay parses
 
     static std::string ToJsonString(const std::string& acText) noexcept;
+
+    // The game's name for a worldspace, or for the cell when there's no worldspace (an interior); "UNKNOWN" when this
+    // client has neither
+    static TiltedPhoques::String GetCellName(const GameId& aWorldSpaceId, const GameId& aCellId) noexcept;
 
     void SetPlayerHealthPercentage(uint32_t aFormId) const noexcept;
 

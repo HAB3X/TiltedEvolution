@@ -92,7 +92,7 @@ struct CpuRenderedOverlayApp final : OverlayApp
     }
 };
 
-String GetCellName(const GameId& aWorldSpaceId, const GameId& aCellId) noexcept
+String OverlayService::GetCellName(const GameId& aWorldSpaceId, const GameId& aCellId) noexcept
 {
     auto& modSystem = World::Get().GetModSystem();
 
