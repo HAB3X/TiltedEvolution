@@ -72,22 +72,27 @@ void LocalServerService::Host(const HostSettings& acSettings) noexcept
     Start(acSettings);
 }
 
+std::vector<RequiredMods::Listed> LocalServerService::HostMods() noexcept
+{
+    std::vector<RequiredMods::Listed> mods;
+    for (auto* pMod : ModManager::Get()->mods)
+    {
+        if (pMod->IsLoaded() && !RequiredMods::IsGamePlugin(pMod->filename))
+            mods.push_back({pMod->filename, pMod->GetFileSize()});
+    }
+    return mods;
+}
+
 bool LocalServerService::WriteRequiredMods() const noexcept
 {
     std::ofstream file(TiltedPhoques::GetPath() / RequiredMods::kFileName, std::ios::trunc);
     if (!file)
         return false;
 
-    size_t count = 0;
-    for (auto* pMod : ModManager::Get()->mods)
-    {
-        if (pMod->IsLoaded() && !RequiredMods::IsGamePlugin(pMod->filename))
-        {
-            file << RequiredMods::FormatLine(pMod->filename, pMod->GetFileSize()) << '\n';
-            ++count;
-        }
-    }
-    spdlog::info("[LocalServer]: friends need the host's {} mods", count);
+    const auto cMods = HostMods();
+    for (const RequiredMods::Listed& cMod : cMods)
+        file << RequiredMods::FormatLine(cMod.Name, cMod.FileSize) << '\n';
+    spdlog::info("[LocalServer]: friends need the host's {} mods", cMods.size());
     return file.good();
 }
 
