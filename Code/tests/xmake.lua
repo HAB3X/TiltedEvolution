@@ -6,6 +6,10 @@ target("TPTests")
         ".", "../encoding", "../server", "../../Libraries/TiltedConnect/Code/connect/include")
     add_headerfiles("**.h")
     add_files("*.cpp")
+    -- The party quest native-load tests came in with a fork merge without the headers they test
+    -- (Structs/Skyrim/PartyQuestRuntimeGenerationFence.h, PartyQuestSkyrimPapyrusRuntimeProfileResolver.h, ...),
+    -- so they can't build in this tree. Remove this line if that code is merged.
+    remove_files("party_quest_*.cpp")
     -- Has no game dependencies, so the client's remote playback timing can be tested here
     add_files("../client/Systems/PlaybackClock.cpp")
     -- Pure date maths, no game dependencies
