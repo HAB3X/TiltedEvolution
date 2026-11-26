@@ -23,6 +23,7 @@ class ConsoleRegistry;
 }
 
 struct LanDiscoveryResponder;
+struct PortMapper;
 
 struct GameServer final : Server
 {
@@ -121,6 +122,7 @@ private:
 
     UniquePtr<World> m_pWorld;
     UniquePtr<LanDiscoveryResponder> m_pLanDiscovery;
+    UniquePtr<PortMapper> m_pPortMapper;
 
     bool m_requestStop;
 

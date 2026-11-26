@@ -18,6 +18,9 @@ struct LocalServerService
     // Starts the server with this password (once per game session), then connects to it when it's up
     void Host(const std::string& acPassword, bool aHostWorld) noexcept;
 
+    // A [Host] line of the server: shown in chat, and its public address sent to the overlay for the invite
+    void OnHostMessage(const std::string& acMessage) noexcept;
+
 private:
     bool IsRunning() const noexcept;
     bool Start(const std::string& acPassword, bool aHostWorld) noexcept;

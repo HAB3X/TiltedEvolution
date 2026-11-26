@@ -1,6 +1,7 @@
 ﻿#include <Components.h>
 #include <GameServer.h>
 #include <LanDiscoveryResponder.h>
+#include <PortMapper.h>
 #include <Packet.hpp>
 
 #include <Events/CharacterRemoveEvent.h>
@@ -28,6 +29,7 @@ Console::Setting uMaxPlayerCount{"GameServer:uMaxPlayerCount", "Maximum number o
 Console::Setting bPremiumTickrate{"GameServer:bPremiumMode", "Server tick rate: 60 updates per second if true, 30 if false", true};
 
 Console::Setting bLanDiscovery{"GameServer:bLanDiscovery", "Lets players on the same network find this server in Connect, Local games (UDP port 10579)", true};
+Console::Setting bUPnP{"GameServer:bUPnP", "Opens the server's UDP port on the router with UPnP while it runs, so friends outside your network can join without forwarding it by hand", true};
 Console::StringSetting sServerName{"GameServer:sServerName", "Name that shows up in the server list", "Dedicated Together Server"};
 Console::StringSetting sAdminPassword{"GameServer:sAdminPassword", "Password for server admins. Joining with it gives admin rights. Leave empty to disable", ""};
 Console::StringSetting sPassword{"GameServer:sPassword", "Password players need to join the server. Leave empty to let anyone join", ""};
@@ -200,6 +202,8 @@ GameServer::GameServer(Console::ConsoleRegistry& aConsole) noexcept
     UpdateInfo();
     if (bLanDiscovery)
         m_pLanDiscovery = MakeUnique<LanDiscoveryResponder>();
+    if (bUPnP)
+        m_pPortMapper = MakeUnique<PortMapper>(GetPort());
     spdlog::info("Server {} started on port {}", BUILD_COMMIT, GetPort());
     UpdateTitle();
 

@@ -8,6 +8,7 @@
 #include <OverlayApp.hpp>
 #include <World.h>
 
+#include <cstring>
 #include <thread>
 
 namespace
@@ -15,6 +16,9 @@ namespace
 constexpr wchar_t kServerExe[] = L"SkyrimTogetherServer.exe";
 // The server prints this once it listens
 constexpr char kStartedLine[] = "started on port";
+// The server tags what the host should see (network check, router port), see server PortMapper
+constexpr char kHostTag[] = "[Host] ";
+constexpr char kPublicAddress[] = "Public address: ";
 
 std::filesystem::path IniPath()
 {
@@ -35,6 +39,8 @@ std::wstring Widen(const std::string& acText)
 LocalServerService::LocalServerService(World& aWorld) noexcept
     : m_world(aWorld)
 {
+    // Killed rather than told to quit: the game exits without running this service's cleanup. The server opens its
+    // router port for a day at a time for that reason (server PortMapper).
     m_job = CreateJobObjectW(nullptr, nullptr);
     JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits{};
     limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
@@ -150,6 +156,12 @@ bool LocalServerService::Start(const std::string& acPassword, bool aHostWorld) n
                     spdlog::info("[Server] {}", line);
                     lastLine = line;
 
+                    if (const size_t cTag = line.find(kHostTag); cTag != std::string::npos)
+                    {
+                        const std::string cMessage = line.substr(cTag + std::strlen(kHostTag));
+                        World::Get().GetRunner().Queue([cMessage]() { World::Get().ctx().at<LocalServerService>().OnHostMessage(cMessage); });
+                    }
+
                     if (!started && line.find(kStartedLine) != std::string::npos)
                     {
                         started = true;
@@ -173,6 +185,22 @@ bool LocalServerService::Start(const std::string& acPassword, bool aHostWorld) n
         .detach();
 
     return true;
+}
+
+void LocalServerService::OnHostMessage(const std::string& acMessage) noexcept
+{
+    m_world.GetOverlayService().SendSystemMessage(acMessage);
+
+    // "Public address: 1.2.3.4:10578 (…)": what friends outside the network join with, for the invite
+    if (acMessage.rfind(kPublicAddress, 0) != 0)
+        return;
+    const size_t cStart = std::strlen(kPublicAddress);
+    const std::string cAddress = acMessage.substr(cStart, acMessage.find(' ', cStart) - cStart);
+    spdlog::info("[LocalServer]: public address {}", cAddress);
+
+    auto pArguments = CefListValue::Create();
+    pArguments->SetString(0, cAddress);
+    m_world.GetOverlayService().GetOverlayApp()->ExecuteAsync("hostAddress", pArguments);
 }
 
 void LocalServerService::Connect(const std::string& acPassword) const noexcept
