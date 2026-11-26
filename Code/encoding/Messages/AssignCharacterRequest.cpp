@@ -1,4 +1,5 @@
 #include <Messages/AssignCharacterRequest.h>
+#include <WireProtocol.h>
 
 void AssignCharacterRequest::SerializeRaw(TiltedPhoques::Buffer::Writer& aWriter) const noexcept
 {
@@ -18,7 +19,9 @@ void AssignCharacterRequest::SerializeRaw(TiltedPhoques::Buffer::Writer& aWriter
     Serialization::WriteBool(aWriter, IsDragon);
     Serialization::WriteBool(aWriter, IsMount);
     Serialization::WriteBool(aWriter, IsPlayerSummon);
-    Serialization::WriteBool(aWriter, IsEncounterCandidate);
+    // Official v1.8.4 has no encounter suppression
+    if (!Wire::IsOfficial184())
+        Serialization::WriteBool(aWriter, IsEncounterCandidate);
     CurrentActorData.Serialize(aWriter);
     LeveledNpcPickId.Serialize(aWriter);
 }
@@ -53,7 +56,7 @@ void AssignCharacterRequest::DeserializeRaw(TiltedPhoques::Buffer::Reader& aRead
     IsDragon = Serialization::ReadBool(aReader);
     IsMount = Serialization::ReadBool(aReader);
     IsPlayerSummon = Serialization::ReadBool(aReader);
-    IsEncounterCandidate = Serialization::ReadBool(aReader);
+    IsEncounterCandidate = !Wire::IsOfficial184() && Serialization::ReadBool(aReader);
 
     CurrentActorData.Deserialize(aReader);
     LeveledNpcPickId.Deserialize(aReader);

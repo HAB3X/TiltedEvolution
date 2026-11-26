@@ -1,5 +1,7 @@
 #include <Messages/Message.h>
 
+#include <WireProtocol.h>
+
 void ClientMessage::DeserializeRaw(TiltedPhoques::Buffer::Reader& aReader) noexcept
 {
     // We don't read the opcode, the factory will do it
@@ -23,7 +25,8 @@ void ClientMessage::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noex
 
 void ClientMessage::SerializeRaw(TiltedPhoques::Buffer::Writer& aWriter) const noexcept
 {
-    aWriter.WriteBits(m_opcode, sizeof(m_opcode) * 8);
+    // A message the server's protocol lacks is never sent (TransportService::Send); 0xFF is no message to any receiver
+    aWriter.WriteBits(Wire::ToWire(m_opcode).value_or(0xFF), sizeof(m_opcode) * 8);
 }
 
 void ClientMessage::SerializeDifferential(TiltedPhoques::Buffer::Writer& aWriter) const noexcept
@@ -53,7 +56,7 @@ void ServerMessage::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noex
 
 void ServerMessage::SerializeRaw(TiltedPhoques::Buffer::Writer& aWriter) const noexcept
 {
-    aWriter.WriteBits(m_opcode, sizeof(m_opcode) * 8);
+    aWriter.WriteBits(Wire::ToWire(m_opcode).value_or(0xFF), sizeof(m_opcode) * 8);
 }
 
 void ServerMessage::SerializeDifferential(TiltedPhoques::Buffer::Writer& aWriter) const noexcept

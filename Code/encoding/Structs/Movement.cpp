@@ -1,4 +1,5 @@
 #include <Structs/Movement.h>
+#include <WireProtocol.h>
 #include <TiltedCore/Serialization.hpp>
 
 using TiltedPhoques::Serialization;
@@ -22,6 +23,9 @@ void Movement::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noexcept
     Variables.GenerateDiff(AnimationVariables{}, aWriter);
     aWriter.WriteBits(*reinterpret_cast<const uint32_t*>(&Direction), 32);
 
+    // Official v1.8.4 doesn't sync where actors look
+    if (Wire::IsOfficial184())
+        return;
     Serialization::WriteBool(aWriter, HasLookAt);
     if (HasLookAt)
         LookOffset.Serialize(aWriter);
@@ -41,7 +45,7 @@ void Movement::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcept
     uint32_t tmp32 = tmp & 0xFFFFFFFF;
     Direction = *reinterpret_cast<float*>(&tmp32);
 
-    HasLookAt = Serialization::ReadBool(aReader);
+    HasLookAt = !Wire::IsOfficial184() && Serialization::ReadBool(aReader);
     LookOffset = glm::vec3{};
     if (HasLookAt)
         LookOffset.Deserialize(aReader);

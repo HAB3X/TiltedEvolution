@@ -1,4 +1,5 @@
 #include <Systems/FrameProfiler.h>
+#include <WireProtocol.h>
 #include "Forms/TESObjectCELL.h"
 #include "Forms/TESWorldSpace.h"
 #include "Services/PapyrusService.h"
@@ -800,8 +801,10 @@ void CharacterService::OnNotifyActionEvents(const NotifyActionEvents& acMessage)
 
     for (const auto& [serverId, actions] : acMessage.Actions)
     {
+        // Official v1.8.4 servers send no epochs: their actions are applied as they come
         const auto epochIt = acMessage.OwnershipEpochs.find(serverId);
-        if (epochIt == acMessage.OwnershipEpochs.end())
+        const bool cHasEpoch = epochIt != acMessage.OwnershipEpochs.end();
+        if (!cHasEpoch && !Wire::IsOfficial184())
             continue;
 
         auto itor = std::find_if(std::begin(view), std::end(view), [serverId = serverId, view](entt::entity entity) { return view.get<RemoteComponent>(entity).Id == serverId; });
@@ -809,7 +812,7 @@ void CharacterService::OnNotifyActionEvents(const NotifyActionEvents& acMessage)
         if (itor == std::end(view))
             continue;
 
-        if (view.get<RemoteComponent>(*itor).OwnershipEpoch != epochIt->second)
+        if (cHasEpoch && view.get<RemoteComponent>(*itor).OwnershipEpoch != epochIt->second)
             continue;
 
         auto& animationComponent = view.get<RemoteAnimationComponent>(*itor);

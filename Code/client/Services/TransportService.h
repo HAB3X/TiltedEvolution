@@ -26,7 +26,12 @@ struct TransportService : Client
 
     TP_NOCOPYMOVE(TransportService);
 
+    // Not sent, and false, when the server's protocol has no such message (an official v1.8.4 server, see Connect)
     bool Send(const ClientMessage& acMessage, TiltedPhoques::EPacketFlags aPacketFlags = TiltedPhoques::kReliable) const noexcept;
+
+    // Connects to a server. An official v1.8.4 server refuses this build's version; then this reconnects speaking its
+    // protocol (encoding/WireProtocol.h), without this build's own features.
+    bool Connect(const std::string& acEndpoint) noexcept;
 
     void OnConsume(const void* apData, uint32_t aSize) override;
     void OnConnected() override;
@@ -62,6 +67,11 @@ private:
     entt::dispatcher& m_dispatcher;
     bool m_connected;
     String m_serverPassword{};
+    // The endpoint and password of the last connection, for the reconnect in an official server's protocol
+    std::string m_endpoint{};
+    String m_lastPassword{};
+    // The server refused this build's version and is an official v1.8.4 one: its disconnect is ours to reconnect
+    bool m_reconnectAsOfficial{};
     bool m_authenticationPending{};
     uint32_t m_localPlayerId;
     double m_lastPollTime{};

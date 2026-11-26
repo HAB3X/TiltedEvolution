@@ -1,10 +1,13 @@
 #include <Messages/RequestOwnershipTransfer.h>
+#include <WireProtocol.h>
 
 void RequestOwnershipTransfer::SerializeRaw(TiltedPhoques::Buffer::Writer& aWriter) const noexcept
 {
     Serialization::WriteVarInt(aWriter, ServerId);
     Serialization::WriteVarInt(aWriter, OwnershipEpoch);
-    aWriter.WriteBits(static_cast<uint8_t>(Reason), 8);
+    // Official v1.8.4 has no Deleted: it hands the actor on, as it would have before
+    const OwnershipReleaseReason cReason = Wire::IsOfficial184() && Reason == OwnershipReleaseReason::Deleted ? OwnershipReleaseReason::Relinquish : Reason;
+    aWriter.WriteBits(static_cast<uint8_t>(cReason), 8);
     WorldSpaceId.Serialize(aWriter);
     CellId.Serialize(aWriter);
     Position.Serialize(aWriter);

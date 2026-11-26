@@ -14,6 +14,10 @@
 #include <catch2/catch.hpp>
 
 #include <Messages/ClientMessageFactory.h>
+#include <Messages/RequestOwnershipTransfer.h>
+#include <Structs/Movement.h>
+#include <Structs/ServerSettings.h>
+#include <WireProtocol.h>
 #include <Messages/ServerMessageFactory.h>
 #include <Structs/Vector2_NetQuantize.h>
 
@@ -806,5 +810,88 @@ TEST_CASE("StringCache", "[encoding.string_cache]")
         recvUpdate.DeserializeRaw(reader);
 
         REQUIRE(update == recvUpdate);
+    }
+}
+
+TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
+{
+    // Restores this build's protocol for the other tests, however this one ends
+    struct ProtocolScope
+    {
+        ProtocolScope() { Wire::Set(WireProtocol::Official184); }
+        ~ProtocolScope() { Wire::Set(WireProtocol::Current); }
+    } scope;
+
+    GIVEN("Message numbers")
+    {
+        // v1.8.4 has no inventory snapshot messages, so everything after them is one lower there
+        REQUIRE(Wire::ToWire(kRequestInventoryChanges) == static_cast<uint8_t>(kRequestInventoryChanges));
+        REQUIRE(Wire::ToWire(kSendChatMessageRequest) == static_cast<uint8_t>(kSendChatMessageRequest) - 1);
+        REQUIRE(Wire::FromWire(static_cast<uint8_t>(kNotifyChatMessageBroadcast) - 1) == kNotifyChatMessageBroadcast);
+        REQUIRE_FALSE(Wire::ToWire(kRequestInventorySnapshot).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestHostWorld).has_value());
+        REQUIRE_FALSE(Wire::FromWire(55).has_value());
+    }
+
+    GIVEN("Fields v1.8.4 lacks are neither written nor read")
+    {
+        ServerSettings sent;
+        sent.AutoPartyJoin = true;
+        sent.ConsoleCommandsAllowed = false;
+        sent.VoipEnabled = true;
+        sent.HostWorld = true;
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 1234567); // what follows the settings in an authentication response
+
+        Buffer::Reader reader(&buffer);
+        ServerSettings received;
+        received.Deserialize(reader);
+        REQUIRE(received.AutoPartyJoin);
+        REQUIRE(received.ConsoleCommandsAllowed);
+        REQUIRE_FALSE(received.VoipEnabled);
+        REQUIRE_FALSE(received.HostWorld);
+        REQUIRE(Serialization::ReadVarInt(reader) == 1234567);
+    }
+
+    GIVEN("Movement without where the actor looks")
+    {
+        Movement sent;
+        sent.Position = glm::vec3{10.f, -20.f, 30.f};
+        sent.HasLookAt = true;
+        sent.LookOffset = glm::vec3{1.f, 2.f, 3.f};
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 42);
+
+        Buffer::Reader reader(&buffer);
+        Movement received;
+        received.Deserialize(reader);
+        REQUIRE(received.Position == sent.Position);
+        REQUIRE_FALSE(received.HasLookAt);
+        REQUIRE(Serialization::ReadVarInt(reader) == 42);
+    }
+
+    GIVEN("A deleted actor is handed on")
+    {
+        RequestOwnershipTransfer sent;
+        sent.ServerId = 7;
+        sent.Reason = OwnershipReleaseReason::Deleted;
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+
+        Buffer::Reader reader(&buffer);
+        uint64_t opcode;
+        reader.ReadBits(opcode, 8);
+        RequestOwnershipTransfer received;
+        received.DeserializeRaw(reader);
+        REQUIRE(received.ServerId == 7);
+        REQUIRE(received.Reason == OwnershipReleaseReason::Relinquish);
     }
 }

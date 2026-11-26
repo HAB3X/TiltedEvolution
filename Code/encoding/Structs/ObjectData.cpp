@@ -1,4 +1,5 @@
 #include <Structs/ObjectData.h>
+#include <WireProtocol.h>
 #include <TiltedCore/Serialization.hpp>
 
 using TiltedPhoques::Serialization;
@@ -23,6 +24,9 @@ void ObjectData::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noexcep
     CurrentLockData.Serialize(aWriter);
     CurrentInventory.Serialize(aWriter);
     Serialization::WriteBool(aWriter, IsSenderFirst);
+    // Official v1.8.4 doesn't keep containers or merge storage
+    if (Wire::IsOfficial184())
+        return;
     Serialization::WriteBool(aWriter, IsContainer);
     Serialization::WriteBool(aWriter, MergeInventory);
 }
@@ -37,6 +41,6 @@ void ObjectData::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcept
     CurrentLockData.Deserialize(aReader);
     CurrentInventory.Deserialize(aReader);
     IsSenderFirst = Serialization::ReadBool(aReader);
-    IsContainer = Serialization::ReadBool(aReader);
-    MergeInventory = Serialization::ReadBool(aReader);
+    IsContainer = !Wire::IsOfficial184() && Serialization::ReadBool(aReader);
+    MergeInventory = !Wire::IsOfficial184() && Serialization::ReadBool(aReader);
 }

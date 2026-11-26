@@ -1,5 +1,7 @@
 
 #include <Services/TransportService.h>
+#include <WireProtocol.h>
+#include <Services/OverlayService.h>
 #include <Services/SendBuffer.h>
 
 #include <Events/ConnectedEvent.h>
@@ -81,6 +83,13 @@ bool TransportService::Send(const ClientMessage& acMessage, const TiltedPhoques:
     if (!IsConnected())
         return false;
 
+    // Features of this build the server's protocol lacks just don't reach it
+    if (!Wire::ToWire(acMessage.GetOpcode()))
+    {
+        spdlog::debug("Not sent, the server's protocol has no message {}", static_cast<int>(acMessage.GetOpcode()));
+        return false;
+    }
+
     {
         SendBuffer::PacketBuffer buffer(acMessage, s_allocator, 1 << 16);
         if (buffer.IsComplete())
@@ -125,6 +134,10 @@ namespace
 // BUILD_COMMIT stays the same across our builds, the launcher passes the id of its package instead.
 String GetBuildVersion()
 {
+    // The version an official server checks for, when speaking its protocol
+    if (Wire::IsOfficial184())
+        return Wire::kOfficial184Version;
+
     char build[128]{};
     return GetEnvironmentVariableA("TP_BUILD", build, static_cast<DWORD>(std::size(build))) ? String(build) : String(BUILD_COMMIT);
 }
@@ -174,6 +187,7 @@ void TransportService::SendAuthenticationRequest()
     request.MO2Active = GetModuleHandleW(kMO2DllName);
 
     request.Token = m_serverPassword;
+    m_lastPassword = m_serverPassword;
     m_serverPassword = "";
 
     PlayerCharacter* pPlayer = PlayerCharacter::Get();
@@ -223,10 +237,30 @@ void TransportService::SendAuthenticationRequest()
     Send(request);
 }
 
+bool TransportService::Connect(const std::string& acEndpoint) noexcept
+{
+    // A new connection starts in this build's protocol
+    Wire::Set(WireProtocol::Current);
+    m_reconnectAsOfficial = false;
+    m_endpoint = acEndpoint;
+    return Client::Connect(acEndpoint);
+}
+
 void TransportService::OnDisconnected(EDisconnectReason aReason)
 {
     m_authenticationPending = false;
     m_connected = false;
+
+    // The official server's kick after refusing our version: the overlay keeps "connecting" while we come back
+    if (m_reconnectAsOfficial)
+    {
+        m_reconnectAsOfficial = false;
+        Wire::Set(WireProtocol::Official184);
+        m_serverPassword = m_lastPassword;
+        spdlog::info("Reconnecting to {} as official Skyrim Together {}", m_endpoint, Wire::kOfficial184Version);
+        m_world.GetRunner().Queue([this]() { Client::Connect(m_endpoint); });
+        return;
+    }
 
     spdlog::warn("Disconnected from server {}", aReason);
 
@@ -276,6 +310,11 @@ void TransportService::HandleAuthenticationResponse(const AuthenticationResponse
     {
         m_connected = true;
 
+        if (Wire::IsOfficial184())
+            m_world.GetOverlayService().SendSystemMessage(fmt::format(
+                "This server runs official Skyrim Together {}. You're playing with it, without this version's own features (host world, party saves, voice chat, invites).",
+                Wire::kOfficial184Version));
+
         m_world.SetServerSettings(acMessage.Settings);
 
         m_dispatcher.trigger(acMessage.UserMods);
@@ -285,6 +324,13 @@ void TransportService::HandleAuthenticationResponse(const AuthenticationResponse
     }
 
     // error finding
+
+    if (acMessage.Type == AR::kWrongVersion && acMessage.Version == Wire::kOfficial184Version && !Wire::IsOfficial184())
+    {
+        spdlog::info("Server {} is official Skyrim Together {}, joining it in its protocol", m_endpoint, Wire::kOfficial184Version);
+        m_reconnectAsOfficial = true;
+        return;
+    }
 
     spdlog::warn("Server refused the connection, type {}", static_cast<int>(acMessage.Type));
     ShowRefusal(acMessage.Type);

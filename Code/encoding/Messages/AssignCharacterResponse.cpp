@@ -1,4 +1,5 @@
 #include <Messages/AssignCharacterResponse.h>
+#include <WireProtocol.h>
 
 void AssignCharacterResponse::SerializeRaw(TiltedPhoques::Buffer::Writer& aWriter) const noexcept
 {
@@ -16,7 +17,8 @@ void AssignCharacterResponse::SerializeRaw(TiltedPhoques::Buffer::Writer& aWrite
     Serialization::WriteBool(aWriter, IsDead);
     Serialization::WriteBool(aWriter, IsWeaponDrawn);
     LeveledNpcPickId.Serialize(aWriter);
-    Serialization::WriteBool(aWriter, Suppressed);
+    if (!Wire::IsOfficial184())
+        Serialization::WriteBool(aWriter, Suppressed);
 }
 
 void AssignCharacterResponse::DeserializeRaw(TiltedPhoques::Buffer::Reader& aReader) noexcept
@@ -35,5 +37,6 @@ void AssignCharacterResponse::DeserializeRaw(TiltedPhoques::Buffer::Reader& aRea
     IsDead = Serialization::ReadBool(aReader);
     IsWeaponDrawn = Serialization::ReadBool(aReader);
     LeveledNpcPickId.Deserialize(aReader);
-    Suppressed = Serialization::ReadBool(aReader);
+    // Official v1.8.4 never suppresses an actor
+    Suppressed = !Wire::IsOfficial184() && Serialization::ReadBool(aReader);
 }

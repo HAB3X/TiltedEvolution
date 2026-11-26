@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Messages/ServerMessageFactory.h>
+#include <WireProtocol.h>
 
 static std::function<UniquePtr<ServerMessage>(TiltedPhoques::Buffer::Reader& aReader)> s_serverMessageExtractor[kServerOpcodeMax];
 
@@ -34,9 +35,9 @@ UniquePtr<ServerMessage> ServerMessageFactory::Extract(TiltedPhoques::Buffer::Re
     uint64_t data;
     aReader.ReadBits(data, sizeof(ServerOpcode) * 8);
 
-    if (data >= kServerOpcodeMax) [[unlikely]]
+    const auto opcode = Wire::FromWire(static_cast<uint8_t>(data));
+    if (!opcode) [[unlikely]]
         return {nullptr};
 
-    const auto opcode = static_cast<ServerOpcode>(data);
-    return s_serverMessageExtractor[opcode](aReader);
+    return s_serverMessageExtractor[*opcode](aReader);
 }
