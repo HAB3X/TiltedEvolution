@@ -274,6 +274,10 @@
     }
   },
   "SERVICE": {
+    "PARTY_DOOR": {
+      "QUESTION": "Následovat {{member}} do místa {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} prošel(a) dveřmi. Následovat?"
+    },
     "PARTY_PING": {
       "SELF": "Označil(a) jsi {{target}} pro družinu.",
       "NEAR": "{{name}} označil(a) {{target}}: {{distance}}.",

@@ -280,6 +280,10 @@
     }
   },
   "SERVICE": {
+    "PARTY_DOOR": {
+      "QUESTION": "Піти за {{member}} у {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} пройшов крізь двері. Піти слідом?"
+    },
     "PARTY_PING": {
       "SELF": "Ви позначили {{target}} для загону.",
       "NEAR": "{{name}} позначає {{target}}: {{distance}}.",

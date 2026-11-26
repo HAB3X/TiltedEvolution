@@ -5,6 +5,7 @@
 #include <Forms/TESObjectARMO.h>
 #include <Games/TES.h>
 
+#include <Services/TravelTogetherService.h>
 #include <World.h>
 #include <Services/PartyService.h>
 #include <Services/PapyrusService.h>
@@ -1015,9 +1016,8 @@ bool TP_MAKE_THISCALL(HookPlayAnimation, void, uint32_t auiStackID, TESObjectREF
     return TiltedPhoques::ThisCall(RealPlayAnimation, apThis, auiStackID, apSelf, apEventName);
 }
 
-// SkyrimCoop M2: door voting. A load door used by the local player while in a party with
-// someone else is held back instead of activated ("Waiting for partner...").
-// Step 2: held doors never open yet; the server vote comes in step 3.
+// Party load doors: a load door the local player goes through is offered to the party to follow
+// (TravelTogetherService::OfferDoor).
 
 // The door's destination, or nullptr if it's not a load door.
 static DoorTeleportData* GetLoadDoorTeleport(TESObjectREFR* apDoor) noexcept
@@ -1035,45 +1035,25 @@ static bool IsDoorLocked(TESObjectREFR* apDoor) noexcept
     return pLock && (pLock->flags & 0xFF); // same check as ObjectService::OnActivate
 }
 
-// Runs on whichever game thread activates the door; the party state is only read here.
-static bool ShouldHoldLoadDoor(TESObjectREFR* apDoor) noexcept
-{
-    if (!GetLoadDoorTeleport(apDoor) || IsDoorLocked(apDoor))
-        return false;
-
-    World& world = World::Get();
-    if (!world.GetTransport().IsConnected())
-        return false;
-
-    const PartyService& partyService = world.GetPartyService();
-    return partyService.IsInParty() && partyService.GetPartyMembers().size() >= 2;
-}
-
-static void LogLoadDoorActivation(TESObjectREFR* apDoor, bool aHeld, uint8_t aUnk1, int32_t aCount, char aDefaultProcessing) noexcept
+// Runs on whichever game thread activates the door. The game activates a load door twice per key press (two
+// threads, ~15 ms apart), so a door is offered once per half second.
+static void OnLoadDoorUsed(TESObjectREFR* apDoor) noexcept
 {
     const DoorTeleportData* pTeleportData = GetLoadDoorTeleport(apDoor);
-    if (!pTeleportData)
+    if (!pTeleportData || IsDoorLocked(apDoor))
         return;
 
-    const TESObjectCELL* pCell = apDoor->GetParentCellEx();
     const TESObjectREFR* pLinkedDoor = TESObjectREFR::GetByHandle(pTeleportData->linkedDoor);
     const TESObjectCELL* pTargetCell = pLinkedDoor ? pLinkedDoor->GetParentCellEx() : nullptr;
-    const auto& target = pTeleportData->position;
+    const NiPoint3 cTarget = pTeleportData->position;
+    spdlog::info("[PartyDoors] Load door {:X} '{}' -> linked door {:X} in cell {:X} at ({:.0f}, {:.0f}, {:.0f})", apDoor->formID,
+                 apDoor->baseForm->GetName(), pLinkedDoor ? pLinkedDoor->formID : 0, pTargetCell ? pTargetCell->formID : 0, cTarget.x, cTarget.y, cTarget.z);
+    if (!pTargetCell)
+        return;
 
-    spdlog::info("[SkyrimCoop] Load door {}: door {:X} '{}' in cell {:X} -> linked door {:X} in cell {:X} at ({:.0f}, {:.0f}, {:.0f}), locked: {} [unk1 {}, count {}, defaultProcessing {}]",
-                 aHeld ? "HELD" : "used", apDoor->formID, apDoor->baseForm->GetName(), pCell ? pCell->formID : 0,
-                 pLinkedDoor ? pLinkedDoor->formID : 0, pTargetCell ? pTargetCell->formID : 0,
-                 target.x, target.y, target.z, IsDoorLocked(apDoor), aUnk1, aCount, static_cast<int>(aDefaultProcessing));
-}
-
-// The game activates a load door twice per key press (two threads, ~15 ms apart),
-// so only tell the player once per door and half second.
-static void OnLoadDoorHeld(TESObjectREFR* apDoor) noexcept
-{
     static std::mutex s_mutex;
     static uint32_t s_lastDoor = 0;
     static std::chrono::steady_clock::time_point s_lastTime{};
-
     {
         std::scoped_lock lock(s_mutex);
         const auto cNow = std::chrono::steady_clock::now();
@@ -1083,7 +1063,8 @@ static void OnLoadDoorHeld(TESObjectREFR* apDoor) noexcept
         s_lastTime = cNow;
     }
 
-    World::Get().GetRunner().Queue([]() { World::Get().GetOverlayService().SendSystemMessage("Waiting for partner..."); });
+    const uint32_t cCellId = pTargetCell->formID;
+    World::Get().GetRunner().Queue([cCellId, cTarget]() { World::Get().ctx().at<TravelTogetherService>().OfferDoor(cCellId, cTarget); });
 }
 
 bool TP_MAKE_THISCALL(HookActivate, TESObjectREFR, TESObjectREFR* apActivator, uint8_t aUnk1, TESBoundObject* apObjectToGet, int32_t aCount, char aDefaultProcessing)
@@ -1091,16 +1072,7 @@ bool TP_MAKE_THISCALL(HookActivate, TESObjectREFR, TESObjectREFR* apActivator, u
     Actor* pActivator = Cast<Actor>(apActivator);
 
     if (pActivator && pActivator == PlayerCharacter::Get())
-    {
-        const bool cHold = ShouldHoldLoadDoor(apThis);
-        LogLoadDoorActivation(apThis, cHold, aUnk1, aCount, aDefaultProcessing);
-
-        if (cHold)
-        {
-            OnLoadDoorHeld(apThis);
-            return false;
-        }
-    }
+        OnLoadDoorUsed(apThis);
 
     // Exclude books from activation since only reading them removes them from the cell
     // Note: Books are now unsynced 

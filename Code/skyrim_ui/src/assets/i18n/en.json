@@ -281,6 +281,10 @@
     }
   },
   "SERVICE": {
+    "PARTY_DOOR": {
+      "QUESTION": "Follow {{member}} into {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} went through a door. Follow them?"
+    },
     "PARTY_PING": {
       "SELF": "You pinged {{target}} for the party.",
       "NEAR": "{{name}} pinged {{target}}: {{distance}}.",

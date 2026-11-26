@@ -868,6 +868,51 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    GIVEN("RequestPartyDoor")
+    {
+        RequestPartyDoor sendMessage, recvMessage;
+        sendMessage.CellId = GameId(0, 0x165A7);
+        sendMessage.Position = glm::vec3{12.f, 340.f, -56.f};
+        sendMessage.Place = "Bleak Falls Barrow";
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyPartyDoor")
+    {
+        NotifyPartyDoor sendMessage, recvMessage;
+        sendMessage.PlayerId = 4;
+        sendMessage.PlayerName = "Lydia";
+        sendMessage.WorldSpaceId = GameId(0, 0x3C);
+        sendMessage.CellId = GameId(0, 0x9732);
+        sendMessage.Position = glm::vec3{-1200.f, 40.f, 6.f};
+        sendMessage.Place = "Skyrim";
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
     GIVEN("RequestPartyTravel")
     {
         RequestPartyTravel sendMessage, recvMessage;
@@ -1179,6 +1224,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestPartyTravel).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestQuestStages).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestPartyPing).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestPartyDoor).has_value());
         REQUIRE_FALSE(Wire::FromWire(55).has_value());
     }
 

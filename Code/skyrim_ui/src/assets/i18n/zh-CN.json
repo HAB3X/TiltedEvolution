@@ -269,6 +269,10 @@
     }
   },
   "SERVICE": {
+    "PARTY_DOOR": {
+      "QUESTION": "跟随{{member}}进入{{place}}？",
+      "QUESTION_NO_PLACE": "{{member}}穿过了一扇门。要跟随吗？"
+    },
     "PARTY_PING": {
       "SELF": "你为队伍标记了{{target}}。",
       "NEAR": "{{name}} 标记了{{target}}：{{distance}}。",

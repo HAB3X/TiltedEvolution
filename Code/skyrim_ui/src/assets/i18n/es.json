@@ -270,6 +270,10 @@
     }
   },
   "SERVICE": {
+    "PARTY_DOOR": {
+      "QUESTION": "¿Seguir a {{member}} a {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} ha cruzado una puerta. ¿Seguirle?"
+    },
     "PARTY_PING": {
       "SELF": "Has marcado {{target}} para el grupo.",
       "NEAR": "{{name}} ha marcado {{target}}: {{distance}}.",

@@ -20,6 +20,16 @@
 #include <Messages/NotifyPlayerJoined.h>
 #include <Messages/NotifyPartyTravel.h>
 #include <Messages/RequestPartyTravel.h>
+#include <Messages/NotifyPartyDoor.h>
+#include <Messages/RequestPartyDoor.h>
+
+#include <Setting.h>
+
+namespace
+{
+Console::Setting bPartyDoorsAnyMember{"Gameplay:bPartyDoorsAnyMember",
+                                      "Whether any party member going through a load door offers the others to follow, not just the leader", false};
+}
 
 PartyService::PartyService(World& aWorld, entt::dispatcher& aDispatcher) noexcept
     : m_world(aWorld)
@@ -33,6 +43,7 @@ PartyService::PartyService(World& aWorld, entt::dispatcher& aDispatcher) noexcep
     , m_partyChangeLeaderConnection(aDispatcher.sink<PacketEvent<PartyChangeLeaderRequest>>().connect<&PartyService::OnPartyChangeLeader>(this))
     , m_partyKickConnection(aDispatcher.sink<PacketEvent<PartyKickRequest>>().connect<&PartyService::OnPartyKick>(this))
     , m_partyTravelConnection(aDispatcher.sink<PacketEvent<RequestPartyTravel>>().connect<&PartyService::OnPartyTravel>(this))
+    , m_partyDoorConnection(aDispatcher.sink<PacketEvent<RequestPartyDoor>>().connect<&PartyService::OnPartyDoor>(this))
 {
 }
 
@@ -193,6 +204,31 @@ void PartyService::OnPartyTravel(const PacketEvent<RequestPartyTravel>& acPacket
     notify.LeaderName = pLeader->GetUsername();
     notify.Place = acPacket.Packet.Place;
     GameServer::Get()->SendToParty(notify, pLeader->GetParty(), pLeader);
+}
+
+void PartyService::OnPartyDoor(const PacketEvent<RequestPartyDoor>& acPacket) const noexcept
+{
+    const Player* pPlayer = acPacket.pPlayer;
+    const auto& cParty = pPlayer->GetParty();
+    if (!cParty.JoinedPartyId.has_value())
+        return;
+
+    // By default only the leader leads the way through doors (Gameplay:bPartyDoorsAnyMember)
+    if (!bPartyDoorsAnyMember && !IsPlayerLeader(pPlayer))
+    {
+        spdlog::debug("[PartyService]: {} isn't the party leader, not offering their door to {}", pPlayer->GetUsername().c_str(), acPacket.Packet.Place.c_str());
+        return;
+    }
+
+    const auto& cDoor = acPacket.Packet;
+    NotifyPartyDoor notify;
+    notify.PlayerId = pPlayer->GetId();
+    notify.PlayerName = pPlayer->GetUsername();
+    notify.WorldSpaceId = cDoor.WorldSpaceId;
+    notify.CellId = cDoor.CellId;
+    notify.Position = cDoor.Position;
+    notify.Place = cDoor.Place;
+    GameServer::Get()->SendToParty(notify, cParty, pPlayer);
 }
 
 void PartyService::OnPartyKick(const PacketEvent<PartyKickRequest>& acPacket) noexcept

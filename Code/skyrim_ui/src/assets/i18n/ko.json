@@ -274,6 +274,10 @@
     }
   },
   "SERVICE": {
+    "PARTY_DOOR": {
+      "QUESTION": "{{member}} 님을 따라 {{place}}(으)로 가시겠습니까?",
+      "QUESTION_NO_PLACE": "{{member}} 님이 문을 지나갔습니다. 따라가시겠습니까?"
+    },
     "PARTY_PING": {
       "SELF": "파티에 {{target}}을(를) 표시했습니다.",
       "NEAR": "{{name}} 님이 {{target}}을(를) 표시했습니다: {{distance}}.",

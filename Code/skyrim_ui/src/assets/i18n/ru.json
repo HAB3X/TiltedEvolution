@@ -280,6 +280,10 @@
     }
   },
   "SERVICE": {
+    "PARTY_DOOR": {
+      "QUESTION": "Последовать за {{member}} в {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} прошёл через дверь. Последовать?"
+    },
     "PARTY_PING": {
       "SELF": "Вы отметили {{target}} для группы.",
       "NEAR": "{{name}} отмечает {{target}}: {{distance}}.",

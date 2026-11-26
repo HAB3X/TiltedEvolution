@@ -278,6 +278,10 @@
     }
   },
   "SERVICE": {
+    "PARTY_DOOR": {
+      "QUESTION": "Podążyć za {{member}} do miejsca {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} przeszedł przez drzwi. Podążyć?"
+    },
     "PARTY_PING": {
       "SELF": "Oznaczono {{target}} dla drużyny.",
       "NEAR": "{{name}} oznacza {{target}}: {{distance}}.",

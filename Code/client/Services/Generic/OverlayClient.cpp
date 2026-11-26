@@ -62,6 +62,11 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             const bool travel = eventArgs->GetBool(0);
             World::Get().GetRunner().Queue([travel]() { World::Get().ctx().at<TravelTogetherService>().Answer(travel); });
         }
+        else if (eventName == "answerPartyDoor")
+        {
+            const bool follow = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([follow]() { World::Get().ctx().at<TravelTogetherService>().AnswerDoor(follow); });
+        }
         else if (eventName == "setNameTags")
         {
             const bool enabled = eventArgs->GetBool(0);

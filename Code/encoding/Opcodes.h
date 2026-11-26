@@ -66,6 +66,7 @@ enum ClientOpcode : unsigned char
     kRequestPartyTravel,
     kRequestQuestStages,
     kRequestPartyPing,
+    kRequestPartyDoor,
     kClientOpcodeMax
 };
 
@@ -136,5 +137,6 @@ enum ServerOpcode : unsigned char
     kNotifyPartyTravel,
     kNotifyQuestDesync,
     kNotifyPartyPing,
+    kNotifyPartyDoor,
     kServerOpcodeMax
 };

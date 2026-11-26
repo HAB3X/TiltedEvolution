@@ -116,6 +116,9 @@ export class ClientService implements OnDestroy {
   /** The party leader fast travelled, see answerPartyTravel. */
   public partyTravelChange = new Subject<{ leader: string; place: string }>();
 
+  /** A party member went through a load door, see answerPartyDoor. */
+  public partyDoorChange = new Subject<{ member: string; place: string }>();
+
   /** A party member, or this player, pinged a spot or a target. */
   public partyPingChange = new Subject<Ping>();
 
@@ -154,6 +157,11 @@ export class ClientService implements OnDestroy {
   /** Whether to travel with the party leader, after partyTravelChange. */
   public answerPartyTravel(travel: boolean): void {
     skyrimtogether.answerPartyTravel(travel);
+  }
+
+  /** Whether to follow a party member through their load door, after partyDoorChange. */
+  public answerPartyDoor(follow: boolean): void {
+    skyrimtogether.answerPartyDoor(follow);
   }
 
   /** The joiner's answer to the host world offer. */
@@ -279,6 +287,7 @@ export class ClientService implements OnDestroy {
     );
     skyrimtogether.on('questUpdated', this.onQuestUpdated.bind(this));
     skyrimtogether.on('partyTravel', this.onPartyTravel.bind(this));
+    skyrimtogether.on('partyDoor', this.onPartyDoor.bind(this));
     skyrimtogether.on('partyPing', this.onPartyPing.bind(this));
     skyrimtogether.on('questDesync', this.onQuestDesync.bind(this));
   }
@@ -323,6 +332,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('partyInviteReceived');
     skyrimtogether.off('questUpdated');
     skyrimtogether.off('partyTravel');
+    skyrimtogether.off('partyDoor');
     skyrimtogether.off('partyPing');
     skyrimtogether.off('questDesync');
   }
@@ -938,6 +948,12 @@ export class ClientService implements OnDestroy {
   private onPartyPing(player: string, target: string, meters: number, direction: number, place: string) {
     this.zone.run(() => {
       this.partyPingChange.next({ player, target, meters, direction, place });
+    });
+  }
+
+  private onPartyDoor(member: string, place: string) {
+    this.zone.run(() => {
+      this.partyDoorChange.next({ member, place });
     });
   }
 

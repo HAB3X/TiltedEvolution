@@ -33,6 +33,8 @@
 #include <Messages/RequestPlayerHealthUpdate.h>
 #include <Messages/RequestPartyPing.h>
 #include <Messages/NotifyPartyPing.h>
+#include <Messages/RequestPartyDoor.h>
+#include <Messages/NotifyPartyDoor.h>
 #include <Messages/RequestQuestStages.h>
 #include <Messages/PartyCreateRequest.h>
 #include <Messages/RequestPartyTravel.h>
@@ -155,6 +157,7 @@ struct FakePlayer final : Client
         case kNotifyQuestDesync: Desyncs.push_back(*static_cast<NotifyQuestDesync*>(pMessage.get())); break;
         case kNotifyPlayerHealthUpdate: Health = *static_cast<NotifyPlayerHealthUpdate*>(pMessage.get()); break;
         case kNotifyPartyPing: Pings.push_back(*static_cast<NotifyPartyPing*>(pMessage.get())); break;
+        case kNotifyPartyDoor: Doors.push_back(*static_cast<NotifyPartyDoor*>(pMessage.get())); break;
         default: break;
         }
     }
@@ -186,6 +189,7 @@ struct FakePlayer final : Client
     std::vector<NotifyQuestDesync> Desyncs;
     std::optional<NotifyPlayerHealthUpdate> Health;
     std::vector<NotifyPartyPing> Pings;
+    std::vector<NotifyPartyDoor> Doors;
 };
 
 // Runs the player until the condition holds or the time is up
@@ -730,6 +734,61 @@ int RunPingMember(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Party doors: the leader goes through a door and the member is offered to follow; the member's own door is offered
+// to the leader only when the server lets any member lead (doormember) and not by default (doorleader / doorfollower)
+RequestPartyDoor FakeDoor(const char* apPlace)
+{
+    RequestPartyDoor door;
+    door.CellId = GameId(0, 0x165A7);
+    door.Position = glm::vec3{12.f, 340.f, -56.f};
+    door.Place = apPlace;
+    return door;
+}
+
+int RunDoorLeader(const std::string& acEndpoint, const std::string& acPassword, bool aAnyMember)
+{
+    FakePlayer leader("FakeDoorLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("door leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("door leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    RunUntil(leader, [] { return false; }, 2s);
+
+    leader.Send(FakeDoor("Bleak Falls Barrow"));
+    RunUntil(leader, [] { return false; }, 8s);
+    std::string detail = std::to_string(leader.Doors.size()) + " doors";
+    if (!leader.Doors.empty())
+        detail += ", the first from " + std::string(leader.Doors[0].PlayerName.c_str()) + " to " + leader.Doors[0].Place.c_str();
+    if (aAnyMember)
+        Check("any member may lead: the member's door is offered to the leader",
+              leader.Doors.size() == 1 && leader.Doors[0].PlayerName == "FakeDoorFollower" && leader.Doors[0].Place == "Riverwood", detail);
+    else
+        Check("only the leader leads: the member's door isn't offered", leader.Doors.empty(), detail);
+    return s_failures ? 1 : 0;
+}
+
+int RunDoorFollower(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeDoorFollower", acPassword);
+    member.Connect(acEndpoint);
+    Check("door member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    member.Send(FakeDoor("Riverwood"));
+    const bool cOffered = RunUntil(member, [&] { return !member.Doors.empty(); }, 20s);
+    const RequestPartyDoor cExpected = FakeDoor("Bleak Falls Barrow");
+    std::string detail = std::to_string(member.Doors.size()) + " doors";
+    if (!member.Doors.empty())
+        detail += ", the first from " + std::string(member.Doors[0].PlayerName.c_str()) + " to " + member.Doors[0].Place.c_str();
+    Check("is offered to follow the leader through the door, to where it leads",
+          cOffered && member.Party && member.Doors[0].PlayerId == member.Party->LeaderPlayerId && member.Doors[0].PlayerName == "FakeDoorLeader" &&
+              member.Doors[0].CellId == cExpected.CellId && member.Doors[0].WorldSpaceId == cExpected.WorldSpaceId &&
+              member.Doors[0].Position == cExpected.Position && member.Doors[0].Place == cExpected.Place,
+          detail);
+    RunUntil(member, [] { return false; }, 2s);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -742,6 +801,8 @@ int RunPingMember(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe desyncleader|desyncmember [address:port] [password]: start the leader first
 // FakePlayers.exe barleader|barmember [address:port] [password]: start the leader first
 // FakePlayers.exe pingleader|pingmember [address:port] [password]: start the leader first
+// FakePlayers.exe doorleader|doorfollower [address:port] [password]: start the leader first; doorleaderany with
+//   Gameplay:bPartyDoorsAnyMember=true
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -791,7 +852,13 @@ int main(int argc, char** argv)
         return RunPingLeader(cEndpoint, cPassword);
     if (cRole == "pingmember")
         return RunPingMember(cEndpoint, cPassword);
+    if (cRole == "doorleader")
+        return RunDoorLeader(cEndpoint, cPassword, false);
+    if (cRole == "doorleaderany")
+        return RunDoorLeader(cEndpoint, cPassword, true);
+    if (cRole == "doorfollower")
+        return RunDoorFollower(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower [address:port] [password]\n");
     return 2;
 }

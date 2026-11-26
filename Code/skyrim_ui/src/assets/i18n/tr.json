@@ -277,6 +277,10 @@
     }
   },
   "SERVICE": {
+    "PARTY_DOOR": {
+      "QUESTION": "{{member}} ile {{place}} içine gidilsin mi?",
+      "QUESTION_NO_PLACE": "{{member}} bir kapıdan geçti. Takip edilsin mi?"
+    },
     "PARTY_PING": {
       "SELF": "Grup için {{target}} işaretledin.",
       "NEAR": "{{name}} {{target}} işaretledi: {{distance}}.",

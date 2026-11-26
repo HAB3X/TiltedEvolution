@@ -14,6 +14,7 @@ struct PartyCreateRequest;
 struct PartyChangeLeaderRequest;
 struct PartyKickRequest;
 struct RequestPartyTravel;
+struct RequestPartyDoor;
 
 /**
  * @brief Manages every party in the server.
@@ -51,6 +52,7 @@ protected:
     void OnPartyChangeLeader(const PacketEvent<PartyChangeLeaderRequest>& acPacket) noexcept;
     void OnPartyKick(const PacketEvent<PartyKickRequest>& acPacket) noexcept;
     void OnPartyTravel(const PacketEvent<RequestPartyTravel>& acPacket) const noexcept;
+    void OnPartyDoor(const PacketEvent<RequestPartyDoor>& acPacket) const noexcept;
     void RemovePlayerFromParty(Player* apPlayer) noexcept;
     void RemoveMemberFromParty(Party& aParty, uint32_t aPartyId, Player* apPlayer) noexcept;
 
@@ -74,6 +76,7 @@ private:
     entt::scoped_connection m_partyChangeLeaderConnection;
     entt::scoped_connection m_partyKickConnection;
     entt::scoped_connection m_partyTravelConnection;
+    entt::scoped_connection m_partyDoorConnection;
 
     void SendPartyJoinedEvent(Party& aParty, Player* aPlayer) noexcept;
 };

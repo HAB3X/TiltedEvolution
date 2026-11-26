@@ -8,6 +8,9 @@
 #include <Messages/NotifyPartyTravel.h>
 #include <Messages/RequestPartyTravel.h>
 #include <Messages/TeleportCommandRequest.h>
+#include <Messages/NotifyPartyDoor.h>
+#include <Messages/RequestPartyDoor.h>
+#include <Services/CommandService.h>
 
 #include <OverlayApp.hpp>
 #include <PlayerCharacter.h>
@@ -39,6 +42,7 @@ TravelTogetherService::TravelTogetherService(World& aWorld, entt::dispatcher& aD
     , m_transport(aTransport)
 {
     m_partyTravelConnection = aDispatcher.sink<NotifyPartyTravel>().connect<&TravelTogetherService::OnPartyTravel>(this);
+    m_partyDoorConnection = aDispatcher.sink<NotifyPartyDoor>().connect<&TravelTogetherService::OnPartyDoor>(this);
 
     // The game sends this when the player arrives from a fast travel (the map or a carriage), not for teleports such
     // as the one a member who says yes takes, so a member following never offers a trip of their own
@@ -90,4 +94,64 @@ void TravelTogetherService::Answer(bool aTravel) noexcept
         m_transport.Send(request);
     }
     m_offeredLeader.clear();
+}
+
+void TravelTogetherService::OfferDoor(uint32_t aCellId, const NiPoint3& acPosition) const noexcept
+{
+    const auto& cParty = m_world.GetPartyService();
+    if (!m_transport.IsOnline() || !cParty.IsInParty() || cParty.GetPartyMembers().size() < 2)
+        return;
+
+    const TESObjectCELL* pCell = Cast<TESObjectCELL>(TESForm::GetById(aCellId));
+    if (!pCell)
+    {
+        spdlog::warn("[TravelTogether]: the door leads to cell {:X}, which isn't there, not offering it", aCellId);
+        return;
+    }
+
+    RequestPartyDoor request;
+    ModSystem& modSystem = m_world.GetModSystem();
+    if (!modSystem.GetServerModId(pCell->formID, request.CellId) ||
+        (pCell->worldspace && !modSystem.GetServerModId(pCell->worldspace->formID, request.WorldSpaceId)))
+    {
+        spdlog::warn("[TravelTogether]: the door's cell {:X} has no server id, not offering it", aCellId);
+        return;
+    }
+    request.Position = acPosition;
+    // An interior's own name; an exterior cell rarely has one, its worldspace does
+    const char* pName = pCell->GetName();
+    if ((!pName || !*pName) && pCell->worldspace)
+        pName = pCell->worldspace->GetName();
+    request.Place = pName ? pName : "";
+
+    spdlog::info("[TravelTogether]: went through a door to '{}' ({:X}), offering the party to follow", request.Place.c_str(), aCellId);
+    m_transport.Send(request);
+}
+
+void TravelTogetherService::OnPartyDoor(const NotifyPartyDoor& acMessage) noexcept
+{
+    spdlog::info("[TravelTogether]: {} went through a door to '{}'", acMessage.PlayerName.c_str(), acMessage.Place.c_str());
+    TeleportCommandResponse destination{};
+    destination.CellId = acMessage.CellId;
+    destination.WorldSpaceId = acMessage.WorldSpaceId;
+    destination.Position = acMessage.Position;
+    m_offeredDoor = destination;
+
+    auto pArguments = CefListValue::Create();
+    pArguments->SetString(0, acMessage.PlayerName.c_str());
+    pArguments->SetString(1, acMessage.Place.c_str());
+    m_world.GetOverlayService().GetOverlayApp()->ExecuteAsync("partyDoor", pArguments);
+}
+
+void TravelTogetherService::AnswerDoor(bool aFollow) noexcept
+{
+    if (!m_offeredDoor)
+    {
+        spdlog::warn("[TravelTogether]: answered a door offer that isn't there");
+        return;
+    }
+
+    if (aFollow)
+        m_world.ctx().at<CommandService>().MoveTo(*m_offeredDoor);
+    m_offeredDoor.reset();
 }

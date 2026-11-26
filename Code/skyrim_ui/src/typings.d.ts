@@ -254,6 +254,9 @@ interface SkyrimTogether {
   /** The party leader fast travelled; place is empty when the game had no name for it. */
   on(event: 'partyTravel', callback: (leader: string, place: string) => void): void;
 
+  /** A party member went through a load door; place is empty when the game had no name for it. */
+  on(event: 'partyDoor', callback: (member: string, place: string) => void): void;
+
   /** A party ping: who (empty for this player), what (empty for their spot), metres away (-1 elsewhere), direction, place. */
   on(event: 'partyPing', callback: (player: string, target: string, meters: number, direction: number, place: string) => void): void;
 
@@ -411,6 +414,8 @@ interface SkyrimTogether {
 
   off(event: 'partyTravel', callback?: (leader: string, place: string) => void): void;
 
+  off(event: 'partyDoor', callback?: (member: string, place: string) => void): void;
+
   off(event: 'partyPing', callback?: (player: string, target: string, meters: number, direction: number, place: string) => void): void;
 
   off(event: 'questDesync', callback?: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
@@ -485,6 +490,11 @@ interface SkyrimTogether {
    * A party member's answer to the leader's fast travel (the partyTravel event): yes moves them next to the leader.
    */
   answerPartyTravel(travel: boolean): void;
+
+  /**
+   * A party member's answer to another's load door (the partyDoor event): yes moves them to where the door leads.
+   */
+  answerPartyDoor(follow: boolean): void;
 
   /**
    * Disconnect from server or cancel connection.
