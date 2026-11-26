@@ -1,5 +1,14 @@
 ﻿#include <Components.h>
 #include <GameServer.h>
+#include <LanDiscoveryResponder.h>
+#include <PortMapper.h>
+
+#include <fstream>
+
+#ifdef _WIN32
+#include <WinSock2.h>
+#include <Windows.h>
+#endif
 #include <Packet.hpp>
 
 #include <Events/CharacterRemoveEvent.h>
@@ -20,12 +29,17 @@
 #include <resources/ResourceCollection.h>
 
 constexpr size_t kMaxServerNameLength = 128u;
+// One banned address per line, read at start and added to by bans
+constexpr char kBansFile[] = "config/bans.txt";
 
 // -- Cvars --
 Console::Setting uServerPort{"GameServer:uPort", "Which port to host the server on", 10578u};
 Console::Setting uMaxPlayerCount{"GameServer:uMaxPlayerCount", "Maximum number of players allowed on the server (going over the default of 8 is not recommended)", 8u};
 Console::Setting bPremiumTickrate{"GameServer:bPremiumMode", "Server tick rate: 60 updates per second if true, 30 if false", true};
 
+Console::Setting bLanDiscovery{"GameServer:bLanDiscovery", "Lets players on the same network find this server in Connect, Local games (UDP port 10579)", true};
+Console::Setting bUPnP{"GameServer:bUPnP", "Opens the server's UDP port on the router with UPnP while it runs, so friends outside your network can join without forwarding it by hand", true};
+Console::Setting uStopWithProcess{"GameServer:uStopWithProcess", "Id of a process the server shuts down with, when it exits (the game that hosts it sets this)", 0u};
 Console::StringSetting sServerName{"GameServer:sServerName", "Name that shows up in the server list", "Dedicated Together Server"};
 Console::StringSetting sAdminPassword{"GameServer:sAdminPassword", "Password for server admins. Joining with it gives admin rights. Leave empty to disable", ""};
 Console::StringSetting sPassword{"GameServer:sPassword", "Password players need to join the server. Leave empty to let anyone join", ""};
@@ -180,6 +194,12 @@ GameServer::GameServer(Console::ConsoleRegistry& aConsole) noexcept
     m_isPasswordProtected = strcmp(sPassword.value(), "") != 0;
 
     UpdateInfo();
+    LoadBans();
+    if (bLanDiscovery)
+        m_pLanDiscovery = MakeUnique<LanDiscoveryResponder>();
+    if (bUPnP)
+        m_pPortMapper = MakeUnique<PortMapper>(GetPort());
+    WatchParentProcess();
     spdlog::info("Server {} started on port {}", BUILD_COMMIT, GetPort());
     UpdateTitle();
 
@@ -193,7 +213,79 @@ GameServer::GameServer(Console::ConsoleRegistry& aConsole) noexcept
 
 GameServer::~GameServer()
 {
+#ifdef _WIN32
+    if (m_parentProcess)
+        CloseHandle(m_parentProcess);
+#endif
     s_pInstance = nullptr;
+}
+
+void GameServer::WatchParentProcess()
+{
+    const auto cProcessId = uStopWithProcess.value_as<uint32_t>();
+    if (cProcessId == 0)
+        return;
+#ifdef _WIN32
+    m_parentProcess = OpenProcess(SYNCHRONIZE, FALSE, cProcessId);
+    if (!m_parentProcess)
+        spdlog::error("Can't watch process {} to shut down with it ({})", cProcessId, GetLastError());
+    else
+        spdlog::info("Shutting down when process {} exits", cProcessId);
+#else
+    spdlog::error("GameServer:uStopWithProcess only works on Windows");
+#endif
+}
+
+bool GameServer::HasParentExited() noexcept
+{
+#ifdef _WIN32
+    if (!m_parentProcess)
+        return false;
+    // Once a second is plenty
+    const auto cNow = std::chrono::steady_clock::now();
+    if (cNow < m_nextParentCheck)
+        return false;
+    m_nextParentCheck = cNow + std::chrono::seconds(1);
+    return WaitForSingleObject(m_parentProcess, 0) == WAIT_OBJECT_0;
+#else
+    return false;
+#endif
+}
+
+void GameServer::LoadBans()
+{
+    std::ifstream file(kBansFile);
+    for (std::string line; std::getline(file, line);)
+    {
+        if (!line.empty() && line.back() == '\r')
+            line.pop_back();
+        if (!line.empty())
+            m_bannedAddresses.insert(line.c_str());
+    }
+    if (!m_bannedAddresses.empty())
+        spdlog::info("{} banned addresses", m_bannedAddresses.size());
+}
+
+void GameServer::Ban(const Player& acPlayer)
+{
+    const String cAddress = acPlayer.GetEndPoint();
+    // A player on this computer: banning its address would ban the host
+    if (cAddress.empty() || cAddress == "127.0.0.1" || cAddress == "::1")
+    {
+        spdlog::warn("Not banning {}, who plays on the server's own computer; kicking them instead", acPlayer.GetUsername().c_str());
+        Kick(acPlayer.GetConnectionId());
+        return;
+    }
+
+    if (m_bannedAddresses.insert(cAddress).second)
+    {
+        std::ofstream file(kBansFile, std::ios::app);
+        file << cAddress << '\n';
+        if (!file)
+            spdlog::error("Couldn't save the ban of {} to {}: it lasts until the server stops", cAddress.c_str(), kBansFile);
+    }
+    spdlog::info("Banned {} ({})", acPlayer.GetUsername().c_str(), cAddress.c_str());
+    Kick(acPlayer.GetConnectionId());
 }
 
 GameServer* GameServer::Get() noexcept
@@ -310,6 +402,22 @@ void GameServer::BindServerCommands()
             {
                 out->info("{}: {}", pPlayer->GetId(), pPlayer->GetUsername().c_str());
             }
+        });
+
+    m_commands.RegisterCommand<int64_t>(
+        "ban", "Disconnect a player and refuse their address from now on, by the number /players shows",
+        [&](Console::ArgStack& aStack)
+        {
+            auto out = spdlog::get("ConOut");
+            const auto cId = aStack.Pop<int64_t>();
+            Player* pPlayer = m_pWorld->GetPlayerManager().GetById(static_cast<uint32_t>(cId));
+            if (!pPlayer)
+            {
+                out->warn("No player {} on here.", cId);
+                return;
+            }
+            out->info("Banned {}: {}", cId, pPlayer->GetUsername().c_str());
+            Ban(*pPlayer);
         });
 
     m_commands.RegisterCommand<int64_t>(
@@ -563,6 +671,24 @@ void GameServer::OnUpdate()
 
     dispatcher.trigger(UpdateEvent{cDeltaSeconds});
 
+    if (HasParentExited())
+    {
+        spdlog::info("The game hosting this server has closed, shutting down");
+        m_requestStop = true;
+    }
+
+    if (m_pLanDiscovery)
+    {
+        LanDiscovery::Reply reply;
+        reply.Port = GetPort();
+        reply.Players = m_pWorld->GetPlayerManager().Count();
+        reply.MaxPlayers = uMaxPlayerCount.value_as<uint32_t>();
+        reply.HasPassword = m_isPasswordProtected;
+        reply.HostWorld = false;
+        reply.Name = m_info.name.c_str();
+        m_pLanDiscovery->Poll(reply);
+    }
+
     if (m_requestStop)
         Close();
 }
@@ -800,6 +926,15 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
         // the previous message is a lingering kick, it still gets delivered.
         Kick(aConnectionId);
     };
+
+    // Official clients don't know the banned refusal and show it as a refusal without a reason
+    if (m_bannedAddresses.contains(remoteAddress))
+    {
+        spdlog::info("Refusing {} ({:x}) from {}, which is banned", acRequest->Username.c_str(), aConnectionId, remoteAddress);
+        sendKick(RT::kBanned);
+        return;
+    }
+
 #if 1
     // to make our testing life a bit easier.
     if (acRequest->Version != BUILD_COMMIT)

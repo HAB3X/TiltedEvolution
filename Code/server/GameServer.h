@@ -22,6 +22,9 @@ namespace Console
 class ConsoleRegistry;
 }
 
+struct LanDiscoveryResponder;
+struct PortMapper;
+
 struct GameServer final : Server
 {
     // TODO: eventually refactor this.
@@ -45,6 +48,10 @@ struct GameServer final : Server
     void Kill();
 
     bool CheckMoPo();
+    void LoadBans();
+    // GameServer:uStopWithProcess: the game that hosts this server, whose exit stops it cleanly (closing the router port)
+    void WatchParentProcess();
+    bool HasParentExited() noexcept;
     void BindMessageHandlers();
     void BindServerCommands();
 
@@ -64,6 +71,8 @@ struct GameServer final : Server
 
     bool IsRunning() const noexcept { return !m_requestStop; }
     bool IsPasswordProtected() const noexcept { return m_isPasswordProtected; }
+    // Kicks the player and refuses their address from now on (config/bans.txt)
+    void Ban(const Player& acPlayer);
     [[nodiscard]] bool IsPublicServer() const noexcept;
     [[nodiscard]] bool AllowsAutoPartyJoin() const noexcept;
 
@@ -116,6 +125,12 @@ private:
     TiltedPhoques::Map<ConnectionId_t, entt::entity> m_connectionToEntity;
 
     UniquePtr<World> m_pWorld;
+    UniquePtr<LanDiscoveryResponder> m_pLanDiscovery;
+    UniquePtr<PortMapper> m_pPortMapper;
+    // Addresses refused at login, from config/bans.txt
+    TiltedPhoques::Set<String> m_bannedAddresses;
+    void* m_parentProcess{};
+    std::chrono::steady_clock::time_point m_nextParentCheck{};
 
     bool m_requestStop;
 
