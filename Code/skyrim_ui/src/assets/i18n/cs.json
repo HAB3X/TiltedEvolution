@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Kdo tu je, družina",
       "INVITE_HINT": "Tvůj kód připojení",
       "REVEAL_HINT": "Ukázat hráče poblíž",
+      "SAVES": "Uložené hry",
+      "SAVES_HINT": "Kontrolní body družiny",
       "CANCEL_CONNECT": "Zrušit"
     },
     "CHAT": {
@@ -64,7 +66,9 @@
         "KIND_CLASSIC_HINT": "Připojit se mohou přátelé s běžným Skyrim Together 1.8.4. Možnosti jen pro Plus jsou vypnuté.",
         "PAUSE_TITLE": "Pauza v nabídkách",
         "PAUSE": "Svět se pozastaví, dokud jsou všichni hráči v nabídce, třeba v inventáři nebo na mapě.",
-        "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody"
+        "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody",
+        "MODS_REQUIRED": "Módy, které přátelé potřebují: {{count}}",
+        "MODS_REQUIRED_NONE": "Kromě vlastních souborů hry nemáte žádné módy, přátelé tedy žádné nepotřebují."
       },
       "LAN": {
         "TITLE": "Hry ve tvé síti",
@@ -97,7 +101,11 @@
       "CANCEL": "Zrušit"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Získejte módy",
+      "SEARCH_NEXUS": "Hledat na Nexusu",
+      "DIFFERENT_VERSION": "jiná verze",
+      "COPY_LIST": "Kopírovat seznam"
     },
     "INVITE": {
       "CODE_INFO": "Přátelé zadají tento kód v okně Připojit:",
@@ -107,6 +115,18 @@
       "COPY": "Kopírovat pozvánku",
       "COPIED": "Zkopírováno",
       "CLOSE": "Zavřít"
+    },
+    "SAVES": {
+      "TITLE": "Uložené hry",
+      "INFO": "Uložené hry, které Skyrim Together vytvořil pro tuto postavu, od nejnovější. Načtení nahradí hru, kterou právě hrajete, takže si ji nejdřív ulož, pokud ji chceš zachovat.",
+      "CHECKPOINT": "Kontrolní bod družiny {{slot}}",
+      "BEFORE_HOST_WORLD": "Před připojením do světa hostitele",
+      "BEFORE_COOP": "Před společným hraním",
+      "LOAD": "Načíst",
+      "LOAD_CONFIRM": "Ano, načíst",
+      "EMPTY": "Pro tuto postavu zatím nejsou žádné kooperativní uložené hry. Skyrim Together ukládá před první společnou hrou, před připojením do světa hostitele a v kontrolních bodech družiny.",
+      "ERROR": "Nepodařilo se přečíst složku s uloženými hrami: {{error}}",
+      "MENU_HINT": "Jsou to běžné uložené hry: můžeš je načíst i z nabídky hry (Esc, pak Načíst)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Zpráva od",
@@ -245,6 +265,7 @@
         "MODS_MISMATCH": "Tento server má povolenou ModPolicy.{{mods}}",
         "MODS_MISMATCH_REMOVE": "Chcete-li se připojit, odstraňte prosím následující módy:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Pro připojení si prosím nainstalujte následující módy:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Tyto módy máte v jiné verzi než hostitel. Pro připojení si prosím nainstalujte hostitelovu verzi:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Tento server zakazuje {{mods}}. Chcete-li se připojit, odstraňte je prosím.",
         "WRONG_PASSWORD": "Zadané heslo je chybné.",
         "NO_REASON": "Server odmítl připojení bez udání důvodu.",

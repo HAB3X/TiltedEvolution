@@ -16,6 +16,8 @@
       "PLAYERS_HINT": "Quién está, grupo",
       "INVITE_HINT": "Tu código",
       "REVEAL_HINT": "Mostrar jugadores cerca",
+      "SAVES": "Partidas guardadas",
+      "SAVES_HINT": "Puntos de control del grupo",
       "CANCEL_CONNECT": "Cancelar"
     },
     "CHAT": {
@@ -65,7 +67,9 @@
         "KIND_CLASSIC_HINT": "Pueden unirse amigos con el Skyrim Together 1.8.4 normal. Las opciones exclusivas de Plus se desactivan.",
         "PAUSE_TITLE": "Pausa en menús",
         "PAUSE": "El mundo se pausa mientras todos los jugadores están en un menú, como el inventario o el mapa.",
-        "REQUIRE_MODS_TITLE": "Mis amigos necesitan mis mods"
+        "REQUIRE_MODS_TITLE": "Mis amigos necesitan mis mods",
+        "MODS_REQUIRED": "Mods que necesitan tus amigos: {{count}}",
+        "MODS_REQUIRED_NONE": "No tienes mods aparte de los del propio juego, así que tus amigos no necesitan ninguno."
       },
       "LAN": {
         "TITLE": "Partidas en tu red",
@@ -98,7 +102,11 @@
       "CANCEL": "Cancelar"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Consigue los mods",
+      "SEARCH_NEXUS": "Buscar en Nexus",
+      "DIFFERENT_VERSION": "versión distinta",
+      "COPY_LIST": "Copiar lista"
     },
     "INVITE": {
       "CODE_INFO": "Tus amigos escriben este código de partida en Conectar:",
@@ -108,6 +116,18 @@
       "COPY": "Copiar invitación",
       "COPIED": "Copiado",
       "CLOSE": "Cerrar"
+    },
+    "SAVES": {
+      "TITLE": "Partidas guardadas",
+      "INFO": "Las partidas que Skyrim Together guardó para este personaje, de la más reciente a la más antigua. Cargar una sustituye la partida actual, así que guarda antes si quieres conservarla.",
+      "CHECKPOINT": "Punto de control del grupo {{slot}}",
+      "BEFORE_HOST_WORLD": "Antes de unirte al mundo de un anfitrión",
+      "BEFORE_COOP": "Antes de jugar juntos",
+      "LOAD": "Cargar",
+      "LOAD_CONFIRM": "Sí, cargar",
+      "EMPTY": "Aún no hay partidas cooperativas de este personaje. Skyrim Together guarda antes de tu primera sesión cooperativa, antes de unirte al mundo de un anfitrión y en los puntos de control del grupo.",
+      "ERROR": "No se pudo leer la carpeta de partidas guardadas: {{error}}",
+      "MENU_HINT": "Son partidas normales: también puedes cargarlas desde el menú del juego (Esc y luego Cargar)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Mensaje de",
@@ -241,6 +261,7 @@
         "MODS_MISMATCH": "Este servidor tiene ModPolicy activado. {{mods}}",
         "MODS_MISMATCH_REMOVE": "Por favor, elimina los siguientes mods para poder unirte:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Por favor, instala los siguientes mods para unirte:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Tienes una versión de estos mods distinta a la del anfitrión. Por favor, instala la versión del anfitrión para unirte:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Este servidor no permite {{mods}}. Por favor, elimínalos para poder unirte.",
         "WRONG_PASSWORD": "La contraseña que has introducido es incorrecta.",
         "NO_REASON": "El servidor ha rechazado la conexión sin razón.",

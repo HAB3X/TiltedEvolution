@@ -18,6 +18,7 @@ import { ConnectPasswordComponent } from './components/connect-password/connect-
 import { DebugComponent } from './components/debug/debug.component';
 import { DisconnectComponent } from './components/disconnect/disconnect.component';
 import { InviteComponent } from './components/invite/invite.component';
+import { SavesComponent } from './components/saves/saves.component';
 import { HostWorldOfferComponent } from './components/host-world-offer/host-world-offer.component';
 import { ConnectionStatusComponent } from './components/connection-status/connection-status.component';
 import { DropdownOptionComponent } from './components/dropdown/dropdown-option.component';
@@ -61,6 +62,7 @@ import { TranslocoRootModule } from './transloco-root.module';
     DebugComponent,
     DisconnectComponent,
     InviteComponent,
+    SavesComponent,
     HostWorldOfferComponent,
     ConnectionStatusComponent,
     DropdownComponent,

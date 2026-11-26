@@ -12,8 +12,12 @@ struct Mods
         String Filename;
         uint16_t Id;
         bool IsLite;
+        // The plugin file's size in bytes, which tells apart versions of a mod that keep its file name; 0 when unknown
+        // (official v1.8.4 doesn't send it). In a kModsMismatch refusal: the host's size when the player has another
+        // version of the mod, 0 when they lack it.
+        uint32_t FileSize = 0;
 
-        bool operator==(const Entry& acRhs) const noexcept { return Filename == acRhs.Filename && Id == acRhs.Id && IsLite == acRhs.IsLite; }
+        bool operator==(const Entry& acRhs) const noexcept { return Filename == acRhs.Filename && Id == acRhs.Id && IsLite == acRhs.IsLite && FileSize == acRhs.FileSize; }
 
         bool operator!=(const Entry& acRhs) const noexcept { return !this->operator==(acRhs); }
     };

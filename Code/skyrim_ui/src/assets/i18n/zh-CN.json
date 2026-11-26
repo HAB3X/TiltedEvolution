@@ -16,6 +16,8 @@
       "PLAYERS_HINT": "在场的人和队伍",
       "INVITE_HINT": "你的加入码",
       "REVEAL_HINT": "显示附近玩家",
+      "SAVES": "存档",
+      "SAVES_HINT": "队伍检查点",
       "CANCEL_CONNECT": "取消"
     },
     "CHAT": {
@@ -65,7 +67,9 @@
         "KIND_CLASSIC_HINT": "使用普通 Skyrim Together 1.8.4 的好友也能加入。Plus 专属选项会关闭。",
         "PAUSE_TITLE": "菜单中暂停",
         "PAUSE": "所有玩家都在菜单（如物品栏或地图）中时，世界会暂停。",
-        "REQUIRE_MODS_TITLE": "好友需要我的模组"
+        "REQUIRE_MODS_TITLE": "好友需要我的模组",
+        "MODS_REQUIRED": "好友需要的模组：{{count}}",
+        "MODS_REQUIRED_NONE": "除游戏自带文件外你没有其他模组，因此好友无需任何模组。"
       },
       "LAN": {
         "TITLE": "你网络中的游戏",
@@ -98,7 +102,11 @@
       "CANCEL": "取消"
     },
     "ERROR": {
-      "OK": "确定"
+      "OK": "确定",
+      "FIND_MODS": "获取模组",
+      "SEARCH_NEXUS": "在 Nexus 上搜索",
+      "DIFFERENT_VERSION": "版本不同",
+      "COPY_LIST": "复制列表"
     },
     "INVITE": {
       "CODE_INFO": "好友在「连接」中输入此加入码：",
@@ -108,6 +116,18 @@
       "COPY": "复制邀请",
       "COPIED": "已复制",
       "CLOSE": "关闭"
+    },
+    "SAVES": {
+      "TITLE": "存档",
+      "INFO": "Skyrim Together 为此角色创建的存档，按时间从新到旧排列。读取存档会替换当前游戏，如需保留请先存档。",
+      "CHECKPOINT": "队伍检查点 {{slot}}",
+      "BEFORE_HOST_WORLD": "加入主机世界之前",
+      "BEFORE_COOP": "一起游戏之前",
+      "LOAD": "读取",
+      "LOAD_CONFIRM": "确定读取",
+      "EMPTY": "此角色还没有合作存档。Skyrim Together 会在你第一次合作游戏前、加入主机世界前以及队伍检查点时存档。",
+      "ERROR": "无法读取游戏存档文件夹：{{error}}",
+      "MENU_HINT": "这些是普通存档：也可以在游戏菜单中读取（按 Esc，然后选择读取）。"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "消息自",
@@ -240,6 +260,7 @@
         "MODS_MISMATCH": "该服务器启用了模组管理策略。{{mods}}",
         "MODS_MISMATCH_REMOVE": "欲加入该服务器，请移除以下模组：\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "欲加入该服务器，请安装以下模组：\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "你的以下模组版本与主机不同。欲加入该服务器，请安装与主机相同的版本：\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "该服务器禁止以下模组：{{mods}}。将其移除以加入服务器。",
         "WRONG_PASSWORD": "您输入的密码不正确。",
         "NO_REASON": "服务器无故拒绝了连接。",

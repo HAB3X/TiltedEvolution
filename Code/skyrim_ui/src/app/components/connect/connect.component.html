@@ -67,6 +67,21 @@
         </span>
         <input type="checkbox" id="require-mods" [(ngModel)]="requireMods" />
       </label>
+      @let hostMods = hostMods$ | async;
+      @if (requireMods && hostMods) {
+        @if (hostMods.length) {
+          <details class="host-mods">
+            <summary>{{ 'COMPONENT.CONNECT.HOST.MODS_REQUIRED' | transloco: { count: hostMods.length } }}</summary>
+            <ul>
+              @for (mod of hostMods; track mod) {
+                <li>{{ mod }}</li>
+              }
+            </ul>
+          </details>
+        } @else {
+          <p class="muted host-mods-none">{{ 'COMPONENT.CONNECT.HOST.MODS_REQUIRED_NONE' | transloco }}</p>
+        }
+      }
       <label class="toggle-row" for="host-pause">
         <span class="toggle-text">
           <span class="toggle-title">{{ 'COMPONENT.CONNECT.HOST.PAUSE_TITLE' | transloco }}</span>

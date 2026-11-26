@@ -131,7 +131,7 @@ export class RootComponent implements OnInit {
   public currentPage(view: View | null, connected: boolean): View {
     const offlineOnly = [View.CONNECT, View.HOST];
     const onlineOnly = [View.PLAYER_MANAGER, View.INVITE];
-    const pages = [...offlineOnly, ...onlineOnly, View.SETTINGS];
+    const pages = [...offlineOnly, ...onlineOnly, View.SAVES, View.SETTINGS];
     if (
       view !== null &&
       pages.includes(view) &&

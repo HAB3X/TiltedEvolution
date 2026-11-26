@@ -16,6 +16,8 @@
       "PLAYERS_HINT": "Qui est là, groupe",
       "INVITE_HINT": "Votre code de partie",
       "REVEAL_HINT": "Montrer les joueurs proches",
+      "SAVES": "Sauvegardes",
+      "SAVES_HINT": "Points de sauvegarde du groupe",
       "CANCEL_CONNECT": "Annuler"
     },
     "CHAT": {
@@ -65,7 +67,9 @@
         "KIND_CLASSIC_HINT": "Les amis avec le Skyrim Together 1.8.4 normal peuvent rejoindre. Les options propres à Plus sont désactivées.",
         "PAUSE_TITLE": "Pause dans les menus",
         "PAUSE": "Le monde se met en pause tant que tous les joueurs sont dans un menu, comme l'inventaire ou la carte.",
-        "REQUIRE_MODS_TITLE": "Mes amis ont besoin de mes mods"
+        "REQUIRE_MODS_TITLE": "Mes amis ont besoin de mes mods",
+        "MODS_REQUIRED": "Mods requis pour vos amis : {{count}}",
+        "MODS_REQUIRED_NONE": "Vous n'avez aucun mod en dehors des fichiers du jeu, vos amis n'en ont donc besoin d'aucun."
       },
       "LAN": {
         "TITLE": "Parties sur votre réseau",
@@ -98,7 +102,11 @@
       "CANCEL": "Annuler"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Obtenir les mods",
+      "SEARCH_NEXUS": "Chercher sur Nexus",
+      "DIFFERENT_VERSION": "autre version",
+      "COPY_LIST": "Copier la liste"
     },
     "INVITE": {
       "CODE_INFO": "Vos amis tapent ce code de partie dans Connexion :",
@@ -108,6 +116,18 @@
       "COPY": "Copier l'invitation",
       "COPIED": "Copié",
       "CLOSE": "Fermer"
+    },
+    "SAVES": {
+      "TITLE": "Sauvegardes",
+      "INFO": "Les sauvegardes que Skyrim Together a créées pour ce personnage, de la plus récente à la plus ancienne. En charger une remplace la partie en cours : sauvegardez d'abord si vous voulez la garder.",
+      "CHECKPOINT": "Point de sauvegarde du groupe {{slot}}",
+      "BEFORE_HOST_WORLD": "Avant de rejoindre le monde d'un hôte",
+      "BEFORE_COOP": "Avant de jouer ensemble",
+      "LOAD": "Charger",
+      "LOAD_CONFIRM": "Oui, charger",
+      "EMPTY": "Aucune sauvegarde coop pour ce personnage pour l'instant. Skyrim Together sauvegarde avant votre première session coop, avant de rejoindre le monde d'un hôte et aux points de sauvegarde du groupe.",
+      "ERROR": "Impossible de lire le dossier de sauvegardes du jeu : {{error}}",
+      "MENU_HINT": "Ce sont des sauvegardes normales : vous pouvez aussi les charger depuis le menu du jeu (Échap, puis Charger)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Message de",
@@ -244,6 +264,7 @@
         "MODS_MISMATCH": "ModPolicy est activé sur ce serveur. {{mods}}",
         "MODS_MISMATCH_REMOVE": "Veuillez supprimer les mods suivants pour rejoindre ce serveur :\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Veuillez installer les mods suivants pour rejoindre ce serveur :\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Votre version de ces mods diffère de celle de l'hôte. Veuillez installer la version de l'hôte pour rejoindre ce serveur :\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Ce serveur n'autorise pas : {{mods}}. Veuillez les retirer pour rejoindre le serveur.",
         "WRONG_PASSWORD": "Le mot de passe que vous avez saisi est incorrect.",
         "NO_REASON": "Le serveur a refusé la connexion sans raison.",

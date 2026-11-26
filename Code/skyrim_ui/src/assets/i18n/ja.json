@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "参加者とパーティー",
       "INVITE_HINT": "参加コード",
       "REVEAL_HINT": "近くのプレイヤーを表示",
+      "SAVES": "セーブデータ",
+      "SAVES_HINT": "パーティーのチェックポイント",
       "CANCEL_CONNECT": "キャンセル"
     },
     "CHAT": {
@@ -64,7 +66,9 @@
         "KIND_CLASSIC_HINT": "通常の Skyrim Together 1.8.4 のフレンドも参加できます。Plus 専用の設定はオフになります。",
         "PAUSE_TITLE": "メニューで一時停止",
         "PAUSE": "全員がインベントリやマップなどのメニューを開いている間、世界が一時停止します。",
-        "REQUIRE_MODS_TITLE": "フレンドに自分のMODを要求"
+        "REQUIRE_MODS_TITLE": "フレンドに自分のMODを要求",
+        "MODS_REQUIRED": "フレンドに必要なMOD: {{count}}",
+        "MODS_REQUIRED_NONE": "ゲーム本体以外のMODがないため、フレンドに必要なMODはありません。"
       },
       "LAN": {
         "TITLE": "ネットワーク上のゲーム",
@@ -97,7 +101,11 @@
       "CANCEL": "いいえ"
     },
     "ERROR": {
-      "OK": "閉じる"
+      "OK": "閉じる",
+      "FIND_MODS": "MODを入手",
+      "SEARCH_NEXUS": "Nexusで検索",
+      "DIFFERENT_VERSION": "バージョン違い",
+      "COPY_LIST": "リストをコピー"
     },
     "INVITE": {
       "CODE_INFO": "フレンドは「接続」でこの参加コードを入力します：",
@@ -107,6 +115,18 @@
       "COPY": "招待をコピー",
       "COPIED": "コピーしました",
       "CLOSE": "閉じる"
+    },
+    "SAVES": {
+      "TITLE": "セーブデータ",
+      "INFO": "Skyrim Togetherがこのキャラクター用に作成したセーブデータです（新しい順）。ロードすると現在のゲームは置き換わるので、残したい場合は先にセーブしてください。",
+      "CHECKPOINT": "パーティーのチェックポイント {{slot}}",
+      "BEFORE_HOST_WORLD": "ホストの世界に参加する前",
+      "BEFORE_COOP": "一緒に遊ぶ前",
+      "LOAD": "ロード",
+      "LOAD_CONFIRM": "ロードする",
+      "EMPTY": "このキャラクターの協力プレイ用セーブデータはまだありません。Skyrim Togetherは最初の協力プレイの前、ホストの世界に参加する前、パーティーのチェックポイントでセーブします。",
+      "ERROR": "ゲームのセーブフォルダーを読み込めませんでした: {{error}}",
+      "MENU_HINT": "通常のセーブデータなので、ゲームのメニュー（Esc→ロード）からもロードできます。"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "メッセージが届いていますー＞",
@@ -245,6 +265,7 @@
         "MODS_MISMATCH": "このサーバーは　「ModPolicy」　がオンに設定してあります。{{mods}}",
         "MODS_MISMATCH_REMOVE": "このサーバーに入るには以下のMODSを削除する必要があります:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "このサーバーに入るには以下のMODSをインストールする必要があります:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "以下のMODのバージョンがホストと異なります。参加するにはホストと同じバージョンをインストールしてください:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "このサーバーでは、　 {{mods}}　が禁止とされています. 入るには削除する必要があります。",
         "WRONG_PASSWORD": "パスワードが間違っています。",
         "NO_REASON": "接続出来ませんでした。",

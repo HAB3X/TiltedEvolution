@@ -1,5 +1,7 @@
 #pragma once
 
+#include <RequiredMods.h>
+
 struct World;
 
 // What the host chose in Host a game
@@ -39,7 +41,12 @@ struct LocalServerService
     // A [Host] line of the server: shown in chat, and its public address sent to the overlay for the invite
     void OnHostMessage(const std::string& acMessage) noexcept;
 
+    // Sends the overlay the mods friends need when the host requires theirs (a hostMods event with their names)
+    void SendHostMods() const noexcept;
+
 private:
+    // The host's loaded plugins that friends can be required to have (not the game's own), with their sizes
+    static std::vector<RequiredMods::Listed> HostMods() noexcept;
     bool IsRunning() const noexcept;
     bool Start(const HostSettings& acSettings) noexcept;
     // The host's mods, for the server to require: written to its RequiredMods::kFileName

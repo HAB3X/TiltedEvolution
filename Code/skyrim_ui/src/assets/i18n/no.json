@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Hvem som er her, gruppe",
       "INVITE_HINT": "Din tilkoblingskode",
       "REVEAL_HINT": "Vis spillere i nærheten",
+      "SAVES": "Lagringer",
+      "SAVES_HINT": "Gruppens lagringspunkter",
       "CANCEL_CONNECT": "Avbryt"
     },
     "CHAT": {
@@ -64,7 +66,9 @@
         "KIND_CLASSIC_HINT": "Venner med vanlig Skyrim Together 1.8.4 kan bli med. Valg som bare finnes i Plus er av.",
         "PAUSE_TITLE": "Pause i menyer",
         "PAUSE": "Verden pauses mens alle spillerne er i en meny, som inventaret eller kartet.",
-        "REQUIRE_MODS_TITLE": "Venner trenger modene mine"
+        "REQUIRE_MODS_TITLE": "Venner trenger modene mine",
+        "MODS_REQUIRED": "Spillendringer vennene trenger: {{count}}",
+        "MODS_REQUIRED_NONE": "Du har ingen spillendringer utover spillets egne, så vennene trenger ingen."
       },
       "LAN": {
         "TITLE": "Spill på nettverket ditt",
@@ -97,7 +101,11 @@
       "CANCEL": "Avbryt"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Skaff spillendringene",
+      "SEARCH_NEXUS": "Søk på Nexus",
+      "DIFFERENT_VERSION": "annen versjon",
+      "COPY_LIST": "Kopier listen"
     },
     "INVITE": {
       "CODE_INFO": "Venner skriver denne tilkoblingskoden under Koble til:",
@@ -107,6 +115,18 @@
       "COPY": "Kopier invitasjon",
       "COPIED": "Kopiert",
       "CLOSE": "Lukk"
+    },
+    "SAVES": {
+      "TITLE": "Lagringer",
+      "INFO": "Lagringene Skyrim Together har laget for denne figuren, nyeste først. Å laste inn en erstatter spillet du spiller nå, så lagre først hvis du vil beholde det.",
+      "CHECKPOINT": "Gruppens lagringspunkt {{slot}}",
+      "BEFORE_HOST_WORLD": "Før du ble med i vertens verden",
+      "BEFORE_COOP": "Før dere spilte sammen",
+      "LOAD": "Last inn",
+      "LOAD_CONFIRM": "Ja, last inn",
+      "EMPTY": "Ingen samarbeidslagringer for denne figuren ennå. Skyrim Together lagrer før første samarbeidsøkt, før du blir med i vertens verden, og ved gruppens lagringspunkter.",
+      "ERROR": "Kunne ikke lese spillets lagringsmappe: {{error}}",
+      "MENU_HINT": "Dette er vanlige lagringer: du kan også laste dem inn fra spillets meny (Esc, deretter Last inn)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Message from",
@@ -245,6 +265,7 @@
         "MODS_MISMATCH": "Denne serveren har ModPolicy aktivert.{{mods}}",
         "MODS_MISMATCH_REMOVE": "Vennligst fjern følgende spillendringer for å bli med:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Vennligst installer følgende spillendringer for å bli med:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Du har en annen versjon av disse spillendringene enn verten. Installer vertens versjon for å bli med:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Denne serveren tilatter deg ikke å bruke {{mods}}. Vennligst fjern dem for å bli med.",
         "WRONG_PASSWORD": "Passordet er feil.",
         "NO_REASON": "Serveren avviste tilkoblingen.",

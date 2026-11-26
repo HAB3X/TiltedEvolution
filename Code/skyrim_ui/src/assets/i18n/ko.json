@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "참가자와 파티",
       "INVITE_HINT": "내 참가 코드",
       "REVEAL_HINT": "근처 플레이어 표시",
+      "SAVES": "저장",
+      "SAVES_HINT": "파티 체크포인트",
       "CANCEL_CONNECT": "취소"
     },
     "CHAT": {
@@ -64,7 +66,9 @@
         "KIND_CLASSIC_HINT": "일반 Skyrim Together 1.8.4를 쓰는 친구도 참가할 수 있습니다. Plus 전용 옵션은 꺼집니다.",
         "PAUSE_TITLE": "메뉴에서 일시정지",
         "PAUSE": "모든 플레이어가 인벤토리나 지도 같은 메뉴에 있는 동안 세계가 일시정지됩니다.",
-        "REQUIRE_MODS_TITLE": "친구에게 내 모드 필요"
+        "REQUIRE_MODS_TITLE": "친구에게 내 모드 필요",
+        "MODS_REQUIRED": "친구에게 필요한 모드: {{count}}",
+        "MODS_REQUIRED_NONE": "게임 기본 파일 외에 모드가 없으므로 친구에게 필요한 모드가 없습니다."
       },
       "LAN": {
         "TITLE": "내 네트워크의 게임",
@@ -97,7 +101,11 @@
       "CANCEL": "취소"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "모드 받기",
+      "SEARCH_NEXUS": "Nexus에서 검색",
+      "DIFFERENT_VERSION": "다른 버전",
+      "COPY_LIST": "목록 복사"
     },
     "INVITE": {
       "CODE_INFO": "친구는 접속 화면에 이 참가 코드를 입력합니다:",
@@ -107,6 +115,18 @@
       "COPY": "초대 복사",
       "COPIED": "복사됨",
       "CLOSE": "닫기"
+    },
+    "SAVES": {
+      "TITLE": "저장",
+      "INFO": "Skyrim Together가 이 캐릭터를 위해 만든 저장 파일입니다(최신순). 불러오면 현재 게임이 대체되므로, 유지하려면 먼저 저장하세요.",
+      "CHECKPOINT": "파티 체크포인트 {{slot}}",
+      "BEFORE_HOST_WORLD": "호스트의 세계에 참가하기 전",
+      "BEFORE_COOP": "함께 플레이하기 전",
+      "LOAD": "불러오기",
+      "LOAD_CONFIRM": "네, 불러오기",
+      "EMPTY": "이 캐릭터의 협동 저장 파일이 아직 없습니다. Skyrim Together는 첫 협동 플레이 전, 호스트의 세계에 참가하기 전, 파티 체크포인트에서 저장합니다.",
+      "ERROR": "게임 저장 폴더를 읽을 수 없습니다: {{error}}",
+      "MENU_HINT": "일반 저장 파일이므로 게임 메뉴(Esc 후 불러오기)에서도 불러올 수 있습니다."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "메시지 보낸 사람:",
@@ -245,6 +265,7 @@
         "MODS_MISMATCH": "이 서버에는 ModPolicy가 활성화되어 있습니다. {{mods}}",
         "MODS_MISMATCH_REMOVE": "참가하려면 다음 모드를 제거하세요:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "참가하려면 다음 모드를 설치하세요:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "다음 모드의 버전이 호스트와 다릅니다. 참가하려면 호스트와 같은 버전을 설치하세요:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "이 서버는 {{mods}}를 허용하지 않습니다. 가입하려면 해당 항목을 삭제하세요.",
         "WRONG_PASSWORD": "입력한 암호가 올바르지 않습니다.",
         "NO_REASON": "서버가 이유 없이 연결을 거부했습니다.",

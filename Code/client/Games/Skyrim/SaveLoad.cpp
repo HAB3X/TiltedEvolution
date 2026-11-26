@@ -8,11 +8,13 @@
 #include <PlayerCharacter.h>
 #include <Utils.h>
 #include <World.h>
+#include <Services/OverlayService.h>
 
 #include <atomic>
 #include <mutex>
 #include <cctype>
 #include <chrono>
+#include <cstring>
 
 namespace
 {
@@ -34,12 +36,38 @@ constexpr const char* kBusyMenus[] = {
 TP_THIS_FUNCTION(TSaveImpl, bool, BGSSaveLoadManager, int32_t, uint32_t, const char*);
 TSaveImpl* RealSaveImpl = nullptr;
 
+// BGSSaveLoadManager::Load_Impl(fileName, deviceId, outputStats, checkForMods): CommonLibSSE
+// src/RE/B/BGSSaveLoadManager.cpp, RELOCATION_ID(34819, 35728); its Load(fileName) passes -1, 0, true, which this
+// copies. Save_Impl above is 35727 from the same file.
+TP_THIS_FUNCTION(TLoadImpl, bool, BGSSaveLoadManager, const char*, int32_t, uint32_t, bool);
+constexpr int32_t kLoadDevice = -1;
+// Long enough to close a menu, short enough that a load doesn't happen long after the player asked
+constexpr auto kLoadWait = std::chrono::seconds(10);
+
 // Zero when no save is queued
 std::atomic<uint32_t> s_queuedSlot{0};
 // A labelled save (QueueSaveAs), empty when none is queued; runs before a slot save
 std::mutex s_labelMutex;
 String s_queuedLabel;
 std::chrono::steady_clock::time_point s_nextAttempt{};
+
+// The save to load (QueueLoad), empty when none is queued, and when it's given up
+std::mutex s_loadMutex;
+String s_queuedLoad;
+std::chrono::steady_clock::time_point s_loadDeadline{};
+
+bool IsMenuOpen(const UI* apUI, bool aAllowMainMenu) noexcept
+{
+    for (const char* cpMenu : kBusyMenus)
+    {
+        // The main menu and its background are where the game itself loads from
+        if (aAllowMainMenu && (std::strcmp(cpMenu, "Main Menu") == 0 || std::strcmp(cpMenu, "Mist Menu") == 0))
+            continue;
+        if (apUI->GetMenuOpen(BSFixedString(cpMenu)))
+            return true;
+    }
+    return false;
+}
 
 bool IsPlayerBusy() noexcept
 {
@@ -48,16 +76,7 @@ bool IsPlayerBusy() noexcept
         return true;
 
     const UI* pUI = UI::Get();
-    if (!pUI)
-        return true;
-
-    for (const char* cpMenu : kBusyMenus)
-    {
-        if (pUI->GetMenuOpen(BSFixedString(cpMenu)))
-            return true;
-    }
-
-    return false;
+    return !pUI || IsMenuOpen(pUI, false);
 }
 
 // <aPrefix>_<character>_<aSuffix>, or <aPrefix>_<character> without a suffix
@@ -65,16 +84,7 @@ String BuildSaveName(const char* apPrefix, const String& acSuffix) noexcept
 {
     String name = apPrefix;
     name += '_';
-
-    // Characters share the save folder, and a file name only allows so much
-    if (const char* cpPlayerName = PlayerCharacter::Get()->baseForm->GetName())
-    {
-        for (; *cpPlayerName; ++cpPlayerName)
-        {
-            if (std::isalnum(static_cast<unsigned char>(*cpPlayerName)))
-                name += *cpPlayerName;
-        }
-    }
+    name += BGSSaveLoadManager::CoopSaveCharacter();
 
     if (!acSuffix.empty())
     {
@@ -94,6 +104,22 @@ bool TP_MAKE_THISCALL(HookSaveImpl, BGSSaveLoadManager, int32_t aDeviceId, uint3
         World::Get().GetRunner().Trigger(LocalSaveEvent{});
 
     return cSaved;
+}
+
+String BGSSaveLoadManager::CoopSaveCharacter() noexcept
+{
+    // Characters share the save folder, and a file name only allows so much
+    String character;
+    const PlayerCharacter* pPlayer = PlayerCharacter::Get();
+    if (const char* cpPlayerName = pPlayer && pPlayer->baseForm ? pPlayer->baseForm->GetName() : nullptr)
+    {
+        for (; *cpPlayerName; ++cpPlayerName)
+        {
+            if (std::isalnum(static_cast<unsigned char>(*cpPlayerName)))
+                character += *cpPlayerName;
+        }
+    }
+    return character;
 }
 
 BGSSaveLoadManager* BGSSaveLoadManager::Get() noexcept
@@ -185,6 +211,49 @@ void BGSSaveLoadManager::ProcessQueuedSave() noexcept
 
     // A newer checkpoint may have arrived in the meantime
     s_queuedSlot.compare_exchange_strong(slot, 0);
+}
+
+void BGSSaveLoadManager::QueueLoad(const String& acName) noexcept
+{
+    std::scoped_lock _(s_loadMutex);
+    s_queuedLoad = acName;
+    s_loadDeadline = std::chrono::steady_clock::now() + kLoadWait;
+}
+
+void BGSSaveLoadManager::ProcessQueuedLoad() noexcept
+{
+    String name;
+    BGSSaveLoadManager* pManager = nullptr;
+    {
+        std::scoped_lock _(s_loadMutex);
+        if (s_queuedLoad.empty())
+            return;
+
+        if (std::chrono::steady_clock::now() > s_loadDeadline)
+        {
+            spdlog::warn("Gave up loading {}: a game menu stayed open", s_queuedLoad);
+            World::Get().GetOverlayService().SendSystemMessage("Couldn't load " + std::string(s_queuedLoad.c_str()) + ": close the game's menus and try again.");
+            s_queuedLoad.clear();
+            return;
+        }
+
+        const UI* pUI = UI::Get();
+        pManager = Get();
+        if (!pUI || !pManager || IsMenuOpen(pUI, true))
+            return;
+
+        // Taken off the queue before the call, so a load the game refuses isn't tried every frame
+        name = s_queuedLoad;
+        s_queuedLoad.clear();
+    }
+
+    POINTER_SKYRIMSE(TLoadImpl, s_loadImpl, 35728);
+    spdlog::info("Loading {}", name);
+    if (!TiltedPhoques::ThisCall(s_loadImpl.Get(), pManager, name.c_str(), kLoadDevice, 0u, true))
+    {
+        spdlog::warn("The game refused to load {}", name);
+        World::Get().GetOverlayService().SendSystemMessage("The game couldn't load " + std::string(name.c_str()) + ".");
+    }
 }
 
 static TiltedPhoques::Initializer s_saveManagerHooks(

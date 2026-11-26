@@ -16,6 +16,8 @@
       "PLAYERS_HINT": "Wie er is, groep",
       "INVITE_HINT": "Je deelnamecode",
       "REVEAL_HINT": "Spelers in de buurt tonen",
+      "SAVES": "Opgeslagen spellen",
+      "SAVES_HINT": "Groepscheckpoints",
       "CANCEL_CONNECT": "Annuleren"
     },
     "CHAT": {
@@ -65,7 +67,9 @@
         "KIND_CLASSIC_HINT": "Vrienden met de gewone Skyrim Together 1.8.4 kunnen meedoen. Opties die alleen in Plus zitten staan uit.",
         "PAUSE_TITLE": "Pauze in menu's",
         "PAUSE": "De wereld pauzeert zolang alle spelers in een menu zitten, zoals de inventaris of de kaart.",
-        "REQUIRE_MODS_TITLE": "Vrienden hebben mijn mods nodig"
+        "REQUIRE_MODS_TITLE": "Vrienden hebben mijn mods nodig",
+        "MODS_REQUIRED": "Mods die vrienden nodig hebben: {{count}}",
+        "MODS_REQUIRED_NONE": "Je hebt geen mods naast die van het spel zelf, dus vrienden hebben er geen nodig."
       },
       "LAN": {
         "TITLE": "Spellen in je netwerk",
@@ -103,7 +107,11 @@
       }
     },
     "ERROR": {
-      "OK": "Oke"
+      "OK": "Oke",
+      "FIND_MODS": "Mods ophalen",
+      "SEARCH_NEXUS": "Zoeken op Nexus",
+      "DIFFERENT_VERSION": "andere versie",
+      "COPY_LIST": "Lijst kopiëren"
     },
     "INVITE": {
       "CODE_INFO": "Vrienden typen deze deelnamecode bij Verbinden:",
@@ -113,6 +121,18 @@
       "COPY": "Uitnodiging kopiëren",
       "COPIED": "Gekopieerd",
       "CLOSE": "Sluiten"
+    },
+    "SAVES": {
+      "TITLE": "Opgeslagen spellen",
+      "INFO": "De opgeslagen spellen die Skyrim Together voor dit personage heeft gemaakt, nieuwste eerst. Laden vervangt het spel dat je nu speelt, dus sla eerst op als je dat wilt houden.",
+      "CHECKPOINT": "Groepscheckpoint {{slot}}",
+      "BEFORE_HOST_WORLD": "Voordat je de wereld van een host binnenging",
+      "BEFORE_COOP": "Voordat jullie samen speelden",
+      "LOAD": "Laden",
+      "LOAD_CONFIRM": "Ja, laden",
+      "EMPTY": "Nog geen co-op-opslagen voor dit personage. Skyrim Together slaat op voor je eerste co-op-sessie, voordat je de wereld van een host binnengaat en bij groepscheckpoints.",
+      "ERROR": "Kon de map met opgeslagen spellen niet lezen: {{error}}",
+      "MENU_HINT": "Dit zijn gewone opslagen: je kunt ze ook laden via het menu van het spel (Esc, dan Laden)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Bericht van"
@@ -223,6 +243,7 @@
         "MODS_MISMATCH": "Deze server heeft een modbeleid (ModPolicy) toegepast.{{mods}}.",
         "MODS_MISMATCH_REMOVE": "Verwijder de volgende mods om deel te nemen:\n{{mods}}.",
         "MODS_MISMATCH_INSTALL": "Installeer de volgende mods om deel te nemen:\n{{mods}}.",
+        "MODS_MISMATCH_VERSION": "Je hebt een andere versie van deze mods dan de host. Installeer de versie van de host om deel te nemen:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Deze server staat de volgende mods niet toe {{mods}}. Verwijder ze om deel te nemen.",
         "WRONG_PASSWORD": "Het ingevoerde wachtwoord is incorrect.",
         "NO_REASON": "De server heeft de verbinding zonder reden geweigerd.",

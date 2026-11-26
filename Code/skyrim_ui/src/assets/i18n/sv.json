@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Vem som är här, grupp",
       "INVITE_HINT": "Din anslutningskod",
       "REVEAL_HINT": "Visa spelare i närheten",
+      "SAVES": "Sparningar",
+      "SAVES_HINT": "Gruppens kontrollpunkter",
       "CANCEL_CONNECT": "Avbryt"
     },
     "CHAT": {
@@ -66,7 +68,9 @@
         "KIND_CLASSIC_HINT": "Vänner med vanliga Skyrim Together 1.8.4 kan gå med. Alternativ som bara finns i Plus är av.",
         "PAUSE_TITLE": "Paus i menyer",
         "PAUSE": "Världen pausas medan alla spelare är i en meny, som inventariet eller kartan.",
-        "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar"
+        "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar",
+        "MODS_REQUIRED": "Mods som vännerna behöver: {{count}}",
+        "MODS_REQUIRED_NONE": "Du har inga mods utöver spelets egna, så vännerna behöver inga."
       },
       "LAN": {
         "TITLE": "Spel i ditt nätverk",
@@ -99,7 +103,11 @@
       "CANCEL": "Avbryt"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Skaffa mods",
+      "SEARCH_NEXUS": "Sök på Nexus",
+      "DIFFERENT_VERSION": "annan version",
+      "COPY_LIST": "Kopiera listan"
     },
     "INVITE": {
       "CODE_INFO": "Vänner skriver den här anslutningskoden under Anslut:",
@@ -109,6 +117,18 @@
       "COPY": "Kopiera inbjudan",
       "COPIED": "Kopierad",
       "CLOSE": "Stäng"
+    },
+    "SAVES": {
+      "TITLE": "Sparningar",
+      "INFO": "Sparningarna som Skyrim Together har gjort för den här karaktären, nyaste först. Att läsa in en ersätter spelet du spelar, så spara först om du vill behålla det.",
+      "CHECKPOINT": "Gruppens kontrollpunkt {{slot}}",
+      "BEFORE_HOST_WORLD": "Innan du gick med i värdens värld",
+      "BEFORE_COOP": "Innan ni spelade tillsammans",
+      "LOAD": "Läs in",
+      "LOAD_CONFIRM": "Ja, läs in",
+      "EMPTY": "Inga samarbetssparningar för den här karaktären än. Skyrim Together sparar före din första samarbetssession, innan du går med i värdens värld och vid gruppens kontrollpunkter.",
+      "ERROR": "Kunde inte läsa spelets sparmapp: {{error}}",
+      "MENU_HINT": "Det här är vanliga sparningar: du kan också läsa in dem från spelets meny (Esc, sedan Läs in)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Meddelande från",
@@ -252,6 +272,7 @@
         "MODS_MISMATCH": "Servern har ModPolicy aktiverad.{{mods}}",
         "MODS_MISMATCH_REMOVE": "Ta bort följande mods för att ansluta:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Installera följande mods för att ansluta:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Du har en annan version av dessa mods än värden. Installera värdens version för att ansluta:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Servern tillåter inte {{mods}}. Ta bort dem för att ansluta.",
         "WRONG_PASSWORD": "Lösenordet du angav är inkorrekt.",
         "NO_REASON": "Servern nekade din anslutning utan känd anledning.",

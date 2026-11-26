@@ -3,12 +3,27 @@
 #include <Games/TES.h>
 
 #include <Actor.h>
+#include <immersive_launcher/launcher.h>
 
 ModManager* ModManager::Get() noexcept
 {
     POINTER_SKYRIMSE(ModManager*, modManager, 400269);
 
     return *modManager.Get();
+}
+
+uint32_t Mod::GetFileSize() const noexcept
+{
+    // Mod Organizer's virtual Data folder is seen through the normal file functions, so this finds its plugins too
+    const std::filesystem::path cPath = launcher::GetLaunchContext()->gamePath / L"Data" / filename;
+    std::error_code error;
+    const uintmax_t cSize = std::filesystem::file_size(cPath, error);
+    if (error || cSize > UINT32_MAX)
+    {
+        spdlog::warn("Can't read the size of {}{}: its version can't be compared with the host's", filename, error ? " (" + error.message() + ")" : std::string(" (too big)"));
+        return 0;
+    }
+    return static_cast<uint32_t>(cSize);
 }
 
 uint32_t Mod::GetFormId(uint32_t aBaseId) const noexcept

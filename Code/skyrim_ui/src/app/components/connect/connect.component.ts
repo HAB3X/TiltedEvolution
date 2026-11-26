@@ -66,9 +66,15 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
   /** Servers on the local network, null while searching. */
   public readonly lanServers$ = this.client.lanServersChange;
 
+  /** The mods friends will need if the host requires theirs, null until the game lists them */
+  public readonly hostMods$ = this.client.hostModsChange;
+
   /** The Together panel's Join or Host page */
   @Input() public set mode(mode: 'join' | 'host') {
     this.hosting = mode === 'host';
+    if (this.hosting) {
+      this.client.listHostMods();
+    }
   }
 
   /** The preset the boxes match, if any, to show it as chosen */

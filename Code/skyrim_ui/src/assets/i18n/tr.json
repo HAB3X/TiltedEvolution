@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Kimler burada, grup",
       "INVITE_HINT": "Katılma kodun",
       "REVEAL_HINT": "Yakındaki oyuncuları göster",
+      "SAVES": "Kayıtlar",
+      "SAVES_HINT": "Grup kayıt noktaları",
       "CANCEL_CONNECT": "İptal"
     },
     "CHAT": {
@@ -66,7 +68,9 @@
         "KIND_CLASSIC_HINT": "Normal Skyrim Together 1.8.4 kullanan arkadaşlar katılabilir. Yalnızca Plus'a ait seçenekler kapalıdır.",
         "PAUSE_TITLE": "Menülerde duraklat",
         "PAUSE": "Tüm oyuncular envanter ya da harita gibi bir menüdeyken dünya duraklar.",
-        "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun"
+        "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun",
+        "MODS_REQUIRED": "Arkadaşlarının ihtiyaç duyduğu modlar: {{count}}",
+        "MODS_REQUIRED_NONE": "Oyunun kendi dosyaları dışında modun yok, bu yüzden arkadaşlarının mod ihtiyacı yok."
       },
       "LAN": {
         "TITLE": "Ağındaki oyunlar",
@@ -99,7 +103,11 @@
       "CANCEL": "İptal"
     },
     "ERROR": {
-      "OK": "Tamam"
+      "OK": "Tamam",
+      "FIND_MODS": "Modları edinin",
+      "SEARCH_NEXUS": "Nexus'ta ara",
+      "DIFFERENT_VERSION": "farklı sürüm",
+      "COPY_LIST": "Listeyi kopyala"
     },
     "INVITE": {
       "CODE_INFO": "Arkadaşların bu katılma kodunu Bağlan ekranına yazar:",
@@ -109,6 +117,18 @@
       "COPY": "Daveti kopyala",
       "COPIED": "Kopyalandı",
       "CLOSE": "Kapat"
+    },
+    "SAVES": {
+      "TITLE": "Kayıtlar",
+      "INFO": "Skyrim Together'ın bu karakter için oluşturduğu kayıtlar, en yenisi önce. Bir kaydı yüklemek oynadığın oyunun yerini alır; korumak istiyorsan önce kaydet.",
+      "CHECKPOINT": "Grup kayıt noktası {{slot}}",
+      "BEFORE_HOST_WORLD": "Bir ev sahibinin dünyasına katılmadan önce",
+      "BEFORE_COOP": "Birlikte oynamadan önce",
+      "LOAD": "Yükle",
+      "LOAD_CONFIRM": "Evet, yükle",
+      "EMPTY": "Bu karakter için henüz ortak oyun kaydı yok. Skyrim Together ilk ortak oyunundan önce, bir ev sahibinin dünyasına katılmadan önce ve grup kayıt noktalarında kaydeder.",
+      "ERROR": "Oyunun kayıt klasörü okunamadı: {{error}}",
+      "MENU_HINT": "Bunlar normal kayıtlardır: onları oyunun menüsünden de yükleyebilirsin (Esc, ardından Yükle)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Gelen mesaj",
@@ -249,6 +269,7 @@
         "MODS_MISMATCH": "Sunucuda ModPolicy aktif.{{mods}}",
         "MODS_MISMATCH_REMOVE": "Katılmak için lütfen bu modları silin:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Katılmak için lütfen bu modları indirin:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Bu modların sizdeki sürümü sunucu sahibininkinden farklı. Katılmak için lütfen sunucu sahibinin sürümünü yükleyin:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Bu sunucu {{mods}} modlarını kabul etmiyor. Katılmak için lütfen siliniz.",
         "WRONG_PASSWORD": "Girdiğiniz parola yanlış.",
         "NO_REASON": "Sunucu sebep vermeden bağlantıyı reddetti.",

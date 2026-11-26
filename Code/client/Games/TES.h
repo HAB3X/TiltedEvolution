@@ -98,6 +98,10 @@ struct Mod
     [[nodiscard]] uint16_t GetId() const noexcept { return IsLite() ? liteId : standardId; }
 
     [[nodiscard]] uint32_t GetFormId(uint32_t aBaseId) const noexcept;
+
+    // The size in bytes of the plugin file in the game's Data folder, which tells apart versions of a mod that keep
+    // its file name; 0 (logged) when it can't be read
+    [[nodiscard]] uint32_t GetFileSize() const noexcept;
 };
 
 static_assert(offsetof(Mod, filename) == 0x58);

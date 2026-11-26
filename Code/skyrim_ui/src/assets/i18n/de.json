@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Wer da ist, Gruppe",
       "INVITE_HINT": "Dein Beitrittscode",
       "REVEAL_HINT": "Spieler in der Nähe zeigen",
+      "SAVES": "Spielstände",
+      "SAVES_HINT": "Gruppen-Speicherpunkte",
       "CANCEL_CONNECT": "Abbrechen"
     },
     "CHAT": {
@@ -64,7 +66,9 @@
         "KIND_CLASSIC_HINT": "Freunde mit dem normalen Skyrim Together 1.8.4 können beitreten. Nur-Plus-Optionen sind aus.",
         "PAUSE_TITLE": "Pause in Menüs",
         "PAUSE": "Die Welt pausiert, solange alle Spieler in einem Menü sind, etwa Inventar oder Karte.",
-        "REQUIRE_MODS_TITLE": "Freunde brauchen meine Mods"
+        "REQUIRE_MODS_TITLE": "Freunde brauchen meine Mods",
+        "MODS_REQUIRED": "Mods, die Freunde brauchen: {{count}}",
+        "MODS_REQUIRED_NONE": "Du hast keine Mods außer den Dateien des Spiels, also brauchen Freunde keine."
       },
       "LAN": {
         "TITLE": "Spiele in deinem Netzwerk",
@@ -97,7 +101,11 @@
       "CANCEL": "Abbrechen"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Mods besorgen",
+      "SEARCH_NEXUS": "Auf Nexus suchen",
+      "DIFFERENT_VERSION": "andere Version",
+      "COPY_LIST": "Liste kopieren"
     },
     "INVITE": {
       "CODE_INFO": "Freunde geben diesen Beitrittscode unter Verbinden ein:",
@@ -107,6 +115,18 @@
       "COPY": "Einladung kopieren",
       "COPIED": "Kopiert",
       "CLOSE": "Schließen"
+    },
+    "SAVES": {
+      "TITLE": "Spielstände",
+      "INFO": "Die Spielstände, die Skyrim Together für diesen Charakter angelegt hat, die neuesten zuerst. Laden ersetzt das laufende Spiel – speichere vorher, wenn du es behalten willst.",
+      "CHECKPOINT": "Gruppen-Speicherpunkt {{slot}}",
+      "BEFORE_HOST_WORLD": "Vor dem Wechsel in die Welt des Hosts",
+      "BEFORE_COOP": "Vor dem gemeinsamen Spielen",
+      "LOAD": "Laden",
+      "LOAD_CONFIRM": "Ja, laden",
+      "EMPTY": "Noch keine Koop-Spielstände für diesen Charakter. Skyrim Together speichert vor deiner ersten Koop-Sitzung, bevor du der Welt eines Hosts beitrittst, und an Gruppen-Speicherpunkten.",
+      "ERROR": "Der Spielstand-Ordner konnte nicht gelesen werden: {{error}}",
+      "MENU_HINT": "Das sind normale Spielstände: Du kannst sie auch im Menü des Spiels laden (Esc, dann Laden)."
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Nachricht von",
@@ -249,6 +269,7 @@
         "MODS_MISMATCH": "Dieser Server hat ModPolicy aktiviert.{{mods}}",
         "MODS_MISMATCH_REMOVE": "Bitte entferne folgende Mods, um dem Server beitreten zu können:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Bitte installiere folgende Mods, um dem Server beitreten zu können:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Du hast eine andere Version dieser Mods als der Host. Bitte installiere die Version des Hosts, um beizutreten:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "Dieser Server verbietet folgende Mods {{mods}}. Bitte entferne diese, um beitreten zu können.",
         "WRONG_PASSWORD": "Das eingegebene Passwort ist falsch.",
         "NO_REASON": "Der Server hat die Verbindung ohne Angabe von Gründen verweigert.",

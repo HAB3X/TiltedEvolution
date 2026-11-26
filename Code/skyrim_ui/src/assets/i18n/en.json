@@ -14,6 +14,8 @@
       "PLAYERS_HINT": "Who's here, party",
       "INVITE_HINT": "Your join code",
       "REVEAL_HINT": "Show players nearby",
+      "SAVES": "Saves",
+      "SAVES_HINT": "Party checkpoints",
       "CANCEL_CONNECT": "Cancel"
     },
     "CHAT": {
@@ -75,7 +77,9 @@
         "KIND_CLASSIC_HINT": "Friends with the regular Skyrim Together 1.8.4 can join. Plus-only options are off.",
         "PAUSE_TITLE": "Pause in menus",
         "PAUSE": "The world pauses while every player is in a menu, like the inventory or the map.",
-        "REQUIRE_MODS_TITLE": "Friends need my mods"
+        "REQUIRE_MODS_TITLE": "Friends need my mods",
+        "MODS_REQUIRED": "Mods friends need: {{count}}",
+        "MODS_REQUIRED_NONE": "You have no mods besides the game's own, so friends need none."
       },
       "ERROR": {
         "CONNECTION": "Could not connect to the specified server. Please make sure you've entered the correct address and that you're not experiencing network issues",
@@ -102,13 +106,29 @@
       "COPIED": "Copied",
       "CLOSE": "Close"
     },
+    "SAVES": {
+      "TITLE": "Saves",
+      "INFO": "The saves Skyrim Together made for this character, newest first. Loading one replaces the game you're playing, so save first if you want to keep it.",
+      "CHECKPOINT": "Party checkpoint {{slot}}",
+      "BEFORE_HOST_WORLD": "Before joining a host's world",
+      "BEFORE_COOP": "Before playing together",
+      "LOAD": "Load",
+      "LOAD_CONFIRM": "Yes, load",
+      "EMPTY": "No co-op saves for this character yet. Skyrim Together saves before your first co-op session, before you join a host's world, and at party checkpoints.",
+      "ERROR": "Couldn't read the game's save folder: {{error}}",
+      "MENU_HINT": "These are normal saves: you can also load them from the game's own menu (Esc, then Load)."
+    },
     "DISCONNECT": {
       "PROMPT": "Are you sure you want to disconnect?",
       "PROCEED": "Proceed",
       "CANCEL": "Cancel"
     },
     "ERROR": {
-      "OK": "Ok"
+      "OK": "Ok",
+      "FIND_MODS": "Get the mods",
+      "SEARCH_NEXUS": "Search on Nexus",
+      "DIFFERENT_VERSION": "different version",
+      "COPY_LIST": "Copy list"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Message from",
@@ -253,6 +273,7 @@
         "MODS_MISMATCH": "This server needs the same mods as its host.{{mods}}",
         "MODS_MISMATCH_REMOVE": "Please remove the following mods to join:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Please install the following mods to join:\n{{mods}}",
+        "MODS_MISMATCH_VERSION": "Your version of these mods differs from the host's. Please install the host's version to join:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "This server disallows {{mods}}. Please remove them to join.",
         "WRONG_PASSWORD": "The password you entered is incorrect.",
         "NO_REASON": "The server refused connection without reason.",
