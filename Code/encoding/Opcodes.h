@@ -77,6 +77,7 @@ enum ClientOpcode : unsigned char
     kRequestQuestShareAnswer,
     kRequestCrimeAuthority,
     kRequestRevive,
+    kRequestTrade,
     kClientOpcodeMax
 };
 
@@ -156,5 +157,6 @@ enum ServerOpcode : unsigned char
     kNotifyQuestShareOffer,
     kNotifyQuestCatchUp,
     kNotifyRevive,
+    kNotifyTrade,
     kServerOpcodeMax
 };

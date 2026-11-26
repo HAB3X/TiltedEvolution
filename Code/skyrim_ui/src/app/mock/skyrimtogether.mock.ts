@@ -501,6 +501,23 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     this.emit('questDesync', 'Lydia', true, 'Bleak Falls Barrow, The Golden Claw, Dragon Rising, The Way of the Voice, Diplomatic Immunity', 3, 6);
   }
 
+  tradeStart(playerId: number): void {
+    this.emit('tradeInventory', JSON.stringify([{ name: 'Gold', count: 250, enchanted: false }, { name: 'Iron Sword', count: 1, enchanted: true }]));
+    this.emit('trade', playerId, 'MockPartner', 0, '[]', '[]', false, false);
+  }
+
+  tradeOffer(picks: string): void {
+    console.log(`trade offer ${picks}`);
+  }
+
+  tradeConfirm(): void {
+    console.log('trade confirm');
+  }
+
+  tradeCancel(): void {
+    console.log('trade cancel');
+  }
+
   summonPlayer(playerId: number): void {
     const player = playerStore.query(getEntity(playerId));
     // The mock player declines every other time

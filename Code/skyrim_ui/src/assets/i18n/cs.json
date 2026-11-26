@@ -12,7 +12,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "Jít k",
-      "SUMMON": "Přivolat"
+      "SUMMON": "Přivolat",
+      "TRADE": "Obchod"
+    },
+    "TRADE": {
+      "TITLE": "Obchod s {{name}}",
+      "YOUR_ITEMS": "Tvé předměty",
+      "YOUR_OFFER": "Tvá nabídka",
+      "THEIR_OFFER": "Nabídka hráče {{name}}",
+      "NOTHING": "Nic",
+      "OFFER": "Nabídnout",
+      "CONFIRM": "Potvrdit",
+      "CANCEL": "Zrušit",
+      "CLOSE": "Zavřít",
+      "CONFIRMED": "Potvrzeno",
+      "NOT_CONFIRMED": "Zatím nepotvrzeno",
+      "HINT": "Nastav množství a stiskni Nabídnout. Každá změna nabídky zruší potvrzení obou; předměty se přesunou, až oba potvrdíte.",
+      "COMPLETED": "Obchod je hotový.",
+      "CANCELLED": "Obchod byl zrušen.",
+      "MISSING_ITEMS": "Někdo už nemá, co nabídl. Zkontrolujte nabídky a potvrďte znovu.",
+      "UNAVAILABLE": "Teď obchodovat nemůže: musí být člen party poblíž a neobchodovat s někým jiným."
     },
     "IMMERSION": {
       "HEADER": "Prvky na obrazovce",

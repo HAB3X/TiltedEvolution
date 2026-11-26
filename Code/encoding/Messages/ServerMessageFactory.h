@@ -78,6 +78,7 @@
 #include <Messages/NotifyPartySummon.h>
 #include <Messages/NotifyPartyTeleportRefused.h>
 #include <Messages/NotifyRevive.h>
+#include <Messages/NotifyTrade.h>
 
 using TiltedPhoques::UniquePtr;
 
@@ -92,7 +93,7 @@ struct ServerMessageFactory
             NotifyActorValueChanges, NotifyPartyJoined, NotifyPartyLeft, NotifyActorMaxValueChanges, NotifyHealthChangeBroadcast, NotifyActivate, NotifyLockChange, AssignObjectsResponse, NotifyDeathStateChange, NotifyOwnershipTransfer, NotifyObjectInventoryChanges, NotifySpellCast,
             NotifyProjectileLaunch, NotifyInterruptCast, NotifyAddTarget, NotifyScriptAnimation, NotifyDrawWeapon, NotifyMount, NotifyNewPackage, NotifyRespawn, NotifySyncExperience, NotifyEquipmentChanges, NotifyChatMessageBroadcast, TeleportCommandResponse, NotifyPlayerRespawn, NotifyDialogue,
             NotifySubtitle, NotifyPlayerDialogue, NotifyActorTeleport, NotifyPlayerLeft, NotifyPlayerJoined, NotifyDialogue, NotifySubtitle, NotifyPlayerDialogue, NotifyPlayerLevel, NotifyPlayerCellChanged, NotifyTeleport, NotifyPlayerHealthUpdate, NotifySettingsChange,
-            NotifyWeatherChange, NotifySetWaypoint, NotifyRemoveWaypoint, NotifySetTimeResult, NotifyRemoveSpell, NotifyActionEvents, NotifyPartyCheckpoint, NotifyVoiceData, NotifyHostWorldRequested, NotifyHostWorldState, NotifyTimeSkip, NotifyPause, NotifyPartyTravel, NotifyQuestDesync, NotifyPartyPing, NotifyPartyDoor, NotifyPartySummon, NotifyPartyTeleportRefused, NotifyVote, NotifyLootRefused, NotifyPartyQuestSharing, NotifyQuestShareOffer, NotifyQuestCatchUp, NotifyRevive>;
+            NotifyWeatherChange, NotifySetWaypoint, NotifyRemoveWaypoint, NotifySetTimeResult, NotifyRemoveSpell, NotifyActionEvents, NotifyPartyCheckpoint, NotifyVoiceData, NotifyHostWorldRequested, NotifyHostWorldState, NotifyTimeSkip, NotifyPause, NotifyPartyTravel, NotifyQuestDesync, NotifyPartyPing, NotifyPartyDoor, NotifyPartySummon, NotifyPartyTeleportRefused, NotifyVote, NotifyLootRefused, NotifyPartyQuestSharing, NotifyQuestShareOffer, NotifyQuestCatchUp, NotifyRevive, NotifyTrade>;
 
         return s_visitor(std::forward<T>(func));
     }

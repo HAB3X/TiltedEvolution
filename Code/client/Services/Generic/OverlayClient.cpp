@@ -11,6 +11,7 @@
 #include <Services/PartySaves.h>
 #include <Services/NameTagService.h>
 #include <Services/HostWorldService.h>
+#include <Services/TradeService.h>
 #include <Services/TravelTogetherService.h>
 #include <Services/QuestSharingService.h>
 #include <Services/QuestDesyncService.h>
@@ -81,6 +82,35 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
         {
             const bool enabled = eventArgs->GetBool(0);
             World::Get().GetRunner().Queue([enabled]() { World::Get().ctx().at<MapService>().SetPingMarkersEnabled(enabled); });
+        }
+        else if (eventName == "tradeStart")
+        {
+            const uint32_t playerId = eventArgs->GetInt(0);
+            World::Get().GetRunner().Queue([playerId]() { World::Get().ctx().at<TradeService>().Start(playerId); });
+        }
+        else if (eventName == "tradeOffer")
+        {
+            // "index:count,index:count", indices into the last tradeInventory
+            Vector<std::pair<uint32_t, int32_t>> picks;
+            const std::string cText = eventArgs->GetString(0).ToString();
+            for (size_t start = 0; start < cText.size();)
+            {
+                const size_t cEnd = std::min(cText.find(',', start), cText.size());
+                uint32_t index = 0;
+                int32_t count = 0;
+                if (std::sscanf(cText.substr(start, cEnd - start).c_str(), "%u:%d", &index, &count) == 2)
+                    picks.emplace_back(index, count);
+                start = cEnd + 1;
+            }
+            World::Get().GetRunner().Queue([picks = std::move(picks)]() { World::Get().ctx().at<TradeService>().Offer(picks); });
+        }
+        else if (eventName == "tradeConfirm")
+        {
+            World::Get().GetRunner().Queue([]() { World::Get().ctx().at<TradeService>().Confirm(); });
+        }
+        else if (eventName == "tradeCancel")
+        {
+            World::Get().GetRunner().Queue([]() { World::Get().ctx().at<TradeService>().Cancel(); });
         }
         else if (eventName == "summonPlayer")
         {

@@ -14,7 +14,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "Rejoindre",
-      "SUMMON": "Appeler"
+      "SUMMON": "Appeler",
+      "TRADE": "Échanger"
+    },
+    "TRADE": {
+      "TITLE": "Échange avec {{name}}",
+      "YOUR_ITEMS": "Tes objets",
+      "YOUR_OFFER": "Ton offre",
+      "THEIR_OFFER": "Offre de {{name}}",
+      "NOTHING": "Rien",
+      "OFFER": "Proposer",
+      "CONFIRM": "Confirmer",
+      "CANCEL": "Annuler",
+      "CLOSE": "Fermer",
+      "CONFIRMED": "Confirmé",
+      "NOT_CONFIRMED": "Pas encore confirmé",
+      "HINT": "Choisis les quantités et appuie sur Proposer. Toute modification d'une offre annule les deux confirmations ; les objets passent quand vous confirmez tous les deux.",
+      "COMPLETED": "L'échange est fait.",
+      "CANCELLED": "L'échange a été annulé.",
+      "MISSING_ITEMS": "Quelqu'un n'a plus ce qu'il proposait. Vérifiez les offres et confirmez à nouveau.",
+      "UNAVAILABLE": "Échange impossible pour l'instant : il faut être membre du groupe, à proximité, et ne pas déjà échanger avec quelqu'un d'autre."
     },
     "IMMERSION": {
       "HEADER": "Éléments à l'écran",

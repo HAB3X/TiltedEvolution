@@ -12,7 +12,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "Go to",
-      "SUMMON": "Summon"
+      "SUMMON": "Summon",
+      "TRADE": "Trade"
+    },
+    "TRADE": {
+      "TITLE": "Trade with {{name}}",
+      "YOUR_ITEMS": "Your items",
+      "YOUR_OFFER": "Your offer",
+      "THEIR_OFFER": "{{name}}'s offer",
+      "NOTHING": "Nothing",
+      "OFFER": "Offer",
+      "CONFIRM": "Confirm",
+      "CANCEL": "Cancel",
+      "CLOSE": "Close",
+      "CONFIRMED": "Confirmed",
+      "NOT_CONFIRMED": "Not confirmed yet",
+      "HINT": "Set the amounts and press Offer. Any change to an offer unconfirms both of you; items move once you both confirm.",
+      "COMPLETED": "The trade is done.",
+      "CANCELLED": "The trade was cancelled.",
+      "MISSING_ITEMS": "Someone no longer has what they offered. Check the offers and confirm again.",
+      "UNAVAILABLE": "They can't trade now: they must be a party member near you and not trading with someone else."
     },
     "IMMERSION": {
       "HEADER": "On-screen elements",

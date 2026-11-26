@@ -1,0 +1,64 @@
+@if (trade$ | async; as trade) {
+  <div class="trade">
+    <p class="title">{{ 'COMPONENT.TRADE.TITLE' | transloco: { name: trade.partnerName } }}</p>
+    @switch (trade.event) {
+      @case ('completed') {
+        <p class="status">{{ 'COMPONENT.TRADE.COMPLETED' | transloco }}</p>
+      }
+      @case ('cancelled') {
+        <p class="status">{{ 'COMPONENT.TRADE.CANCELLED' | transloco }}</p>
+      }
+      @case ('unavailable') {
+        <p class="status">{{ 'COMPONENT.TRADE.UNAVAILABLE' | transloco }}</p>
+      }
+      @default {
+        @if (trade.event === 'missingItems') {
+          <p class="status">{{ 'COMPONENT.TRADE.MISSING_ITEMS' | transloco }}</p>
+        }
+        <div class="columns">
+          <section>
+            <p class="heading">{{ 'COMPONENT.TRADE.YOUR_ITEMS' | transloco }}</p>
+            @for (item of inventory$ | async; track $index) {
+              <label class="item">
+                <span>{{ item.name }} ({{ item.count }})@if (item.enchanted) { *}</span>
+                <input type="number" min="0" [max]="item.count" [value]="amounts[$index] ?? 0" (change)="setAmount($index, item, $any($event.target).value)" />
+              </label>
+            } @empty {
+              <p>{{ 'COMPONENT.TRADE.NOTHING' | transloco }}</p>
+            }
+            <button class="btn btn-secondary btn-small" (click)="offer()">{{ 'COMPONENT.TRADE.OFFER' | transloco }}</button>
+          </section>
+          <section>
+            <p class="heading">{{ 'COMPONENT.TRADE.YOUR_OFFER' | transloco }}</p>
+            @for (item of trade.myOffer; track $index) {
+              <p class="item">{{ item.name }} × {{ item.count }}</p>
+            } @empty {
+              <p>{{ 'COMPONENT.TRADE.NOTHING' | transloco }}</p>
+            }
+            <p class="confirmation">{{ (trade.myConfirmed ? 'COMPONENT.TRADE.CONFIRMED' : 'COMPONENT.TRADE.NOT_CONFIRMED') | transloco }}</p>
+          </section>
+          <section>
+            <p class="heading">{{ 'COMPONENT.TRADE.THEIR_OFFER' | transloco: { name: trade.partnerName } }}</p>
+            @for (item of trade.theirOffer; track $index) {
+              <p class="item">{{ item.name }} × {{ item.count }}</p>
+            } @empty {
+              <p>{{ 'COMPONENT.TRADE.NOTHING' | transloco }}</p>
+            }
+            <p class="confirmation">{{ (trade.theirConfirmed ? 'COMPONENT.TRADE.CONFIRMED' : 'COMPONENT.TRADE.NOT_CONFIRMED') | transloco }}</p>
+          </section>
+        </div>
+        <p class="hint">{{ 'COMPONENT.TRADE.HINT' | transloco }}</p>
+      }
+    }
+    <app-action-buttons>
+      @if (trade.event === 'updated' || trade.event === 'missingItems') {
+        <button (click)="confirm()" [disabled]="trade.myConfirmed" data-style-ornament="simple">
+          {{ 'COMPONENT.TRADE.CONFIRM' | transloco }}
+        </button>
+        <button (click)="close()" data-style-ornament="simple">{{ 'COMPONENT.TRADE.CANCEL' | transloco }}</button>
+      } @else {
+        <button (click)="close()" data-style-ornament="simple">{{ 'COMPONENT.TRADE.CLOSE' | transloco }}</button>
+      }
+    </app-action-buttons>
+  </div>
+}

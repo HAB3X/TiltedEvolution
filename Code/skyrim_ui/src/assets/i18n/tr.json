@@ -12,7 +12,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "Yanına git",
-      "SUMMON": "Çağır"
+      "SUMMON": "Çağır",
+      "TRADE": "Takas"
+    },
+    "TRADE": {
+      "TITLE": "{{name}} ile takas",
+      "YOUR_ITEMS": "Eşyaların",
+      "YOUR_OFFER": "Teklifin",
+      "THEIR_OFFER": "{{name}} teklifi",
+      "NOTHING": "Hiçbir şey",
+      "OFFER": "Teklif et",
+      "CONFIRM": "Onayla",
+      "CANCEL": "İptal",
+      "CLOSE": "Kapat",
+      "CONFIRMED": "Onaylandı",
+      "NOT_CONFIRMED": "Henüz onaylanmadı",
+      "HINT": "Miktarları seçip Teklif et'e bas. Bir teklifteki her değişiklik iki onayı da kaldırır; ikiniz de onaylayınca eşyalar el değiştirir.",
+      "COMPLETED": "Takas tamamlandı.",
+      "CANCELLED": "Takas iptal edildi.",
+      "MISSING_ITEMS": "Biri artık teklif ettiği şeye sahip değil. Teklifleri kontrol edip yeniden onaylayın.",
+      "UNAVAILABLE": "Şu an takas yapılamaz: yakındaki, başka biriyle takas yapmayan bir grup üyesi olmalı."
     },
     "IMMERSION": {
       "HEADER": "Ekran öğeleri",

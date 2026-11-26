@@ -140,6 +140,11 @@
         <app-host-world-offer></app-host-world-offer>
       </app-popup>
     }
+    @if (trade$ | async) {
+      <app-popup>
+        <app-trade></app-trade>
+      </app-popup>
+    }
     @switch (view$ | async) {
       @case (RootView.CONNECT_PASSWORD) {
         <app-popup>

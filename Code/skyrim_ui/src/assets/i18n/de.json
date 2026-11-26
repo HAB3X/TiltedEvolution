@@ -12,7 +12,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "Hingehen",
-      "SUMMON": "Herbeirufen"
+      "SUMMON": "Herbeirufen",
+      "TRADE": "Handeln"
+    },
+    "TRADE": {
+      "TITLE": "Handel mit {{name}}",
+      "YOUR_ITEMS": "Deine Gegenstände",
+      "YOUR_OFFER": "Dein Angebot",
+      "THEIR_OFFER": "Angebot von {{name}}",
+      "NOTHING": "Nichts",
+      "OFFER": "Anbieten",
+      "CONFIRM": "Bestätigen",
+      "CANCEL": "Abbrechen",
+      "CLOSE": "Schließen",
+      "CONFIRMED": "Bestätigt",
+      "NOT_CONFIRMED": "Noch nicht bestätigt",
+      "HINT": "Mengen wählen und Anbieten drücken. Jede Änderung eines Angebots hebt beide Bestätigungen auf; die Gegenstände wechseln, sobald ihr beide bestätigt.",
+      "COMPLETED": "Der Handel ist abgeschlossen.",
+      "CANCELLED": "Der Handel wurde abgebrochen.",
+      "MISSING_ITEMS": "Jemand hat nicht mehr, was er angeboten hat. Prüft die Angebote und bestätigt erneut.",
+      "UNAVAILABLE": "Gerade nicht möglich: Der Spieler muss ein Gruppenmitglied in deiner Nähe sein und darf nicht schon mit jemand anderem handeln."
     },
     "IMMERSION": {
       "HEADER": "Bildschirmelemente",

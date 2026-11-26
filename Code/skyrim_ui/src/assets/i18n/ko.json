@@ -12,7 +12,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "찾아가기",
-      "SUMMON": "부르기"
+      "SUMMON": "부르기",
+      "TRADE": "거래"
+    },
+    "TRADE": {
+      "TITLE": "{{name}}와(과) 거래",
+      "YOUR_ITEMS": "내 아이템",
+      "YOUR_OFFER": "내 제안",
+      "THEIR_OFFER": "{{name}}의 제안",
+      "NOTHING": "없음",
+      "OFFER": "제안",
+      "CONFIRM": "확인",
+      "CANCEL": "취소",
+      "CLOSE": "닫기",
+      "CONFIRMED": "확인됨",
+      "NOT_CONFIRMED": "아직 확인 안 됨",
+      "HINT": "수량을 정하고 제안을 누르세요. 제안이 바뀌면 양쪽 확인이 모두 풀리며, 둘 다 확인하면 아이템이 옮겨집니다.",
+      "COMPLETED": "거래가 완료되었습니다.",
+      "CANCELLED": "거래가 취소되었습니다.",
+      "MISSING_ITEMS": "누군가 제안한 아이템을 더 이상 갖고 있지 않습니다. 제안을 확인하고 다시 확인하세요.",
+      "UNAVAILABLE": "지금은 거래할 수 없습니다. 가까이 있는 파티원이어야 하고 다른 사람과 거래 중이 아니어야 합니다."
     },
     "IMMERSION": {
       "HEADER": "화면 요소",

@@ -12,7 +12,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "Gå till",
-      "SUMMON": "Kalla hit"
+      "SUMMON": "Kalla hit",
+      "TRADE": "Handla"
+    },
+    "TRADE": {
+      "TITLE": "Handel med {{name}}",
+      "YOUR_ITEMS": "Dina föremål",
+      "YOUR_OFFER": "Ditt erbjudande",
+      "THEIR_OFFER": "{{name}}s erbjudande",
+      "NOTHING": "Ingenting",
+      "OFFER": "Erbjud",
+      "CONFIRM": "Bekräfta",
+      "CANCEL": "Avbryt",
+      "CLOSE": "Stäng",
+      "CONFIRMED": "Bekräftat",
+      "NOT_CONFIRMED": "Inte bekräftat än",
+      "HINT": "Välj antal och tryck Erbjud. Varje ändring av ett erbjudande tar bort båda bekräftelserna; föremålen flyttas när ni båda bekräftar.",
+      "COMPLETED": "Handeln är klar.",
+      "CANCELLED": "Handeln avbröts.",
+      "MISSING_ITEMS": "Någon har inte längre det de erbjöd. Kontrollera erbjudandena och bekräfta igen.",
+      "UNAVAILABLE": "Kan inte handla nu: det måste vara en gruppmedlem i närheten som inte redan handlar med någon annan."
     },
     "IMMERSION": {
       "HEADER": "Element på skärmen",

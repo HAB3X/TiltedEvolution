@@ -20,6 +20,7 @@ import { DisconnectComponent } from './components/disconnect/disconnect.componen
 import { InviteComponent } from './components/invite/invite.component';
 import { SavesComponent } from './components/saves/saves.component';
 import { HostWorldOfferComponent } from './components/host-world-offer/host-world-offer.component';
+import { TradeComponent } from './components/trade/trade.component';
 import { ConnectionStatusComponent } from './components/connection-status/connection-status.component';
 import { HostWorldSyncComponent } from './components/host-world-sync/host-world-sync.component';
 import { VoteComponent } from './components/vote/vote.component';
@@ -66,6 +67,7 @@ import { TranslocoRootModule } from './transloco-root.module';
     InviteComponent,
     SavesComponent,
     HostWorldOfferComponent,
+    TradeComponent,
     ConnectionStatusComponent,
     HostWorldSyncComponent,
     VoteComponent,

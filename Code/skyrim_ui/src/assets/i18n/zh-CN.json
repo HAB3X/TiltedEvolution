@@ -14,7 +14,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "前往",
-      "SUMMON": "召唤"
+      "SUMMON": "召唤",
+      "TRADE": "交易"
+    },
+    "TRADE": {
+      "TITLE": "与 {{name}} 交易",
+      "YOUR_ITEMS": "你的物品",
+      "YOUR_OFFER": "你的报价",
+      "THEIR_OFFER": "{{name}} 的报价",
+      "NOTHING": "无",
+      "OFFER": "报价",
+      "CONFIRM": "确认",
+      "CANCEL": "取消",
+      "CLOSE": "关闭",
+      "CONFIRMED": "已确认",
+      "NOT_CONFIRMED": "尚未确认",
+      "HINT": "设置数量并按“报价”。任何一方修改报价都会取消双方的确认；双方都确认后物品才会转移。",
+      "COMPLETED": "交易完成。",
+      "CANCELLED": "交易已取消。",
+      "MISSING_ITEMS": "有人已不再拥有其报价的物品。请检查报价后重新确认。",
+      "UNAVAILABLE": "现在无法交易：对方必须是附近的队友，且没有在与别人交易。"
     },
     "IMMERSION": {
       "HEADER": "屏幕元素",

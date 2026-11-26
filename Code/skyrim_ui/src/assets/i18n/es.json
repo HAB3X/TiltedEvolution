@@ -14,7 +14,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "Ir",
-      "SUMMON": "Invocar"
+      "SUMMON": "Invocar",
+      "TRADE": "Comerciar"
+    },
+    "TRADE": {
+      "TITLE": "Comercio con {{name}}",
+      "YOUR_ITEMS": "Tus objetos",
+      "YOUR_OFFER": "Tu oferta",
+      "THEIR_OFFER": "Oferta de {{name}}",
+      "NOTHING": "Nada",
+      "OFFER": "Ofrecer",
+      "CONFIRM": "Confirmar",
+      "CANCEL": "Cancelar",
+      "CLOSE": "Cerrar",
+      "CONFIRMED": "Confirmado",
+      "NOT_CONFIRMED": "Aún sin confirmar",
+      "HINT": "Elige las cantidades y pulsa Ofrecer. Cualquier cambio en una oferta anula la confirmación de ambos; los objetos pasan cuando los dos confirmáis.",
+      "COMPLETED": "El intercambio está hecho.",
+      "CANCELLED": "El intercambio se canceló.",
+      "MISSING_ITEMS": "Alguien ya no tiene lo que ofreció. Revisad las ofertas y confirmad de nuevo.",
+      "UNAVAILABLE": "Ahora no puede comerciar: debe ser miembro del grupo, estar cerca y no estar comerciando con otra persona."
     },
     "IMMERSION": {
       "HEADER": "Elementos en pantalla",

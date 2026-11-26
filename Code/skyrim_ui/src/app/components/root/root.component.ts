@@ -56,6 +56,7 @@ export class RootComponent implements OnInit {
   lastSession$ = this.client.lastSessionChange.asObservable();
   reconnecting$ = this.client.reconnectingChange.asObservable();
   hostWorldOffer$ = this.client.hostWorldOfferChange.asObservable();
+  trade$ = this.client.tradeChange.asObservable();
   debugData$ = this.client.debugDataChange.asObservable();
   connectionInProgress$ =
     this.client.isConnectionInProgressChange.asObservable();

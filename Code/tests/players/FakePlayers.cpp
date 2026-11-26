@@ -42,6 +42,8 @@
 #include <Messages/RequestRevive.h>
 #include <Messages/NotifyRevive.h>
 #include <Messages/RequestDeathStateChange.h>
+#include <Messages/RequestTrade.h>
+#include <Messages/NotifyTrade.h>
 #include <Messages/RequestOwnershipClaim.h>
 #include <Messages/CharacterSpawnRequest.h>
 #include <Messages/NotifyInventoryChanges.h>
@@ -223,6 +225,7 @@ struct FakePlayer final : Client
         case kNotifyLootRefused: LootRefusals.push_back(*static_cast<NotifyLootRefused*>(pMessage.get())); break;
         case kNotifyOwnershipTransfer: OwnershipTransfers.push_back(*static_cast<NotifyOwnershipTransfer*>(pMessage.get())); break;
         case kNotifyRevive: Revives.push_back(*static_cast<NotifyRevive*>(pMessage.get())); break;
+        case kNotifyTrade: Trades.push_back(*static_cast<NotifyTrade*>(pMessage.get())); break;
         case kCharacterSpawnRequest:
         {
             const auto* pSpawn = static_cast<CharacterSpawnRequest*>(pMessage.get());
@@ -305,6 +308,7 @@ struct FakePlayer final : Client
     std::vector<NotifyLootRefused> LootRefusals;
     std::vector<NotifyOwnershipTransfer> OwnershipTransfers;
     std::vector<NotifyRevive> Revives;
+    std::vector<NotifyTrade> Trades;
 
     // The last transfer of this actor to this player, if any came since aFrom
     const NotifyOwnershipTransfer* FindTransfer(uint32_t aServerId, uint32_t aOwnerPlayerId, size_t aFrom = 0) const
@@ -2093,6 +2097,152 @@ int RunOwnBodyLooter(const std::string& acEndpoint, const std::string& acPasswor
     return s_failures ? 1 : 0;
 }
 
+// Player trading: the leader offers more gold than it has, which is refused once both confirm; then 60 gold for the
+// member's sword, both confirm, and the server moves the items as inventory changes of both characters
+const GameId kGold{0, 0xF};
+
+std::optional<uint32_t> AssignWith(FakePlayer& aPlayer, const GameId& acItem, int32_t aCount, float aX)
+{
+    AssignCharacterRequest request;
+    request.Cookie = 1;
+    request.ReferenceId = GameId(0, 0x14);
+    request.CellId = kRelayCell;
+    request.WorldSpaceId = kRelayWorld;
+    request.Position = glm::vec3(aX, 0.f, 0.f);
+    Inventory::Entry item{};
+    item.BaseId = acItem;
+    item.Count = aCount;
+    request.CurrentActorData.InitialInventory.Entries.push_back(item);
+    aPlayer.Send(request);
+    if (!RunUntil(aPlayer, [&] { return aPlayer.AssignedIds.count(1) != 0; }))
+        return std::nullopt;
+    return aPlayer.AssignedIds[1];
+}
+
+RequestTrade TradeOffer(uint32_t aPartner, const GameId& acItem, int32_t aCount)
+{
+    RequestTrade request;
+    request.PartnerId = aPartner;
+    request.Act = RequestTrade::Action::kOffer;
+    if (aCount > 0)
+    {
+        Inventory::Entry item{};
+        item.BaseId = acItem;
+        item.Count = aCount;
+        request.Offer.Entries.push_back(item);
+    }
+    return request;
+}
+
+bool HasTrade(const FakePlayer& acPlayer, NotifyTrade::Event aEvent, size_t aFrom = 0)
+{
+    return std::any_of(acPlayer.Trades.begin() + static_cast<ptrdiff_t>(std::min(aFrom, acPlayer.Trades.size())), acPlayer.Trades.end(),
+                       [aEvent](const NotifyTrade& acTrade) { return acTrade.What == aEvent; });
+}
+
+bool GotChange(const FakePlayer& acPlayer, uint32_t aServerId, const GameId& acItem, int32_t aCount)
+{
+    return std::any_of(acPlayer.InventoryChanges.begin(), acPlayer.InventoryChanges.end(),
+                       [&](const NotifyInventoryChanges& acChange) { return acChange.ServerId == aServerId && acChange.Item.BaseId == acItem && acChange.Item.Count == aCount; });
+}
+
+int RunTradeLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeTradeLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("trade leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("trade leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    const auto cSelf = AssignWith(leader, kGold, 100, kBodyX);
+    Check("trade leader gets its character with 100 gold", cSelf.has_value());
+    EnterRelayCell(leader, kBodyX);
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    if (!cSelf || leader.JoinedIds.empty())
+        return 1;
+    const uint32_t cMember = leader.JoinedIds.front();
+    RunUntil(leader, [] { return false; }, 3s);
+
+    // Confirmed before the member offers anything: the member's offer has to unconfirm it
+    RequestTrade confirm;
+    confirm.PartnerId = cMember;
+    confirm.Act = RequestTrade::Action::kConfirm;
+    leader.Send(TradeOffer(cMember, kGold, 200));
+    leader.Send(confirm);
+    const auto withSword = [&]() -> const NotifyTrade*
+    {
+        for (const NotifyTrade& cTrade : leader.Trades)
+        {
+            if (!cTrade.TheirOffer.Entries.empty())
+                return &cTrade;
+        }
+        return nullptr;
+    };
+    const bool cSword = RunUntil(leader, [&] { return withSword() != nullptr; }, 20s);
+    Check("the member offers its sword", cSword && withSword()->TheirOffer.Entries[0].BaseId == kLootSword);
+    Check("the member's offer unconfirms the leader", cSword && !withSword()->MyConfirmed && !withSword()->TheirConfirmed);
+    RunUntil(leader, [] { return false; }, 1s);
+    leader.Send(confirm);
+    Check("200 gold it doesn't have is refused once both confirm", RunUntil(leader, [&] { return HasTrade(leader, NotifyTrade::Event::kMissingItems); }));
+    Check("nothing moved", !GotChange(leader, *cSelf, kGold, -200) && !GotChange(leader, *cSelf, kLootSword, 1));
+
+    const size_t cBefore = leader.Trades.size();
+    leader.Send(TradeOffer(cMember, kGold, 60));
+    Check("its new offer is sent to both", RunUntil(leader, [&] { return leader.Trades.size() > cBefore; }) && leader.Trades[cBefore].MyOffer.Entries.size() == 1 &&
+                                                  leader.Trades[cBefore].MyOffer.Entries[0].Count == 60);
+    leader.Send(confirm);
+    Check("both confirm and the trade completes", RunUntil(leader, [&] { return HasTrade(leader, NotifyTrade::Event::kCompleted, cBefore); }));
+    Check("its character gets the sword and gives 60 gold", RunUntil(leader, [&] { return GotChange(leader, *cSelf, kLootSword, 1) && GotChange(leader, *cSelf, kGold, -60); }));
+    RunUntil(leader, [] { return false; }, 3s);
+    return s_failures ? 1 : 0;
+}
+
+int RunTradeMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeTradeMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("trade member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    const auto cSelf = AssignWith(member, kLootSword, 1, kBodyX + 50.f);
+    Check("trade member gets its character with a sword", cSelf.has_value());
+    EnterRelayCell(member, kBodyX + 50.f);
+    if (!cSelf)
+        return 1;
+
+    // Offers its sword when asked, confirms whenever the leader has
+    bool offered = false;
+    size_t seen = 0;
+    const bool cDone = RunUntil(
+        member,
+        [&]
+        {
+            for (; seen < member.Trades.size(); ++seen)
+            {
+                const NotifyTrade& cTrade = member.Trades[seen];
+                if (cTrade.What == NotifyTrade::Event::kCompleted)
+                    return true;
+                if (cTrade.What != NotifyTrade::Event::kUpdated && cTrade.What != NotifyTrade::Event::kMissingItems)
+                    continue;
+                if (!offered)
+                {
+                    member.Send(TradeOffer(cTrade.PartnerId, kLootSword, 1));
+                    offered = true;
+                }
+                else if (cTrade.TheirConfirmed && !cTrade.MyConfirmed)
+                {
+                    RequestTrade confirm;
+                    confirm.PartnerId = cTrade.PartnerId;
+                    confirm.Act = RequestTrade::Action::kConfirm;
+                    member.Send(confirm);
+                }
+            }
+            return false;
+        },
+        40s);
+    Check("the trade completes", cDone);
+    Check("its character gets 60 gold and gives the sword", RunUntil(member, [&] { return GotChange(member, *cSelf, kGold, 60) && GotChange(member, *cSelf, kLootSword, -1); }));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -2124,6 +2274,7 @@ int RunOwnBodyLooter(const std::string& acEndpoint, const std::string& acPasswor
 // FakePlayers.exe crimeleader|crimemember [address:port] [password]: start the leader first
 // FakePlayers.exe reviveleader|revivemember [address:port] [password]: start the leader first
 // FakePlayers.exe ownbodyowner|ownbodylooter [address:port] [password]: start the owner first (bPerPlayerLoot=true)
+// FakePlayers.exe tradeleader|trademember [address:port] [password]: start the leader first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -2233,6 +2384,10 @@ int main(int argc, char** argv)
         return RunShareMember(cEndpoint, cPassword);
     if (cRole == "catchupleader")
         return RunCatchUpLeader(cEndpoint, cPassword);
+    if (cRole == "tradeleader")
+        return RunTradeLeader(cEndpoint, cPassword);
+    if (cRole == "trademember")
+        return RunTradeMember(cEndpoint, cPassword);
     if (cRole == "ownbodyowner")
         return RunOwnBodyOwner(cEndpoint, cPassword);
     if (cRole == "ownbodylooter")
@@ -2247,6 +2402,6 @@ int main(int argc, char** argv)
         return RunCrimeMember(cEndpoint, cPassword);
     if (cRole == "catchupmember")
         return RunCatchUpMember(cEndpoint, cPassword);
-    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|crimeleader|crimemember|reviveleader|revivemember|ownbodyowner|ownbodylooter|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|crimeleader|crimemember|reviveleader|revivemember|ownbodyowner|ownbodylooter|tradeleader|trademember|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
     return 2;
 }

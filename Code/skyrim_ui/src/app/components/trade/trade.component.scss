@@ -1,0 +1,39 @@
+.trade {
+  max-width: 48em;
+
+  .title {
+    font-weight: bold;
+  }
+
+  .columns {
+    display: flex;
+    gap: 1.5em;
+
+    section {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .heading {
+    font-weight: bold;
+    margin-bottom: 0.3em;
+  }
+
+  .item {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5em;
+    margin: 0.2em 0;
+
+    input {
+      width: 4em;
+    }
+  }
+
+  .confirmation,
+  .hint,
+  .status {
+    opacity: 0.8;
+  }
+}

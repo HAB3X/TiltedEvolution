@@ -12,7 +12,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "会いに行く",
-      "SUMMON": "呼び寄せる"
+      "SUMMON": "呼び寄せる",
+      "TRADE": "取引"
+    },
+    "TRADE": {
+      "TITLE": "{{name}}との取引",
+      "YOUR_ITEMS": "自分のアイテム",
+      "YOUR_OFFER": "自分の提示",
+      "THEIR_OFFER": "{{name}}の提示",
+      "NOTHING": "なし",
+      "OFFER": "提示する",
+      "CONFIRM": "確定",
+      "CANCEL": "キャンセル",
+      "CLOSE": "閉じる",
+      "CONFIRMED": "確定済み",
+      "NOT_CONFIRMED": "未確定",
+      "HINT": "数量を決めて「提示する」を押します。どちらかの提示が変わると両方の確定が解除され、両方が確定するとアイテムが移動します。",
+      "COMPLETED": "取引が完了しました。",
+      "CANCELLED": "取引はキャンセルされました。",
+      "MISSING_ITEMS": "誰かが提示したアイテムを持っていません。提示を確認して、もう一度確定してください。",
+      "UNAVAILABLE": "今は取引できません。近くにいるパーティーメンバーで、他の人と取引していない必要があります。"
     },
     "IMMERSION": {
       "HEADER": "画面上の表示",

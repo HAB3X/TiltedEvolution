@@ -24,6 +24,7 @@
 #include <PartyCompass.h>
 #include <PartyTeleport.h>
 #include <WireProtocol.h>
+#include <Trade.h>
 #include <RequiredMods.h>
 #include <Relay.h>
 #include <Messages/NotifyVote.h>
@@ -1046,6 +1047,38 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendNotify == recvNotify);
     }
 
+    GIVEN("RequestTrade and NotifyTrade")
+    {
+        Inventory::Entry gold{};
+        gold.BaseId = GameId(0, 0xF);
+        gold.Count = 60;
+        RequestTrade sendRequest, recvRequest;
+        sendRequest.PartnerId = 4;
+        sendRequest.Act = RequestTrade::Action::kConfirm;
+        sendRequest.Offer.Entries.push_back(gold);
+        NotifyTrade sendNotify, recvNotify;
+        sendNotify.PartnerId = 9;
+        sendNotify.PartnerName = "Lydia";
+        sendNotify.What = NotifyTrade::Event::kUnavailable;
+        sendNotify.TheirOffer.Entries.push_back(gold);
+        sendNotify.TheirConfirmed = true;
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendRequest.Serialize(writer);
+        sendNotify.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+        recvRequest.DeserializeRaw(reader);
+        reader.ReadBits(trash, 8);
+        recvNotify.DeserializeRaw(reader);
+
+        REQUIRE(sendRequest == recvRequest);
+        REQUIRE(sendNotify == recvNotify);
+    }
+
     GIVEN("RequestPartyPing")
     {
         RequestPartyPing sendMessage, recvMessage;
@@ -1538,6 +1571,8 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestCrimeAuthority).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestRevive).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyRevive).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestTrade).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kNotifyTrade).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyPartyQuestSharing).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyQuestShareOffer).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyQuestCatchUp).has_value());
@@ -1977,4 +2012,46 @@ TEST_CASE("Vote messages", "[encoding.votes]")
     const bool cOfficialHasVotes = Wire::ToWire(kRequestVote).has_value() || Wire::ToWire(kNotifyVote).has_value();
     Wire::Set(WireProtocol::Current);
     REQUIRE_FALSE(cOfficialHasVotes);
+}
+
+TEST_CASE("Trade offers", "[encoding.trade]")
+{
+    Inventory::Entry gold{};
+    gold.BaseId = GameId(0, 0xF);
+    gold.Count = 100;
+    Inventory::Entry sword{};
+    sword.BaseId = GameId(0, 0x12EB7);
+    sword.Count = 1;
+    Inventory held;
+    held.Entries = {gold, sword};
+
+    GIVEN("What an offer may hold")
+    {
+        Inventory offer;
+        offer.Entries.push_back(gold);
+        REQUIRE(Trade::IsValidOffer(offer));
+        offer.Entries[0].Count = 0;
+        REQUIRE_FALSE(Trade::IsValidOffer(offer));
+        offer.Entries[0] = sword;
+        offer.Entries[0].ExtraWorn = true;
+        REQUIRE_FALSE(Trade::IsValidOffer(offer));
+        offer.Entries[0].ExtraWorn = false;
+        offer.Entries[0].IsQuestItem = true;
+        REQUIRE_FALSE(Trade::IsValidOffer(offer));
+    }
+
+    GIVEN("Only what the giver holds, stacks counted together")
+    {
+        Inventory offer;
+        Inventory::Entry some = gold;
+        some.Count = 60;
+        offer.Entries = {some, some};
+        REQUIRE_FALSE(Trade::Holds(held, offer));
+        offer.Entries = {some, sword};
+        REQUIRE(Trade::Holds(held, offer));
+        Inventory::Entry enchanted = sword;
+        enchanted.ExtraEnchantId = GameId(0, 0x1234);
+        offer.Entries = {enchanted};
+        REQUIRE_FALSE(Trade::Holds(held, offer));
+    }
 }

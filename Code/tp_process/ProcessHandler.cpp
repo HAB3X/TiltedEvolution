@@ -18,6 +18,10 @@ void ProcessHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<C
     m_pCoreObject->SetValue("answerPartyTravel", CefV8Value::CreateFunction("answerPartyTravel", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
     m_pCoreObject->SetValue("answerPartyDoor", CefV8Value::CreateFunction("answerPartyDoor", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
     m_pCoreObject->SetValue("summonPlayer", CefV8Value::CreateFunction("summonPlayer", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
+    m_pCoreObject->SetValue("tradeStart", CefV8Value::CreateFunction("tradeStart", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
+    m_pCoreObject->SetValue("tradeOffer", CefV8Value::CreateFunction("tradeOffer", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
+    m_pCoreObject->SetValue("tradeConfirm", CefV8Value::CreateFunction("tradeConfirm", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
+    m_pCoreObject->SetValue("tradeCancel", CefV8Value::CreateFunction("tradeCancel", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
     m_pCoreObject->SetValue("answerPartySummon", CefV8Value::CreateFunction("answerPartySummon", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
     m_pCoreObject->SetValue("setPartyBar", CefV8Value::CreateFunction("setPartyBar", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
     m_pCoreObject->SetValue("setPerfOverlay", CefV8Value::CreateFunction("setPerfOverlay", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);

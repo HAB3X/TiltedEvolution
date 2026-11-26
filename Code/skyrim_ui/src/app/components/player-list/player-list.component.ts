@@ -73,6 +73,11 @@ export class PlayerListComponent {
     this.clientService.summonPlayer(playerId);
   }
 
+  /** Open a trade window with a party member; both confirm before anything moves. */
+  public trade(playerId: number) {
+    this.clientService.startTrade(playerId);
+  }
+
   /** Ask the others to vote on kicking a player; the host kicks directly */
   public voteKick(playerId: number) {
     this.clientService.startKickVote(playerId);

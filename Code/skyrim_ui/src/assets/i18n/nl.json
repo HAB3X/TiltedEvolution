@@ -14,7 +14,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "Ga naar",
-      "SUMMON": "Oproepen"
+      "SUMMON": "Oproepen",
+      "TRADE": "Handelen"
+    },
+    "TRADE": {
+      "TITLE": "Handel met {{name}}",
+      "YOUR_ITEMS": "Jouw voorwerpen",
+      "YOUR_OFFER": "Jouw aanbod",
+      "THEIR_OFFER": "Aanbod van {{name}}",
+      "NOTHING": "Niets",
+      "OFFER": "Aanbieden",
+      "CONFIRM": "Bevestigen",
+      "CANCEL": "Annuleren",
+      "CLOSE": "Sluiten",
+      "CONFIRMED": "Bevestigd",
+      "NOT_CONFIRMED": "Nog niet bevestigd",
+      "HINT": "Kies de aantallen en druk op Aanbieden. Elke wijziging van een aanbod heft beide bevestigingen op; de voorwerpen wisselen zodra jullie allebei bevestigen.",
+      "COMPLETED": "De handel is rond.",
+      "CANCELLED": "De handel is geannuleerd.",
+      "MISSING_ITEMS": "Iemand heeft niet meer wat hij aanbood. Controleer de aanbiedingen en bevestig opnieuw.",
+      "UNAVAILABLE": "Handelen kan nu niet: het moet een groepslid in de buurt zijn dat niet al met iemand anders handelt."
     },
     "IMMERSION": {
       "HEADER": "Elementen op het scherm",

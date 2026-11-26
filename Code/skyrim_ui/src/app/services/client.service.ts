@@ -36,6 +36,28 @@ export interface HostWorldSync {
   people: number;
 }
 
+/** A stack in a trade: the player's own tradeable ones (tradeInventory), or either side's offer. */
+export interface TradeItem {
+  name: string;
+  count: number;
+  enchanted: boolean;
+}
+
+/** What last happened in a trade, in the order of the server's NotifyTrade::Event */
+export const TRADE_EVENTS = ['updated', 'cancelled', 'completed', 'missingItems', 'unavailable'] as const;
+export type TradeEvent = (typeof TRADE_EVENTS)[number];
+
+/** A trade with a party member, from the game's trade event (the server's TradeService). */
+export interface TradeState {
+  partnerId: number;
+  partnerName: string;
+  event: TradeEvent;
+  myOffer: TradeItem[];
+  theirOffer: TradeItem[];
+  myConfirmed: boolean;
+  theirConfirmed: boolean;
+}
+
 /** A kick vote or ready check, from the game's vote event (the server's VoteService). */
 export interface Vote {
   id: number;
@@ -242,6 +264,34 @@ export class ClientService implements OnDestroy {
     skyrimtogether.summonPlayer(playerId);
   }
 
+  /** The trade with a party member, null when there's none (see startTrade). */
+  public tradeChange = new BehaviorSubject<TradeState | null>(null);
+  /** The player's own stacks a trade can offer, as the game last listed them. */
+  public tradeInventoryChange = new BehaviorSubject<TradeItem[]>([]);
+
+  /** Opens a trade with a party member; the server refuses one out of range or already trading. */
+  public startTrade(playerId: number): void {
+    skyrimtogether.tradeStart(playerId);
+  }
+
+  /** This side's whole offer, as [index in tradeInventoryChange, count] pairs; it unconfirms both sides. */
+  public offerTrade(picks: [number, number][]): void {
+    skyrimtogether.tradeOffer(picks.map(([index, count]) => `${index}:${count}`).join(','));
+  }
+
+  public confirmTrade(): void {
+    skyrimtogether.tradeConfirm();
+  }
+
+  /** Cancels the trade, or closes the window after it ended. */
+  public cancelTrade(): void {
+    const trade = this.tradeChange.value;
+    this.tradeChange.next(null);
+    if (trade && (trade.event === 'updated' || trade.event === 'missingItems')) {
+      skyrimtogether.tradeCancel();
+    }
+  }
+
   /** Whether to go to the party member who summoned this player, after partySummonChange. */
   public answerPartySummon(summonerId: number, accept: boolean): void {
     skyrimtogether.answerPartySummon(summonerId, accept);
@@ -413,6 +463,8 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('hostWorldOffer', this.onHostWorldOffer.bind(this));
     skyrimtogether.on('hostWorldSync', this.onHostWorldSync.bind(this));
     skyrimtogether.on('vote', this.onVote.bind(this));
+    skyrimtogether.on('trade', this.onTrade.bind(this));
+    skyrimtogether.on('tradeInventory', this.onTradeInventory.bind(this));
     skyrimtogether.on('crashDump', this.onCrashDump.bind(this));
 
     try {
@@ -480,6 +532,8 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('hostWorldOffer');
     skyrimtogether.off('hostWorldSync');
     skyrimtogether.off('vote');
+    skyrimtogether.off('trade');
+    skyrimtogether.off('tradeInventory');
     skyrimtogether.off('crashDump');
     skyrimtogether.off('dummyData');
     skyrimtogether.off('partyInfo');
@@ -1092,6 +1146,34 @@ export class ClientService implements OnDestroy {
     this.zone.run(() => {
       this.protocolMismatchChange.next(true);
     });
+  }
+
+  private onTrade(
+    partnerId: number,
+    partnerName: string,
+    event: number,
+    myOffer: string,
+    theirOffer: string,
+    myConfirmed: boolean,
+    theirConfirmed: boolean,
+  ) {
+    this.zone.run(() => {
+      const previous = this.tradeChange.value;
+      this.tradeChange.next({
+        partnerId,
+        // A refusal or a cancel from the server may not name them again
+        partnerName: partnerName || previous?.partnerName || '',
+        event: TRADE_EVENTS[event] ?? 'cancelled',
+        myOffer: JSON.parse(myOffer) as TradeItem[],
+        theirOffer: JSON.parse(theirOffer) as TradeItem[],
+        myConfirmed,
+        theirConfirmed,
+      });
+    });
+  }
+
+  private onTradeInventory(items: string) {
+    this.zone.run(() => this.tradeInventoryChange.next(JSON.parse(items) as TradeItem[]));
   }
 
   private onHostWorldOffer(host: string, quests: number, places: number, people: number) {

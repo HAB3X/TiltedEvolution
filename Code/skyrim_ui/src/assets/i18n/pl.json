@@ -14,7 +14,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "Idź do",
-      "SUMMON": "Przywołaj"
+      "SUMMON": "Przywołaj",
+      "TRADE": "Handluj"
+    },
+    "TRADE": {
+      "TITLE": "Handel z {{name}}",
+      "YOUR_ITEMS": "Twoje przedmioty",
+      "YOUR_OFFER": "Twoja oferta",
+      "THEIR_OFFER": "Oferta gracza {{name}}",
+      "NOTHING": "Nic",
+      "OFFER": "Zaoferuj",
+      "CONFIRM": "Potwierdź",
+      "CANCEL": "Anuluj",
+      "CLOSE": "Zamknij",
+      "CONFIRMED": "Potwierdzono",
+      "NOT_CONFIRMED": "Jeszcze niepotwierdzone",
+      "HINT": "Ustaw ilości i naciśnij Zaoferuj. Każda zmiana oferty cofa oba potwierdzenia; przedmioty przechodzą, gdy oboje potwierdzicie.",
+      "COMPLETED": "Wymiana zakończona.",
+      "CANCELLED": "Wymiana została anulowana.",
+      "MISSING_ITEMS": "Ktoś nie ma już tego, co zaoferował. Sprawdźcie oferty i potwierdźcie ponownie.",
+      "UNAVAILABLE": "Teraz nie można handlować: musi to być członek drużyny w pobliżu, który nie handluje już z kimś innym."
     },
     "IMMERSION": {
       "HEADER": "Elementy na ekranie",

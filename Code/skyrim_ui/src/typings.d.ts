@@ -305,6 +305,26 @@ interface SkyrimTogether {
   /** Another player took the same items out of a container first, so this player's were given back. */
   on(event: 'lootRefused', callback: (item: string, count: number) => void): void;
 
+  /**
+   * A trade with a party member changed: the event is the server's NotifyTrade::Event as a number (TRADE_EVENTS), the
+   * offers are JSON lists of { name, count, enchanted }.
+   */
+  on(
+    event: 'trade',
+    callback: (
+      partnerId: number,
+      partnerName: string,
+      event: number,
+      myOffer: string,
+      theirOffer: string,
+      myConfirmed: boolean,
+      theirConfirmed: boolean,
+    ) => void,
+  ): void;
+
+  /** The player's stacks a trade can offer, a JSON list of { name, count, enchanted }; tradeOffer picks from it by index. */
+  on(event: 'tradeInventory', callback: (items: string) => void): void;
+
   /** Remove listener from when the application is first initialized. */
   off(event: 'init', callback?: SkyrimTogetherTypes.InitCallback): void;
 
@@ -483,6 +503,8 @@ interface SkyrimTogether {
   ): void;
 
   off(event: 'lootRefused', callback?: (item: string, count: number) => void): void;
+  off(event: 'trade', callback?: (...args: unknown[]) => void): void;
+  off(event: 'tradeInventory', callback?: (items: string) => void): void;
 
   /**
    * Connect to server at given address and port.
@@ -577,6 +599,18 @@ interface SkyrimTogether {
 
   /** Ask a party member to come to this player; they are asked first. */
   summonPlayer(playerId: number): void;
+
+  /** Open a trade with a party member; the answer comes as trade events, and tradeInventory lists what can be offered. */
+  tradeStart(playerId: number): void;
+
+  /** This side's whole offer in the open trade: "index:count" pairs, indices into the last tradeInventory, comma separated. */
+  tradeOffer(picks: string): void;
+
+  /** Confirm the trade as it stands; the server moves the items once both sides have. */
+  tradeConfirm(): void;
+
+  /** Cancel the open trade. */
+  tradeCancel(): void;
 
   /** This player's answer to a party member's summons (the partySummon event). */
   answerPartySummon(summonerId: number, accept: boolean): void;

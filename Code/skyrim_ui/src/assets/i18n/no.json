@@ -12,7 +12,26 @@
     },
     "PARTY_MOVES": {
       "GO_TO": "Gå til",
-      "SUMMON": "Tilkall"
+      "SUMMON": "Tilkall",
+      "TRADE": "Handle"
+    },
+    "TRADE": {
+      "TITLE": "Handel med {{name}}",
+      "YOUR_ITEMS": "Dine gjenstander",
+      "YOUR_OFFER": "Ditt tilbud",
+      "THEIR_OFFER": "Tilbudet til {{name}}",
+      "NOTHING": "Ingenting",
+      "OFFER": "Tilby",
+      "CONFIRM": "Bekreft",
+      "CANCEL": "Avbryt",
+      "CLOSE": "Lukk",
+      "CONFIRMED": "Bekreftet",
+      "NOT_CONFIRMED": "Ikke bekreftet ennå",
+      "HINT": "Velg antall og trykk Tilby. Enhver endring i et tilbud opphever begge bekreftelsene; gjenstandene flyttes når dere begge bekrefter.",
+      "COMPLETED": "Handelen er gjennomført.",
+      "CANCELLED": "Handelen ble avbrutt.",
+      "MISSING_ITEMS": "Noen har ikke lenger det de tilbød. Sjekk tilbudene og bekreft igjen.",
+      "UNAVAILABLE": "Kan ikke handle nå: det må være et gruppemedlem i nærheten som ikke allerede handler med noen andre."
     },
     "IMMERSION": {
       "HEADER": "Elementer på skjermen",
