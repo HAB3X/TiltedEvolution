@@ -58,6 +58,12 @@
         "PRESET_FREE_ROAM_HINT": "各自の世界のまま。あなたのMODが必要",
         "PRESET_PVP_HINT": "プレイヤー同士で戦える。MOD自由",
         "HOST_WORLD_TITLE": "フレンドを自分の世界に招く",
+        "KIND_PLUS": "Plus",
+        "KIND_PLUS_HINT": "Plus のすべての機能。フレンドには Skyrim Together Plus が必要です。",
+        "KIND_CLASSIC": "クラシック",
+        "KIND_CLASSIC_HINT": "通常の Skyrim Together 1.8.4 のフレンドも参加できます。Plus 専用の設定はオフになります。",
+        "PAUSE_TITLE": "メニューで一時停止",
+        "PAUSE": "全員がインベントリやマップなどのメニューを開いている間、世界が一時停止します。",
         "REQUIRE_MODS_TITLE": "フレンドに自分のMODを要求"
       },
       "LAN": {

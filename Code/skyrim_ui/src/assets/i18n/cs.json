@@ -58,6 +58,12 @@
         "PRESET_FREE_ROAM_HINT": "Každý má svůj svět; tvé mody nutné",
         "PRESET_PVP_HINT": "Hráči mohou bojovat; libovolné mody",
         "HOST_WORLD_TITLE": "Přátelé vstoupí do mého světa",
+        "KIND_PLUS": "Plus",
+        "KIND_PLUS_HINT": "Všechny funkce Plus. Přátelé potřebují Skyrim Together Plus.",
+        "KIND_CLASSIC": "Klasický",
+        "KIND_CLASSIC_HINT": "Připojit se mohou přátelé s běžným Skyrim Together 1.8.4. Možnosti jen pro Plus jsou vypnuté.",
+        "PAUSE_TITLE": "Pauza v nabídkách",
+        "PAUSE": "Svět se pozastaví, dokud jsou všichni hráči v nabídce, třeba v inventáři nebo na mapě.",
         "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody"
       },
       "LAN": {

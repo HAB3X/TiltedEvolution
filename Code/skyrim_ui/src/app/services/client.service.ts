@@ -28,6 +28,20 @@ export interface LastSession {
 
 const LAST_SESSION_KEY = 'last_session';
 
+/** What the host chose on the Host page, besides the password */
+export interface HostOptions {
+  /** Friends who join take over the host's world */
+  hostWorld: boolean;
+  /** Friends need the host's mods to join */
+  requireMods: boolean;
+  /** Players can hurt each other */
+  pvp: boolean;
+  /** The world pauses while every player is in a menu */
+  pauseInMenus: boolean;
+  /** An official-protocol server that the regular Skyrim Together can join; the Plus-only options are off */
+  classic: boolean;
+}
+
 /** A server on the local network, as it answered a search. */
 export interface LanServer {
   address: string;
@@ -288,9 +302,7 @@ export class ClientService implements OnDestroy {
     if (session.hosting) {
       this.hostServer(
         this.storeService.get('host_password', ''),
-        this.storeService.getBool('host_world', true),
-        this.storeService.getBool('host_require_mods', true),
-        this.storeService.getBool('host_pvp', false),
+        this.savedHostOptions(),
       );
     } else {
       this.connect(
@@ -301,14 +313,33 @@ export class ClientService implements OnDestroy {
     }
   }
 
-  /** Start the server next to the game and connect to it once it's up. */
-  public hostServer(
-    password: string,
-    hostWorld: boolean,
-    requireMods: boolean,
-    pvp = false,
-  ): void {
-    skyrimtogether.hostServer(password, hostWorld, requireMods, pvp);
+  /** The Host page's choices from the last time this player hosted */
+  public savedHostOptions(): HostOptions {
+    return {
+      hostWorld: this.storeService.getBool('host_world', true),
+      requireMods: this.storeService.getBool('host_require_mods', true),
+      pvp: this.storeService.getBool('host_pvp', false),
+      pauseInMenus: this.storeService.getBool('host_pause_in_menus', false),
+      classic: this.storeService.getBool('host_classic', false),
+    };
+  }
+
+  /** Start the server next to the game and connect to it once it's up; remembers the choices for next time. */
+  public hostServer(password: string, options: HostOptions): void {
+    this.storeService.set('host_password', password);
+    this.storeService.set('host_world', String(options.hostWorld));
+    this.storeService.set('host_require_mods', String(options.requireMods));
+    this.storeService.set('host_pvp', String(options.pvp));
+    this.storeService.set('host_pause_in_menus', String(options.pauseInMenus));
+    this.storeService.set('host_classic', String(options.classic));
+    skyrimtogether.hostServer(
+      password,
+      options.hostWorld,
+      options.requireMods,
+      options.pvp,
+      options.pauseInMenus,
+      options.classic,
+    );
     this.hostingChange.next(true);
     this.isConnectionInProgressChange.next(true);
     this._host = '127.0.0.1';

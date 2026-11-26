@@ -59,6 +59,12 @@
         "PRESET_FREE_ROAM_HINT": "Iedereen houdt zijn wereld; jouw mods vereist",
         "PRESET_PVP_HINT": "Spelers kunnen vechten; elke mod",
         "HOST_WORLD_TITLE": "Vrienden betreden mijn wereld",
+        "KIND_PLUS": "Plus",
+        "KIND_PLUS_HINT": "Alle Plus-functies. Vrienden hebben Skyrim Together Plus nodig.",
+        "KIND_CLASSIC": "Klassiek",
+        "KIND_CLASSIC_HINT": "Vrienden met de gewone Skyrim Together 1.8.4 kunnen meedoen. Opties die alleen in Plus zitten staan uit.",
+        "PAUSE_TITLE": "Pauze in menu's",
+        "PAUSE": "De wereld pauzeert zolang alle spelers in een menu zitten, zoals de inventaris of de kaart.",
         "REQUIRE_MODS_TITLE": "Vrienden hebben mijn mods nodig"
       },
       "LAN": {

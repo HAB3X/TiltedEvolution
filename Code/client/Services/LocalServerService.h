@@ -12,12 +12,18 @@ struct HostSettings
     bool RequireMods{};
     // Players can hurt each other (Gameplay:bEnablePvp)
     bool Pvp{};
+    // The world pauses while every player is in a menu (Gameplay:bPauseWhenAllInMenus)
+    bool PauseInMenus{};
+    // Runs the official-protocol server in the classic folder instead, so players with the regular Skyrim Together
+    // v1.8.4 can join; the Plus-only settings above (host world, required mods, pause) don't exist there
+    bool Classic{};
 };
 
 /**
  * @brief Hosting from inside the game: runs the Skyrim Together server that sits next to the client and connects to it.
  *
- * The server runs without a window and stops when the game exits (it watches the game). Its output goes to the
+ * Plus games run the server next to the client, classic games the official-protocol one in its classic folder (the
+ * client then joins it as official v1.8.4, see TransportService). The server runs without a window and stops when the game exits (it watches the game). Its output goes to the
  * client log.
  */
 struct LocalServerService
@@ -44,4 +50,6 @@ private:
     World& m_world;
     HANDLE m_process{};
     uint16_t m_port{};
+    // Which server m_process is
+    bool m_classic{};
 };

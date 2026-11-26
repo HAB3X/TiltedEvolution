@@ -60,6 +60,12 @@
         "PRESET_FREE_ROAM_HINT": "У каждого свой мир; нужны ваши моды",
         "PRESET_PVP_HINT": "Игроки могут сражаться; любые моды",
         "HOST_WORLD_TITLE": "Друзья входят в мой мир",
+        "KIND_PLUS": "Plus",
+        "KIND_PLUS_HINT": "Все функции Plus. Друзьям нужен Skyrim Together Plus.",
+        "KIND_CLASSIC": "Классический",
+        "KIND_CLASSIC_HINT": "Могут подключиться друзья с обычным Skyrim Together 1.8.4. Функции только для Plus выключены.",
+        "PAUSE_TITLE": "Пауза в меню",
+        "PAUSE": "Мир ставится на паузу, пока все игроки в меню, например в инвентаре или на карте.",
         "REQUIRE_MODS_TITLE": "Друзьям нужны мои моды"
       },
       "LAN": {

@@ -6,22 +6,36 @@
       <p class="muted page-lead">{{ 'COMPONENT.CONNECT.HOST.INFO' | transloco }}</p>
     </div>
 
-    <div class="presets">
-      @for (preset of presetNames; track preset) {
-        <button
-          class="preset"
-          [class.chosen]="activePreset === preset"
-          (click)="applyPreset(preset)"
-        >
-          <span class="preset-name">{{
-            'COMPONENT.CONNECT.HOST.PRESET_' + preset | transloco
-          }}</span>
-          <span class="preset-hint">{{
-            'COMPONENT.CONNECT.HOST.PRESET_' + preset + '_HINT' | transloco
-          }}</span>
-        </button>
-      }
+    <!-- Who can join: Plus players, or anyone on the regular Skyrim Together -->
+    <div class="kinds">
+      <button class="preset" [class.chosen]="!classic" (click)="setClassic(false)">
+        <span class="preset-name">{{ 'COMPONENT.CONNECT.HOST.KIND_PLUS' | transloco }}</span>
+        <span class="preset-hint">{{ 'COMPONENT.CONNECT.HOST.KIND_PLUS_HINT' | transloco }}</span>
+      </button>
+      <button class="preset" [class.chosen]="classic" (click)="setClassic(true)">
+        <span class="preset-name">{{ 'COMPONENT.CONNECT.HOST.KIND_CLASSIC' | transloco }}</span>
+        <span class="preset-hint">{{ 'COMPONENT.CONNECT.HOST.KIND_CLASSIC_HINT' | transloco }}</span>
+      </button>
     </div>
+
+    @if (!classic) {
+      <div class="presets">
+        @for (preset of presetNames; track preset) {
+          <button
+            class="preset"
+            [class.chosen]="activePreset === preset"
+            (click)="applyPreset(preset)"
+          >
+            <span class="preset-name">{{
+              'COMPONENT.CONNECT.HOST.PRESET_' + preset | transloco
+            }}</span>
+            <span class="preset-hint">{{
+              'COMPONENT.CONNECT.HOST.PRESET_' + preset + '_HINT' | transloco
+            }}</span>
+          </button>
+        }
+      </div>
+    }
 
     <div class="field">
       <label for="host-password">{{
@@ -38,6 +52,7 @@
     </div>
 
     <div class="toggles">
+      @if (!classic) {
       <label class="toggle-row" for="host-world">
         <span class="toggle-text">
           <span class="toggle-title">{{ 'COMPONENT.CONNECT.HOST.HOST_WORLD_TITLE' | transloco }}</span>
@@ -52,6 +67,14 @@
         </span>
         <input type="checkbox" id="require-mods" [(ngModel)]="requireMods" />
       </label>
+      <label class="toggle-row" for="host-pause">
+        <span class="toggle-text">
+          <span class="toggle-title">{{ 'COMPONENT.CONNECT.HOST.PAUSE_TITLE' | transloco }}</span>
+          <span class="toggle-hint">{{ 'COMPONENT.CONNECT.HOST.PAUSE' | transloco }}</span>
+        </span>
+        <input type="checkbox" id="host-pause" [(ngModel)]="pauseInMenus" />
+      </label>
+      }
       <label class="toggle-row" for="host-pvp">
         <span class="toggle-text">
           <span class="toggle-title">PvP</span>

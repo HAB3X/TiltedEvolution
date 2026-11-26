@@ -59,6 +59,12 @@
         "PRESET_FREE_ROAM_HINT": "各自保留自己的世界；需要你的模组",
         "PRESET_PVP_HINT": "玩家可以互相战斗；模组随意",
         "HOST_WORLD_TITLE": "好友进入我的世界",
+        "KIND_PLUS": "Plus",
+        "KIND_PLUS_HINT": "全部 Plus 功能。好友需要 Skyrim Together Plus。",
+        "KIND_CLASSIC": "经典",
+        "KIND_CLASSIC_HINT": "使用普通 Skyrim Together 1.8.4 的好友也能加入。Plus 专属选项会关闭。",
+        "PAUSE_TITLE": "菜单中暂停",
+        "PAUSE": "所有玩家都在菜单（如物品栏或地图）中时，世界会暂停。",
         "REQUIRE_MODS_TITLE": "好友需要我的模组"
       },
       "LAN": {

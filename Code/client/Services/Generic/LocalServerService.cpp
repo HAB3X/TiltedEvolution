@@ -24,9 +24,20 @@ constexpr char kStartedLine[] = "started on port";
 constexpr char kHostTag[] = "[Host] ";
 constexpr char kPublicAddress[] = "Public address: ";
 
-std::filesystem::path IniPath()
+// The folder of the server to run: the Plus one next to the client, or the official-protocol one in classic/
+std::filesystem::path ServerDir(bool aClassic)
 {
-    return TiltedPhoques::GetPath() / L"config" / L"STServer.ini";
+    return aClassic ? TiltedPhoques::GetPath() / L"classic" : TiltedPhoques::GetPath();
+}
+
+std::filesystem::path IniPath(bool aClassic)
+{
+    return ServerDir(aClassic) / L"config" / L"STServer.ini";
+}
+
+const wchar_t* Bool(bool aValue)
+{
+    return aValue ? L"true" : L"false";
 }
 
 std::wstring Widen(const std::string& acText)
@@ -64,6 +75,12 @@ void LocalServerService::Host(const HostSettings& acSettings) noexcept
 {
     if (IsRunning())
     {
+        // One server per game session: it stops with the game, and killing it would leave its router port open
+        if (m_classic != acSettings.Classic)
+        {
+            Fail(std::string("You're already hosting a ") + (m_classic ? "classic" : "Plus") + " game. Restart Skyrim to host the other kind.");
+            return;
+        }
         spdlog::info("[LocalServer]: already hosting on port {}, connecting", m_port);
         Connect(acSettings.Password);
         return;
@@ -93,27 +110,34 @@ bool LocalServerService::WriteRequiredMods() const noexcept
 
 bool LocalServerService::Start(const HostSettings& acSettings) noexcept
 {
-    const std::filesystem::path cDir = TiltedPhoques::GetPath();
+    const bool cClassic = acSettings.Classic;
+    const std::filesystem::path cDir = ServerDir(cClassic);
     const std::filesystem::path cExe = cDir / kServerExe;
     std::error_code ec;
     if (!std::filesystem::exists(cExe, ec))
     {
-        Fail("SkyrimTogetherServer.exe isn't in the Skyrim Together folder, so this copy can't host.");
+        Fail(cClassic ? "The classic server (classic\\SkyrimTogetherServer.exe) isn't in the Skyrim Together folder, so this copy can't host classic games."
+                      : "SkyrimTogetherServer.exe isn't in the Skyrim Together folder, so this copy can't host.");
         return false;
     }
 
     // The server reads its settings from here; the rest of the file keeps what the player set
-    std::filesystem::create_directories(IniPath().parent_path(), ec);
-    const std::wstring cIni = IniPath().wstring();
-    if (!WritePrivateProfileStringW(L"GameServer", L"sPassword", Widen(acSettings.Password).c_str(), cIni.c_str()) ||
-        !WritePrivateProfileStringW(L"Gameplay", L"bHostWorld", acSettings.HostWorld ? L"true" : L"false", cIni.c_str()) ||
-        !WritePrivateProfileStringW(L"ModPolicy", L"bRequireMods", acSettings.RequireMods ? L"true" : L"false", cIni.c_str()) ||
-        !WritePrivateProfileStringW(L"Gameplay", L"bEnablePvp", acSettings.Pvp ? L"true" : L"false", cIni.c_str()))
+    std::filesystem::create_directories(IniPath(cClassic).parent_path(), ec);
+    const std::wstring cIni = IniPath(cClassic).wstring();
+    bool written = WritePrivateProfileStringW(L"GameServer", L"sPassword", Widen(acSettings.Password).c_str(), cIni.c_str()) &&
+                   WritePrivateProfileStringW(L"Gameplay", L"bEnablePvp", Bool(acSettings.Pvp), cIni.c_str());
+    if (!cClassic)
+    {
+        written = written && WritePrivateProfileStringW(L"Gameplay", L"bHostWorld", Bool(acSettings.HostWorld), cIni.c_str()) &&
+                  WritePrivateProfileStringW(L"ModPolicy", L"bRequireMods", Bool(acSettings.RequireMods), cIni.c_str()) &&
+                  WritePrivateProfileStringW(L"Gameplay", L"bPauseWhenAllInMenus", Bool(acSettings.PauseInMenus), cIni.c_str());
+    }
+    if (!written)
     {
         Fail("Couldn't write the server settings (" + std::to_string(GetLastError()) + ").");
         return false;
     }
-    if (acSettings.RequireMods && !WriteRequiredMods())
+    if (!cClassic && acSettings.RequireMods && !WriteRequiredMods())
     {
         Fail("Couldn't write the list of your mods for the server.");
         return false;
@@ -154,8 +178,10 @@ bool LocalServerService::Start(const HostSettings& acSettings) noexcept
     ResumeThread(process.hThread);
     CloseHandle(process.hThread);
     m_process = process.hProcess;
+    m_classic = cClassic;
 
-    spdlog::info("[LocalServer]: started the server on port {}, host world {}, require mods {}", m_port, acSettings.HostWorld, acSettings.RequireMods);
+    spdlog::info("[LocalServer]: started the {} server on port {}, host world {}, require mods {}, pause in menus {}", cClassic ? "classic" : "Plus", m_port,
+                 acSettings.HostWorld, acSettings.RequireMods, acSettings.PauseInMenus);
 
     // Reads the server's output for as long as it runs: it would stop when the pipe fills up. Its stdin stays open
     // here (inWrite is never closed), so that it doesn't see the end of its input.

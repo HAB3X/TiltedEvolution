@@ -60,6 +60,12 @@
         "PRESET_FREE_ROAM_HINT": "Herkes kendi dünyasında; modların gerekli",
         "PRESET_PVP_HINT": "Oyuncular dövüşebilir; her mod",
         "HOST_WORLD_TITLE": "Arkadaşlarım dünyama girsin",
+        "KIND_PLUS": "Plus",
+        "KIND_PLUS_HINT": "Tüm Plus özellikleri. Arkadaşlarının Skyrim Together Plus'a ihtiyacı var.",
+        "KIND_CLASSIC": "Klasik",
+        "KIND_CLASSIC_HINT": "Normal Skyrim Together 1.8.4 kullanan arkadaşlar katılabilir. Yalnızca Plus'a ait seçenekler kapalıdır.",
+        "PAUSE_TITLE": "Menülerde duraklat",
+        "PAUSE": "Tüm oyuncular envanter ya da harita gibi bir menüdeyken dünya duraklar.",
         "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun"
       },
       "LAN": {

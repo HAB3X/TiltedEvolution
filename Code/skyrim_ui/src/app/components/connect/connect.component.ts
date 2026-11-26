@@ -42,6 +42,9 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
   public hostWorld = true;
   public requireMods = true;
   public pvp = false;
+  public pauseInMenus = false;
+  /** Hosting for the regular Skyrim Together: the Plus-only options are off */
+  public classic = false;
 
   /** One click setups for the host form */
   public readonly presets = {
@@ -53,6 +56,11 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
   public applyPreset(name: keyof ConnectComponent['presets']): void {
     this.sound.play(Sound.Ok);
     Object.assign(this, this.presets[name]);
+  }
+
+  public setClassic(classic: boolean): void {
+    this.sound.play(Sound.Ok);
+    this.classic = classic;
   }
 
   /** Servers on the local network, null while searching. */
@@ -122,9 +130,7 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
     this.password = this.storeService.get('last_connected_password', '');
     this.savePassword = this.password !== '';
     this.hostPassword = this.storeService.get('host_password', '');
-    this.hostWorld = this.storeService.getBool('host_world', true);
-    this.requireMods = this.storeService.getBool('host_require_mods', true);
-    this.pvp = this.storeService.getBool('host_pvp', false);
+    Object.assign(this, this.client.savedHostOptions());
   }
 
   public searchLan(): void {
@@ -200,12 +206,14 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public host(): void {
     this.connecting = true;
-    this.storeService.set('host_password', this.hostPassword);
-    this.storeService.set('host_world', String(this.hostWorld));
-    this.storeService.set('host_require_mods', String(this.requireMods));
-    this.storeService.set('host_pvp', String(this.pvp));
     this.sound.play(Sound.Ok);
-    this.client.hostServer(this.hostPassword, this.hostWorld, this.requireMods, this.pvp);
+    this.client.hostServer(this.hostPassword, {
+      hostWorld: this.hostWorld,
+      requireMods: this.requireMods,
+      pvp: this.pvp,
+      pauseInMenus: this.pauseInMenus,
+      classic: this.classic,
+    });
   }
 
   public openServerList(): void {

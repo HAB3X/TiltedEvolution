@@ -394,8 +394,17 @@ interface SkyrimTogether {
    * @param hostWorld Whether friends who join take over the host's world.
    * @param requireMods Whether friends need the host's mods to join.
    * @param pvp Whether players can hurt each other.
+   * @param pauseInMenus Whether the world pauses while every player is in a menu.
+   * @param classic Whether to run the official-protocol server instead, which the regular Skyrim Together can join.
    */
-  hostServer(password: string, hostWorld: boolean, requireMods: boolean, pvp: boolean): void;
+  hostServer(
+    password: string,
+    hostWorld: boolean,
+    requireMods: boolean,
+    pvp: boolean,
+    pauseInMenus: boolean,
+    classic: boolean,
+  ): void;
 
   /**
    * Look for servers on the local network; the answer comes as a lanServers event.

@@ -58,6 +58,12 @@
         "PRESET_FREE_ROAM_HINT": "Alle beholder sin verden; dine moder kreves",
         "PRESET_PVP_HINT": "Spillere kan sloss; alle moder",
         "HOST_WORLD_TITLE": "Venner går inn i min verden",
+        "KIND_PLUS": "Plus",
+        "KIND_PLUS_HINT": "Alle Plus-funksjoner. Venner trenger Skyrim Together Plus.",
+        "KIND_CLASSIC": "Klassisk",
+        "KIND_CLASSIC_HINT": "Venner med vanlig Skyrim Together 1.8.4 kan bli med. Valg som bare finnes i Plus er av.",
+        "PAUSE_TITLE": "Pause i menyer",
+        "PAUSE": "Verden pauses mens alle spillerne er i en meny, som inventaret eller kartet.",
         "REQUIRE_MODS_TITLE": "Venner trenger modene mine"
       },
       "LAN": {

@@ -69,6 +69,12 @@
         "PRESET_FREE_ROAM_HINT": "Everyone keeps their own world; your mods required",
         "PRESET_PVP_HINT": "Players can fight each other; any mods",
         "HOST_WORLD_TITLE": "Friends join my world",
+        "KIND_PLUS": "Plus",
+        "KIND_PLUS_HINT": "Every Plus feature. Friends need Skyrim Together Plus.",
+        "KIND_CLASSIC": "Classic",
+        "KIND_CLASSIC_HINT": "Friends with the regular Skyrim Together 1.8.4 can join. Plus-only options are off.",
+        "PAUSE_TITLE": "Pause in menus",
+        "PAUSE": "The world pauses while every player is in a menu, like the inventory or the map.",
         "REQUIRE_MODS_TITLE": "Friends need my mods"
       },
       "ERROR": {

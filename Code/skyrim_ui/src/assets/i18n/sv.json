@@ -60,6 +60,12 @@
         "PRESET_FREE_ROAM_HINT": "Alla behåller sin värld; dina moddar krävs",
         "PRESET_PVP_HINT": "Spelare kan slåss; valfria moddar",
         "HOST_WORLD_TITLE": "Vänner går in i min värld",
+        "KIND_PLUS": "Plus",
+        "KIND_PLUS_HINT": "Alla Plus-funktioner. Vänner behöver Skyrim Together Plus.",
+        "KIND_CLASSIC": "Klassisk",
+        "KIND_CLASSIC_HINT": "Vänner med vanliga Skyrim Together 1.8.4 kan gå med. Alternativ som bara finns i Plus är av.",
+        "PAUSE_TITLE": "Paus i menyer",
+        "PAUSE": "Världen pausas medan alla spelare är i en meny, som inventariet eller kartan.",
         "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar"
       },
       "LAN": {

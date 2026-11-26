@@ -117,6 +117,12 @@
   font-size: 0.75rem;
 }
 
+.kinds {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
 .presets {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

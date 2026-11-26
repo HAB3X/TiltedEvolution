@@ -59,6 +59,12 @@
         "PRESET_FREE_ROAM_HINT": "Chacun garde son monde ; vos mods requis",
         "PRESET_PVP_HINT": "Les joueurs peuvent se battre ; tous mods",
         "HOST_WORLD_TITLE": "Mes amis rejoignent mon monde",
+        "KIND_PLUS": "Plus",
+        "KIND_PLUS_HINT": "Toutes les fonctions Plus. Vos amis ont besoin de Skyrim Together Plus.",
+        "KIND_CLASSIC": "Classique",
+        "KIND_CLASSIC_HINT": "Les amis avec le Skyrim Together 1.8.4 normal peuvent rejoindre. Les options propres à Plus sont désactivées.",
+        "PAUSE_TITLE": "Pause dans les menus",
+        "PAUSE": "Le monde se met en pause tant que tous les joueurs sont dans un menu, comme l'inventaire ou la carte.",
         "REQUIRE_MODS_TITLE": "Mes amis ont besoin de mes mods"
       },
       "LAN": {
