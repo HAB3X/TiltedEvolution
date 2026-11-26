@@ -4,6 +4,8 @@
 #include <Games/Skyrim/SaveLoad.h>
 #include <Services/OverlayService.h>
 #include <Services/SendBuffer.h>
+#include <Services/PluginChecksums.h>
+#include <RequiredMods.h>
 
 #include <Events/ConnectedEvent.h>
 #include <Events/ConnectionErrorEvent.h>
@@ -167,14 +169,24 @@ String GetBuildVersion()
 }
 
 // Launcher sessions have no overlay, and without this a refused player would stand around without a word.
-void ShowRefusal(const AuthenticationResponse::ResponseType aType)
+void ShowRefusal(const AuthenticationResponse& acResponse)
 {
     using AR = AuthenticationResponse::ResponseType;
 
+    std::wstring versions;
     const wchar_t* pText = nullptr;
-    switch (aType)
+    switch (acResponse.Type)
     {
-    case AR::kWrongVersion: pText = L"The server refused the connection:\nthe host and you use different versions of Skyrim Together."; break;
+    case AR::kWrongVersion:
+    {
+        // Versions are plain ASCII
+        const String cOurs = GetBuildVersion();
+        versions = L"The server refused the connection:\nthe host has Skyrim Together " + std::wstring(acResponse.Version.begin(), acResponse.Version.end()) +
+                   L" and you have " + std::wstring(cOurs.begin(), cOurs.end()) +
+                   L". Everyone needs the same version (Plus releases: github.com/HAB3X/TiltedEvolution/releases).";
+        pText = versions.c_str();
+        break;
+    }
     case AR::kModsMismatch: pText = L"The server refused the connection:\nyour mods don't match the host's."; break;
     case AR::kClientModsDisallowed: pText = L"The server refused the connection:\nthe host doesn't allow client mods (SKSE or Mod Organizer)."; break;
     case AR::kWrongPassword: pText = L"The server refused the connection:\nthe password is wrong."; break;
@@ -195,7 +207,9 @@ void ShowRefusal(const AuthenticationResponse::ResponseType aType)
 
 void TransportService::OnConnected()
 {
-    if (PlayerCharacter::Get())
+    // The plugins' checksums go with the authentication; reading them the first time takes a few seconds
+    PluginChecksums::Start();
+    if (PlayerCharacter::Get() && PluginChecksums::IsReady())
     {
         SendAuthenticationRequest();
         return;
@@ -242,6 +256,7 @@ void TransportService::SendAuthenticationRequest()
         entry.IsLite = pMod->IsLite();
         entry.Filename = pMod->filename;
         entry.FileSize = pMod->GetFileSize();
+        entry.Checksum = RequiredMods::IsGamePlugin(pMod->filename) ? 0 : PluginChecksums::Get(pMod->filename);
     }
 
     auto& modSystem = m_world.GetModSystem();
@@ -252,6 +267,7 @@ void TransportService::SendAuthenticationRequest()
         modSystem.GetServerModId(pCell->formID, request.CellId);
 
     request.Level = pPlayer->GetLevel();
+    request.Returning = m_returning;
 
     auto* pGameTime = TimeData::Get();
     request.PlayerTime.TimeScale = pGameTime->TimeScale->f;
@@ -263,11 +279,12 @@ void TransportService::SendAuthenticationRequest()
     Send(request);
 }
 
-bool TransportService::Connect(const std::string& acEndpoint) noexcept
+bool TransportService::Connect(const std::string& acEndpoint, const bool aReturning) noexcept
 {
     // A new connection starts in this build's protocol
     Wire::Set(WireProtocol::Current);
     m_reconnectAsOfficial = false;
+    m_returning = aReturning;
     m_endpoint = acEndpoint;
     return Client::Connect(acEndpoint);
 }
@@ -298,7 +315,7 @@ void TransportService::OnUpdate()
     if (!m_authenticationPending)
         return;
 
-    if (!PlayerCharacter::Get())
+    if (!PlayerCharacter::Get() || !PluginChecksums::IsReady())
         return;
 
     m_authenticationPending = false;
@@ -369,7 +386,7 @@ void TransportService::HandleAuthenticationResponse(const AuthenticationResponse
     }
 
     spdlog::warn("Server refused the connection, type {}", static_cast<int>(acMessage.Type));
-    ShowRefusal(acMessage.Type);
+    ShowRefusal(acMessage);
 
     TiltedPhoques::String ErrorInfo;
 
@@ -379,7 +396,7 @@ void TransportService::HandleAuthenticationResponse(const AuthenticationResponse
     {
     case AR::kWrongVersion:
         ErrorInfo += "\"error\": \"wrong_version\", \"data\": {";
-        ErrorInfo += fmt::format("\"expectedVersion\": \"{}\", \"version\": \"{}\"", acMessage.Version, BUILD_COMMIT);
+        ErrorInfo += fmt::format("\"expectedVersion\": \"{}\", \"version\": \"{}\"", acMessage.Version, GetBuildVersion());
         ErrorInfo += "}";
         break;
     case AR::kModsMismatch:

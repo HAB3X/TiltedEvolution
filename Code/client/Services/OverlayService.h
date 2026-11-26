@@ -27,6 +27,7 @@ struct NotifyPlayerLevel;
 struct NotifyPlayerCellChanged;
 struct NotifyTeleport;
 struct NotifyPlayerHealthUpdate;
+struct NotifyVote;
 enum ChatMessageTypes;
 struct PartyJoinedEvent;
 struct PartyLeftEvent;
@@ -97,6 +98,7 @@ protected:
     void OnPlayerCellChanged(const NotifyPlayerCellChanged& acMessage) const noexcept;
     void OnNotifyTeleport(const NotifyTeleport& acMessage) noexcept;
     void OnNotifyPlayerHealthUpdate(const NotifyPlayerHealthUpdate& acMessage) noexcept;
+    void OnNotifyVote(const NotifyVote& acMessage) noexcept;
     void OnPartyJoinedEvent(const PartyJoinedEvent& acEvent) noexcept;
     void OnPartyLeftEvent(const PartyLeftEvent& acEvent) noexcept;
 
@@ -132,6 +134,7 @@ private:
     entt::scoped_connection m_cellChangedConnection;
     entt::scoped_connection m_teleportConnection;
     entt::scoped_connection m_playerHealthConnection;
+    entt::scoped_connection m_voteConnection;
     entt::scoped_connection m_partyJoinedConnection;
     entt::scoped_connection m_partyLeftConnection;
 };

@@ -1,4 +1,5 @@
 #include <Messages/AuthenticationRequest.h>
+#include <WireProtocol.h>
 
 void AuthenticationRequest::SerializeRaw(TiltedPhoques::Buffer::Writer& aWriter) const noexcept
 {
@@ -13,6 +14,8 @@ void AuthenticationRequest::SerializeRaw(TiltedPhoques::Buffer::Writer& aWriter)
     CellId.Serialize(aWriter);
     Serialization::WriteVarInt(aWriter, Level);
     PlayerTime.Serialize(aWriter);
+    if (!Wire::IsOfficial184())
+        Serialization::WriteBool(aWriter, Returning);
 }
 
 void AuthenticationRequest::DeserializeRaw(TiltedPhoques::Buffer::Reader& aReader) noexcept
@@ -30,4 +33,5 @@ void AuthenticationRequest::DeserializeRaw(TiltedPhoques::Buffer::Reader& aReade
     CellId.Deserialize(aReader);
     Level = Serialization::ReadVarInt(aReader) & 0xFFFF;
     PlayerTime.Deserialize(aReader);
+    Returning = !Wire::IsOfficial184() && Serialization::ReadBool(aReader);
 }

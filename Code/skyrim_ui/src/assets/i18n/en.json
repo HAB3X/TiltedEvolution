@@ -56,7 +56,9 @@
       "REVEAL_HINT": "Show players nearby",
       "SAVES": "Saves",
       "SAVES_HINT": "Party checkpoints",
-      "CANCEL_CONNECT": "Cancel"
+      "CANCEL_CONNECT": "Cancel",
+      "READY_CHECK": "Ready check",
+      "READY_CHECK_HINT": "Ask if everyone is ready"
     },
     "CHAT": {
       "SEND": "Send",
@@ -132,7 +134,11 @@
         "QUEST_TYPE_Side": "Side quests",
         "QUEST_TYPE_CivilWar": "Civil War",
         "QUEST_TYPE_Dawnguard": "Dawnguard",
-        "QUEST_TYPE_Dragonborn": "Dragonborn"
+        "QUEST_TYPE_Dragonborn": "Dragonborn",
+        "RELAY_TITLE": "Relay, for when your router can't be opened",
+        "RELAY_HINT": "If friends outside your network can't reach you (no UPnP, or your provider shares one public address between customers), they can join through a relay: SkyrimTogetherRelay running on a machine everyone can reach. It's only used when the router port can't be opened. Leave it empty to go without.",
+        "RELAY_ADDRESS": "Relay address (address:port)",
+        "RELAY_PASSWORD": "Relay password, if it has one"
       },
       "ERROR": {
         "CONNECTION": "Could not connect to the specified server. Please make sure you've entered the correct address and that you're not experiencing network issues",
@@ -148,7 +154,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Connecting…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Reconnecting… (attempt {{attempt}})",
+      "CANCEL": "Cancel"
     },
     "INVITE": {
       "CODE_INFO": "Friends type this join code in Connect:",
@@ -181,7 +189,8 @@
       "FIND_MODS": "Get the mods",
       "SEARCH_NEXUS": "Search on Nexus",
       "DIFFERENT_VERSION": "different version",
-      "COPY_LIST": "Copy list"
+      "COPY_LIST": "Copy list",
+      "OPEN_RELEASES": "Open the Plus release page"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Message from",
@@ -227,7 +236,8 @@
       "INVITE": "Invite",
       "KICK": "Kick",
       "BAN": "Ban",
-      "IN_PARTY": "In your party"
+      "IN_PARTY": "In your party",
+      "VOTE_KICK": "Vote to kick"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Player List",
@@ -244,7 +254,12 @@
       "PLAYER_MANAGER": "Player Manager",
       "INVITE": "Invite",
       "SETTINGS": "Settings",
-      "CONNECTION_IN_PROGRESS": "Connection in progress..."
+      "CONNECTION_IN_PROGRESS": "Connection in progress...",
+      "REJOIN_OFFER": "Your last game together ended unexpectedly. Rejoin {{address}}?",
+      "REHOST_OFFER": "The game you hosted last ended unexpectedly. Host it again?",
+      "CRASH_REPORT_OFFER": "Skyrim Together crashed last time. Report it on GitHub? Nothing is sent by itself: a pre-filled issue page opens in your browser.",
+      "CRASH_REPORT": "Report",
+      "CRASH_REPORT_NO": "No thanks"
     },
     "SERVER_LIST": {
       "SEARCH": "Search...",
@@ -301,6 +316,35 @@
         "XL": "Extra Large"
       },
       "BACK": "Back"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Syncing with the host…",
+      "DONE": "You're in the host's world",
+      "CANCELLED": "You kept your own world",
+      "STEP_REQUESTING": "Asking the host for their world",
+      "STEP_RECEIVED": "Got the host's world: your answer",
+      "STEP_SAVING": "Saving your own world",
+      "STEP_APPLYING": "Matching quests, places and people",
+      "STEP_TRAVELLING": "Moving you to the host",
+      "CHANGED": "{{quests}} quests, {{places}} places and {{people}} people changed to match."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} wants to kick {{target}}",
+      "KICK_YOU": "The others are voting on kicking you",
+      "READY_QUESTION": "{{starter}} asks: is everyone ready?",
+      "TALLY": "{{yes}} yes, {{no}} no of {{eligible}}",
+      "READY_TALLY": "{{yes}} of {{eligible}} ready",
+      "SECONDS": "{{seconds}} s left",
+      "YES": "Kick",
+      "NO": "Keep",
+      "READY": "Ready",
+      "NOT_READY": "Not yet",
+      "ANSWER_HINT": "Open the panel (F2) to answer.",
+      "KICK_PASSED": "{{target}} was voted out",
+      "KICK_FAILED": "The vote to kick {{target}} failed",
+      "KICK_CANCELLED": "{{target}} left before the vote ended",
+      "READY_PASSED": "Everyone is ready!",
+      "READY_FAILED": "Not everyone is ready"
     }
   },
   "SERVICE": {
@@ -327,7 +371,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Connection lost, trying to reconnect. {{remainingReconnectionAttempt}} attempts left.",
       "CONNECTED": "Successfully connected to server.",
-      "DISCONNECTED": "Disconnected from server."
+      "DISCONNECTED": "Disconnected from server.",
+      "RECONNECTING": "Connection lost. Reconnecting (attempt {{attempt}})…",
+      "RECONNECTED": "Reconnected to the server.",
+      "RECONNECT_GAVE_UP": "Couldn't get back to the server for two minutes. Use Rejoin in the Skyrim Together panel (F2) to try again."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "Available chat commands: {{cmds}}",
@@ -364,7 +411,9 @@
         "SERVER_FULL": "This server is full.",
         "BAD_UGRIDSTOLOAD": "It seems that your Skyrim.ini file has a non-default value for 'uGridsToLoad'. THIS IS A VERY BAD IDEA, and will most likely break the mod. Please set this setting back to its default (5), or remove the Skyrim.ini file and launch Skyrim vanilla once to generate a new file. The settings 'uExterior Cell Buffer' and 'uInterior Cell Buffer' should also be left at the default setting. If you do not know how to do this, please refer to our wiki or ask on our Discord server/Reddit sub for help.",
         "NON_DEFAULT_INSTALL": "It seems that your installation is not purely vanilla, i.e. it has Creation Club content (Anniversary Update or otherwise) or other mods.\nWe do NOT recommend playing with mods.\nWe recommend that you uninstall and disable these mods (instructions can be found on the wiki).\n\nFor the best experience, you should have the following mod list:<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>",
-        "BANNED": "You're banned from this server."
+        "BANNED": "You're banned from this server.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "This game runs Skyrim Together Plus {{expectedVersion}} and you have {{version}}, which is older. Everyone needs the same version: update from the Plus release page to join.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "This game runs Skyrim Together Plus {{expectedVersion}}, which is older than yours ({{version}}). Everyone needs the same version: ask the host to update from the Plus release page, or install {{expectedVersion}} from it."
       }
     },
     "PLAYER_LIST": {
@@ -372,6 +421,16 @@
     },
     "PARTY_HINT": {
       "MESSAGE": "Want to quest together? Form a party and stay close to share quest progress! Check out our play guide to learn more."
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Another vote is still open.",
+      "REFUSED_COOLDOWN": "Wait {{seconds}} s before starting that vote again.",
+      "REFUSED_TOO_FEW": "A vote to kick needs at least 3 players.",
+      "REFUSED_HOST": "The host can't be voted out.",
+      "REFUSED_TARGET": "That player isn't here."
+    },
+    "CRASH": {
+      "ATTACH": "Attach {{file}} from {{folder}} to the issue, and say what you were doing when it crashed."
     }
   }
 }

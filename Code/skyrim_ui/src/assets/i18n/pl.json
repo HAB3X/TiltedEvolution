@@ -58,7 +58,9 @@
       "REVEAL_HINT": "Pokaż graczy w pobliżu",
       "SAVES": "Zapisy",
       "SAVES_HINT": "Punkty kontrolne drużyny",
-      "CANCEL_CONNECT": "Anuluj"
+      "CANCEL_CONNECT": "Anuluj",
+      "READY_CHECK": "Sprawdź gotowość",
+      "READY_CHECK_HINT": "Zapytaj, czy wszyscy są gotowi"
     },
     "CHAT": {
       "SEND": "Wyślij",
@@ -122,7 +124,11 @@
         "QUEST_TYPE_Side": "Zadania poboczne",
         "QUEST_TYPE_CivilWar": "Wojna domowa",
         "QUEST_TYPE_Dawnguard": "Straż Świtu",
-        "QUEST_TYPE_Dragonborn": "Dragonborn"
+        "QUEST_TYPE_Dragonborn": "Dragonborn",
+        "RELAY_TITLE": "Przekaźnik, gdy routera nie da się otworzyć",
+        "RELAY_HINT": "Jeśli znajomi spoza twojej sieci nie mogą się z tobą połączyć (brak UPnP albo dostawca dzieli jeden publiczny adres między klientów), mogą dołączyć przez przekaźnik: SkyrimTogetherRelay uruchomiony na komputerze, do którego wszyscy mają dostęp. Jest używany tylko wtedy, gdy portu na routerze nie da się otworzyć. Zostaw puste, aby obejść się bez niego.",
+        "RELAY_ADDRESS": "Adres przekaźnika (adres:port)",
+        "RELAY_PASSWORD": "Hasło przekaźnika, jeśli je ma"
       },
       "LAN": {
         "TITLE": "Gry w twojej sieci",
@@ -147,7 +153,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Łączenie…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Ponowne łączenie… (próba {{attempt}})",
+      "CANCEL": "Anuluj"
     },
     "DISCONNECT": {
       "PROMPT": "Czy jesteś pewny, że chcesz się odłączyć?",
@@ -159,7 +167,8 @@
       "FIND_MODS": "Zdobądź mody",
       "SEARCH_NEXUS": "Szukaj na Nexusie",
       "DIFFERENT_VERSION": "inna wersja",
-      "COPY_LIST": "Kopiuj listę"
+      "COPY_LIST": "Kopiuj listę",
+      "OPEN_RELEASES": "Otwórz stronę wydań Plus"
     },
     "INVITE": {
       "CODE_INFO": "Znajomi wpisują ten kod w oknie Połącz:",
@@ -226,7 +235,8 @@
       "INVITE": "Zaproś",
       "KICK": "Wyrzuć",
       "BAN": "Zbanuj",
-      "IN_PARTY": "W twojej drużynie"
+      "IN_PARTY": "W twojej drużynie",
+      "VOTE_KICK": "Głosuj za wyrzuceniem"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Lista Graczy",
@@ -243,7 +253,12 @@
       "PLAYER_MANAGER": "Menedżer Graczy",
       "INVITE": "Zaproś",
       "SETTINGS": "Ustawienia",
-      "CONNECTION_IN_PROGRESS": "Podłączanie jest w trakcie"
+      "CONNECTION_IN_PROGRESS": "Podłączanie jest w trakcie",
+      "REJOIN_OFFER": "Twoja ostatnia wspólna gra nieoczekiwanie się zakończyła. Dołączyć ponownie do {{address}}?",
+      "REHOST_OFFER": "Gra, którą ostatnio hostowałeś, nieoczekiwanie się zakończyła. Hostować ją ponownie?",
+      "CRASH_REPORT_OFFER": "Ostatnio Skyrim Together uległ awarii. Zgłosić to na GitHubie? Nic nie jest wysyłane samo: w przeglądarce otworzy się wstępnie wypełniona strona zgłoszenia.",
+      "CRASH_REPORT": "Zgłoś",
+      "CRASH_REPORT_NO": "Nie, dzięki"
     },
     "SERVER_LIST": {
       "SEARCH": "Szukaj...",
@@ -298,6 +313,35 @@
         "XL": "Bardzo Duża"
       },
       "BACK": "Wróć"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Synchronizacja z hostem…",
+      "DONE": "Jesteś w świecie hosta",
+      "CANCELLED": "Zachowałeś własny świat",
+      "STEP_REQUESTING": "Prośba o świat hosta",
+      "STEP_RECEIVED": "Otrzymano świat hosta: twoja odpowiedź",
+      "STEP_SAVING": "Zapisywanie własnego świata",
+      "STEP_APPLYING": "Dopasowywanie zadań, miejsc i postaci",
+      "STEP_TRAVELLING": "Przenoszenie do hosta",
+      "CHANGED": "Dopasowano {{quests}} zadań, {{places}} miejsc i {{people}} postaci."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} chce wyrzucić gracza {{target}}",
+      "KICK_YOU": "Pozostali głosują nad wyrzuceniem cię",
+      "READY_QUESTION": "{{starter}} pyta: wszyscy gotowi?",
+      "TALLY": "{{yes}} tak, {{no}} nie z {{eligible}}",
+      "READY_TALLY": "{{yes}} z {{eligible}} gotowych",
+      "SECONDS": "pozostało {{seconds}} s",
+      "YES": "Wyrzuć",
+      "NO": "Zostaw",
+      "READY": "Gotowy",
+      "NOT_READY": "Jeszcze nie",
+      "ANSWER_HINT": "Otwórz panel (F2), aby odpowiedzieć.",
+      "KICK_PASSED": "{{target}} został wyrzucony w głosowaniu",
+      "KICK_FAILED": "Głosowanie nad wyrzuceniem {{target}} nie przeszło",
+      "KICK_CANCELLED": "{{target}} wyszedł przed końcem głosowania",
+      "READY_PASSED": "Wszyscy gotowi!",
+      "READY_FAILED": "Nie wszyscy są gotowi"
     }
   },
   "SERVICE": {
@@ -324,7 +368,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Stracono połączenie, próbujemy się podłączyć z powrotem. {{remainingReconnectionAttempt}} pozostałych prób.",
       "CONNECTED": "Pomyślnie nawiązano połączenie z serwerem.",
-      "DISCONNECTED": "Rozłączono z serwerem."
+      "DISCONNECTED": "Rozłączono z serwerem.",
+      "RECONNECTING": "Utracono połączenie. Ponowne łączenie (próba {{attempt}})…",
+      "RECONNECTED": "Ponownie połączono z serwerem.",
+      "RECONNECT_GAVE_UP": "Przez dwie minuty nie udało się wrócić na serwer. Użyj opcji Dołącz ponownie w panelu Skyrim Together (F2), aby spróbować jeszcze raz."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "Dostępne Komendy Czatu: {{cmds}}",
@@ -358,7 +405,9 @@
         "WRONG_PASSWORD": "Hasło które wpisałeś jest niepoprawne.",
         "NO_REASON": "Serwer odmówił połączenia brak powodu.",
         "SERVER_FULL": "Ten Serwer jest Pełen.",
-        "BANNED": "Masz bana na tym serwerze."
+        "BANNED": "Masz bana na tym serwerze.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Ta gra działa na Skyrim Together Plus {{expectedVersion}}, a ty masz starszą wersję {{version}}. Wszyscy potrzebują tej samej wersji: zaktualizuj ze strony wydań Plus, aby dołączyć.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Ta gra działa na Skyrim Together Plus {{expectedVersion}}, starszej niż twoja ({{version}}). Wszyscy potrzebują tej samej wersji: poproś hosta o aktualizację ze strony wydań Plus albo zainstaluj stamtąd {{expectedVersion}}."
       }
     },
     "PLAYER_LIST": {
@@ -366,6 +415,16 @@
     },
     "PARTY_HINT": {
       "MESSAGE": "Chcesz porobić wspólnie questy? Stwórz grupę i trzymaj się jej blisko, aby współdzielić postęp w questach! Przeczytaj nasz przewodnik, aby dowiedzieć się więcej."
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Inne głosowanie wciąż trwa.",
+      "REFUSED_COOLDOWN": "Odczekaj {{seconds}} s, zanim ponownie rozpoczniesz to głosowanie.",
+      "REFUSED_TOO_FEW": "Głosowanie nad wyrzuceniem wymaga co najmniej 3 graczy.",
+      "REFUSED_HOST": "Hosta nie można wyrzucić w głosowaniu.",
+      "REFUSED_TARGET": "Tego gracza tu nie ma."
+    },
+    "CRASH": {
+      "ATTACH": "Dołącz plik {{file}} z folderu {{folder}} do zgłoszenia i napisz, co robiłeś w chwili awarii."
     }
   }
 }

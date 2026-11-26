@@ -40,6 +40,10 @@ struct CharacterService
 
     static void Serialize(World& aRegistry, entt::entity aEntity, CharacterSpawnRequest* apSpawnRequest) noexcept;
 
+    // NPCs killed whose entity is gone, with their loot (see m_deadActors): the world save keeps them between runs
+    [[nodiscard]] const Map<GameId, Inventory>& GetDeadActors() const noexcept { return m_deadActors; }
+    void RestoreDeadActors(Map<GameId, Inventory> aDeadActors) noexcept { m_deadActors = std::move(aDeadActors); }
+
 protected:
     enum class OwnershipTransferReason : uint8_t
     {

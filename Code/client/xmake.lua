@@ -64,7 +64,8 @@ target(name)
         "mem",
         "xbyak",
         "libopus",
-        "miniaudio")
+        "miniaudio",
+        "zlib")
 
     add_syslinks(
         "ws2_32",

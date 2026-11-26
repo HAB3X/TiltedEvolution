@@ -11,6 +11,7 @@
 #include <Windows.h>
 #endif
 #include <PortMapper.h>
+#include <RelayClient.h>
 #include <Packet.hpp>
 
 #include <Events/CharacterRemoveEvent.h>
@@ -20,6 +21,8 @@
 #include <Events/PlayerLeaveCellEvent.h>
 #include <Events/PlayerLeaveEvent.h>
 #include <Events/UpdateEvent.h>
+#include <Services/ReturnService.h>
+#include <Services/WorldSaveService.h>
 #include <steam/isteamnetworkingutils.h>
 
 #include <Messages/AuthenticationResponse.h>
@@ -42,6 +45,8 @@ Console::Setting bPremiumTickrate{"GameServer:bPremiumMode", "Server tick rate: 
 Console::Setting bLanDiscovery{"GameServer:bLanDiscovery", "Lets players on the same network find this server in Connect, Local games (UDP port 10579)", true};
 Console::Setting uStopWithProcess{"GameServer:uStopWithProcess", "Id of a process the server shuts down with, when it exits (the game that hosts it sets this)", 0u};
 Console::Setting bUPnP{"GameServer:bUPnP", "Opens the server's UDP port on the router with UPnP while it runs, so friends outside your network can join without forwarding it by hand", true};
+Console::StringSetting sRelay{"GameServer:sRelay", "A relay friends join through when the router port can't be opened (no UPnP, or carrier-grade NAT), as address:port of a machine running SkyrimTogetherRelay. Empty: none", ""};
+Console::StringSetting sRelayPassword{"GameServer:sRelayPassword", "The password of the relay in sRelay, if it has one", ""};
 Console::StringSetting sServerName{"GameServer:sServerName", "Name that shows up in the server list", "Dedicated Together Server"};
 Console::StringSetting sAdminPassword{"GameServer:sAdminPassword", "Password for server admins. Joining with it gives admin rights. Leave empty to disable", ""};
 Console::StringSetting sPassword{"GameServer:sPassword", "Password players need to join the server. Leave empty to let anyone join", ""};
@@ -219,8 +224,18 @@ GameServer::GameServer(Console::ConsoleRegistry& aConsole) noexcept
     LoadBans();
     if (bLanDiscovery)
         m_pLanDiscovery = MakeUnique<LanDiscoveryResponder>();
+    // The relay is the way in when the router can't be opened
+    if (*sRelay.value())
+        m_pRelay = MakeUnique<RelayClient>(sRelay.value(), sRelayPassword.value(), GetPort());
     if (bUPnP)
-        m_pPortMapper = MakeUnique<PortMapper>(GetPort());
+        m_pPortMapper = MakeUnique<PortMapper>(GetPort(),
+                                               [pRelay = m_pRelay.get()]()
+                                               {
+                                                   if (pRelay)
+                                                       pRelay->Start();
+                                               });
+    else if (m_pRelay)
+        m_pRelay->Start();
     WatchParentProcess();
     spdlog::info("Server {} started on port {}", BUILD_COMMIT, GetPort());
     UpdateTitle();
@@ -331,7 +346,7 @@ void GameServer::Ban(const Player& acPlayer)
 {
     const String cAddress = acPlayer.GetEndpoint();
     // A player on this computer: banning its address would ban the host
-    if (cAddress.empty() || cAddress == "127.0.0.1" || cAddress == "::1")
+    if (cAddress.empty() || acPlayer.IsOnServerComputer())
     {
         spdlog::warn("Not banning {}, who plays on the server's own computer; kicking them instead", acPlayer.GetUsername().c_str());
         Kick(acPlayer.GetConnectionId());
@@ -767,7 +782,10 @@ void GameServer::OnUpdate()
     }
 
     if (m_requestStop)
+    {
+        m_pWorld->ctx().at<WorldSaveService>().Save();
         Close();
+    }
 }
 
 void GameServer::OnConsume(const void* apData, const uint32_t aSize, const ConnectionId_t aConnectionId)
@@ -804,6 +822,10 @@ void GameServer::OnDisconnection(const ConnectionId_t aConnectionId, EDisconnect
 
     if (pPlayer)
     {
+        // A lost connection (a timeout, or the player's game crashed) is put back when they come back
+        if (aReason == EDisconnectReason::BadConnection)
+            m_pWorld->ctx().at<ReturnService>().OnLost(*pPlayer);
+
         if (const auto& cell = pPlayer->GetCellComponent())
         {
             const auto oldCell = cell.Cell;
@@ -996,6 +1018,12 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
 
     char remoteAddress[48]{};
     info.m_addrRemote.ToString(remoteAddress, 48, false);
+    // A friend joining through the relay reaches the game from a loopback socket: they are who the relay saw
+    if (m_pRelay && info.m_addrRemote.IsLocalHost())
+    {
+        if (const auto cPublic = m_pRelay->PublicAddressOf(info.m_addrRemote.m_port))
+            std::snprintf(remoteAddress, sizeof(remoteAddress), "%s", cPublic->c_str());
+    }
     const bool cBanned = m_bannedAddresses.contains(remoteAddress);
 
     // BUILD_COMMIT stays the same across our builds, the launcher passes the id of its package instead.
@@ -1025,6 +1053,10 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
     if (acRequest->Version != cVersion)
     {
         spdlog::info("New player {:x} '{}' tried to connect with client {} - Version mismatch", aConnectionId, remoteAddress, acRequest->Version.c_str());
+        // Shown in the host's chat when the game hosts this server (LocalServerService)
+        spdlog::info("[Host] {} couldn't join: they have Skyrim Together {} and this game runs {}. Everyone needs the same version (Plus releases: "
+                     "github.com/HAB3X/TiltedEvolution/releases).",
+                     acRequest->Username.c_str(), acRequest->Version.c_str(), cVersion.c_str());
         sendKick(RT::kWrongVersion);
         return;
     }
@@ -1229,6 +1261,7 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
         }
 
         m_pWorld->GetDispatcher().trigger(PlayerJoinEvent(pPlayer, acRequest->WorldSpaceId, acRequest->CellId, acRequest->PlayerTime));
+        m_pWorld->ctx().at<ReturnService>().OnJoined(*pPlayer, acRequest->Returning);
     }
     else
     {

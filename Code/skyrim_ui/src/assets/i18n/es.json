@@ -58,7 +58,9 @@
       "REVEAL_HINT": "Mostrar jugadores cerca",
       "SAVES": "Partidas guardadas",
       "SAVES_HINT": "Puntos de control del grupo",
-      "CANCEL_CONNECT": "Cancelar"
+      "CANCEL_CONNECT": "Cancelar",
+      "READY_CHECK": "Comprobar si están listos",
+      "READY_CHECK_HINT": "Preguntar si todos están listos"
     },
     "CHAT": {
       "SEND": "Enviar",
@@ -122,7 +124,11 @@
         "QUEST_TYPE_Side": "Misiones secundarias",
         "QUEST_TYPE_CivilWar": "Guerra civil",
         "QUEST_TYPE_Dawnguard": "Dawnguard",
-        "QUEST_TYPE_Dragonborn": "Dragonborn"
+        "QUEST_TYPE_Dragonborn": "Dragonborn",
+        "RELAY_TITLE": "Relé, por si no se puede abrir tu router",
+        "RELAY_HINT": "Si tus amigos de fuera de tu red no pueden llegar a ti (sin UPnP, o tu proveedor comparte una dirección pública entre clientes), pueden unirse a través de un relé: SkyrimTogetherRelay ejecutándose en una máquina a la que todos lleguen. Solo se usa cuando no se puede abrir el puerto del router. Déjalo vacío para no usarlo.",
+        "RELAY_ADDRESS": "Dirección del relé (dirección:puerto)",
+        "RELAY_PASSWORD": "Contraseña del relé, si tiene"
       },
       "LAN": {
         "TITLE": "Partidas en tu red",
@@ -147,7 +153,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Conectando…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Reconectando… (intento {{attempt}})",
+      "CANCEL": "Cancelar"
     },
     "DISCONNECT": {
       "PROMPT": "¿Seguro que quieres desconectarte?",
@@ -159,7 +167,8 @@
       "FIND_MODS": "Consigue los mods",
       "SEARCH_NEXUS": "Buscar en Nexus",
       "DIFFERENT_VERSION": "versión distinta",
-      "COPY_LIST": "Copiar lista"
+      "COPY_LIST": "Copiar lista",
+      "OPEN_RELEASES": "Abrir la página de versiones de Plus"
     },
     "INVITE": {
       "CODE_INFO": "Tus amigos escriben este código de partida en Conectar:",
@@ -223,7 +232,8 @@
       "INVITE": "Invitar",
       "KICK": "Expulsar",
       "BAN": "Vetar",
-      "IN_PARTY": "En tu grupo"
+      "IN_PARTY": "En tu grupo",
+      "VOTE_KICK": "Votar expulsión"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Lista de jugadores",
@@ -240,7 +250,12 @@
       "PLAYER_MANAGER": "Gestionar jugadores",
       "INVITE": "Invitar",
       "SETTINGS": "Parámetros",
-      "CONNECTION_IN_PROGRESS": "Conexión en progreso..."
+      "CONNECTION_IN_PROGRESS": "Conexión en progreso...",
+      "REJOIN_OFFER": "Tu última partida en grupo terminó de forma inesperada. ¿Volver a unirte a {{address}}?",
+      "REHOST_OFFER": "La última partida que alojaste terminó de forma inesperada. ¿Alojarla de nuevo?",
+      "CRASH_REPORT_OFFER": "Skyrim Together se cerró por un fallo la última vez. ¿Informar en GitHub? No se envía nada por sí solo: se abre en tu navegador una página de incidencia ya rellenada.",
+      "CRASH_REPORT": "Informar",
+      "CRASH_REPORT_NO": "No, gracias"
     },
     "SERVER_LIST": {
       "SEARCH": "Buscar...",
@@ -290,6 +305,35 @@
         "XL": "Extra grande"
       },
       "BACK": "Atrás"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Sincronizando con el anfitrión…",
+      "DONE": "Estás en el mundo del anfitrión",
+      "CANCELLED": "Te quedaste con tu propio mundo",
+      "STEP_REQUESTING": "Pidiendo su mundo al anfitrión",
+      "STEP_RECEIVED": "Mundo del anfitrión recibido: tu respuesta",
+      "STEP_SAVING": "Guardando tu propio mundo",
+      "STEP_APPLYING": "Igualando misiones, lugares y personas",
+      "STEP_TRAVELLING": "Llevándote junto al anfitrión",
+      "CHANGED": "Se cambiaron {{quests}} misiones, {{places}} lugares y {{people}} personas para coincidir."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} quiere expulsar a {{target}}",
+      "KICK_YOU": "Los demás están votando para expulsarte",
+      "READY_QUESTION": "{{starter}} pregunta: ¿están todos listos?",
+      "TALLY": "{{yes}} sí, {{no}} no de {{eligible}}",
+      "READY_TALLY": "{{yes}} de {{eligible}} listos",
+      "SECONDS": "quedan {{seconds}} s",
+      "YES": "Expulsar",
+      "NO": "Mantener",
+      "READY": "Listo",
+      "NOT_READY": "Todavía no",
+      "ANSWER_HINT": "Abre el panel (F2) para responder.",
+      "KICK_PASSED": "{{target}} fue expulsado por votación",
+      "KICK_FAILED": "La votación para expulsar a {{target}} no salió adelante",
+      "KICK_CANCELLED": "{{target}} se fue antes de que terminara la votación",
+      "READY_PASSED": "¡Todos están listos!",
+      "READY_FAILED": "No todos están listos"
     }
   },
   "SERVICE": {
@@ -316,7 +360,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Conexión perdida, intentando reconectar. Quedan {{remainingReconnectionAttempt}} intentos.",
       "CONNECTED": "Conectado con éxito al servidor.",
-      "DISCONNECTED": "Desconectado del servidor."
+      "DISCONNECTED": "Desconectado del servidor.",
+      "RECONNECTING": "Conexión perdida. Reconectando (intento {{attempt}})…",
+      "RECONNECTED": "Reconectado al servidor.",
+      "RECONNECT_GAVE_UP": "No se pudo volver al servidor durante dos minutos. Usa Volver a unirse en el panel de Skyrim Together (F2) para intentarlo de nuevo."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "Comandos del chat disponibles: {{cmds}}",
@@ -352,11 +399,23 @@
         "SERVER_FULL": "El servidor está lleno.",
         "BAD_UGRIDSTOLOAD": "Parece que su Skyrim.ini tiene un valor no predeterminado para 'uGridsToLoad'. ESTA ES UNA MUY MALA IDEA y lo más probable es que rompa el mod. Por favor, restaurar esta configuración a su valor predeterminado (5) , o elimine el Skyrim.ini e lanzar Skyrim Vanilla una vez para generar un nuevo archivo. Las configuraciones 'uExterior Cell Buffer' y 'uInterior Cell Buffer' también deben dejarse en la configuración predeterminada. Si no sabe cómo hacerlo. , consulte nuestra wiki o solicite ayuda en nuestro servidor de Discord/subreddit.",
         "NON_DEFAULT_INSTALL": "Parece que tu instalación no es puramente básica, en ejemplo, tiene contenido del Creation Club (De aniversario o no) o otras modificaciones.\nNO recomendamos jugar con modificaciones.\nRecomendamos que desinstales y deshabilites estas modificaciones (las instrucciones se pueden encontrar en la wiki).\n\nPara la mejor experiencia, debe tener la siguiente lista de mods:<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>",
-        "BANNED": "Estás vetado en este servidor."
+        "BANNED": "Estás vetado en este servidor.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Esta partida usa Skyrim Together Plus {{expectedVersion}} y tú tienes {{version}}, que es anterior. Todos necesitan la misma versión: actualiza desde la página de versiones de Plus para unirte.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Esta partida usa Skyrim Together Plus {{expectedVersion}}, anterior a la tuya ({{version}}). Todos necesitan la misma versión: pide al anfitrión que actualice desde la página de versiones de Plus, o instala {{expectedVersion}} desde allí."
       }
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} te invitó para unirte a un grupo"
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Todavía hay otra votación abierta.",
+      "REFUSED_COOLDOWN": "Espera {{seconds}} s antes de volver a iniciar esa votación.",
+      "REFUSED_TOO_FEW": "Una votación de expulsión necesita al menos 3 jugadores.",
+      "REFUSED_HOST": "No se puede expulsar al anfitrión por votación.",
+      "REFUSED_TARGET": "Ese jugador no está aquí."
+    },
+    "CRASH": {
+      "ATTACH": "Adjunta {{file}} de {{folder}} a la incidencia y cuenta qué hacías cuando falló."
     }
   }
 }

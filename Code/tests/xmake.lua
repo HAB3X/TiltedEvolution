@@ -16,6 +16,8 @@ target("TPTests")
     add_files("../common/DateTime.cpp")
     -- Voice chat's noise gate, falloff and jitter buffer, also game independent
     add_files("../client/Systems/VoiceDsp.cpp")
+    -- The host world's file format, pure serialization
+    add_files("../server/Game/WorldSave.cpp")
     add_deps("SkyrimEncoding")
     add_packages(
         "tiltedcore",

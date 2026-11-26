@@ -58,7 +58,9 @@
       "REVEAL_HINT": "显示附近玩家",
       "SAVES": "存档",
       "SAVES_HINT": "队伍检查点",
-      "CANCEL_CONNECT": "取消"
+      "CANCEL_CONNECT": "取消",
+      "READY_CHECK": "准备确认",
+      "READY_CHECK_HINT": "询问大家是否准备好"
     },
     "CHAT": {
       "SEND": "发送",
@@ -122,7 +124,11 @@
         "QUEST_TYPE_Side": "支线任务",
         "QUEST_TYPE_CivilWar": "内战",
         "QUEST_TYPE_Dawnguard": "黎明守卫",
-        "QUEST_TYPE_Dragonborn": "龙裔"
+        "QUEST_TYPE_Dragonborn": "龙裔",
+        "RELAY_TITLE": "中继（无法打开路由器端口时）",
+        "RELAY_HINT": "如果你网络外的好友无法连接你（没有 UPnP，或运营商让多个用户共用一个公网地址），他们可以通过中继加入：中继是在所有人都能访问的机器上运行的 SkyrimTogetherRelay。只有在无法打开路由器端口时才会使用。不需要就留空。",
+        "RELAY_ADDRESS": "中继地址（地址:端口）",
+        "RELAY_PASSWORD": "中继密码（如有）"
       },
       "LAN": {
         "TITLE": "你网络中的游戏",
@@ -147,7 +153,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "连接中…",
-      "PING": "{{ms}} 毫秒"
+      "PING": "{{ms}} 毫秒",
+      "RECONNECTING": "正在重新连接…（第 {{attempt}} 次）",
+      "CANCEL": "取消"
     },
     "DISCONNECT": {
       "PROMPT": "您确定要断开连接吗？",
@@ -159,7 +167,8 @@
       "FIND_MODS": "获取模组",
       "SEARCH_NEXUS": "在 Nexus 上搜索",
       "DIFFERENT_VERSION": "版本不同",
-      "COPY_LIST": "复制列表"
+      "COPY_LIST": "复制列表",
+      "OPEN_RELEASES": "打开 Plus 发布页面"
     },
     "INVITE": {
       "CODE_INFO": "好友在「连接」中输入此加入码：",
@@ -223,7 +232,8 @@
       "INVITE": "邀请",
       "KICK": "踢出",
       "BAN": "封禁",
-      "IN_PARTY": "在你的队伍中"
+      "IN_PARTY": "在你的队伍中",
+      "VOTE_KICK": "投票踢出"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "玩家列表",
@@ -239,7 +249,12 @@
       "PLAYER_MANAGER": "玩家管理",
       "INVITE": "邀请",
       "SETTINGS": "设置",
-      "CONNECTION_IN_PROGRESS": "连接中"
+      "CONNECTION_IN_PROGRESS": "连接中",
+      "REJOIN_OFFER": "上次联机游戏意外结束。要重新加入 {{address}} 吗？",
+      "REHOST_OFFER": "你上次主持的游戏意外结束。要再次主持吗？",
+      "CRASH_REPORT_OFFER": "Skyrim Together 上次崩溃了。要在 GitHub 上报告吗？不会自动发送任何内容：浏览器中会打开一个预填好的问题页面。",
+      "CRASH_REPORT": "报告",
+      "CRASH_REPORT_NO": "不用了"
     },
     "SERVER_LIST": {
       "SEARCH": "搜索...",
@@ -289,6 +304,35 @@
         "XL": "特大"
       },
       "BACK": "返回"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "正在与主机同步…",
+      "DONE": "你已进入主机的世界",
+      "CANCELLED": "你保留了自己的世界",
+      "STEP_REQUESTING": "向主机请求其世界",
+      "STEP_RECEIVED": "已收到主机的世界：等待你的回答",
+      "STEP_SAVING": "保存你自己的世界",
+      "STEP_APPLYING": "同步任务、地点和人物",
+      "STEP_TRAVELLING": "将你移动到主机身边",
+      "CHANGED": "已同步 {{quests}} 个任务、{{places}} 个地点和 {{people}} 个人物。"
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} 想踢出 {{target}}",
+      "KICK_YOU": "其他人正在投票决定是否踢出你",
+      "READY_QUESTION": "{{starter}} 问：大家都准备好了吗？",
+      "TALLY": "{{eligible}} 人中 {{yes}} 人赞成，{{no}} 人反对",
+      "READY_TALLY": "{{eligible}} 人中 {{yes}} 人已准备",
+      "SECONDS": "剩余 {{seconds}} 秒",
+      "YES": "踢出",
+      "NO": "保留",
+      "READY": "准备好了",
+      "NOT_READY": "还没有",
+      "ANSWER_HINT": "打开面板（F2）进行回答。",
+      "KICK_PASSED": "{{target}} 已被投票踢出",
+      "KICK_FAILED": "踢出 {{target}} 的投票未通过",
+      "KICK_CANCELLED": "{{target}} 在投票结束前离开了",
+      "READY_PASSED": "大家都准备好了！",
+      "READY_FAILED": "还有人没准备好"
     }
   },
   "SERVICE": {
@@ -315,7 +359,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "连接已丢失，正在重新连接。剩余{{remainingReconnectionAttempt}}次尝试。",
       "CONNECTED": "成功连接至服务器。",
-      "DISCONNECTED": "与服务器断开连接。"
+      "DISCONNECTED": "与服务器断开连接。",
+      "RECONNECTING": "连接已断开。正在重新连接（第 {{attempt}} 次）…",
+      "RECONNECTED": "已重新连接到服务器。",
+      "RECONNECT_GAVE_UP": "两分钟内未能重新连接到服务器。请在 Skyrim Together 面板（F2）中使用“重新加入”再试一次。"
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "可用的聊天指令：{{cmds}}",
@@ -349,11 +396,23 @@
         "WRONG_PASSWORD": "您输入的密码不正确。",
         "NO_REASON": "服务器无故拒绝了连接。",
         "SERVER_FULL": "服务器已满。",
-        "BANNED": "你已被此服务器封禁。"
+        "BANNED": "你已被此服务器封禁。",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "此游戏运行的是 Skyrim Together Plus {{expectedVersion}}，而你的版本 {{version}} 较旧。所有人需要相同的版本：请从 Plus 发布页面更新后再加入。",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "此游戏运行的是 Skyrim Together Plus {{expectedVersion}}，比你的版本（{{version}}）旧。所有人需要相同的版本：请让主机从 Plus 发布页面更新，或从那里安装 {{expectedVersion}}。"
       }
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}}邀请您加入其团队"
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "另一个投票仍在进行。",
+      "REFUSED_COOLDOWN": "请等待 {{seconds}} 秒后再发起该投票。",
+      "REFUSED_TOO_FEW": "踢人投票至少需要 3 名玩家。",
+      "REFUSED_HOST": "无法投票踢出主机。",
+      "REFUSED_TARGET": "该玩家不在这里。"
+    },
+    "CRASH": {
+      "ATTACH": "请将 {{folder}} 中的 {{file}} 附加到问题中，并说明崩溃时你在做什么。"
     }
   }
 }

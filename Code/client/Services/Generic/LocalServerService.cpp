@@ -9,6 +9,8 @@
 #include <World.h>
 #include <Games/TES.h>
 #include <RequiredMods.h>
+#include <Services/PluginChecksums.h>
+#include <Games/Skyrim/SaveLoad.h>
 
 #include <fstream>
 
@@ -48,6 +50,12 @@ std::wstring Widen(const std::string& acText)
     std::wstring out(cLength, L'\0');
     MultiByteToWideChar(CP_UTF8, 0, acText.data(), static_cast<int>(acText.size()), out.data(), cLength);
     return out;
+}
+// The host's character, as co-op saves name it; "world" without one
+std::string KeptWorldName()
+{
+    const String cCharacter = BGSSaveLoadManager::CoopSaveCharacter();
+    return cCharacter.empty() ? std::string("world") : std::string(cCharacter.c_str());
 }
 } // namespace
 
@@ -102,6 +110,9 @@ std::vector<RequiredMods::Listed> LocalServerService::HostMods() noexcept
 
 void LocalServerService::SendHostMods() const noexcept
 {
+    // The Host page is open: hosting will need the checksums soon
+    PluginChecksums::Start();
+
     std::string json = "[";
     for (const RequiredMods::Listed& cMod : HostMods())
         json += (json.size() > 1 ? "," : "") + OverlayService::ToJsonString(cMod.Name);
@@ -120,7 +131,7 @@ bool LocalServerService::WriteRequiredMods() const noexcept
 
     const auto cMods = HostMods();
     for (const RequiredMods::Listed& cMod : cMods)
-        file << RequiredMods::FormatLine(cMod.Name, cMod.FileSize) << '\n';
+        file << RequiredMods::FormatLine(cMod.Name, cMod.FileSize, PluginChecksums::Get(cMod.Name)) << '\n';
     spdlog::info("[LocalServer]: friends need the host's {} mods", cMods.size());
     return file.good();
 }
@@ -150,7 +161,11 @@ bool LocalServerService::Start(const HostSettings& acSettings) noexcept
                   WritePrivateProfileStringW(L"Gameplay", L"bPauseWhenAllInMenus", Bool(acSettings.PauseInMenus), cIni.c_str()) &&
                   WritePrivateProfileStringW(L"Gameplay", L"sSharedQuestTypes", Widen(acSettings.SharedQuestTypes).c_str(), cIni.c_str()) &&
                   // The older Misc switch would share Misc quests even when the host leaves them out
-                  WritePrivateProfileStringW(L"Gameplay", L"bEnableMiscQuestSync", L"false", cIni.c_str());
+                  WritePrivateProfileStringW(L"Gameplay", L"bEnableMiscQuestSync", L"false", cIni.c_str()) &&
+                  WritePrivateProfileStringW(L"GameServer", L"sRelay", Widen(acSettings.Relay).c_str(), cIni.c_str()) &&
+                  // Each character's playthrough keeps its own world (WorldSaveService)
+                  WritePrivateProfileStringW(L"Gameplay", L"sKeepWorldName", Widen(KeptWorldName()).c_str(), cIni.c_str()) &&
+                  WritePrivateProfileStringW(L"GameServer", L"sRelayPassword", Widen(acSettings.RelayPassword).c_str(), cIni.c_str());
     }
     if (!written)
     {

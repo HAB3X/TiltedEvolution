@@ -30,8 +30,9 @@ struct TransportService : Client
     bool Send(const ClientMessage& acMessage, TiltedPhoques::EPacketFlags aPacketFlags = TiltedPhoques::kReliable) const noexcept;
 
     // Connects to a server. An official v1.8.4 server refuses this build's version; then this reconnects speaking its
-    // protocol (encoding/WireProtocol.h), without this build's own features.
-    bool Connect(const std::string& acEndpoint) noexcept;
+    // protocol (encoding/WireProtocol.h), without this build's own features. Returning: the player comes back after
+    // their game stopped, so the server may move them back to where it last saw them (AuthenticationRequest::Returning).
+    bool Connect(const std::string& acEndpoint, bool aReturning = false) noexcept;
 
     void OnConsume(const void* apData, uint32_t aSize) override;
     void OnConnected() override;
@@ -72,6 +73,8 @@ private:
     String m_lastPassword{};
     // The server refused this build's version and is an official v1.8.4 one: its disconnect is ours to reconnect
     bool m_reconnectAsOfficial{};
+    // See Connect
+    bool m_returning{};
     // The BeforeCoop save of this game session is made: later connections would save co-op changes over it
     bool m_backedUpThisSession{};
     bool m_authenticationPending{};

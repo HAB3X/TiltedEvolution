@@ -19,6 +19,9 @@
 #include <Services/PartyCheckpointService.h>
 #include <Services/VoiceService.h>
 #include <Services/HostWorldService.h>
+#include <Services/ReturnService.h>
+#include <Services/VoteService.h>
+#include <Services/WorldSaveService.h>
 
 #include <es_loader/ESLoader.h>
 
@@ -45,6 +48,10 @@ World::World()
     ctx().emplace<PartyCheckpointService>(*this, m_dispatcher);
     ctx().emplace<VoiceService>(*this, m_dispatcher);
     ctx().emplace<HostWorldService>(*this, m_dispatcher);
+    ctx().emplace<ReturnService>(*this);
+    ctx().emplace<VoteService>(*this, m_dispatcher);
+    // Last: loading the saved world uses the other services
+    ctx().emplace<WorldSaveService>(*this, m_dispatcher);
 
     ESLoader::ESLoader loader;
     // emplace loaded mods into modscomponent.

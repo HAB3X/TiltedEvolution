@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <cstdint>
+#include <functional>
 #include <string>
 #include <thread>
 
@@ -10,11 +11,12 @@
  * network can join without forwarding it by hand, and closes it again when the server stops.
  *
  * Runs in the background: finding the router takes a few seconds. The outcome is logged with the [Host] tag, which
- * the game's Host a game button shows in chat (client LocalServerService).
+ * the game's Host a game button shows in chat (client LocalServerService). aOnUnreachable runs on that background
+ * thread when friends outside can't reach the port: no router, a refusal, or a router behind another NAT.
  */
 struct PortMapper
 {
-    explicit PortMapper(uint16_t aPort) noexcept;
+    PortMapper(uint16_t aPort, std::function<void()> aOnUnreachable) noexcept;
     ~PortMapper() noexcept;
 
     PortMapper(const PortMapper&) = delete;
@@ -30,7 +32,8 @@ private:
         std::string LocalAddress;
     };
 
-    void Run() noexcept;
+    // False when friends outside the network can't reach the port
+    bool Run() noexcept;
     bool FindRouter(Router& aRouter, std::string& aError) const noexcept;
     bool Soap(const Router& acRouter, const std::string& acAction, const std::string& acArguments, std::string& aResponse) const noexcept;
 

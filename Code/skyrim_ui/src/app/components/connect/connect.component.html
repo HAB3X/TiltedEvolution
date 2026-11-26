@@ -118,6 +118,18 @@
           }
         </div>
       </div>
+      <details class="relay" [open]="!!relay">
+        <summary>{{ 'COMPONENT.CONNECT.HOST.RELAY_TITLE' | transloco }}</summary>
+        <p class="muted">{{ 'COMPONENT.CONNECT.HOST.RELAY_HINT' | transloco }}</p>
+        <div class="field">
+          <label for="host-relay">{{ 'COMPONENT.CONNECT.HOST.RELAY_ADDRESS' | transloco }}</label>
+          <input id="host-relay" type="text" placeholder="relay.example.net:10600" spellcheck="false" [(ngModel)]="relay" />
+        </div>
+        <div class="field">
+          <label for="host-relay-password">{{ 'COMPONENT.CONNECT.HOST.RELAY_PASSWORD' | transloco }}</label>
+          <input id="host-relay-password" type="password" spellcheck="false" [(ngModel)]="relayPassword" />
+        </div>
+      </details>
     }
 
     <div class="actions">

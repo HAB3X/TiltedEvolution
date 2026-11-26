@@ -73,6 +73,11 @@ export class PlayerListComponent {
     this.clientService.summonPlayer(playerId);
   }
 
+  /** Ask the others to vote on kicking a player; the host kicks directly */
+  public voteKick(playerId: number) {
+    this.clientService.startKickVote(playerId);
+  }
+
   public sendPartyInvite(inviteeId: number) {
     this.playerListService.sendPartyInvite(inviteeId);
   }

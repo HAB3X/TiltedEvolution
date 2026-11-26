@@ -13,6 +13,8 @@ import { StoreService } from './store.service';
 import { ErrorEvents, ErrorService } from './error.service';
 import { LoadingService } from './loading.service';
 import { DEFAULT_SHARED_QUEST_TYPES } from '../models/shared-quests';
+import { reconnectDelay } from '../utils/reconnect';
+import { CrashDump, crashIssueUrl } from '../utils/crash-report';
 
 /** Client game service. */
 /** What joining a host's world would change. */
@@ -23,6 +25,42 @@ export interface HostWorldOffer {
   people: number;
 }
 
+/** How far joining a host world got, from the game's hostWorldSync event (HostWorldService::ReportSync). */
+export type HostWorldSyncStep = 'requesting' | 'received' | 'saving' | 'applying' | 'travelling' | 'done' | 'cancelled';
+
+export interface HostWorldSync {
+  step: HostWorldSyncStep;
+  /** What changed to match the host, once applied */
+  quests: number;
+  places: number;
+  people: number;
+}
+
+/** A kick vote or ready check, from the game's vote event (the server's VoteService). */
+export interface Vote {
+  id: number;
+  kind: 'kick' | 'ready';
+  state: 'open' | 'passed' | 'failed' | 'cancelled';
+  starterId: number;
+  targetId: number;
+  yes: number;
+  no: number;
+  eligible: number;
+  /** When it closes, as Date.now() */
+  endsAt: number;
+  /** This player has answered (or started it) */
+  answered: boolean;
+}
+
+/** The server's VoteState numbers from 4 on: why a vote didn't start */
+const VOTE_REFUSALS = ['BUSY', 'COOLDOWN', 'TOO_FEW', 'HOST', 'TARGET'];
+const VOTE_STATES: Vote['state'][] = ['open', 'passed', 'failed', 'cancelled'];
+/** How long a finished vote stays on screen */
+const VOTE_RESULT_SHOWN_MS = 6000;
+
+/** How long the finished sync stays on screen */
+const HOST_WORLD_SYNC_SHOWN_MS = 8000;
+
 /** Where the player last played, kept while connected (see ClientService.rejoin). */
 export interface LastSession {
   host: string;
@@ -31,6 +69,8 @@ export interface LastSession {
 }
 
 const LAST_SESSION_KEY = 'last_session';
+/** The crash dump the player was last asked about */
+const CRASH_ASKED_KEY = 'crash_report_asked';
 
 /** What the host chose on the Host page, besides the password */
 export interface HostOptions {
@@ -46,6 +86,9 @@ export interface HostOptions {
   classic: boolean;
   /** Comma separated quest categories the party shares (Gameplay:sSharedQuestTypes) */
   sharedQuestTypes: string;
+  /** A relay (SkyrimTogetherRelay) friends join through when the router can't be opened, address:port; empty for none */
+  relay: string;
+  relayPassword: string;
 }
 
 /** A server on the local network, as it answered a search. */
@@ -184,6 +227,18 @@ export class ClientService implements OnDestroy {
   public answerPartySummon(summonerId: number, accept: boolean): void {
     skyrimtogether.answerPartySummon(summonerId, accept);
   }
+  /** A crash dump this player hasn't been asked about yet (see reportCrash); null when there's none. */
+  public crashDumpChange = new BehaviorSubject<CrashDump | null>(null);
+
+  /** The open vote, or the last one for a few seconds after it ended; else null. */
+  public voteChange = new BehaviorSubject<Vote | null>(null);
+
+  private _voteTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** While joining a host world, and shortly after: how far it got; else null. */
+  public hostWorldSyncChange = new BehaviorSubject<HostWorldSync | null>(null);
+
+  private _hostWorldSyncTimer: ReturnType<typeof setTimeout> | null = null;
 
   /** The joiner's answer to the host world offer. */
   public answerHostWorld(join: boolean): void {
@@ -202,6 +257,9 @@ export class ClientService implements OnDestroy {
 
   /** The session the game crashed or quit in, which Rejoin returns to; null when there's none. */
   public lastSessionChange = new BehaviorSubject<LastSession | null>(null);
+
+  /** While getting back to a server after the connection was lost: the attempt under way or next (1 for the first); else null. */
+  public reconnectingChange = new BehaviorSubject<number | null>(null);
 
   /** Whether this player hosts the game they're connected to (Host a game). */
   public hostingChange = new BehaviorSubject(false);
@@ -242,7 +300,10 @@ export class ClientService implements OnDestroy {
 
   private _password: string;
 
-  private _remainingReconnectionAttempt = environment.nbReconnectionAttempts;
+  /** When the connection being reconnected was lost (Date.now()), null when not reconnecting */
+  private _lostAt: number | null = null;
+
+  private _reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   /**
    * Instantiate.
@@ -300,6 +361,9 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('hostMods', this.onHostMods.bind(this));
     skyrimtogether.on('partySaves', this.onPartySaves.bind(this));
     skyrimtogether.on('hostWorldOffer', this.onHostWorldOffer.bind(this));
+    skyrimtogether.on('hostWorldSync', this.onHostWorldSync.bind(this));
+    skyrimtogether.on('vote', this.onVote.bind(this));
+    skyrimtogether.on('crashDump', this.onCrashDump.bind(this));
 
     try {
       this.lastSessionChange.next(
@@ -359,6 +423,9 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('hostMods');
     skyrimtogether.off('partySaves');
     skyrimtogether.off('hostWorldOffer');
+    skyrimtogether.off('hostWorldSync');
+    skyrimtogether.off('vote');
+    skyrimtogether.off('crashDump');
     skyrimtogether.off('dummyData');
     skyrimtogether.off('partyInfo');
     skyrimtogether.off('partyCreated');
@@ -385,16 +452,55 @@ export class ClientService implements OnDestroy {
     skyrimtogether.moderatePlayer(playerId, ban);
   }
 
+  /**
+   * Answers the crash question: with report, opens a pre-filled GitHub issue and says in chat which file to attach.
+   */
+  public answerCrashReport(report: boolean): void {
+    const dump = this.crashDumpChange.getValue();
+    if (!dump) {
+      return;
+    }
+    this.crashDumpChange.next(null);
+    if (report) {
+      skyrimtogether.openUrl(crashIssueUrl(dump));
+      this.chatService.pushSystemMessage('SERVICE.CRASH.ATTACH', { file: dump.file, folder: dump.folder });
+    }
+  }
+
+  /** Ask the others to vote on kicking a player (see voteChange). */
+  public startKickVote(playerId: number): void {
+    skyrimtogether.startVote(0, playerId);
+  }
+
+  /** Ask everyone whether they're ready (see voteChange). */
+  public startReadyCheck(): void {
+    skyrimtogether.startVote(1, 0);
+  }
+
+  /** Answer the open vote. */
+  public answerVote(yes: boolean): void {
+    const vote = this.voteChange.getValue();
+    if (!vote || vote.state !== 'open' || vote.answered) {
+      return;
+    }
+    skyrimtogether.answerVote(vote.id, yes);
+    this.voteChange.next({ ...vote, answered: true });
+  }
+
   /** Look for servers on the local network, see lanServersChange. */
   public searchLanServers(): void {
     this.lanServersChange.next(null);
     skyrimtogether.searchLanServers();
   }
 
-  /** Returns to the last session: hosts it again, or connects to its server with the saved password. */
+  /**
+   * Returns to the last session: hosts it again, or connects to its server with the saved password. The game stopped
+   * since, so the server may move the player back to where it last saw them.
+   */
   public rejoin(): void {
     const session = this.lastSessionChange.getValue();
-    if (!session) {
+    // The offer can outlive a connection made another way
+    if (!session || this.connectionStateChange.getValue() || this.isConnectionInProgressChange.getValue()) {
       return;
     }
     if (session.hosting) {
@@ -407,6 +513,7 @@ export class ClientService implements OnDestroy {
         session.host,
         session.port,
         this.storeService.get('last_connected_password', ''),
+        true,
       );
     }
   }
@@ -420,6 +527,8 @@ export class ClientService implements OnDestroy {
       pauseInMenus: this.storeService.getBool('host_pause_in_menus', false),
       classic: this.storeService.getBool('host_classic', false),
       sharedQuestTypes: this.storeService.get('host_quest_types', DEFAULT_SHARED_QUEST_TYPES.join(',')),
+      relay: this.storeService.get('host_relay', ''),
+      relayPassword: this.storeService.get('host_relay_password', ''),
     };
   }
 
@@ -432,6 +541,8 @@ export class ClientService implements OnDestroy {
     this.storeService.set('host_pause_in_menus', String(options.pauseInMenus));
     this.storeService.set('host_classic', String(options.classic));
     this.storeService.set('host_quest_types', options.sharedQuestTypes);
+    this.storeService.set('host_relay', options.relay);
+    this.storeService.set('host_relay_password', options.relayPassword);
     skyrimtogether.hostServer(
       password,
       options.hostWorld,
@@ -440,6 +551,8 @@ export class ClientService implements OnDestroy {
       options.pauseInMenus,
       options.classic,
       options.sharedQuestTypes,
+      options.relay,
+      options.relayPassword,
     );
     this.hostingChange.next(true);
     this.isConnectionInProgressChange.next(true);
@@ -448,8 +561,9 @@ export class ClientService implements OnDestroy {
     this._password = password;
   }
 
-  public connect(host: string, port: number, password = ''): void {
-    skyrimtogether.connect(host, port, password);
+  /** @param returning The player comes back after their game stopped (see rejoin) */
+  public connect(host: string, port: number, password = '', returning = false): void {
+    skyrimtogether.connect(host, port, password, returning);
     this.hostingChange.next(false);
     this.isConnectionInProgressChange.next(true);
     this._host = host;
@@ -462,7 +576,7 @@ export class ClientService implements OnDestroy {
    */
   public disconnect(): void {
     skyrimtogether.disconnect();
-    this._remainingReconnectionAttempt = 0;
+    this.stopReconnecting();
     // Left on purpose: nothing to rejoin
     this.storeService.remove(LAST_SESSION_KEY);
     this.lastSessionChange.next(null);
@@ -532,6 +646,11 @@ export class ClientService implements OnDestroy {
     );
   }
 
+  /** The Plus release page, to update, in the default browser. */
+  public openReleasePage(): void {
+    skyrimtogether.openUrl('https://github.com/HAB3X/TiltedEvolution/releases');
+  }
+
   /** List the co-op saves, see partySavesChange. */
   public listPartySaves(): void {
     this.partySavesChange.next(null);
@@ -560,7 +679,7 @@ export class ClientService implements OnDestroy {
    */
   public reconnect(): void {
     skyrimtogether.reconnect();
-    this._remainingReconnectionAttempt = 0;
+    this.stopReconnecting();
   }
 
   public teleportToPlayer(playerId: number): void {
@@ -629,11 +748,14 @@ export class ClientService implements OnDestroy {
    */
   private onConnect(): void {
     this.zone.run(async () => {
-      this._remainingReconnectionAttempt = environment.nbReconnectionAttempts;
+      const reconnected = this.reconnectingChange.getValue() !== null;
+      this.stopReconnecting();
       this.isConnectionInProgressChange.next(false);
       this.connectionStateChange.next(true);
 
-      this.chatService.pushSystemMessage('SERVICE.CLIENT.CONNECTED');
+      this.chatService.pushSystemMessage(
+        reconnected ? 'SERVICE.CLIENT.RECONNECTED' : 'SERVICE.CLIENT.CONNECTED',
+      );
 
       // Kept until the player disconnects, so that after a crash the next start offers to rejoin
       const session: LastSession = {
@@ -651,18 +773,63 @@ export class ClientService implements OnDestroy {
    */
   private onDisconnect(isError: boolean): void {
     void this.zone.run(async () => {
+      // Playing with this server: connected, or trying to get back to it
+      const wasPlaying =
+        this.connectionStateChange.getValue() ||
+        this.reconnectingChange.getValue() !== null;
       this.localPlayerId = undefined;
+      this.voteChange.next(null);
+      // A sync in progress ends with the connection
+      if (this.hostWorldSyncChange.getValue()?.step !== 'done') {
+        this.hostWorldSyncChange.next(null);
+      }
       this.connectionStateChange.next(false);
       this.isConnectionInProgressChange.next(false);
 
-      if (isError && this._remainingReconnectionAttempt > 0) {
-        this._remainingReconnectionAttempt--;
-        this.chatService.pushSystemMessage('SERVICE.CLIENT.CONNECTION_LOST');
-        this.connect(this._host, this._port, this._password);
+      // Only a lost connection to someone else's server: a kick, a refusal or leaving isn't an error, and the
+      // server this player hosts stops with a problem only when the game does
+      if (isError && wasPlaying && !this.hostingChange.getValue()) {
+        this.reconnectLater();
       } else {
+        this.stopReconnecting();
         this.chatService.pushSystemMessage('SERVICE.CLIENT.DISCONNECTED');
       }
     });
+  }
+
+  /** Tries the lost server again after the next backoff wait, or gives up and offers Rejoin. */
+  private reconnectLater(): void {
+    if (this._lostAt === null) {
+      this._lostAt = Date.now();
+    }
+    const attempt = (this.reconnectingChange.getValue() ?? 0) + 1;
+    const delay = reconnectDelay(attempt, Date.now() - this._lostAt);
+    if (delay === null) {
+      this.stopReconnecting();
+      this.chatService.pushSystemMessage('SERVICE.CLIENT.RECONNECT_GAVE_UP');
+      // Still saved: the player didn't leave, so Rejoin stays on offer
+      this.lastSessionChange.next(
+        JSON.parse(this.storeService.get(LAST_SESSION_KEY, 'null')),
+      );
+      return;
+    }
+    this.reconnectingChange.next(attempt);
+    this.chatService.pushSystemMessage('SERVICE.CLIENT.RECONNECTING', {
+      attempt,
+    });
+    this._reconnectTimer = setTimeout(() => {
+      this._reconnectTimer = null;
+      this.zone.run(() => this.connect(this._host, this._port, this._password));
+    }, delay);
+  }
+
+  private stopReconnecting(): void {
+    if (this._reconnectTimer !== null) {
+      clearTimeout(this._reconnectTimer);
+      this._reconnectTimer = null;
+    }
+    this._lostAt = null;
+    this.reconnectingChange.next(null);
   }
 
   /**
@@ -863,6 +1030,65 @@ export class ClientService implements OnDestroy {
   private onHostWorldOffer(host: string, quests: number, places: number, people: number) {
     this.zone.run(() => {
       this.hostWorldOfferChange.next({ host, quests, places, people });
+    });
+  }
+
+  private onHostWorldSync(step: string, quests: number, places: number, people: number) {
+    this.zone.run(() => {
+      if (this._hostWorldSyncTimer !== null) {
+        clearTimeout(this._hostWorldSyncTimer);
+        this._hostWorldSyncTimer = null;
+      }
+      this.hostWorldSyncChange.next({ step: step as HostWorldSyncStep, quests, places, people });
+      if (step === 'done' || step === 'cancelled') {
+        this._hostWorldSyncTimer = setTimeout(() => {
+          this._hostWorldSyncTimer = null;
+          this.hostWorldSyncChange.next(null);
+        }, HOST_WORLD_SYNC_SHOWN_MS);
+      }
+    });
+  }
+
+  private onCrashDump(file: string, folder: string, version: string, game: string, system: string) {
+    this.zone.run(() => {
+      // Offering it is asking: a missed notification doesn't come back for the same dump
+      if (this.storeService.get(CRASH_ASKED_KEY, '') !== file) {
+        this.storeService.set(CRASH_ASKED_KEY, file);
+        this.crashDumpChange.next({ file, folder, version, game, system });
+      }
+    });
+  }
+
+  private onVote(id: number, kind: number, state: number, starterId: number, targetId: number, yes: number, no: number, eligible: number, secondsLeft: number) {
+    this.zone.run(() => {
+      if (state >= VOTE_STATES.length) {
+        this.chatService.pushSystemMessage('SERVICE.VOTE.REFUSED_' + (VOTE_REFUSALS[state - VOTE_STATES.length] ?? 'TARGET'), { seconds: secondsLeft });
+        return;
+      }
+      if (this._voteTimer !== null) {
+        clearTimeout(this._voteTimer);
+        this._voteTimer = null;
+      }
+      const previous = this.voteChange.getValue();
+      const vote: Vote = {
+        id,
+        kind: kind === 0 ? 'kick' : 'ready',
+        state: VOTE_STATES[state],
+        starterId,
+        targetId,
+        yes,
+        no,
+        eligible,
+        endsAt: Date.now() + secondsLeft * 1000,
+        answered: (previous?.id === id && previous.answered) || starterId === this.localPlayerId,
+      };
+      this.voteChange.next(vote);
+      if (vote.state !== 'open') {
+        this._voteTimer = setTimeout(() => {
+          this._voteTimer = null;
+          this.voteChange.next(null);
+        }, VOTE_RESULT_SHOWN_MS);
+      }
     });
   }
 

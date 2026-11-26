@@ -49,6 +49,9 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
   /** The quest categories the party shares, names the server knows (Gameplay:sSharedQuestTypes) */
   public sharedQuestTypes = new Set<string>(DEFAULT_SHARED_QUEST_TYPES);
   public readonly questTypes = QUEST_TYPES;
+  /** A relay friends join through when the router can't be opened (address:port), and its password */
+  public relay = '';
+  public relayPassword = '';
 
   /** One click setups for the host form */
   public readonly presets = {
@@ -233,6 +236,8 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
       classic: this.classic,
       // In the order the server lists them, so the setting reads the same every time
       sharedQuestTypes: QUEST_TYPES.filter(type => this.sharedQuestTypes.has(type)).join(','),
+      relay: this.classic ? '' : this.relay.trim(),
+      relayPassword: this.relayPassword,
     });
   }
 

@@ -23,6 +23,10 @@
 #include <PartyTeleport.h>
 #include <WireProtocol.h>
 #include <RequiredMods.h>
+#include <Relay.h>
+#include <Messages/NotifyVote.h>
+#include <Messages/RequestVote.h>
+#include <Messages/RequestVoteAnswer.h>
 #include <Messages/ServerMessageFactory.h>
 #include <Structs/Vector2_NetQuantize.h>
 
@@ -354,6 +358,7 @@ TEST_CASE("Differential structures", "[encoding.differential]")
         sendMods.ModList.push_back({"SomeMod.esp", 3, false, 12345});
         sendMods.ModList.push_back({"Big.esm", 4, false, 0xFFFFFFFF});
         sendMods.ModList.push_back({"Unknown.esl", 5, true, 0});
+        sendMods.ModList[0].Checksum = 0x89ABCDEF;
 
         Buffer buff(1000);
         Buffer::Writer writer(&buff);
@@ -365,6 +370,7 @@ TEST_CASE("Differential structures", "[encoding.differential]")
         REQUIRE(recvMods.ModList.size() == 3);
         REQUIRE(recvMods.ModList[0].FileSize == 12345);
         REQUIRE(recvMods.ModList[1].FileSize == 0xFFFFFFFF);
+        REQUIRE(recvMods.ModList[0].Checksum == 0x89ABCDEF);
         REQUIRE(sendMods == recvMods);
     }
 
@@ -441,6 +447,7 @@ TEST_CASE("Packets", "[encoding.packets]")
         sendMessage.UserMods.ModList.push_back({"Hi", 14});
         sendMessage.UserMods.ModList.push_back({"Test", 8});
         sendMessage.UserMods.ModList.push_back({"Toast", 49});
+        sendMessage.Returning = true;
 
         Buffer::Writer writer(&buff);
         sendMessage.Serialize(writer);
@@ -1341,6 +1348,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
     {
         Mods sent;
         sent.ModList.push_back({"SomeMod.esp", 3, true, 12345});
+        sent.ModList.back().Checksum = 0xDEADBEEF;
 
         // Zeroed, so the comparison below doesn't see leftover bits after the last one written
         Buffer buffer(1000);
@@ -1367,6 +1375,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE(received.ModList.size() == 1);
         REQUIRE(received.ModList[0].Filename == "SomeMod.esp");
         REQUIRE(received.ModList[0].FileSize == 0);
+        REQUIRE(received.ModList[0].Checksum == 0);
         REQUIRE(Serialization::ReadVarInt(reader) == 42);
     }
 
@@ -1410,6 +1419,27 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE(received.PlayerId == 3);
         REQUIRE(received.Percentage == 25.f);
         REQUIRE(received.Vitals == PartyVitals{});
+        REQUIRE(Serialization::ReadVarInt(reader) == 42);
+    }
+
+    GIVEN("An authentication request ends where v1.8.4's does")
+    {
+        AuthenticationRequest sent;
+        sent.Username = "Lydia";
+        sent.Returning = true;
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 42);
+
+        Buffer::Reader reader(&buffer);
+        uint64_t opcode;
+        reader.ReadBits(opcode, 8);
+        AuthenticationRequest received;
+        received.DeserializeRaw(reader);
+        REQUIRE(received.Username == "Lydia");
+        REQUIRE_FALSE(received.Returning);
         REQUIRE(Serialization::ReadVarInt(reader) == 42);
     }
 
@@ -1509,6 +1539,16 @@ TEST_CASE("Required mods lists", "[encoding.required_mods]")
         REQUIRE(RequiredMods::FormatLine("SomeMod.esp", 12345) == "SomeMod.esp|12345");
         REQUIRE(RequiredMods::FormatLine("SomeMod.esp", 0) == "SomeMod.esp");
         REQUIRE(RequiredMods::ParseLine(RequiredMods::FormatLine("A B.esp", 7)) == Listed{"A B.esp", 7});
+
+        // The host's content checksum (CRC-32, hex) after the size
+        REQUIRE(RequiredMods::ParseLine("SomeMod.esp|12345|0a1b2c3d") == Listed{"SomeMod.esp", 12345, 0x0A1B2C3D});
+        REQUIRE(RequiredMods::ParseLine("SomeMod.esp|12345|0A1B2C3D\r") == Listed{"SomeMod.esp", 12345, 0x0A1B2C3D});
+        REQUIRE_FALSE(RequiredMods::ParseLine("SomeMod.esp|12345|xyz").has_value());
+        REQUIRE_FALSE(RequiredMods::ParseLine("SomeMod.esp|12345|").has_value());
+        REQUIRE_FALSE(RequiredMods::ParseLine("SomeMod.esp|12345|123456789").has_value());
+        REQUIRE(RequiredMods::FormatLine("SomeMod.esp", 12345, 0x0A1B2C3D) == "SomeMod.esp|12345|0a1b2c3d");
+        REQUIRE(RequiredMods::FormatLine("SomeMod.esp", 12345, 0) == "SomeMod.esp|12345");
+        REQUIRE(RequiredMods::ParseLine(RequiredMods::FormatLine("C.esp", 9, 0xFFFFFFFF)) == Listed{"C.esp", 9, 0xFFFFFFFF});
     }
 
     GIVEN("A player's mods compared with the listed ones")
@@ -1531,4 +1571,122 @@ TEST_CASE("Required mods lists", "[encoding.required_mods]")
         // A size the player's game couldn't read isn't refused
         REQUIRE(RequiredMods::Compare(cListed, player({{"Sized.esp", 0}, {"Plain.esp", 1}, {"Gone.esp", 5}})).Empty());
     }
+
+    GIVEN("Mods listed with their content checksum")
+    {
+        const std::vector<Listed> cListed{{"Exact.esp", 100, 0xABCD}};
+        auto player = [](uint32_t aSize, uint32_t aChecksum)
+        {
+            Vector<Mods::Entry> mods;
+            Mods::Entry entry{"Exact.esp", 0, false, aSize};
+            entry.Checksum = aChecksum;
+            mods.push_back(entry);
+            return mods;
+        };
+        // The same size with other contents is another version
+        REQUIRE(RequiredMods::Compare(cListed, player(100, 0x1234)).DifferentVersion == cListed);
+        REQUIRE(RequiredMods::Compare(cListed, player(100, 0xABCD)).Empty());
+        // A checksum the player's game couldn't compute falls back to the size
+        REQUIRE(RequiredMods::Compare(cListed, player(100, 0)).Empty());
+        REQUIRE_FALSE(RequiredMods::Compare(cListed, player(99, 0)).Empty());
+    }
+}
+
+TEST_CASE("Relay messages", "[encoding.relay]")
+{
+    using Relay::Message;
+    using Relay::Type;
+    auto roundTrip = [](const Message& acSent)
+    {
+        const std::string cBytes = acSent.Serialize();
+        return Message::Parse(cBytes.data(), cBytes.size());
+    };
+
+    GIVEN("Each kind of message")
+    {
+        Message allocate{Type::Allocate};
+        allocate.Text = "secret";
+        REQUIRE(roundTrip(allocate)->Text == "secret");
+
+        Message allocated{Type::Allocated};
+        allocated.Port = 10601;
+        REQUIRE(roundTrip(allocated)->Port == 10601);
+
+        Message data{Type::Data};
+        data.PeerId = 0x01020304;
+        data.PeerAddress = 0xC0A80105;
+        data.PeerPort = 54321;
+        data.Payload = std::string("\0game\xFFpacket", 12);
+        const auto cData = roundTrip(data);
+        REQUIRE(cData);
+        REQUIRE(cData->Kind == Type::Data);
+        REQUIRE(cData->PeerId == 0x01020304);
+        REQUIRE(cData->PeerAddress == 0xC0A80105);
+        REQUIRE(cData->PeerPort == 54321);
+        REQUIRE(cData->Payload == data.Payload);
+
+        Message closed{Type::PeerClosed};
+        closed.PeerId = 7;
+        REQUIRE(roundTrip(closed)->PeerId == 7);
+        REQUIRE(roundTrip(Message{Type::Keepalive})->Kind == Type::Keepalive);
+    }
+
+    GIVEN("Anything else")
+    {
+        const std::string cAllocated = [] { Message m{Type::Allocated}; m.Port = 5; return m.Serialize(); }();
+        REQUIRE_FALSE(Message::Parse(cAllocated.data(), cAllocated.size() - 1));
+        REQUIRE_FALSE(Message::Parse("STRZ\x01\x05", 6));
+        REQUIRE_FALSE(Message::Parse("STRY\x02\x05", 6));
+        REQUIRE_FALSE(Message::Parse("STRY\x01\x63", 6));
+        REQUIRE_FALSE(Message::Parse("STRY\x01\x05x", 7));
+        // A length byte longer than the text
+        REQUIRE_FALSE(Message::Parse("STRY\x01\x01\x09" "abc", 10));
+        Message huge{Type::Data};
+        huge.Payload.assign(Relay::kMaxPayload + 1, 'x');
+        const std::string cHuge = huge.Serialize();
+        REQUIRE_FALSE(Message::Parse(cHuge.data(), cHuge.size()));
+    }
+}
+
+TEST_CASE("Vote messages", "[encoding.votes]")
+{
+    auto roundTrip = [](const auto& acSent, auto aReceived)
+    {
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        acSent.Serialize(writer);
+        Buffer::Reader reader(&buffer);
+        uint64_t opcode;
+        reader.ReadBits(opcode, 8);
+        aReceived.DeserializeRaw(reader);
+        return aReceived;
+    };
+
+    RequestVote start;
+    start.Kind = VoteKind::Kick;
+    start.TargetId = 300;
+    REQUIRE(roundTrip(start, RequestVote{}) == start);
+
+    RequestVoteAnswer answer;
+    answer.VoteId = 7;
+    answer.Yes = true;
+    REQUIRE(roundTrip(answer, RequestVoteAnswer{}) == answer);
+
+    NotifyVote vote;
+    vote.VoteId = 7;
+    vote.Kind = VoteKind::Ready;
+    vote.State = VoteState::RefusedCooldown;
+    vote.StarterId = 1;
+    vote.TargetId = 2;
+    vote.Yes = 3;
+    vote.No = 4;
+    vote.Eligible = 5;
+    vote.SecondsLeft = 6;
+    REQUIRE(roundTrip(vote, NotifyVote{}) == vote);
+
+    // Official v1.8.4 has no votes
+    Wire::Set(WireProtocol::Official184);
+    const bool cOfficialHasVotes = Wire::ToWire(kRequestVote).has_value() || Wire::ToWire(kNotifyVote).has_value();
+    Wire::Set(WireProtocol::Current);
+    REQUIRE_FALSE(cOfficialHasVotes);
 }

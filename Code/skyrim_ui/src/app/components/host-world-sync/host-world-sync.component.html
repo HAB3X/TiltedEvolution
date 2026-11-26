@@ -1,0 +1,22 @@
+@if (sync$ | async; as sync) {
+  <section class="sync" [attr.data-step]="sync.step">
+    @if (sync.step === 'cancelled') {
+      <h2>{{ 'COMPONENT.HOST_WORLD_SYNC.CANCELLED' | transloco }}</h2>
+    } @else {
+      <h2>{{ (sync.finished ? 'COMPONENT.HOST_WORLD_SYNC.DONE' : 'COMPONENT.HOST_WORLD_SYNC.TITLE') | transloco }}</h2>
+      <ol>
+        @for (step of sync.steps; track step.key) {
+          <li [attr.data-state]="step.state">{{ step.key | transloco }}</li>
+        }
+      </ol>
+      @if (sync.finished) {
+        <p>
+          {{
+            'COMPONENT.HOST_WORLD_SYNC.CHANGED'
+              | transloco: { quests: sync.quests, places: sync.places, people: sync.people }
+          }}
+        </p>
+      }
+    }
+  </section>
+}

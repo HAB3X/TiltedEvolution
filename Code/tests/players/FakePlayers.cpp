@@ -17,14 +17,23 @@
 #include <BuildInfo.h>
 #include <LanDiscovery.h>
 #include <WireProtocol.h>
+#include <Messages/AssignCharacterRequest.h>
 #include <Messages/AuthenticationRequest.h>
+#include <Messages/AssignObjectsRequest.h>
+#include <Messages/AssignObjectsResponse.h>
 #include <Messages/AuthenticationResponse.h>
 #include <Messages/ClientMessageFactory.h>
+#include <Messages/EnterInteriorCellRequest.h>
 #include <Messages/HostWorldStateRequest.h>
 #include <Messages/NotifyHostWorldRequested.h>
 #include <Messages/NotifyHostWorldState.h>
 #include <Messages/NotifyChatMessageBroadcast.h>
+#include <Messages/NotifyPartyInfo.h>
+#include <Messages/NotifyPartyInvite.h>
 #include <Messages/NotifyPartyJoined.h>
+#include <Messages/PartyAcceptInviteRequest.h>
+#include <Messages/PartyCreateRequest.h>
+#include <Messages/PartyInviteRequest.h>
 #include <Messages/NotifyPlayerJoined.h>
 #include <Messages/NotifyQuestUpdate.h>
 #include <Messages/NotifyPartyTravel.h>
@@ -50,6 +59,9 @@
 #include <Messages/RequestQuestUpdate.h>
 #include <Messages/RequestHostWorld.h>
 #include <Messages/RequestModeratePlayer.h>
+#include <Messages/NotifyVote.h>
+#include <Messages/RequestVote.h>
+#include <Messages/RequestVoteAnswer.h>
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/ServerMessageFactory.h>
 #include <Messages/TeleportCommandResponse.h>
@@ -100,10 +112,11 @@ struct FakePlayer final : Client
     {
         std::printf("%s connected\n", m_name.c_str());
         AuthenticationRequest request;
-        request.Version = Wire::IsOfficial184() ? Wire::kOfficial184Version : BUILD_COMMIT;
+        request.Version = !Version.empty() ? Version.c_str() : Wire::IsOfficial184() ? Wire::kOfficial184Version : BUILD_COMMIT;
         request.Token = m_password.c_str();
         request.Username = m_name.c_str();
         request.Level = 1;
+        request.Returning = Returning;
         for (const Plugin& cMod : Plugins)
         {
             Mods::Entry entry;
@@ -111,6 +124,7 @@ struct FakePlayer final : Client
             entry.Id = static_cast<uint16_t>(request.UserMods.ModList.size());
             entry.IsLite = false;
             entry.FileSize = cMod.FileSize;
+            entry.Checksum = cMod.Checksum;
             request.UserMods.ModList.push_back(entry);
         }
         Send(request);
@@ -145,6 +159,7 @@ struct FakePlayer final : Client
             }
             Settings = pResponse->Settings;
             ServerVersion = pResponse->Version.c_str();
+            PlayerId = pResponse->PlayerId;
             break;
         }
         case kNotifyPlayerJoined:
@@ -157,6 +172,8 @@ struct FakePlayer final : Client
                 ++OwnChatsBack;
             break;
         case kNotifyPartyJoined: Party = *static_cast<NotifyPartyJoined*>(pMessage.get()); break;
+        case kNotifyPartyInfo: PartyInfo = *static_cast<NotifyPartyInfo*>(pMessage.get()); break;
+        case kNotifyPartyInvite: Invite = *static_cast<NotifyPartyInvite*>(pMessage.get()); break;
         case kNotifyHostWorldRequested: WorldRequest = *static_cast<NotifyHostWorldRequested*>(pMessage.get()); break;
         case kNotifyHostWorldState: World = *static_cast<NotifyHostWorldState*>(pMessage.get()); break;
         case kTeleportCommandResponse: Teleport = *static_cast<TeleportCommandResponse*>(pMessage.get()); break;
@@ -169,16 +186,23 @@ struct FakePlayer final : Client
         case kNotifyPartySummon: Summons.push_back(*static_cast<NotifyPartySummon*>(pMessage.get())); break;
         case kNotifyPartyTeleportRefused: Refusals.push_back(*static_cast<NotifyPartyTeleportRefused*>(pMessage.get())); break;
         case kNotifyTeleport: ++Teleports; break;
+        case kNotifyVote: Votes.push_back(*static_cast<NotifyVote*>(pMessage.get())); break;
+        case kAssignObjectsResponse: Objects = *static_cast<AssignObjectsResponse*>(pMessage.get()); break;
         default: break;
         }
     }
 
     std::string m_name, m_password;
     bool LoggedIn = false, Disconnected = false;
+    // Says it comes back after its game stopped (AuthenticationRequest::Returning)
+    bool Returning = false;
+    // The version it says it has, when not this build's
+    std::string Version;
     struct Plugin
     {
         std::string Name;
         uint32_t FileSize = 0;
+        uint32_t Checksum = 0;
     };
     // The plugins this player says it has loaded
     std::vector<Plugin> Plugins;
@@ -192,6 +216,8 @@ struct FakePlayer final : Client
     std::optional<NotifyChatMessageBroadcast> Chat;
     uint32_t OwnChatsBack = 0;
     std::optional<NotifyPartyJoined> Party;
+    std::optional<NotifyPartyInfo> PartyInfo;
+    std::optional<NotifyPartyInvite> Invite;
     std::optional<NotifyHostWorldRequested> WorldRequest;
     std::optional<NotifyHostWorldState> World;
     std::optional<TeleportCommandResponse> Teleport;
@@ -204,6 +230,21 @@ struct FakePlayer final : Client
     std::vector<NotifyPartySummon> Summons;
     std::vector<NotifyPartyTeleportRefused> Refusals;
     uint32_t Teleports = 0;
+    uint32_t PlayerId = 0;
+    // Every vote state the server sent, in order
+    std::vector<NotifyVote> Votes;
+    std::optional<AssignObjectsResponse> Objects;
+
+    // The last vote state of this kind and state, if any came since aFrom
+    const NotifyVote* FindVote(VoteKind aKind, VoteState aState, size_t aFrom = 0) const
+    {
+        for (size_t i = Votes.size(); i > aFrom; --i)
+        {
+            if (Votes[i - 1].Kind == aKind && Votes[i - 1].State == aState)
+                return &Votes[i - 1];
+        }
+        return nullptr;
+    }
 };
 
 // Runs the player until the condition holds or the time is up
@@ -404,6 +445,172 @@ int RunModVersions(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// A server requiring "Exact.esp|100|0000abcd" (ModPolicy:bRequireMods): the same size with other contents is refused as
+// a different version, the same contents get in, and a player whose game couldn't read the file (checksum 0) is
+// compared by size only. One player at a time, so one process works.
+int RunModChecksums(const std::string& acEndpoint, const std::string& acPassword)
+{
+    using RT = AuthenticationResponse::ResponseType;
+    auto login = [&](const char* apName, uint32_t aChecksum)
+    {
+        auto pPlayer = std::make_unique<FakePlayer>(apName, acPassword);
+        pPlayer->Plugins = {{"Exact.esp", 100, aChecksum}};
+        pPlayer->Connect(acEndpoint);
+        RunUntil(*pPlayer, [&] { return pPlayer->LoggedIn || pPlayer->Refusal.has_value(); });
+        return pPlayer;
+    };
+    {
+        const auto cpOther = login("FakeOtherContents", 0x1234);
+        Check("the same size with other contents is refused", cpOther->Refusal == RT::kModsMismatch);
+        Check("as a different version of that mod", cpOther->RefusedVersions == std::vector<std::string>{"Exact.esp"}, "versions: " + JoinNames(cpOther->RefusedVersions));
+    }
+    Check("the same contents get in", login("FakeSameContents", 0xABCD)->LoggedIn);
+    Check("a plugin the game couldn't read is compared by size", login("FakeUnreadable", 0)->LoggedIn);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+// Votes (VoteService) between three players: the host on the server's computer (votehost, at 127.0.0.1) and two who
+// join from another address (votevoter and votetarget, at this computer's network address, so they aren't the host).
+// The voter can't kick the host; the host starts a kick vote against the target, the voter agrees and the target is
+// kicked; the host can't start another kick vote right away; then a ready check passes when both say ready. Start
+// votehost, then votetarget, both in the background, then votevoter.
+uint32_t IdOf(const FakePlayer& acPlayer, const std::string& acName)
+{
+    for (size_t i = 0; i < acPlayer.JoinedNames.size(); ++i)
+    {
+        if (acPlayer.JoinedNames[i] == acName)
+            return acPlayer.JoinedIds[i];
+    }
+    return 0;
+}
+
+int RunVoteHost(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer host("FakeVoteHost", acPassword);
+    host.Connect(acEndpoint);
+    Check("host logs in", RunUntil(host, [&] { return host.LoggedIn; }));
+    Check("sees the voter and the target join", RunUntil(host, [&] { return IdOf(host, "FakeVoter") && IdOf(host, "FakeTarget"); }, 40s));
+    // The voter tries to kick the host first
+    RunUntil(host, [] { return false; }, 3s);
+
+    RequestVote kick;
+    kick.Kind = VoteKind::Kick;
+    kick.TargetId = IdOf(host, "FakeTarget");
+    host.Send(kick);
+    const NotifyVote* pOpen = nullptr;
+    Check("a kick vote opens with the host's yes, the target not counted",
+          RunUntil(host, [&] { return (pOpen = host.FindVote(VoteKind::Kick, VoteState::Open)) != nullptr; }) && pOpen->Yes == 1 && pOpen->Eligible == 2);
+    Check("it passes when the voter agrees", RunUntil(host, [&] { return host.FindVote(VoteKind::Kick, VoteState::Passed) != nullptr; }, 30s));
+
+    const size_t cBefore = host.Votes.size();
+    kick.TargetId = IdOf(host, "FakeVoter");
+    host.Send(kick);
+    Check("the host can't start another kick vote right away",
+          RunUntil(host, [&] { return host.FindVote(VoteKind::Kick, VoteState::RefusedCooldown, cBefore) != nullptr; }));
+
+    RequestVote ready;
+    ready.Kind = VoteKind::Ready;
+    host.Send(ready);
+    Check("a ready check passes once everyone is ready", RunUntil(host, [&] { return host.FindVote(VoteKind::Ready, VoteState::Passed) != nullptr; }, 30s));
+    RunUntil(host, [] { return false; }, 3s);
+    return s_failures ? 1 : 0;
+}
+
+int RunVoteTarget(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer target("FakeTarget", acPassword);
+    target.Connect(acEndpoint);
+    Check("target logs in", RunUntil(target, [&] { return target.LoggedIn; }));
+    Check("hears of the vote against it", RunUntil(target, [&] { return !target.Votes.empty() && target.Votes.back().TargetId == target.PlayerId; }, 60s));
+    // Its own no doesn't count
+    RequestVoteAnswer no;
+    no.VoteId = target.Votes.back().VoteId;
+    target.Send(no);
+    Check("the vote kicks it", RunUntil(target, [&] { return target.Disconnected; }, 30s));
+    return s_failures ? 1 : 0;
+}
+
+int RunVoteVoter(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer voter("FakeVoter", acPassword);
+    voter.Connect(acEndpoint);
+    Check("voter logs in", RunUntil(voter, [&] { return voter.LoggedIn; }));
+
+    RequestVote kickHost;
+    kickHost.Kind = VoteKind::Kick;
+    kickHost.TargetId = IdOf(voter, "FakeVoteHost");
+    voter.Send(kickHost);
+    Check("can't start a vote against the host", RunUntil(voter, [&] { return voter.FindVote(VoteKind::Kick, VoteState::RefusedHost) != nullptr; }));
+
+    const NotifyVote* pOpen = nullptr;
+    Check("sees the kick vote", RunUntil(voter, [&] { return (pOpen = voter.FindVote(VoteKind::Kick, VoteState::Open)) != nullptr; }, 30s));
+    RequestVoteAnswer yes;
+    yes.VoteId = pOpen ? pOpen->VoteId : 0;
+    yes.Yes = true;
+    voter.Send(yes);
+    const NotifyVote* pPassed = nullptr;
+    Check("the vote passes with two yes of two", RunUntil(voter, [&] { return (pPassed = voter.FindVote(VoteKind::Kick, VoteState::Passed)) != nullptr; }) &&
+                                                 pPassed->Yes == 2 && pPassed->Eligible == 2);
+
+    Check("sees the ready check", RunUntil(voter, [&] { return (pOpen = voter.FindVote(VoteKind::Ready, VoteState::Open)) != nullptr; }, 30s));
+    yes.VoteId = pOpen ? pOpen->VoteId : 0;
+    voter.Send(yes);
+    Check("everyone is ready", RunUntil(voter, [&] { return voter.FindVote(VoteKind::Ready, VoteState::Passed) != nullptr; }));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+// A host world server keeping its world between runs (WorldSaveService): worldstore puts 7 gold in a chest and waits for
+// the server's periodic save (run the server with Gameplay:uKeepWorldSeconds=2); after the server restarts in the same
+// folder, worldload finds the chest as the server kept it, not as its own empty copy.
+ObjectData FakeChest(int32_t aGold)
+{
+    ObjectData chest;
+    chest.Id = GameId(0, 0x812);
+    chest.CellId = GameId(0, 0x3C);
+    chest.IsContainer = true;
+    if (aGold)
+    {
+        Inventory::Entry gold;
+        gold.BaseId = GameId(0, 0xF);
+        gold.Count = aGold;
+        chest.CurrentInventory.Entries.push_back(gold);
+    }
+    return chest;
+}
+
+int RunWorldStore(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer player("FakeStorer", acPassword);
+    player.Connect(acEndpoint);
+    Check("logs in to the host world", RunUntil(player, [&] { return player.LoggedIn; }));
+    AssignObjectsRequest objects;
+    objects.Objects.push_back(FakeChest(7));
+    player.Send(objects);
+    Check("the server takes the chest as it is", RunUntil(player, [&] { return player.Objects.has_value(); }) && player.Objects->Objects.size() == 1 &&
+                                                       player.Objects->Objects[0].IsSenderFirst);
+    // The periodic save
+    RunUntil(player, [] { return false; }, 6s);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+int RunWorldLoad(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer player("FakeLoader", acPassword);
+    player.Connect(acEndpoint);
+    Check("logs in to the restarted host world", RunUntil(player, [&] { return player.LoggedIn; }));
+    AssignObjectsRequest objects;
+    objects.Objects.push_back(FakeChest(0));
+    player.Send(objects);
+    Check("the chest comes back as the server kept it, with the 7 gold", RunUntil(player, [&] { return player.Objects.has_value(); }) &&
+                                                                          player.Objects->Objects.size() == 1 && !player.Objects->Objects[0].IsSenderFirst &&
+                                                                          player.Objects->Objects[0].CurrentInventory == FakeChest(7).CurrentInventory);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // Like the game hosting: starts the server in a folder as a child that should stop with this process
 // (GameServer:uStopWithProcess), lets it run for a while, then exits. The caller checks the server stopped by itself.
 int RunParent(const std::string& acServerFolder)
@@ -529,6 +736,63 @@ int RunQuestMember(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// A lost connection put back (ReturnService), on a server without auto party join. The leader stands in a cell and
+// leads a party with the member, then its game "crashes" (the process ends without closing the connection). The member
+// sees the party carry on without it; the leader comes back as a restarted game (Returning) and is put back in its
+// party, leading it, and moved to where the server last saw it. Start lostleader, then lostmember, both in the
+// background; once the server has timed the leader out, run lostreturn.
+const GameId kLostCell{0, 0x3C};
+const glm::vec3 kLostPosition{100.f, 200.f, 300.f};
+constexpr char kLostName[] = "FakeLost";
+
+int RunLostLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader(kLostName, acPassword);
+    leader.Connect(acEndpoint);
+    Check("leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+
+    EnterInteriorCellRequest cell;
+    cell.CellId = kLostCell;
+    leader.Send(cell);
+    AssignCharacterRequest character;
+    character.ReferenceId = GameId(0, 0x14);
+    character.CellId = kLostCell;
+    character.Position = kLostPosition;
+    leader.Send(character);
+
+    leader.Send(PartyCreateRequest{});
+    Check("leader leads a party", RunUntil(leader, [&] { return leader.Party && leader.Party->IsLeader; }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    PartyInviteRequest invite;
+    invite.PlayerId = leader.JoinedIds.empty() ? 0 : leader.JoinedIds.back();
+    leader.Send(invite);
+    Check("the member joins the party", RunUntil(leader, [&] { return leader.PartyInfo && leader.PartyInfo->PlayerIds.size() == 2; }, 15s));
+    std::fflush(stdout);
+
+    // The game crashing: no goodbye to the server, which times the connection out
+    TerminateProcess(GetCurrentProcess(), s_failures ? 1 : 0);
+    return 1;
+}
+
+int RunLostMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeStays", acPassword);
+    member.Connect(acEndpoint);
+    Check("member logs in", RunUntil(member, [&] { return member.LoggedIn; }));
+    Check("is invited", RunUntil(member, [&] { return member.Invite.has_value(); }, 30s));
+    PartyAcceptInviteRequest accept;
+    accept.InviterId = member.Invite ? member.Invite->InviterId : 0;
+    member.Send(accept);
+    Check("joins the leader's party", RunUntil(member, [&] { return member.Party && !member.Party->IsLeader; }));
+    const uint32_t cLeaderId = member.Party ? member.Party->LeaderPlayerId : 0;
+
+    Check("the party carries on without the lost leader", RunUntil(member, [&] { return member.PartyInfo && member.PartyInfo->PlayerIds.size() == 1 && member.PartyInfo->IsLeader; }, 40s));
+    Check("the leader comes back into the party and leads it again",
+          RunUntil(member, [&] { return member.PartyInfo && member.PartyInfo->PlayerIds.size() == 2 && !member.PartyInfo->IsLeader && member.PartyInfo->LeaderPlayerId != cLeaderId; }, 60s));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // Travel together: the leader fast travels to Riverwood and the member is asked to follow, and says yes (a teleport
 // to the leader); the member's own trip isn't offered to the leader, only the leader leads.
 constexpr char kTravelPlace[] = "Riverwood";
@@ -572,6 +836,20 @@ int RunTravelMember(const std::string& acEndpoint, const std::string& acPassword
     follow.TargetPlayer = member.Travel ? member.Travel->LeaderName : "";
     member.Send(follow);
     Check("saying yes gets the leader's whereabouts", RunUntil(member, [&] { return member.Teleport.has_value(); }));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+int RunLostReturn(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader(kLostName, acPassword);
+    leader.Returning = true;
+    leader.Connect(acEndpoint);
+    Check("the lost leader logs in again", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    Check("and is back in its party, leading it", RunUntil(leader, [&] { return leader.Party && leader.Party->IsLeader && leader.Party->PlayerIds.size() == 2; }));
+    Check("and is moved back to where the server last saw it", RunUntil(leader, [&] { return leader.Teleport.has_value(); }, 5s) && leader.Teleport->CellId == kLostCell &&
+              glm::distance(glm::vec3(leader.Teleport->Position), kLostPosition) < 1.f);
+    RunUntil(leader, [] { return false; }, 5s);
     std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
     return s_failures ? 1 : 0;
 }
@@ -920,6 +1198,20 @@ int RunRespawnMember(const std::string& acEndpoint, const std::string& acPasswor
     return s_failures ? 1 : 0;
 }
 
+// A player with another Plus release: refused as a wrong version, and told which version the server runs. The server
+// also logs it for the host's chat ([Host] line), which the caller checks in its log.
+int RunOldVersion(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer player("FakeOldBuild", acPassword);
+    player.Version = "v1.8.4-plus.0";
+    player.Connect(acEndpoint);
+    Check("a player with another Plus release is refused as a wrong version",
+          RunUntil(player, [&] { return player.Refusal.has_value(); }) && player.Refusal == AuthenticationResponse::ResponseType::kWrongVersion);
+    Check("and told the server's version", player.ServerVersion == BUILD_COMMIT, player.ServerVersion);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -936,6 +1228,11 @@ int RunRespawnMember(const std::string& acEndpoint, const std::string& acPasswor
 //   Gameplay:bPartyDoorsAnyMember=true
 // FakePlayers.exe respawnleader|respawnmember [address:port] [password]: start the leader first
 // FakePlayers.exe moveleader|movemember [address:port] [password]: start the leader first (uPartyTeleportCooldown=5)
+// FakePlayers.exe lostleader|lostmember|lostreturn [address:port] [password]: see RunLostLeader
+// FakePlayers.exe oldversion [address:port] [password]: see RunOldVersion
+// FakePlayers.exe modchecksums [address:port] [password]: against a server requiring Exact.esp|100|0000abcd
+// FakePlayers.exe votehost|votetarget|votevoter [address:port] [password]: see RunVoteHost
+// FakePlayers.exe worldstore|worldload [address:port] [password]: see RunWorldStore
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -999,6 +1296,26 @@ int main(int argc, char** argv)
         return RunMoveLeader(cEndpoint, cPassword);
     if (cRole == "movemember")
         return RunMoveMember(cEndpoint, cPassword);
+    if (cRole == "worldstore")
+        return RunWorldStore(cEndpoint, cPassword);
+    if (cRole == "worldload")
+        return RunWorldLoad(cEndpoint, cPassword);
+    if (cRole == "votehost")
+        return RunVoteHost(cEndpoint, cPassword);
+    if (cRole == "votetarget")
+        return RunVoteTarget(cEndpoint, cPassword);
+    if (cRole == "votevoter")
+        return RunVoteVoter(cEndpoint, cPassword);
+    if (cRole == "modchecksums")
+        return RunModChecksums(cEndpoint, cPassword);
+    if (cRole == "oldversion")
+        return RunOldVersion(cEndpoint, cPassword);
+    if (cRole == "lostleader")
+        return RunLostLeader(cEndpoint, cPassword);
+    if (cRole == "lostmember")
+        return RunLostMember(cEndpoint, cPassword);
+    if (cRole == "lostreturn")
+        return RunLostReturn(cEndpoint, cPassword);
 
     std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|moveleader|movemember|respawnleader|respawnmember [address:port] [password]\n");
     return 2;

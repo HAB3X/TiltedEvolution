@@ -55,6 +55,9 @@ private:
         Apply
     };
 
+    // Tells the overlay how far joining the host's world got (its hostWorldSync event): requesting, received, saving,
+    // applying, travelling, done or cancelled, with the counts of what changed once applied
+    void ReportSync(const char* apStep, uint32_t aQuests = 0, uint32_t aPlaces = 0, uint32_t aPeople = 0) const noexcept;
     HostWorldState CollectWorld() const noexcept;
     void RequestWorld() noexcept;
     void ApplyPending() noexcept;

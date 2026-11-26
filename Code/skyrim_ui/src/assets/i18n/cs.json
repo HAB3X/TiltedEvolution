@@ -56,7 +56,9 @@
       "REVEAL_HINT": "Ukázat hráče poblíž",
       "SAVES": "Uložené hry",
       "SAVES_HINT": "Kontrolní body družiny",
-      "CANCEL_CONNECT": "Zrušit"
+      "CANCEL_CONNECT": "Zrušit",
+      "READY_CHECK": "Kontrola připravenosti",
+      "READY_CHECK_HINT": "Zeptat se, zda jsou všichni připraveni"
     },
     "CHAT": {
       "SEND": "Odeslat",
@@ -121,7 +123,11 @@
         "QUEST_TYPE_Side": "Vedlejší úkoly",
         "QUEST_TYPE_CivilWar": "Občanská válka",
         "QUEST_TYPE_Dawnguard": "Dawnguard",
-        "QUEST_TYPE_Dragonborn": "Dragonborn"
+        "QUEST_TYPE_Dragonborn": "Dragonborn",
+        "RELAY_TITLE": "Relay pro případ, že router nejde otevřít",
+        "RELAY_HINT": "Pokud se k vám přátelé mimo vaši síť nedostanou (bez UPnP, nebo poskytovatel sdílí jednu veřejnou adresu mezi zákazníky), mohou se připojit přes relay: SkyrimTogetherRelay spuštěný na počítači, ke kterému se dostanou všichni. Použije se jen tehdy, když port na routeru nejde otevřít. Nechte prázdné, pokud ho nechcete.",
+        "RELAY_ADDRESS": "Adresa relaye (adresa:port)",
+        "RELAY_PASSWORD": "Heslo relaye, pokud nějaké má"
       },
       "LAN": {
         "TITLE": "Hry ve tvé síti",
@@ -146,7 +152,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Připojování…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Znovu se připojuji… (pokus {{attempt}})",
+      "CANCEL": "Zrušit"
     },
     "DISCONNECT": {
       "PROMPT": "Určitě se chcete odpojit?",
@@ -158,7 +166,8 @@
       "FIND_MODS": "Získejte módy",
       "SEARCH_NEXUS": "Hledat na Nexusu",
       "DIFFERENT_VERSION": "jiná verze",
-      "COPY_LIST": "Kopírovat seznam"
+      "COPY_LIST": "Kopírovat seznam",
+      "OPEN_RELEASES": "Otevřít stránku vydání Plus"
     },
     "INVITE": {
       "CODE_INFO": "Přátelé zadají tento kód v okně Připojit:",
@@ -222,7 +231,8 @@
       "INVITE": "Pozvat",
       "KICK": "Vyhodit",
       "BAN": "Zabanovat",
-      "IN_PARTY": "Ve tvé družině"
+      "IN_PARTY": "Ve tvé družině",
+      "VOTE_KICK": "Hlasovat o vyhození"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Seznam hráčů",
@@ -238,7 +248,12 @@
       "PLAYER_MANAGER": "Správa hráčů",
       "INVITE": "Pozvat",
       "SETTINGS": "Nastavení",
-      "CONNECTION_IN_PROGRESS": "Připojení probíhá..."
+      "CONNECTION_IN_PROGRESS": "Připojení probíhá...",
+      "REJOIN_OFFER": "Vaše poslední společná hra nečekaně skončila. Znovu se připojit k {{address}}?",
+      "REHOST_OFFER": "Hra, kterou jste naposledy hostovali, nečekaně skončila. Hostovat ji znovu?",
+      "CRASH_REPORT_OFFER": "Skyrim Together minule spadl. Nahlásit to na GitHubu? Nic se neodešle samo: v prohlížeči se otevře předvyplněná stránka hlášení.",
+      "CRASH_REPORT": "Nahlásit",
+      "CRASH_REPORT_NO": "Ne, díky"
     },
     "SERVER_LIST": {
       "SEARCH": "Vyhledávání...",
@@ -294,6 +309,35 @@
         "XL": "Velmi Velké"
       },
       "BACK": "Zpět"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Synchronizace s hostitelem…",
+      "DONE": "Jste ve světě hostitele",
+      "CANCELLED": "Ponechali jste si vlastní svět",
+      "STEP_REQUESTING": "Žádost o svět hostitele",
+      "STEP_RECEIVED": "Svět hostitele přijat: vaše odpověď",
+      "STEP_SAVING": "Ukládání vlastního světa",
+      "STEP_APPLYING": "Sjednocení úkolů, míst a postav",
+      "STEP_TRAVELLING": "Přesun k hostiteli",
+      "CHANGED": "Změněno pro shodu: {{quests}} úkolů, {{places}} míst a {{people}} postav."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} chce vyhodit hráče {{target}}",
+      "KICK_YOU": "Ostatní hlasují o vašem vyhození",
+      "READY_QUESTION": "{{starter}} se ptá: jsou všichni připraveni?",
+      "TALLY": "{{yes}} ano, {{no}} ne z {{eligible}}",
+      "READY_TALLY": "{{yes}} z {{eligible}} připraveno",
+      "SECONDS": "zbývá {{seconds}} s",
+      "YES": "Vyhodit",
+      "NO": "Ponechat",
+      "READY": "Připraven",
+      "NOT_READY": "Ještě ne",
+      "ANSWER_HINT": "Odpovězte v panelu (F2).",
+      "KICK_PASSED": "{{target}} byl vyhozen hlasováním",
+      "KICK_FAILED": "Hlasování o vyhození hráče {{target}} neprošlo",
+      "KICK_CANCELLED": "{{target}} odešel před koncem hlasování",
+      "READY_PASSED": "Všichni jsou připraveni!",
+      "READY_FAILED": "Ne všichni jsou připraveni"
     }
   },
   "SERVICE": {
@@ -320,7 +364,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Ztráta spojení, pokus o obnovení spojení. {{remainingReconnectionAttempt}} zbývajících pokusů.",
       "CONNECTED": "Úspěšně připojeno k serveru.",
-      "DISCONNECTED": "Odpojeno od serveru."
+      "DISCONNECTED": "Odpojeno od serveru.",
+      "RECONNECTING": "Spojení ztraceno. Znovu se připojuji (pokus {{attempt}})…",
+      "RECONNECTED": "Znovu připojeno k serveru.",
+      "RECONNECT_GAVE_UP": "Po dvě minuty se nepodařilo znovu připojit k serveru. Zkuste to znovu tlačítkem Znovu se připojit v panelu Skyrim Together (F2)."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "Dostupné příkazy pro chat: {{cmds}}",
@@ -354,11 +401,23 @@
         "WRONG_PASSWORD": "Zadané heslo je chybné.",
         "NO_REASON": "Server odmítl připojení bez udání důvodu.",
         "SERVER_FULL": "Tento server je plný.",
-        "BANNED": "Na tomto serveru máš ban."
+        "BANNED": "Na tomto serveru máš ban.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Tato hra běží na Skyrim Together Plus {{expectedVersion}} a vy máte starší {{version}}. Všichni potřebují stejnou verzi: aktualizujte ze stránky vydání Plus, abyste se mohli připojit.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Tato hra běží na Skyrim Together Plus {{expectedVersion}}, starší než vaše ({{version}}). Všichni potřebují stejnou verzi: požádejte hostitele o aktualizaci ze stránky vydání Plus, nebo si odtud nainstalujte {{expectedVersion}}."
       }
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} vás pozval do skupiny."
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Jiné hlasování ještě probíhá.",
+      "REFUSED_COOLDOWN": "Počkejte {{seconds}} s, než znovu zahájíte toto hlasování.",
+      "REFUSED_TOO_FEW": "Hlasování o vyhození vyžaduje alespoň 3 hráče.",
+      "REFUSED_HOST": "Hostitele nelze vyhodit hlasováním.",
+      "REFUSED_TARGET": "Tento hráč tu není."
+    },
+    "CRASH": {
+      "ATTACH": "K hlášení přiložte soubor {{file}} ze složky {{folder}} a napište, co jste dělali, když hra spadla."
     }
   }
 }

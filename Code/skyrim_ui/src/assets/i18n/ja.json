@@ -56,7 +56,9 @@
       "REVEAL_HINT": "近くのプレイヤーを表示",
       "SAVES": "セーブデータ",
       "SAVES_HINT": "パーティーのチェックポイント",
-      "CANCEL_CONNECT": "キャンセル"
+      "CANCEL_CONNECT": "キャンセル",
+      "READY_CHECK": "準備確認",
+      "READY_CHECK_HINT": "全員の準備ができているか確認"
     },
     "CHAT": {
       "SEND": "送信",
@@ -121,7 +123,11 @@
         "QUEST_TYPE_Side": "サイドクエスト",
         "QUEST_TYPE_CivilWar": "内戦",
         "QUEST_TYPE_Dawnguard": "ドーンガード",
-        "QUEST_TYPE_Dragonborn": "ドラゴンボーン"
+        "QUEST_TYPE_Dragonborn": "ドラゴンボーン",
+        "RELAY_TITLE": "リレー（ルーターのポートを開けない場合）",
+        "RELAY_HINT": "ネットワーク外のフレンドが接続できない場合（UPnP がない、またはプロバイダーが 1 つのグローバルアドレスを複数の契約者で共有している場合）、リレー経由で参加できます。リレーは、全員が接続できるマシンで動く SkyrimTogetherRelay です。ルーターのポートを開けないときだけ使われます。使わない場合は空欄のままにしてください。",
+        "RELAY_ADDRESS": "リレーのアドレス（アドレス:ポート）",
+        "RELAY_PASSWORD": "リレーのパスワード（ある場合）"
       },
       "LAN": {
         "TITLE": "ネットワーク上のゲーム",
@@ -146,7 +152,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "接続中…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "再接続中…（{{attempt}} 回目）",
+      "CANCEL": "キャンセル"
     },
     "DISCONNECT": {
       "PROMPT": "切断しますか?",
@@ -158,7 +166,8 @@
       "FIND_MODS": "MODを入手",
       "SEARCH_NEXUS": "Nexusで検索",
       "DIFFERENT_VERSION": "バージョン違い",
-      "COPY_LIST": "リストをコピー"
+      "COPY_LIST": "リストをコピー",
+      "OPEN_RELEASES": "Plus のリリースページを開く"
     },
     "INVITE": {
       "CODE_INFO": "フレンドは「接続」でこの参加コードを入力します：",
@@ -222,7 +231,8 @@
       "INVITE": "招待",
       "KICK": "キック",
       "BAN": "BAN",
-      "IN_PARTY": "パーティーメンバー"
+      "IN_PARTY": "パーティーメンバー",
+      "VOTE_KICK": "キック投票"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "プレイヤーメニュー",
@@ -238,7 +248,12 @@
       "PLAYER_MANAGER": "プレイヤーの管理",
       "INVITE": "招待",
       "SETTINGS": "設定",
-      "CONNECTION_IN_PROGRESS": "接続しています…"
+      "CONNECTION_IN_PROGRESS": "接続しています…",
+      "REJOIN_OFFER": "前回のマルチプレイが予期せず終了しました。{{address}} に再参加しますか？",
+      "REHOST_OFFER": "前回ホストしたゲームが予期せず終了しました。もう一度ホストしますか？",
+      "CRASH_REPORT_OFFER": "前回 Skyrim Together がクラッシュしました。GitHub に報告しますか？自動では何も送信されません。入力済みの Issue ページがブラウザで開きます。",
+      "CRASH_REPORT": "報告する",
+      "CRASH_REPORT_NO": "いいえ"
     },
     "SERVER_LIST": {
       "SEARCH": "検索",
@@ -294,6 +309,35 @@
         "XL": "最大"
       },
       "BACK": "戻る"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "ホストと同期中…",
+      "DONE": "ホストのワールドに入りました",
+      "CANCELLED": "自分のワールドのままにしました",
+      "STEP_REQUESTING": "ホストにワールドを要求中",
+      "STEP_RECEIVED": "ホストのワールドを受信：あなたの回答",
+      "STEP_SAVING": "自分のワールドを保存中",
+      "STEP_APPLYING": "クエスト、場所、人物を一致させています",
+      "STEP_TRAVELLING": "ホストのところへ移動中",
+      "CHANGED": "クエスト {{quests}} 件、場所 {{places}} 件、人物 {{people}} 人を一致させました。"
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} が {{target}} のキックを提案しています",
+      "KICK_YOU": "他のプレイヤーがあなたのキックを投票中です",
+      "READY_QUESTION": "{{starter}}：全員準備はいい？",
+      "TALLY": "賛成 {{yes}}、反対 {{no}}（{{eligible}} 人中）",
+      "READY_TALLY": "{{eligible}} 人中 {{yes}} 人準備完了",
+      "SECONDS": "残り {{seconds}} 秒",
+      "YES": "キックする",
+      "NO": "残す",
+      "READY": "準備完了",
+      "NOT_READY": "まだ",
+      "ANSWER_HINT": "パネル（F2）を開いて回答してください。",
+      "KICK_PASSED": "{{target}} は投票でキックされました",
+      "KICK_FAILED": "{{target}} のキック投票は否決されました",
+      "KICK_CANCELLED": "{{target}} は投票終了前に退出しました",
+      "READY_PASSED": "全員準備完了！",
+      "READY_FAILED": "全員の準備は整っていません"
     }
   },
   "SERVICE": {
@@ -320,7 +364,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "サーバーから切断されました。再接続しようとしています… 後{{remainingReconnectionAttempt}}回試します。",
       "CONNECTED": "接続しました。",
-      "DISCONNECTED": "サーバーから切断されました。"
+      "DISCONNECTED": "サーバーから切断されました。",
+      "RECONNECTING": "接続が切れました。再接続中（{{attempt}} 回目）…",
+      "RECONNECTED": "サーバーに再接続しました。",
+      "RECONNECT_GAVE_UP": "2 分間サーバーに戻れませんでした。Skyrim Together パネル（F2）の「再参加」でもう一度お試しください。"
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "使用できるコマンド: {{cmds}}",
@@ -356,11 +403,23 @@
         "SERVER_FULL": "このサーバーは満員です。",
         "BAD_UGRIDSTOLOAD": "Skyrim.iniの「uGridsToLoad」値がデフォルトではないようです。これはイケマセン。「Skyrim Together」が故障してしまいます。この値をデフォルト（５）に戻すか、Skyrim.iniを削除し１回バニラで起動し新しいファイルをジェネレートしてください。「uExterior Cell Buffer」と「uInterior Cell Buffer」もデフォルトの値のままであったほうがマシです。やり方が分からない場合はSkyrim TogetherのRedditやDiscordをご参考にしてください。",
         "NON_DEFAULT_INSTALL": "スカイリムが純粋なバニラではないようです［CCコンテンツなど］。\nMODSを使わなかったほうがマシ。\nAEのCCコンテンツコンテンツも含めて、インストールしたMODSを削除し無効にすることをお勧めします［詳細はWIKIに。］\n\n有効な順番はこの通り：<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>",
-        "BANNED": "このサーバーからBANされています。"
+        "BANNED": "このサーバーからBANされています。",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "このゲームは Skyrim Together Plus {{expectedVersion}} で動いていますが、あなたのバージョンは古い {{version}} です。全員が同じバージョンである必要があります。Plus のリリースページから更新して参加してください。",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "このゲームは Skyrim Together Plus {{expectedVersion}} で動いており、あなたの {{version}} より古いバージョンです。全員が同じバージョンである必要があります。ホストに Plus のリリースページから更新してもらうか、そこから {{expectedVersion}} をインストールしてください。"
       }
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} がパーティーに招待しました。"
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "別の投票がまだ行われています。",
+      "REFUSED_COOLDOWN": "その投票をもう一度始めるには {{seconds}} 秒待ってください。",
+      "REFUSED_TOO_FEW": "キック投票には 3 人以上のプレイヤーが必要です。",
+      "REFUSED_HOST": "ホストを投票でキックすることはできません。",
+      "REFUSED_TARGET": "そのプレイヤーはいません。"
+    },
+    "CRASH": {
+      "ATTACH": "{{folder}} にある {{file}} を Issue に添付し、クラッシュしたときに何をしていたか書いてください。"
     }
   }
 }

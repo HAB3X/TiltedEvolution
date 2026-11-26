@@ -17,6 +17,8 @@
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/TeleportRequest.h>
 #include <Messages/RequestModeratePlayer.h>
+#include <Messages/RequestVote.h>
+#include <Messages/RequestVoteAnswer.h>
 
 #include <Events/SetTimeCommandEvent.h>
 #include <Events/WaveCommandEvent.h>
@@ -106,6 +108,20 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             request.Ban = eventArgs->GetBool(1);
             World::Get().GetRunner().Queue([request]() { World::Get().GetTransport().Send(request); });
         }
+        else if (eventName == "startVote")
+        {
+            RequestVote request;
+            request.Kind = eventArgs->GetInt(0) == 0 ? VoteKind::Kick : VoteKind::Ready;
+            request.TargetId = static_cast<uint32_t>(eventArgs->GetInt(1));
+            World::Get().GetRunner().Queue([request]() { World::Get().GetTransport().Send(request); });
+        }
+        else if (eventName == "answerVote")
+        {
+            RequestVoteAnswer request;
+            request.VoteId = static_cast<uint32_t>(eventArgs->GetInt(0));
+            request.Yes = eventArgs->GetBool(1);
+            World::Get().GetRunner().Queue([request]() { World::Get().GetTransport().Send(request); });
+        }
         else if (eventName == "searchLanServers")
             LanSearch::Start();
         else if (eventName == "hostServer")
@@ -118,6 +134,8 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             settings.PauseInMenus = eventArgs->GetBool(4);
             settings.Classic = eventArgs->GetBool(5);
             settings.SharedQuestTypes = eventArgs->GetString(6).ToString();
+            settings.Relay = eventArgs->GetString(7).ToString();
+            settings.RelayPassword = eventArgs->GetString(8).ToString();
             World::Get().GetRunner().Queue([settings]() { World::Get().ctx().at<LocalServerService>().Host(settings); });
         }
         else if (eventName == "disconnect")
@@ -208,8 +226,10 @@ void OverlayClient::ProcessConnectMessage(CefRefPtr<CefListValue> aEventArgs)
     World::Get().GetTransport().SetServerPassword(aEventArgs->GetString(2));
 
     std::string endpoint = baseIp + ":" + std::to_string(port);
+    // Rejoining after the game stopped (ClientService.rejoin in the overlay)
+    const bool cReturning = aEventArgs->GetSize() > 3 && aEventArgs->GetBool(3);
 
-    World::Get().GetRunner().Queue([endpoint] { World::Get().GetTransport().Connect(endpoint); });
+    World::Get().GetRunner().Queue([endpoint, cReturning] { World::Get().GetTransport().Connect(endpoint, cReturning); });
 }
 
 void OverlayClient::ProcessDisconnectMessage()
@@ -269,16 +289,19 @@ void OverlayClient::ProcessOpenPlayGuide()
     ShellExecuteW(nullptr, L"open", LR"(https://wiki.tiltedphoques.com/tilted-online/general-information/playguide)", nullptr, nullptr, SW_SHOWNORMAL);
 }
 
-// Only Nexus Mods pages (the refusal box's mod searches): the overlay shows text from servers, so a page in it must
-// not be able to open other addresses or programs through the shell
+// Only these pages: Nexus Mods (the refusal box's mod searches), the Plus release page (a version refusal) and a new
+// Plus issue (reporting a crash, CrashReport). The
+// overlay shows text from servers, so a page in it must not be able to open other addresses or programs through the shell
 void OverlayClient::ProcessOpenUrl(CefRefPtr<CefListValue> aEventArgs)
 {
-    constexpr char kAllowedPrefix[] = "https://www.nexusmods.com/";
+    constexpr const char* kAllowedPrefixes[] = {"https://www.nexusmods.com/", "https://github.com/HAB3X/TiltedEvolution/releases",
+                                                "https://github.com/HAB3X/TiltedEvolution/issues/new?"};
     const std::string cUrl = aEventArgs->GetString(0).ToString();
     const bool cPlain = std::all_of(cUrl.begin(), cUrl.end(), [](unsigned char c) { return c > ' ' && c < 0x7F && c != '"'; });
-    if (cUrl.rfind(kAllowedPrefix, 0) != 0 || !cPlain)
+    const bool cAllowed = std::any_of(std::begin(kAllowedPrefixes), std::end(kAllowedPrefixes), [&](const char* apPrefix) { return cUrl.rfind(apPrefix, 0) == 0; });
+    if (!cAllowed || !cPlain)
     {
-        spdlog::warn("Not opening {}: only {} addresses can be opened from the overlay", cUrl, kAllowedPrefix);
+        spdlog::warn("Not opening {}: only Nexus Mods and the Plus release and new issue pages can be opened from the overlay", cUrl);
         return;
     }
     ShellExecuteA(nullptr, "open", cUrl.c_str(), nullptr, nullptr, SW_SHOWNORMAL);

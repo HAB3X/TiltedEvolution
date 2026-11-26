@@ -21,6 +21,8 @@ import { InviteComponent } from './components/invite/invite.component';
 import { SavesComponent } from './components/saves/saves.component';
 import { HostWorldOfferComponent } from './components/host-world-offer/host-world-offer.component';
 import { ConnectionStatusComponent } from './components/connection-status/connection-status.component';
+import { HostWorldSyncComponent } from './components/host-world-sync/host-world-sync.component';
+import { VoteComponent } from './components/vote/vote.component';
 import { DropdownOptionComponent } from './components/dropdown/dropdown-option.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { ErrorComponent } from './components/error/error.component';
@@ -65,6 +67,8 @@ import { TranslocoRootModule } from './transloco-root.module';
     SavesComponent,
     HostWorldOfferComponent,
     ConnectionStatusComponent,
+    HostWorldSyncComponent,
+    VoteComponent,
     DropdownComponent,
     DropdownOptionComponent,
     ErrorComponent,

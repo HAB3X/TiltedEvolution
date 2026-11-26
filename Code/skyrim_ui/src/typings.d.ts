@@ -230,6 +230,18 @@ interface SkyrimTogether {
   /** A host world server's offer: the host's name and how many quests, places and people would change. */
   on(event: 'hostWorldOffer', callback: (host: string, quests: number, places: number, people: number) => void): void;
 
+  /** How far joining a host world got (requesting, received, saving, applying, travelling, done, cancelled) and, once applied, what changed. */
+  on(event: 'hostWorldSync', callback: (step: string, quests: number, places: number, people: number) => void): void;
+
+  /** A vote's state (the server's NotifyVote): id, kind (0 kick, 1 ready), state (0 open, 1 passed, 2 failed, 3 cancelled, 4-8 refused: busy, cooldown, too few, host, no such player), starter, target, yes, no, eligible voters and seconds left. */
+  /** The newest crash dump next to SkyrimTogether.exe, sent on entering the game when there is one. */
+  on(event: 'crashDump', callback: (file: string, folder: string, version: string, game: string, system: string) => void): void;
+
+  on(
+    event: 'vote',
+    callback: (id: number, kind: number, state: number, starterId: number, targetId: number, yes: number, no: number, eligible: number, secondsLeft: number) => void,
+  ): void;
+
   on(event: 'dummyData', callback: SkyrimTogetherTypes.DummyDataCallback): void;
 
   on(event: 'partyInfo', callback: SkyrimTogetherTypes.PartyInfoCallback): void;
@@ -390,6 +402,9 @@ interface SkyrimTogether {
   off(event: 'partySaves', callback?: (json: string) => void): void;
 
   off(event: 'hostWorldOffer', callback?: (host: string, quests: number, places: number, people: number) => void): void;
+  off(event: 'hostWorldSync', callback?: (step: string, quests: number, places: number, people: number) => void): void;
+  off(event: 'vote', callback?: (...args: number[]) => void): void;
+  off(event: 'crashDump', callback?: (file: string, folder: string, version: string, game: string, system: string) => void): void;
 
   off(
     event: 'dummyData',
@@ -441,8 +456,9 @@ interface SkyrimTogether {
    * @param host IP address or hostname.
    * @param port Port.
    * @param password Server password.
+   * @param returning The player comes back after their game stopped: the server may move them back to where it last saw them.
    */
-  connect(host: string, port: number, password: string): void;
+  connect(host: string, port: number, password: string, returning?: boolean): void;
 
   /**
    * Start the server next to the game and connect to it.
@@ -454,6 +470,8 @@ interface SkyrimTogether {
    * @param pauseInMenus Whether the world pauses while every player is in a menu.
    * @param classic Whether to run the official-protocol server instead, which the regular Skyrim Together can join.
    * @param sharedQuestTypes Comma separated quest categories shared with the party (Gameplay:sSharedQuestTypes).
+   * @param relay A relay (SkyrimTogetherRelay) friends join through when the router can't be opened, address:port; empty for none.
+   * @param relayPassword That relay's password.
    */
   hostServer(
     password: string,
@@ -463,6 +481,8 @@ interface SkyrimTogether {
     pauseInMenus: boolean,
     classic: boolean,
     sharedQuestTypes: string,
+    relay: string,
+    relayPassword: string,
   ): void;
 
   /**
@@ -490,6 +510,12 @@ interface SkyrimTogether {
    * Kick a player, or ban them (the host and admins only).
    */
   moderatePlayer(playerId: number, ban: boolean): void;
+
+  /** Start a vote: kind 0 kicks targetId (a majority of the others decides), kind 1 is a ready check (target unused). */
+  startVote(kind: number, targetId: number): void;
+
+  /** Answer the open vote: yes (kick, or ready) or no. */
+  answerVote(voteId: number, yes: boolean): void;
 
   /**
    * Show or hide other players' name tags.

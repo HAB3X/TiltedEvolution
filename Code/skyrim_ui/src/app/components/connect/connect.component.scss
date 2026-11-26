@@ -256,3 +256,19 @@
   margin: 0;
   font-size: 0.9rem;
 }
+
+.relay {
+  padding: 0.5rem 0.8rem;
+  border-radius: env.$radius;
+  border: 1px solid env.$color-line;
+  font-size: 0.9rem;
+
+  summary {
+    color: env.$color-accent;
+    cursor: pointer;
+  }
+
+  .field {
+    margin-top: 0.5rem;
+  }
+}

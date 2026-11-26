@@ -70,6 +70,8 @@ enum ClientOpcode : unsigned char
     kRequestPartySummon,
     kRequestPartySummonAnswer,
     kRequestRespawnAtPartner,
+    kRequestVote,
+    kRequestVoteAnswer,
     kClientOpcodeMax
 };
 
@@ -143,5 +145,6 @@ enum ServerOpcode : unsigned char
     kNotifyPartyDoor,
     kNotifyPartySummon,
     kNotifyPartyTeleportRefused,
+    kNotifyVote,
     kServerOpcodeMax
 };

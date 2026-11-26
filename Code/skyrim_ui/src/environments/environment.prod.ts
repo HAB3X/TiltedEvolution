@@ -8,7 +8,6 @@ export const environment = {
   githubUrl: 'https://api.github.com/repos/tiltedphoques/TiltedEvolution/tags',
   overwriteVersion: "",
   chatMessageLengthLimit: 512,
-  nbReconnectionAttempts: 5,
 
   providers: [] as Provider[],
 };

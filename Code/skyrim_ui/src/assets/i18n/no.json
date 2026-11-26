@@ -56,7 +56,9 @@
       "REVEAL_HINT": "Vis spillere i nærheten",
       "SAVES": "Lagringer",
       "SAVES_HINT": "Gruppens lagringspunkter",
-      "CANCEL_CONNECT": "Avbryt"
+      "CANCEL_CONNECT": "Avbryt",
+      "READY_CHECK": "Klarsjekk",
+      "READY_CHECK_HINT": "Spør om alle er klare"
     },
     "CHAT": {
       "SEND": "Send",
@@ -121,7 +123,11 @@
         "QUEST_TYPE_Side": "Sideoppdrag",
         "QUEST_TYPE_CivilWar": "Borgerkrigen",
         "QUEST_TYPE_Dawnguard": "Dawnguard",
-        "QUEST_TYPE_Dragonborn": "Dragonborn"
+        "QUEST_TYPE_Dragonborn": "Dragonborn",
+        "RELAY_TITLE": "Relé, når ruteren din ikke kan åpnes",
+        "RELAY_HINT": "Hvis venner utenfor nettverket ditt ikke når deg (ingen UPnP, eller leverandøren deler én offentlig adresse mellom kunder), kan de bli med via et relé: SkyrimTogetherRelay som kjører på en maskin alle kan nå. Det brukes bare når porten på ruteren ikke kan åpnes. La feltet stå tomt for å klare deg uten.",
+        "RELAY_ADDRESS": "Reléadresse (adresse:port)",
+        "RELAY_PASSWORD": "Relépassord, hvis det har et"
       },
       "LAN": {
         "TITLE": "Spill på nettverket ditt",
@@ -146,7 +152,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Kobler til…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Kobler til igjen… (forsøk {{attempt}})",
+      "CANCEL": "Avbryt"
     },
     "DISCONNECT": {
       "PROMPT": "Er du sikker på at vil koble fra?",
@@ -158,7 +166,8 @@
       "FIND_MODS": "Skaff spillendringene",
       "SEARCH_NEXUS": "Søk på Nexus",
       "DIFFERENT_VERSION": "annen versjon",
-      "COPY_LIST": "Kopier listen"
+      "COPY_LIST": "Kopier listen",
+      "OPEN_RELEASES": "Åpne Plus-utgivelsessiden"
     },
     "INVITE": {
       "CODE_INFO": "Venner skriver denne tilkoblingskoden under Koble til:",
@@ -222,7 +231,8 @@
       "INVITE": "Inviter",
       "KICK": "Kast ut",
       "BAN": "Utesteng",
-      "IN_PARTY": "I gruppen din"
+      "IN_PARTY": "I gruppen din",
+      "VOTE_KICK": "Stem for utkasting"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spillere",
@@ -238,7 +248,12 @@
       "PLAYER_MANAGER": "Spillerliste",
       "INVITE": "Inviter",
       "SETTINGS": "Innstillinger",
-      "CONNECTION_IN_PROGRESS": "Kobler til..."
+      "CONNECTION_IN_PROGRESS": "Kobler til...",
+      "REJOIN_OFFER": "Det siste spillet dere spilte sammen sluttet uventet. Bli med på {{address}} igjen?",
+      "REHOST_OFFER": "Spillet du var vert for sist, sluttet uventet. Vil du være vert igjen?",
+      "CRASH_REPORT_OFFER": "Skyrim Together krasjet sist. Vil du rapportere det på GitHub? Ingenting sendes av seg selv: en forhåndsutfylt saksside åpnes i nettleseren.",
+      "CRASH_REPORT": "Rapporter",
+      "CRASH_REPORT_NO": "Nei takk"
     },
     "SERVER_LIST": {
       "SEARCH": "Søk...",
@@ -294,6 +309,35 @@
         "XL": "Extra stor"
       },
       "BACK": "Tilbake"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Synkroniserer med verten…",
+      "DONE": "Du er i vertens verden",
+      "CANCELLED": "Du beholdt din egen verden",
+      "STEP_REQUESTING": "Ber verten om verdenen",
+      "STEP_RECEIVED": "Fikk vertens verden: ditt svar",
+      "STEP_SAVING": "Lagrer din egen verden",
+      "STEP_APPLYING": "Samkjører oppdrag, steder og personer",
+      "STEP_TRAVELLING": "Flytter deg til verten",
+      "CHANGED": "{{quests}} oppdrag, {{places}} steder og {{people}} personer endret for å stemme."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} vil kaste ut {{target}}",
+      "KICK_YOU": "De andre stemmer over å kaste deg ut",
+      "READY_QUESTION": "{{starter}} spør: er alle klare?",
+      "TALLY": "{{yes}} ja, {{no}} nei av {{eligible}}",
+      "READY_TALLY": "{{yes}} av {{eligible}} klare",
+      "SECONDS": "{{seconds}} s igjen",
+      "YES": "Kast ut",
+      "NO": "Behold",
+      "READY": "Klar",
+      "NOT_READY": "Ikke ennå",
+      "ANSWER_HINT": "Åpne panelet (F2) for å svare.",
+      "KICK_PASSED": "{{target}} ble stemt ut",
+      "KICK_FAILED": "Avstemningen om å kaste ut {{target}} feilet",
+      "KICK_CANCELLED": "{{target}} forlot spillet før avstemningen var ferdig",
+      "READY_PASSED": "Alle er klare!",
+      "READY_FAILED": "Ikke alle er klare"
     }
   },
   "SERVICE": {
@@ -320,7 +364,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Mistet tilkobling, prøver å koble til på nytt. {{remainingReconnectionAttempt}} forsøk igjen.",
       "CONNECTED": "Koblet til server.",
-      "DISCONNECTED": "Koble fra server."
+      "DISCONNECTED": "Koble fra server.",
+      "RECONNECTING": "Tilkoblingen ble brutt. Kobler til igjen (forsøk {{attempt}})…",
+      "RECONNECTED": "Koblet til serveren igjen.",
+      "RECONNECT_GAVE_UP": "Kom ikke tilbake til serveren på to minutter. Bruk Koble til igjen i Skyrim Together-panelet (F2) for å prøve på nytt."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "tilgjengelige chat kommandoer: {{cmds}}",
@@ -356,11 +403,23 @@
         "SERVER_FULL": "Denne serveren er full.",
         "BAD_UGRIDSTOLOAD": "Det ser ut som Skyrim.ini har en feil verdi for 'uGridsToLoad'. DETTE ER EN VELDIG DÅRLIG IDE, og vil mest sannsynling knekke denne modden. Sett denne tilbake til (5), eller fjern Skyrim.ini filen and kjør Skyrim vanilla en gang for en ny fil. Instillingen 'uExterior Cell Buffer' og 'uInterior Cell Buffer' bør også bli værende på standardinnstillingen. Hvis du trenger hjelp med dette kan du spør på Discord, Reddit eller wikien.",
         "NON_DEFAULT_INSTALL": "Det ser ut som innstallasjonen din ikke er vanilla. Creation Club mods (inkluderte de fra Anniversary oppdateringen) eller andre mods bør unngås .\nVi anbefaller IKKE å spille med mods.\nDu bør avinstallere og skru av disse (instruksjoner kan finnes på wikien).\n\nFor den beste opplevelsen bør du ha følgene mods:<strong>\nSkyrim.esm\nUpdate.esm\nDawnguard.esm\nHearthFires.esm\nDragonborn.esm\n_ResourcePack.esl\nSkyrimTogether.esp\nSkyrimTogetherQuestPatches.esp</strong>",
-        "BANNED": "Du er utestengt fra denne serveren."
+        "BANNED": "Du er utestengt fra denne serveren.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Dette spillet kjører Skyrim Together Plus {{expectedVersion}}, og du har den eldre {{version}}. Alle trenger samme versjon: oppdater fra Plus-utgivelsessiden for å bli med.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Dette spillet kjører Skyrim Together Plus {{expectedVersion}}, som er eldre enn din ({{version}}). Alle trenger samme versjon: be verten oppdatere fra Plus-utgivelsessiden, eller installer {{expectedVersion}} derfra."
       }
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} inviterte deg til en gruppe."
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "En annen avstemning pågår fortsatt.",
+      "REFUSED_COOLDOWN": "Vent {{seconds}} s før du starter den avstemningen igjen.",
+      "REFUSED_TOO_FEW": "En avstemning om utkasting krever minst 3 spillere.",
+      "REFUSED_HOST": "Verten kan ikke stemmes ut.",
+      "REFUSED_TARGET": "Den spilleren er ikke her."
+    },
+    "CRASH": {
+      "ATTACH": "Legg ved {{file}} fra {{folder}} i saken, og skriv hva du gjorde da det krasjet."
     }
   }
 }

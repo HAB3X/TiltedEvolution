@@ -26,6 +26,8 @@
 #include <Messages/NotifyTeleport.h>
 #include <Messages/RequestPlayerHealthUpdate.h>
 #include <Messages/NotifyPlayerHealthUpdate.h>
+#include <Messages/NotifyVote.h>
+#include <Services/CrashReport.h>
 
 #include <Structs/GridCellCoords.h>
 #include <PartyCompass.h>
@@ -171,6 +173,7 @@ OverlayService::OverlayService(World& aWorld, TransportService& transport, entt:
     m_cellChangedConnection = aDispatcher.sink<NotifyPlayerCellChanged>().connect<&OverlayService::OnPlayerCellChanged>(this);
     m_teleportConnection = aDispatcher.sink<NotifyTeleport>().connect<&OverlayService::OnNotifyTeleport>(this);
     m_playerHealthConnection = aDispatcher.sink<NotifyPlayerHealthUpdate>().connect<&OverlayService::OnNotifyPlayerHealthUpdate>(this);
+    m_voteConnection = aDispatcher.sink<NotifyVote>().connect<&OverlayService::OnNotifyVote>(this);
     m_partyJoinedConnection = aDispatcher.sink<PartyJoinedEvent>().connect<&OverlayService::OnPartyJoinedEvent>(this);
     m_partyLeftConnection = aDispatcher.sink<PartyLeftEvent>().connect<&OverlayService::OnPartyLeftEvent>(this);
 }
@@ -256,6 +259,8 @@ void OverlayService::SetInGame(bool aInGame) noexcept
     {
         SetVersion(BUILD_COMMIT);
         m_pOverlay->ExecuteAsync("enterGame");
+        // The overlay asks once per crash dump whether to report it
+        CrashReport::Send();
     }
     else
     {
@@ -502,6 +507,22 @@ void OverlayService::OnNotifyTeleport(const NotifyTeleport& acMessage) noexcept
     }
 
     PlayerCharacter::Get()->MoveTo(pCell, acMessage.Position);
+}
+
+// A vote kick or ready check (the server's VoteService): the overlay shows it and its answers
+void OverlayService::OnNotifyVote(const NotifyVote& acMessage) noexcept
+{
+    auto pArguments = CefListValue::Create();
+    pArguments->SetInt(0, static_cast<int>(acMessage.VoteId));
+    pArguments->SetInt(1, static_cast<int>(acMessage.Kind));
+    pArguments->SetInt(2, static_cast<int>(acMessage.State));
+    pArguments->SetInt(3, static_cast<int>(acMessage.StarterId));
+    pArguments->SetInt(4, static_cast<int>(acMessage.TargetId));
+    pArguments->SetInt(5, static_cast<int>(acMessage.Yes));
+    pArguments->SetInt(6, static_cast<int>(acMessage.No));
+    pArguments->SetInt(7, static_cast<int>(acMessage.Eligible));
+    pArguments->SetInt(8, static_cast<int>(acMessage.SecondsLeft));
+    m_pOverlay->ExecuteAsync("vote", pArguments);
 }
 
 void OverlayService::OnNotifyPlayerHealthUpdate(const NotifyPlayerHealthUpdate& acMessage) noexcept

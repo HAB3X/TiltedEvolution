@@ -28,10 +28,20 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
   private playerName = 'Local Player';
   private showEvents = true;
   private localPlayerId: number;
+  // 't-drop': connects, loses the connection 3 s later, then fails twice before getting back
+  private dropTries = 0;
   public readonly players$ = playerStore.pipe(selectAllEntities());
 
   answerHostWorld(join: boolean): void {
     console.log(`host world: ${join ? 'join' : 'keep'}`);
+    if (!join) {
+      this.emit('hostWorldSync', 'cancelled', 0, 0, 0);
+      return;
+    }
+    this.emit('hostWorldSync', 'saving', 0, 0, 0);
+    setTimeout(() => this.emit('hostWorldSync', 'applying', 0, 0, 0), 1500);
+    setTimeout(() => this.emit('hostWorldSync', 'travelling', 12, 3, 2), 2000);
+    setTimeout(() => this.emit('hostWorldSync', 'done', 12, 3, 2), 3000);
   }
 
   setPingMarkers(enabled: boolean): void {
@@ -53,6 +63,22 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
 
   setNameTags(enabled: boolean): void {
     console.log(`name tags ${enabled}`);
+  }
+
+  // A vote as the server would run it, with one other player saying yes after a second
+  startVote(kind: number, targetId: number): void {
+    const id = Date.now() % 1000;
+    this.emit('vote', id, kind, 0, this.localPlayerId, targetId, 1, 0, kind === 0 ? 2 : 3, kind === 0 ? 60 : 30);
+    setTimeout(() => this.emit('vote', id, kind, kind === 0 ? 1 : 0, this.localPlayerId, targetId, 2, 0, kind === 0 ? 2 : 3, 0), 1500);
+  }
+
+  // The newest crash dump, as the game sends it on entering a game: call from the console to try the crash report
+  sendCrashDump(): void {
+    this.emit('crashDump', 'crash_UTC_2026-11-26_10-00-00.dmp', 'C:\\Games\\Skyrim Special Edition', 'v1.8.4-plus.4', '1.6.1170.0', 'Windows 10.0.19045 (Wine 9.0)');
+  }
+
+  answerVote(voteId: number, yes: boolean): void {
+    console.log(`vote ${voteId}: ${yes ? 'yes' : 'no'}`);
   }
 
   moderatePlayer(playerId: number, ban: boolean): void {
@@ -115,12 +141,34 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     pauseInMenus: boolean,
     classic: boolean,
     sharedQuestTypes: string,
+    relay: string,
+    relayPassword: string,
   ): void {
+    console.log(`host${relay ? ` through the relay ${relay}` : ''}`);
     this.connect('127.0.0.1', 10578, password);
     setTimeout(() => this.emit('hostAddress', '203.0.113.7:10578'), 1000);
   }
 
-  connect(host: string, port: number, password: string): void {
+  connect(host: string, port: number, password: string, returning = false): void {
+    console.log(`connect ${host}:${port}${returning ? ', returning' : ''}`);
+    if (host === 't-drop' && this.dropTries++ > 0 && this.dropTries <= 3) {
+      setTimeout(() => this.emit('disconnect', true), 250);
+      return;
+    }
+    // 't-world-sync': a host world server, which asks before the joiner's world changes
+    if (host === 't-world-sync') {
+      setTimeout(() => this.emit('hostWorldSync', 'requesting', 0, 0, 0), 500);
+      setTimeout(() => {
+        this.emit('hostWorldSync', 'received', 0, 0, 0);
+        this.emit('hostWorldOffer', 'MockHost', 12, 3, 2);
+      }, 2000);
+    }
+    if (host === 't-drop' && this.dropTries === 1) {
+      setTimeout(() => {
+        this.connected = false;
+        this.emit('disconnect', true);
+      }, 3000);
+    }
     if (!this.connected) {
       let error: ErrorEvents | boolean;
       switch (host) {

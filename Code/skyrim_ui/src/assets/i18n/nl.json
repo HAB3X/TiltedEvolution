@@ -58,7 +58,9 @@
       "REVEAL_HINT": "Spelers in de buurt tonen",
       "SAVES": "Opgeslagen spellen",
       "SAVES_HINT": "Groepscheckpoints",
-      "CANCEL_CONNECT": "Annuleren"
+      "CANCEL_CONNECT": "Annuleren",
+      "READY_CHECK": "Gereedheidscheck",
+      "READY_CHECK_HINT": "Vragen of iedereen klaar is"
     },
     "CHAT": {
       "SEND": "Verzenden",
@@ -122,7 +124,11 @@
         "QUEST_TYPE_Side": "Zijquests",
         "QUEST_TYPE_CivilWar": "Burgeroorlog",
         "QUEST_TYPE_Dawnguard": "Dawnguard",
-        "QUEST_TYPE_Dragonborn": "Dragonborn"
+        "QUEST_TYPE_Dragonborn": "Dragonborn",
+        "RELAY_TITLE": "Relay, voor als je router niet open kan",
+        "RELAY_HINT": "Als vrienden buiten je netwerk je niet kunnen bereiken (geen UPnP, of je provider deelt één publiek adres tussen klanten), kunnen ze via een relay meedoen: SkyrimTogetherRelay op een machine die iedereen kan bereiken. Hij wordt alleen gebruikt als de routerpoort niet open kan. Laat leeg om zonder te spelen.",
+        "RELAY_ADDRESS": "Relay-adres (adres:poort)",
+        "RELAY_PASSWORD": "Relay-wachtwoord, als het er een heeft"
       },
       "LAN": {
         "TITLE": "Spellen in je netwerk",
@@ -147,7 +153,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Verbinden…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Opnieuw verbinden… (poging {{attempt}})",
+      "CANCEL": "Annuleren"
     },
     "DISCONNECT": {
       "PROMPT": "Weet je het zeker dat je de verbinding wil verbreken?",
@@ -164,7 +172,8 @@
       "FIND_MODS": "Mods ophalen",
       "SEARCH_NEXUS": "Zoeken op Nexus",
       "DIFFERENT_VERSION": "andere versie",
-      "COPY_LIST": "Lijst kopiëren"
+      "COPY_LIST": "Lijst kopiëren",
+      "OPEN_RELEASES": "Plus-releasepagina openen"
     },
     "INVITE": {
       "CODE_INFO": "Vrienden typen deze deelnamecode bij Verbinden:",
@@ -224,7 +233,8 @@
       "INVITE": "Uitnodigen",
       "KICK": "Verwijderen",
       "BAN": "Verbannen",
-      "IN_PARTY": "In je groep"
+      "IN_PARTY": "In je groep",
+      "VOTE_KICK": "Stemmen om eruit te zetten"
     },
     "PLAYER_MANAGER": {
       "PLAYER_LIST": "Spelerslijst",
@@ -240,7 +250,12 @@
       "PLAYER_MANAGER": "Speler beheerder",
       "INVITE": "Uitnodigen",
       "SETTINGS": "Instellingen",
-      "CONNECTION_IN_PROGRESS": "Verbinden"
+      "CONNECTION_IN_PROGRESS": "Verbinden",
+      "REJOIN_OFFER": "Je laatste gezamenlijke spel eindigde onverwacht. Opnieuw deelnemen aan {{address}}?",
+      "REHOST_OFFER": "Het spel dat je het laatst host, eindigde onverwacht. Opnieuw hosten?",
+      "CRASH_REPORT_OFFER": "Skyrim Together is de vorige keer gecrasht. Melden op GitHub? Er wordt niets vanzelf verstuurd: een vooraf ingevulde issuepagina opent in je browser.",
+      "CRASH_REPORT": "Melden",
+      "CRASH_REPORT_NO": "Nee, bedankt"
     },
     "SERVER_LIST": {
       "SEARCH": "Zoeken...",
@@ -278,6 +293,35 @@
       "DEBUG": "Debug",
       "SHOW_DEBUG_INFO": "Debug informatie weergeven",
       "BACK": "Terug"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Synchroniseren met de host…",
+      "DONE": "Je bent in de wereld van de host",
+      "CANCELLED": "Je hebt je eigen wereld gehouden",
+      "STEP_REQUESTING": "De host om zijn wereld vragen",
+      "STEP_RECEIVED": "Wereld van de host ontvangen: jouw antwoord",
+      "STEP_SAVING": "Je eigen wereld opslaan",
+      "STEP_APPLYING": "Quests, plaatsen en personen gelijkzetten",
+      "STEP_TRAVELLING": "Je naar de host brengen",
+      "CHANGED": "{{quests}} quests, {{places}} plaatsen en {{people}} personen gelijkgezet."
+    },
+    "VOTE": {
+      "KICK_QUESTION": "{{starter}} wil {{target}} eruit zetten",
+      "KICK_YOU": "De anderen stemmen over jouw verwijdering",
+      "READY_QUESTION": "{{starter}} vraagt: is iedereen klaar?",
+      "TALLY": "{{yes}} ja, {{no}} nee van {{eligible}}",
+      "READY_TALLY": "{{yes}} van {{eligible}} klaar",
+      "SECONDS": "nog {{seconds}} s",
+      "YES": "Eruit zetten",
+      "NO": "Houden",
+      "READY": "Klaar",
+      "NOT_READY": "Nog niet",
+      "ANSWER_HINT": "Open het paneel (F2) om te antwoorden.",
+      "KICK_PASSED": "{{target}} is weggestemd",
+      "KICK_FAILED": "De stemming om {{target}} eruit te zetten is mislukt",
+      "KICK_CANCELLED": "{{target}} vertrok voordat de stemming klaar was",
+      "READY_PASSED": "Iedereen is klaar!",
+      "READY_FAILED": "Niet iedereen is klaar"
     }
   },
   "SERVICE": {
@@ -302,7 +346,10 @@
       "YOUR_SPOT": "je positie"
     },
     "CLIENT": {
-      "CONNECTION_LOST": "Verbinding verbroken, proberen opnieuw te verbinden. {{remainingReconnectionAttempt } pogingen over."
+      "CONNECTION_LOST": "Verbinding verbroken, proberen opnieuw te verbinden. {{remainingReconnectionAttempt } pogingen over.",
+      "RECONNECTING": "Verbinding verbroken. Opnieuw verbinden (poging {{attempt}})…",
+      "RECONNECTED": "Opnieuw verbonden met de server.",
+      "RECONNECT_GAVE_UP": "Twee minuten lang kon er geen verbinding met de server worden gemaakt. Gebruik Opnieuw verbinden in het Skyrim Together-paneel (F2) om het opnieuw te proberen."
     },
     "GROUP": {
       "LEVEL_UP": "{{name}} heeft level {{level}} bereikt.",
@@ -331,11 +378,23 @@
         "CLIENT_MODS_DISALLOWED": "Deze server staat de volgende mods niet toe {{mods}}. Verwijder ze om deel te nemen.",
         "WRONG_PASSWORD": "Het ingevoerde wachtwoord is incorrect.",
         "NO_REASON": "De server heeft de verbinding zonder reden geweigerd.",
-        "BANNED": "Je bent verbannen van deze server."
+        "BANNED": "Je bent verbannen van deze server.",
+        "WRONG_VERSION_PLUS_UPDATE_YOU": "Dit spel draait Skyrim Together Plus {{expectedVersion}} en jij hebt het oudere {{version}}. Iedereen heeft dezelfde versie nodig: werk bij via de Plus-releasepagina om mee te doen.",
+        "WRONG_VERSION_PLUS_UPDATE_HOST": "Dit spel draait Skyrim Together Plus {{expectedVersion}}, ouder dan die van jou ({{version}}). Iedereen heeft dezelfde versie nodig: vraag de host bij te werken via de Plus-releasepagina, of installeer daar {{expectedVersion}}."
       }
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} heeft je uitgenodigd voor een groep"
+    },
+    "VOTE": {
+      "REFUSED_BUSY": "Er loopt nog een andere stemming.",
+      "REFUSED_COOLDOWN": "Wacht {{seconds}} s voordat je die stemming opnieuw start.",
+      "REFUSED_TOO_FEW": "Een stemming om iemand eruit te zetten heeft minstens 3 spelers nodig.",
+      "REFUSED_HOST": "De host kan niet worden weggestemd.",
+      "REFUSED_TARGET": "Die speler is er niet."
+    },
+    "CRASH": {
+      "ATTACH": "Voeg {{file}} uit {{folder}} toe aan het issue en vertel wat je deed toen het crashte."
     }
   }
 }

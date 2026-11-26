@@ -21,6 +21,10 @@ struct HostSettings
     // Runs the official-protocol server in the classic folder instead, so players with the regular Skyrim Together
     // v1.8.4 can join; the Plus-only settings above (host world, required mods, shared quests, pause) don't exist there
     bool Classic{};
+    // A relay friends join through when the router can't be opened, address:port, and its password (GameServer:sRelay,
+    // sRelayPassword); empty for none. Plus servers only
+    std::string Relay;
+    std::string RelayPassword;
 };
 
 /**
