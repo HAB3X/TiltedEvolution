@@ -1,6 +1,8 @@
 #include <Structs/Inventory.h>
 #include <TiltedCore/Serialization.hpp>
 
+#include <algorithm>
+
 using TiltedPhoques::Serialization;
 
 void Inventory::EffectItem::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noexcept
@@ -160,23 +162,27 @@ void Inventory::AddOrRemoveEntry(const Entry& acEntry) noexcept
     }
 }
 
-void Inventory::AddOrRemoveEntryClamped(const Entry& acEntry) noexcept
+int32_t Inventory::AddOrRemoveEntryClamped(const Entry& acEntry) noexcept
 {
     if (acEntry.Count == 0)
-        return;
+        return 0;
 
     auto duplicate = std::find_if(Entries.begin(), Entries.end(), [&acEntry](const Entry& entry) { return entry.CanBeMerged(acEntry); });
 
     if (duplicate != Entries.end())
     {
-        duplicate->Count += acEntry.Count;
+        const int32_t cApplied = std::max(acEntry.Count, -duplicate->Count);
+        duplicate->Count += cApplied;
         if (duplicate->Count <= 0)
             Entries.erase(duplicate);
+        return cApplied;
     }
-    else if (acEntry.Count > 0)
-    {
-        Entries.push_back(acEntry);
-    }
+
+    if (acEntry.Count < 0)
+        return 0;
+
+    Entries.push_back(acEntry);
+    return acEntry.Count;
 }
 
 Vector<Inventory::Entry> Inventory::MergeMissing(const Inventory& acOther) noexcept

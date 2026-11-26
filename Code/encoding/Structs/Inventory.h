@@ -91,7 +91,8 @@ struct Inventory
     void AddOrRemoveEntry(const Entry& acEntry) noexcept;
     // Like AddOrRemoveEntry, but never records a negative entry when removing something that is not there.
     // Container contents are absolute state, a negative count would later remove items from other players' copies.
-    void AddOrRemoveEntryClamped(const Entry& acEntry) noexcept;
+    // Returns the count actually added (positive) or removed (negative).
+    int32_t AddOrRemoveEntryClamped(const Entry& acEntry) noexcept;
     // Adds whatever acOther has more of than this inventory, and returns the added amounts.
     // Used to merge a player's local copy of a storage container into the shared server state.
     Vector<Entry> MergeMissing(const Inventory& acOther) noexcept;
