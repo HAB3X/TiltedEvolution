@@ -10,6 +10,7 @@ struct ActivateEvent;
 struct TransportService;
 struct NotifyActivate;
 struct LockChangeEvent;
+struct OpenStateChangeEvent;
 struct NotifyLockChange;
 struct CellChangeEvent;
 struct ScriptAnimationEvent;
@@ -32,6 +33,7 @@ private:
     void OnActivate(const ActivateEvent&) noexcept;
     void OnActivateNotify(const NotifyActivate&) noexcept;
     void OnLockChange(const LockChangeEvent&) noexcept;
+    void OnOpenStateChange(const OpenStateChangeEvent&) noexcept;
     void OnLockChangeNotify(const NotifyLockChange&) noexcept;
     void OnScriptAnimationEvent(const ScriptAnimationEvent&) noexcept;
     void OnWaveCommand(const WaveCommandEvent&) noexcept;
@@ -49,6 +51,7 @@ private:
     entt::scoped_connection m_onActivateConnection;
     entt::scoped_connection m_activateConnection;
     entt::scoped_connection m_lockChangeConnection;
+    entt::scoped_connection m_openStateChangeConnection;
     entt::scoped_connection m_lockChangeNotifyConnection;
     entt::scoped_connection m_assignObjectConnection;
     entt::scoped_connection m_scriptAnimationConnection;

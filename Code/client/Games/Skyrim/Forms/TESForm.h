@@ -5,6 +5,8 @@
 
 enum class FormType : uint8_t
 {
+    // ACTI: BGSOpenCloseForm::SetOpenState (ID 14287) and GetOpenState (ID 14288) switch on 0x18 with containers and doors
+    Activator = 24,
     Armor = 26,
     Book = 27,
     Container = 28,

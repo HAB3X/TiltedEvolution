@@ -1,5 +1,6 @@
 #include <Services/ObjectService.h>
 #include <Services/InventoryService.h>
+#include <Messages/RequestObjectOpenState.h>
 
 #include <GameServer.h>
 #include <World.h>
@@ -23,6 +24,7 @@ ObjectService::ObjectService(World& aWorld, entt::dispatcher& aDispatcher)
     m_leaveCellConnection = aDispatcher.sink<PlayerLeaveCellEvent>().connect<&ObjectService::OnPlayerLeaveCellEvent>(this);
     m_assignObjectConnection = aDispatcher.sink<PacketEvent<AssignObjectsRequest>>().connect<&ObjectService::OnAssignObjectsRequest>(this);
     m_activateConnection = aDispatcher.sink<PacketEvent<ActivateRequest>>().connect<&ObjectService::OnActivate>(this);
+    m_openStateConnection = aDispatcher.sink<PacketEvent<RequestObjectOpenState>>().connect<&ObjectService::OnObjectOpenState>(this);
     m_lockChangeConnection = aDispatcher.sink<PacketEvent<LockChangeRequest>>().connect<&ObjectService::OnLockChange>(this);
     m_scriptAnimationConnection = aDispatcher.sink<PacketEvent<ScriptAnimationRequest>>().connect<&ObjectService::OnScriptAnimationRequest>(this);
 }
@@ -231,5 +233,23 @@ void ObjectService::OnScriptAnimationRequest(const PacketEvent<ScriptAnimationRe
             continue;
 
         pPlayer->Send(message);
+    }
+}
+
+void ObjectService::OnObjectOpenState(const PacketEvent<RequestObjectOpenState>& acMessage) const noexcept
+{
+    const auto& message = acMessage.Packet;
+    if (ObjectData::SettledDoorState(message.State) != message.State || message.State == ObjectData::kNotADoor)
+        return;
+
+    // Kept for players entering the cell later; the ones in it ran the activation themselves
+    auto view = m_world.view<FormIdComponent, ObjectComponent, CellIdComponent>();
+    for (const auto cEntity : view)
+    {
+        if (view.get<FormIdComponent>(cEntity).Id == message.Id && view.get<CellIdComponent>(cEntity).Cell == message.CellId)
+        {
+            view.get<ObjectComponent>(cEntity).DoorState = message.State;
+            return;
+        }
     }
 }

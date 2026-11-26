@@ -45,6 +45,7 @@
 #include <Messages/RequestTrade.h>
 #include <Messages/NotifyTrade.h>
 #include <Messages/RequestCompanions.h>
+#include <Messages/RequestObjectOpenState.h>
 #include <Messages/RequestOwnershipClaim.h>
 #include <Messages/CharacterSpawnRequest.h>
 #include <Messages/NotifyInventoryChanges.h>
@@ -2328,6 +2329,68 @@ int RunCompanionMember(const std::string& acEndpoint, const std::string& acPassw
     return s_failures ? 1 : 0;
 }
 
+// Activator catch-up: the first player's lever opens a gate (a script's activation, so no ActivateRequest), the
+// player entering later is told the gate is open; a lever that never changed state stays as it was
+const GameId kGate{0, 0x16C02};
+const GameId kLever{0, 0x16C03};
+
+AssignObjectsRequest ClosedActivatorsIn(const GameId acCell)
+{
+    AssignObjectsRequest request;
+    for (const GameId& cId : {kGate, kLever})
+    {
+        ObjectData activator;
+        activator.Id = cId;
+        activator.CellId = acCell;
+        activator.DoorState = ObjectData::kDoorClosed;
+        request.Objects.push_back(activator);
+    }
+    return request;
+}
+
+const ObjectData* FindObject(const FakePlayer& acPlayer, const GameId& acId)
+{
+    if (!acPlayer.Objects)
+        return nullptr;
+    const auto cIt = std::find_if(acPlayer.Objects->Objects.begin(), acPlayer.Objects->Objects.end(), [&](const ObjectData& acObject) { return acObject.Id == acId; });
+    return cIt != acPlayer.Objects->Objects.end() ? &*cIt : nullptr;
+}
+
+int RunActivatorFirst(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer first("FakeActivatorFirst", acPassword);
+    first.Connect(acEndpoint);
+    Check("gate opener logs in", RunUntil(first, [&] { return first.LoggedIn; }));
+    EnterDoorCell(first);
+    first.Send(ClosedActivatorsIn(kDoorCell));
+    Check("is the first to see the gate and the lever", RunUntil(first, [&] { return first.Objects && first.Objects->Objects.size() == 2 && first.Objects->Objects[0].IsSenderFirst; }));
+
+    RequestObjectOpenState open;
+    open.Id = kGate;
+    open.CellId = kDoorCell;
+    open.State = ObjectData::kDoorOpen;
+    first.Send(open);
+    RunUntil(first, [] { return false; }, 15s);
+    return s_failures ? 1 : 0;
+}
+
+int RunActivatorLater(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer later("FakeActivatorLater", acPassword);
+    later.Connect(acEndpoint);
+    Check("later player logs in", RunUntil(later, [&] { return later.LoggedIn; }));
+    EnterDoorCell(later);
+    later.Send(ClosedActivatorsIn(kDoorCell));
+    Check("is told about the gate and the lever", RunUntil(later, [&] { return later.Objects && later.Objects->Objects.size() == 2; }));
+    const ObjectData* pGate = FindObject(later, kGate);
+    const ObjectData* pLever = FindObject(later, kLever);
+    Check("the gate is open, as the first player's lever left it", pGate && !pGate->IsSenderFirst && pGate->DoorState == ObjectData::kDoorOpen,
+          pGate ? "state " + std::to_string(pGate->DoorState) : "");
+    Check("the lever that never changed is as it was", pLever && pLever->DoorState == ObjectData::kDoorClosed, pLever ? "state " + std::to_string(pLever->DoorState) : "");
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -2361,6 +2424,7 @@ int RunCompanionMember(const std::string& acEndpoint, const std::string& acPassw
 // FakePlayers.exe ownbodyowner|ownbodylooter [address:port] [password]: start the owner first (bPerPlayerLoot=true)
 // FakePlayers.exe tradeleader|trademember [address:port] [password]: start the leader first
 // FakePlayers.exe companionleader|companionmember [address:port] [password]: start the leader first
+// FakePlayers.exe activatorfirst|activatorlater [address:port] [password]: start the first one first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -2474,6 +2538,10 @@ int main(int argc, char** argv)
         return RunCompanionLeader(cEndpoint, cPassword);
     if (cRole == "companionmember")
         return RunCompanionMember(cEndpoint, cPassword);
+    if (cRole == "activatorfirst")
+        return RunActivatorFirst(cEndpoint, cPassword);
+    if (cRole == "activatorlater")
+        return RunActivatorLater(cEndpoint, cPassword);
     if (cRole == "tradeleader")
         return RunTradeLeader(cEndpoint, cPassword);
     if (cRole == "trademember")
@@ -2492,6 +2560,6 @@ int main(int argc, char** argv)
         return RunCrimeMember(cEndpoint, cPassword);
     if (cRole == "catchupmember")
         return RunCatchUpMember(cEndpoint, cPassword);
-    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|crimeleader|crimemember|reviveleader|revivemember|ownbodyowner|ownbodylooter|tradeleader|trademember|companionleader|companionmember|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|crimeleader|crimemember|reviveleader|revivemember|ownbodyowner|ownbodylooter|tradeleader|trademember|companionleader|companionmember|activatorfirst|activatorlater|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
     return 2;
 }

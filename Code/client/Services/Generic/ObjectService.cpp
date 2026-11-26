@@ -1,4 +1,7 @@
 #include <Services/ObjectService.h>
+#include <WireProtocol.h>
+#include <Messages/RequestObjectOpenState.h>
+#include <Events/OpenStateChangeEvent.h>
 
 #include <World.h>
 #include <Events/DisconnectedEvent.h>
@@ -36,6 +39,7 @@ ObjectService::ObjectService(World& aWorld, entt::dispatcher& aDispatcher, Trans
     m_onActivateConnection = aDispatcher.sink<ActivateEvent>().connect<&ObjectService::OnActivate>(this);
     m_activateConnection = aDispatcher.sink<NotifyActivate>().connect<&ObjectService::OnActivateNotify>(this);
     m_lockChangeConnection = aDispatcher.sink<LockChangeEvent>().connect<&ObjectService::OnLockChange>(this);
+    m_openStateChangeConnection = aDispatcher.sink<OpenStateChangeEvent>().connect<&ObjectService::OnOpenStateChange>(this);
     m_lockChangeNotifyConnection = aDispatcher.sink<NotifyLockChange>().connect<&ObjectService::OnLockChangeNotify>(this);
     m_assignObjectConnection = aDispatcher.sink<AssignObjectsResponse>().connect<&ObjectService::OnAssignObjectsResponse>(this);
     m_scriptAnimationConnection = aDispatcher.sink<ScriptAnimationEvent>().connect<&ObjectService::OnScriptAnimationEvent>(this);
@@ -153,7 +157,8 @@ void ObjectService::OnCellChange(const CellChangeEvent& acEvent) noexcept
         }
     }
 
-    Vector<FormType> formTypes = {FormType::Container, FormType::Door};
+    // Activators for their open state (OnOpenStateChange): only those with open and close animations ever change it
+    Vector<FormType> formTypes = {FormType::Container, FormType::Door, FormType::Activator};
     // Door seemed to be at the wrong form id (29, now 32), verify this.
     Vector<TESObjectREFR*> objects = pCell->GetRefsByFormTypes(formTypes);
 
@@ -186,7 +191,7 @@ void ObjectService::OnCellChange(const CellChangeEvent& acEvent) noexcept
             objectData.CurrentLockData.LockLevel = pLock->lockLevel;
         }
 
-        if (pObject->baseForm->formType == FormType::Door)
+        if (pObject->baseForm->formType == FormType::Door || pObject->baseForm->formType == FormType::Activator)
             objectData.DoorState = ObjectData::SettledDoorState(pObject->GetOpenState());
 
         if (pObject->baseForm->formType == FormType::Container)
@@ -235,11 +240,14 @@ void ObjectService::OnAssignObjectsResponse(const AssignObjectsResponse& acMessa
             pObject->LockChange();
         }
 
-        // Doors the players already in the cell opened or closed
-        if (pObject->baseForm->formType == FormType::Door && objectData.DoorState != ObjectData::kNotADoor &&
+        // Doors and open/close activators (gates, levers) the players already in the cell opened or closed. Set without
+        // activating (BGSOpenCloseForm::SetOpenState takes activators too: ID 14287 accepts form types 0x18, 0x1C and
+        // 0x1D, activator, container and door, in 1.6.1179), so no script runs twice. An activator without open and
+        // close animations never changes state (see HookActivate), so the server's always matches it.
+        if ((pObject->baseForm->formType == FormType::Door || pObject->baseForm->formType == FormType::Activator) && objectData.DoorState != ObjectData::kNotADoor &&
             ObjectData::SettledDoorState(pObject->GetOpenState()) != objectData.DoorState)
         {
-            spdlog::info("Door {:X} set {} as the players in the cell left it", pObject->formID, objectData.DoorState == ObjectData::kDoorOpen ? "open" : "closed");
+            spdlog::info("{:X} set {} as the players in the cell left it", pObject->formID, objectData.DoorState == ObjectData::kDoorOpen ? "open" : "closed");
             pObject->SetOpenState(objectData.DoorState == ObjectData::kDoorOpen, true);
         }
 
@@ -383,6 +391,28 @@ void ObjectService::OnActivateNotify(const NotifyActivate& acMessage) noexcept
     // unsure if these flags are the best, but these are passed with the papyrus Activate fn
     // might be an idea to have the client send the flags through NotifyActivate
     pObject->Activate(pActor, 0, nullptr, 1, 0);
+}
+
+void ObjectService::OnOpenStateChange(const OpenStateChangeEvent& acEvent) noexcept
+{
+    // Official v1.8.4 servers have no such message
+    if (!m_transport.IsConnected() || Wire::IsOfficial184())
+        return;
+
+    TESObjectREFR* pObject = Cast<TESObjectREFR>(TESForm::GetById(acEvent.FormId));
+    TESObjectCELL* pCell = pObject ? pObject->GetParentCellEx() : nullptr;
+    // Temporary references have other ids in other games
+    if (!pCell || (acEvent.FormId >> 24) == 0xFF)
+        return;
+
+    RequestObjectOpenState request;
+    if (!m_world.GetModSystem().GetServerModId(acEvent.FormId, request.Id) || !m_world.GetModSystem().GetServerModId(pCell->formID, request.CellId))
+    {
+        spdlog::error("Server ids not found for opened or closed object {:X} in cell {:X}", acEvent.FormId, pCell->formID);
+        return;
+    }
+    request.State = acEvent.State;
+    m_transport.Send(request);
 }
 
 void ObjectService::OnLockChange(const LockChangeEvent& acEvent) noexcept

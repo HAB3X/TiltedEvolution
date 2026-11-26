@@ -1079,21 +1079,29 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendNotify == recvNotify);
     }
 
-    GIVEN("RequestCompanions")
+    GIVEN("RequestCompanions and RequestObjectOpenState")
     {
-        RequestCompanions sendMessage, recvMessage;
-        sendMessage.Companions = {{0x51, 2}, {0x7000, 90000}};
+        RequestCompanions sendCompanions, recvCompanions;
+        sendCompanions.Companions = {{0x51, 2}, {0x7000, 90000}};
+        RequestObjectOpenState sendOpen, recvOpen;
+        sendOpen.Id = GameId(0, 0x16C02);
+        sendOpen.CellId = GameId(0, 0x16BDF);
+        sendOpen.State = ObjectData::kDoorOpen;
 
         Buffer buff(1000);
         Buffer::Writer writer(&buff);
-        sendMessage.Serialize(writer);
+        sendCompanions.Serialize(writer);
+        sendOpen.Serialize(writer);
 
         Buffer::Reader reader(&buff);
         uint64_t trash;
         reader.ReadBits(trash, 8); // pop opcode
-        recvMessage.DeserializeRaw(reader);
+        recvCompanions.DeserializeRaw(reader);
+        reader.ReadBits(trash, 8);
+        recvOpen.DeserializeRaw(reader);
 
-        REQUIRE(sendMessage == recvMessage);
+        REQUIRE(sendCompanions == recvCompanions);
+        REQUIRE(sendOpen == recvOpen);
     }
 
     GIVEN("RequestPartyPing")
@@ -1591,6 +1599,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestTrade).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyTrade).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestCompanions).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestObjectOpenState).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyPartyQuestSharing).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyQuestShareOffer).has_value());
         REQUIRE_FALSE(Wire::ToWire(kNotifyQuestCatchUp).has_value());

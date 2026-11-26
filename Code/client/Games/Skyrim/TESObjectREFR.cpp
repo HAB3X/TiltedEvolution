@@ -14,6 +14,8 @@
 #include <Forms/TESQuest.h>
 #include <Services/PapyrusService.h>
 #include <Events/ActivateEvent.h>
+#include <Events/OpenStateChangeEvent.h>
+#include <Structs/ObjectData.h>
 #include <Events/InventoryChangeEvent.h>
 #include <Events/ScriptAnimationEvent.h>
 #include <Events/LockChangeEvent.h>
@@ -1116,7 +1118,23 @@ bool TP_MAKE_THISCALL(HookActivate, TESObjectREFR, TESObjectREFR* apActivator, u
         );
     }
 
-    return TiltedPhoques::ThisCall(RealActivate, apThis, apActivator, aUnk1, apObjectToGet, aCount, aDefaultProcessing);
+    // Doors, and activators with open and close animations: activating one toggles the open flag the engine keeps
+    // (BGSOpenCloseForm activation, ID 14284 at 0x1401d3d00 in 1.6.1179, called from TESObjectACTI::Activate, vtable
+    // ID 189485 slot 0x37, and only for 3D with an open/close graph; others keep their state). Any activator counts,
+    // not only an actor: a script's Activate (Papyrus SetOpen at 0x140a323f0 activates when the state differs, and a
+    // lever activates its gate) changes it too.
+    const bool cTracksOpenState = apThis->baseForm->formType == FormType::Door || apThis->baseForm->formType == FormType::Activator;
+    const uint8_t cBefore = cTracksOpenState ? ObjectData::SettledDoorState(apThis->GetOpenState()) : ObjectData::kNotADoor;
+
+    const bool cResult = TiltedPhoques::ThisCall(RealActivate, apThis, apActivator, aUnk1, apObjectToGet, aCount, aDefaultProcessing);
+
+    if (cTracksOpenState)
+    {
+        const uint8_t cAfter = ObjectData::SettledDoorState(apThis->GetOpenState());
+        if (cAfter != cBefore && cAfter != ObjectData::kNotADoor)
+            World::Get().GetRunner().Trigger(OpenStateChangeEvent(apThis->formID, cAfter));
+    }
+    return cResult;
 }
 
 void TP_MAKE_THISCALL(HookAddInventoryItem, TESObjectREFR, TESBoundObject* apItem, ExtraDataList* apExtraData, int32_t aCount, TESObjectREFR* apOldOwner)

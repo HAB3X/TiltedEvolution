@@ -79,6 +79,7 @@ enum ClientOpcode : unsigned char
     kRequestRevive,
     kRequestTrade,
     kRequestCompanions,
+    kRequestObjectOpenState,
     kClientOpcodeMax
 };
 
