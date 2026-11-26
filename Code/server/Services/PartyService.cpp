@@ -1,4 +1,5 @@
 #include <Services/PartyService.h>
+#include <Services/QuestService.h>
 #include <Components.h>
 #include <GameServer.h>
 
@@ -474,6 +475,14 @@ void PartyService::RemoveMemberFromParty(Party& aParty, const uint32_t aPartyId,
     if (auto memberItor = std::find(std::begin(members), std::end(members), apPlayer); memberItor != std::end(members))
         members.erase(memberItor);
 
+    // The quests offered to the party stay with it, and a player joining another party is compared with its leader anew
+    for (auto offeredIt = aParty.OfferedQuests.begin(); offeredIt != aParty.OfferedQuests.end(); ++offeredIt)
+    {
+        offeredIt.value().Players.erase(apPlayer->GetId());
+        offeredIt.value().Asked.erase(apPlayer->GetId());
+    }
+    apPlayer->GetQuestLogComponent().ResetDesync();
+
     if (members.empty())
     {
         m_parties.erase(aPartyId);
@@ -548,4 +557,5 @@ void PartyService::SendPartyJoinedEvent(Party& aParty, Player* aPlayer) noexcept
     }
     spdlog::debug("[PartyService]: Sending party join event to player");
     aPlayer->Send(joinedMessage);
+    QuestService::SendQuestSharing(aParty, *aPlayer);
 }

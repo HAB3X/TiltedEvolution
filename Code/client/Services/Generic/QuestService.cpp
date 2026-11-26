@@ -7,6 +7,7 @@
 #include <Events/UpdateEvent.h>
 
 #include <Services/QuestService.h>
+#include <Services/QuestSharingService.h>
 #include <Services/ImguiService.h>
 #include <Services/OverlayService.h>
 #include <Services/TransportService.h>
@@ -694,7 +695,8 @@ static_assert(SharedQuests::kMisc == static_cast<uint8_t>(TESQuest::Type::Miscel
 bool QuestService::IsSharedQuest(TESQuest* apQuest) noexcept
 {
     const uint8_t cType = static_cast<uint8_t>(apQuest->type);
-    return apQuest->type != TESQuest::Type::None && SharedQuests::IsShared(World::Get().GetServerSettings().SharedQuestTypes, cType) && !IsNonSyncableQuest(apQuest);
+    return apQuest->type != TESQuest::Type::None && SharedQuests::IsShared(World::Get().ctx().at<QuestSharingService>().GetSharedQuestTypes(), cType) &&
+           !IsNonSyncableQuest(apQuest);
 }
 
 void QuestService::CollectSharedQuests(QuestLog& aRunning, QuestLog& aCompleted) noexcept

@@ -12,7 +12,7 @@ import { ChatService } from './chat.service';
 import { StoreService } from './store.service';
 import { ErrorEvents, ErrorService } from './error.service';
 import { LoadingService } from './loading.service';
-import { DEFAULT_SHARED_QUEST_TYPES } from '../models/shared-quests';
+import { DEFAULT_SHARED_QUEST_TYPES, PartyQuestSharing, ShareableQuest } from '../models/shared-quests';
 
 /** Client game service. */
 /** What joining a host's world would change. */
@@ -133,6 +133,18 @@ export class ClientService implements OnDestroy {
   /** A party member, or this player, pinged a spot or a target. */
   public partyPingChange = new Subject<Ping>();
 
+  /** The party's quest sharing as its leader set it, null outside a party (or on a server without it). */
+  public partyQuestSharingChange = new BehaviorSubject<PartyQuestSharing | null>(null);
+
+  /** The running quests this player can offer the party, null until listed (see listShareableQuests). */
+  public shareableQuestsChange = new BehaviorSubject<ShareableQuest[] | null>(null);
+
+  /** A party member offers this player one of their quests, see answerQuestShare. */
+  public questShareOfferChange = new Subject<{ player: string; quest: string; questId: number }>();
+
+  /** On joining a party, the leader is further in some shared quests, see answerQuestCatchUp. */
+  public questCatchUpChange = new Subject<{ leader: string; quests: number }>();
+
   /** Shared quests differ from another party member's (the leader's, or a member's for the leader). */
   public questDesyncChange = new Subject<{ otherPlayer: string; otherIsLeader: boolean; quests: string; more: number }>();
 
@@ -183,6 +195,32 @@ export class ClientService implements OnDestroy {
   /** Whether to go to the party member who summoned this player, after partySummonChange. */
   public answerPartySummon(summonerId: number, accept: boolean): void {
     skyrimtogether.answerPartySummon(summonerId, accept);
+  }
+
+  /** The party leader's quest sharing for the party. */
+  public setPartyQuestSharing(enabled: boolean, types: number): void {
+    skyrimtogether.setPartyQuestSharing(enabled, types);
+  }
+
+  /** Lists the quests this player can offer the party, into shareableQuestsChange. */
+  public listShareableQuests(): void {
+    this.shareableQuestsChange.next(null);
+    skyrimtogether.listShareableQuests();
+  }
+
+  /** Offers one of this player's quests to the party. */
+  public shareQuest(questId: number): void {
+    skyrimtogether.shareQuest(questId);
+  }
+
+  /** Whether to take a party member's quest, after questShareOfferChange. */
+  public answerQuestShare(questId: number, accept: boolean): void {
+    skyrimtogether.answerQuestShare(questId, accept);
+  }
+
+  /** Whether to take the leader's quest progress, after questCatchUpChange. */
+  public answerQuestCatchUp(take: boolean): void {
+    skyrimtogether.answerQuestCatchUp(take);
   }
 
   /** The joiner's answer to the host world offer. */
@@ -323,6 +361,10 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('partyTeleportRefused', this.onPartyTeleportRefused.bind(this));
     skyrimtogether.on('partyPing', this.onPartyPing.bind(this));
     skyrimtogether.on('questDesync', this.onQuestDesync.bind(this));
+    skyrimtogether.on('partyQuestSharing', this.onPartyQuestSharing.bind(this));
+    skyrimtogether.on('shareableQuests', this.onShareableQuests.bind(this));
+    skyrimtogether.on('questShareOffer', this.onQuestShareOffer.bind(this));
+    skyrimtogether.on('questCatchUp', this.onQuestCatchUp.bind(this));
   }
 
   /**
@@ -371,6 +413,10 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('partyTeleportRefused');
     skyrimtogether.off('partyPing');
     skyrimtogether.off('questDesync');
+    skyrimtogether.off('partyQuestSharing');
+    skyrimtogether.off('shareableQuests');
+    skyrimtogether.off('questShareOffer');
+    skyrimtogether.off('questCatchUp');
   }
 
   /**
@@ -652,6 +698,7 @@ export class ClientService implements OnDestroy {
   private onDisconnect(isError: boolean): void {
     void this.zone.run(async () => {
       this.localPlayerId = undefined;
+      this.partyQuestSharingChange.next(null);
       this.connectionStateChange.next(false);
       this.isConnectionInProgressChange.next(false);
 
@@ -956,6 +1003,7 @@ export class ClientService implements OnDestroy {
       );
     }
     this.zone.run(() => {
+      this.partyQuestSharingChange.next(null);
       this.partyLeftChange.next();
     });
   }
@@ -1012,6 +1060,30 @@ export class ClientService implements OnDestroy {
   private onPartyTravel(leader: string, place: string) {
     this.zone.run(() => {
       this.partyTravelChange.next({ leader, place });
+    });
+  }
+
+  private onPartyQuestSharing(enabled: boolean, types: number) {
+    this.zone.run(() => {
+      this.partyQuestSharingChange.next({ enabled, types });
+    });
+  }
+
+  private onShareableQuests(json: string) {
+    this.zone.run(() => {
+      this.shareableQuestsChange.next(JSON.parse(json));
+    });
+  }
+
+  private onQuestShareOffer(player: string, quest: string, questId: number) {
+    this.zone.run(() => {
+      this.questShareOfferChange.next({ player, quest, questId });
+    });
+  }
+
+  private onQuestCatchUp(leader: string, quests: number) {
+    this.zone.run(() => {
+      this.questCatchUpChange.next({ leader, quests });
     });
   }
 

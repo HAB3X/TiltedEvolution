@@ -54,4 +54,16 @@ inline Vector<GameId> InBoth(const Vector<GameId>& acPrevious, const Vector<Game
     std::set_intersection(acPrevious.begin(), acPrevious.end(), acCurrent.begin(), acCurrent.end(), std::back_inserter(both), IdLess);
     return both;
 }
+// The leader's entries of the given quests (NotifyQuestCatchUp): the stages a member takes on catching up. The quests
+// only the member has aren't there, the leader has no stage of them.
+inline QuestLog LeaderStages(const QuestLog& acLeader, const Vector<GameId>& acQuests) noexcept
+{
+    QuestLog stages;
+    for (const QuestLog::Entry& cEntry : acLeader.Entries)
+    {
+        if (std::find(acQuests.begin(), acQuests.end(), cEntry.Id) != acQuests.end())
+            stages.Entries.push_back(cEntry);
+    }
+    return stages;
+}
 } // namespace QuestDesync

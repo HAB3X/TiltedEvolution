@@ -65,6 +65,9 @@
 #include <Messages/NotifyHostWorldRequested.h>
 #include <Messages/NotifyPartyTravel.h>
 #include <Messages/NotifyQuestDesync.h>
+#include <Messages/NotifyPartyQuestSharing.h>
+#include <Messages/NotifyQuestShareOffer.h>
+#include <Messages/NotifyQuestCatchUp.h>
 #include <Messages/NotifyHostWorldState.h>
 #include <Messages/NotifyTimeSkip.h>
 #include <Messages/NotifyPause.h>
@@ -86,7 +89,7 @@ struct ServerMessageFactory
             NotifyActorValueChanges, NotifyPartyJoined, NotifyPartyLeft, NotifyActorMaxValueChanges, NotifyHealthChangeBroadcast, NotifyActivate, NotifyLockChange, AssignObjectsResponse, NotifyDeathStateChange, NotifyOwnershipTransfer, NotifyObjectInventoryChanges, NotifySpellCast,
             NotifyProjectileLaunch, NotifyInterruptCast, NotifyAddTarget, NotifyScriptAnimation, NotifyDrawWeapon, NotifyMount, NotifyNewPackage, NotifyRespawn, NotifySyncExperience, NotifyEquipmentChanges, NotifyChatMessageBroadcast, TeleportCommandResponse, NotifyPlayerRespawn, NotifyDialogue,
             NotifySubtitle, NotifyPlayerDialogue, NotifyActorTeleport, NotifyPlayerLeft, NotifyPlayerJoined, NotifyDialogue, NotifySubtitle, NotifyPlayerDialogue, NotifyPlayerLevel, NotifyPlayerCellChanged, NotifyTeleport, NotifyPlayerHealthUpdate, NotifySettingsChange,
-            NotifyWeatherChange, NotifySetWaypoint, NotifyRemoveWaypoint, NotifySetTimeResult, NotifyRemoveSpell, NotifyActionEvents, NotifyPartyCheckpoint, NotifyVoiceData, NotifyHostWorldRequested, NotifyHostWorldState, NotifyTimeSkip, NotifyPause, NotifyPartyTravel, NotifyQuestDesync, NotifyPartyPing, NotifyPartyDoor, NotifyPartySummon, NotifyPartyTeleportRefused>;
+            NotifyWeatherChange, NotifySetWaypoint, NotifyRemoveWaypoint, NotifySetTimeResult, NotifyRemoveSpell, NotifyActionEvents, NotifyPartyCheckpoint, NotifyVoiceData, NotifyHostWorldRequested, NotifyHostWorldState, NotifyTimeSkip, NotifyPause, NotifyPartyTravel, NotifyQuestDesync, NotifyPartyPing, NotifyPartyDoor, NotifyPartySummon, NotifyPartyTeleportRefused, NotifyPartyQuestSharing, NotifyQuestShareOffer, NotifyQuestCatchUp>;
 
         return s_visitor(std::forward<T>(func));
     }

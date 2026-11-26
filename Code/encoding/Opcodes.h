@@ -70,6 +70,9 @@ enum ClientOpcode : unsigned char
     kRequestPartySummon,
     kRequestPartySummonAnswer,
     kRequestRespawnAtPartner,
+    kRequestPartyQuestSharing,
+    kRequestQuestShare,
+    kRequestQuestShareAnswer,
     kClientOpcodeMax
 };
 
@@ -143,5 +146,8 @@ enum ServerOpcode : unsigned char
     kNotifyPartyDoor,
     kNotifyPartySummon,
     kNotifyPartyTeleportRefused,
+    kNotifyPartyQuestSharing,
+    kNotifyQuestShareOffer,
+    kNotifyQuestCatchUp,
     kServerOpcodeMax
 };

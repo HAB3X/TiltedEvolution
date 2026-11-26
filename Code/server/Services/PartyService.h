@@ -28,6 +28,21 @@ struct PartyService
         GameId CachedWeather{};
         // Stages each quest reached since it started, as relayed to the party
         Map<GameId, TiltedPhoques::Set<uint16_t>> QuestStages{};
+
+        // The quest kinds the party shares, set by its leader (RequestPartyQuestSharing); the host's until then
+        bool QuestSharingEnabled{true};
+        std::optional<uint32_t> SharedQuestTypes{};
+        // A quest a member offered the party although its kind isn't shared (RequestQuestShare)
+        struct OfferedQuest
+        {
+            // The players running it together, whose updates of it are relayed among them
+            TiltedPhoques::Set<uint32_t> Players{};
+            // Those asked who haven't answered yet
+            TiltedPhoques::Set<uint32_t> Asked{};
+            uint16_t Stage{};
+            uint8_t ClientQuestType{};
+        };
+        Map<GameId, OfferedQuest> OfferedQuests{};
     };
 
     PartyService(World& aWorld, entt::dispatcher& aDispatcher) noexcept;

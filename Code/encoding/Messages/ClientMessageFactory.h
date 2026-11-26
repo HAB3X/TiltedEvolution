@@ -67,6 +67,9 @@
 #include <Messages/RequestModeratePlayer.h>
 #include <Messages/RequestPartyTravel.h>
 #include <Messages/RequestQuestStages.h>
+#include <Messages/RequestPartyQuestSharing.h>
+#include <Messages/RequestQuestShare.h>
+#include <Messages/RequestQuestShareAnswer.h>
 #include <Messages/RequestPartyPing.h>
 #include <Messages/RequestPartyDoor.h>
 #include <Messages/RequestPartySummon.h>
@@ -86,7 +89,7 @@ struct ClientMessageFactory
             PartyChangeLeaderRequest, PartyKickRequest, RequestActorValueChanges, RequestActorMaxValueChanges, EnterExteriorCellRequest, RequestHealthChangeBroadcast, ActivateRequest, LockChangeRequest, AssignObjectsRequest, RequestDeathStateChange, ShiftGridCellRequest,
             RequestOwnershipTransfer, RequestOwnershipClaim, RequestObjectInventoryChanges, SpellCastRequest, ProjectileLaunchRequest, InterruptCastRequest, AddTargetRequest, ScriptAnimationRequest, DrawWeaponRequest, MountRequest, NewPackageRequest, RequestRespawn, SyncExperienceRequest,
             RequestEquipmentChanges, SendChatMessageRequest, TeleportCommandRequest, PlayerRespawnRequest, DialogueRequest, SubtitleRequest, PlayerDialogueRequest, PlayerLevelRequest, TeleportRequest, RequestPlayerHealthUpdate, RequestWeatherChange, RequestCurrentWeather, RequestSetWaypoint,
-            RequestRemoveWaypoint, RemoveSpellRequest, SetTimeCommandRequest, RequestActionEvents, PartyCheckpointRequest, VoiceDataRequest, VoiceStateRequest, RequestHostWorld, HostWorldStateRequest, RequestModeratePlayer, RequestTimeSkip, RequestPause, RequestPartyTravel, RequestQuestStages, RequestPartyPing, RequestPartyDoor, RequestPartySummon, RequestPartySummonAnswer, RequestRespawnAtPartner>;
+            RequestRemoveWaypoint, RemoveSpellRequest, SetTimeCommandRequest, RequestActionEvents, PartyCheckpointRequest, VoiceDataRequest, VoiceStateRequest, RequestHostWorld, HostWorldStateRequest, RequestModeratePlayer, RequestTimeSkip, RequestPause, RequestPartyTravel, RequestQuestStages, RequestPartyPing, RequestPartyDoor, RequestPartySummon, RequestPartySummonAnswer, RequestRespawnAtPartner, RequestPartyQuestSharing, RequestQuestShare, RequestQuestShareAnswer>;
 
         return s_visitor(std::forward<T>(func));
     }

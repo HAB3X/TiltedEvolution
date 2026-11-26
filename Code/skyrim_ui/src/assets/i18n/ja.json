@@ -210,7 +210,16 @@
         "TELEPORT": "テレポート",
         "MAKE_LEADER": "リーダーにする"
       },
-      "LEAVE_PARTY": "パーティーを抜ける"
+      "LEAVE_PARTY": "パーティーを抜ける",
+      "QUESTS": {
+        "TITLE": "クエスト",
+        "SHARE_BY_KIND": "これらの種類のクエストをパーティーで共有する",
+        "LEADER_CHOOSES": "パーティーで共有するクエストの種類はリーダーが選びます。",
+        "SHARE_A_QUEST": "自分のクエストを共有する",
+        "NOTHING_TO_SHARE": "共有できるクエストは他にありません。",
+        "SHARE": "共有",
+        "OFFERED": "提案済み"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "ニワトリしかいないね。",
@@ -361,6 +370,14 @@
     },
     "PLAYER_LIST": {
       "PARTY_INVITE": "{{from}} がパーティーに招待しました。"
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} がクエスト「{{quest}}」の共有を希望しています。",
+      "ACCEPT": "受け入れる",
+      "DECLINE": "断る",
+      "CATCH_UP": "パーティーリーダーの {{name}} は共有クエスト {{count}} 件で別の段階にいます。リーダーの進行を引き継ぎますか？それとも自分の進行を保ちますか？",
+      "TAKE_PROGRESS": "リーダーの進行を引き継ぐ",
+      "KEEP_MINE": "自分の進行を保つ"
     }
   }
 }

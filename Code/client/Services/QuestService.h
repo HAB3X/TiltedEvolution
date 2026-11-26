@@ -45,7 +45,7 @@ public:
     ~QuestService() = default;
 
     static bool IsNonSyncableQuest(TESQuest* apQuest);
-    // A quest of a category the party shares (ServerSettings::SharedQuestTypes) that can be synced
+    // A quest of a category the party shares (QuestSharingService::GetSharedQuestTypes) that can be synced
     static bool IsSharedQuest(TESQuest* apQuest) noexcept;
     // The shared quests this game has started and not stopped, and those it completed, at their current stage
     static void CollectSharedQuests(QuestLog& aRunning, QuestLog& aCompleted) noexcept;

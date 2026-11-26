@@ -215,7 +215,16 @@
         "TELEPORT": "Teleport",
         "MAKE_LEADER": "Make leader"
       },
-      "LEAVE_PARTY": "Leave party"
+      "LEAVE_PARTY": "Leave party",
+      "QUESTS": {
+        "TITLE": "Quests",
+        "SHARE_BY_KIND": "Share these kinds of quests with the party",
+        "LEADER_CHOOSES": "The party leader chooses which kinds of quests the party shares.",
+        "SHARE_A_QUEST": "Share one of my quests",
+        "NOTHING_TO_SHARE": "You have no other quests to share.",
+        "SHARE": "Share",
+        "OFFERED": "Offered"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "Nobody here but us chickens",
@@ -372,6 +381,14 @@
     },
     "PARTY_HINT": {
       "MESSAGE": "Want to quest together? Form a party and stay close to share quest progress! Check out our play guide to learn more."
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} wants to share the quest {{quest}} with you.",
+      "ACCEPT": "Accept",
+      "DECLINE": "Decline",
+      "CATCH_UP": "Your party leader {{name}} is at other stages in {{count}} shared quests. Take their progress, or keep your own?",
+      "TAKE_PROGRESS": "Take their progress",
+      "KEEP_MINE": "Keep mine"
     }
   }
 }
