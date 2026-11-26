@@ -1,5 +1,15 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Performance overlay",
+      "FPS": "fps",
+      "FRAME_MS": "ms/frame",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "synced",
+      "PROFILER_OFF": "Frame profiler off ([Debug] bFrameProfiler)",
+      "WAITING": "Measuring…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "Go to",
       "SUMMON": "Summon"

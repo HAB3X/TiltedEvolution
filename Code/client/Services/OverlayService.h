@@ -79,6 +79,8 @@ struct OverlayService
 
     // The overlay's party bar is shown: members' distances are only worked out then
     void SetPartyBarEnabled(bool aEnabled) noexcept { m_partyBarEnabled = aEnabled; }
+    // The overlay's performance line is shown: its numbers are only sent then
+    void SetPerfOverlayEnabled(bool aEnabled) noexcept { m_perfOverlayEnabled = aEnabled; }
 
 protected:
     void OnUpdate(const UpdateEvent&) noexcept;
@@ -102,6 +104,7 @@ private:
     void RunDebugDataUpdates() noexcept;
     void RunPlayerHealthUpdates() noexcept;
     void RunPartyDistanceUpdates() noexcept;
+    void SendPerfData() noexcept;
 
     CefRefPtr<OverlayApp> m_pOverlay{nullptr};
     TiltedPhoques::UniquePtr<D3D11RenderProvider> m_pProvider;
@@ -112,6 +115,7 @@ private:
     bool m_active = false;
     bool m_inGame = false;
     bool m_partyBarEnabled = true;
+    bool m_perfOverlayEnabled = false;
 
     entt::scoped_connection m_updateConnection;
     entt::scoped_connection m_connectedConnection;

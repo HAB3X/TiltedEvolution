@@ -1,5 +1,15 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Prestandaöverlägg",
+      "FPS": "fps",
+      "FRAME_MS": "ms/bildruta",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "synkade",
+      "PROFILER_OFF": "Bildprofileraren är av ([Debug] bFrameProfiler)",
+      "WAITING": "Mäter…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "Gå till",
       "SUMMON": "Kalla hit"

@@ -560,6 +560,23 @@ void OverlayService::RunDebugDataUpdates() noexcept
     pArguments->SetInt(5, internalStats.RecvBytes);
 
     m_pOverlay->ExecuteAsync("debugData", pArguments);
+
+    if (m_perfOverlayEnabled)
+        SendPerfData();
+}
+
+// The performance overlay: the frame profiler's last second (fps, frame time, Skyrim Together's own share), the ping
+// and how many actors are synced; -1 for the profiler's numbers while it's off ([Debug] bFrameProfiler=false)
+void OverlayService::SendPerfData() noexcept
+{
+    const auto cSummary = FrameProfiler::LastSecond();
+    auto pArguments = CefListValue::Create();
+    pArguments->SetDouble(0, cSummary ? cSummary->Fps : -1.0);
+    pArguments->SetDouble(1, cSummary ? cSummary->FrameMs : -1.0);
+    pArguments->SetDouble(2, cSummary ? cSummary->ModMs : -1.0);
+    pArguments->SetInt(3, m_transport.GetConnectionStatus().m_nPing);
+    pArguments->SetInt(4, static_cast<int>(m_world.view<FormIdComponent>().size()));
+    m_pOverlay->ExecuteAsync("perfData", pArguments);
 }
 
 // TODO(cosideci): this whole thing is a really hacky solution to

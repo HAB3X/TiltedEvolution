@@ -2,6 +2,16 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Prestatie-overlay",
+      "FPS": "fps",
+      "FRAME_MS": "ms/frame",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "gesynchroniseerd",
+      "PROFILER_OFF": "Frameprofiler uit ([Debug] bFrameProfiler)",
+      "WAITING": "Meten…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "Ga naar",
       "SUMMON": "Oproepen"

@@ -1,5 +1,15 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Оверлей продуктивності",
+      "FPS": "к/с",
+      "FRAME_MS": "мс/кадр",
+      "MOD_MS": "мс Skyrim Together",
+      "PING": "мс пінг",
+      "ACTORS": "синхронізовано",
+      "PROFILER_OFF": "Профайлер кадрів вимкнено ([Debug] bFrameProfiler)",
+      "WAITING": "Вимірювання…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "До гравця",
       "SUMMON": "Покликати"

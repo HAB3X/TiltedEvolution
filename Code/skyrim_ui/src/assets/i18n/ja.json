@@ -1,5 +1,15 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "パフォーマンス表示",
+      "FPS": "fps",
+      "FRAME_MS": "ms/フレーム",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "同期中",
+      "PROFILER_OFF": "フレームプロファイラーはオフです ([Debug] bFrameProfiler)",
+      "WAITING": "計測中…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "会いに行く",
       "SUMMON": "呼び寄せる"

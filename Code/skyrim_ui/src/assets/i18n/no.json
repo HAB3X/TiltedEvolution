@@ -1,5 +1,15 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Ytelsesvisning",
+      "FPS": "fps",
+      "FRAME_MS": "ms/bilde",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "synkronisert",
+      "PROFILER_OFF": "Bildeprofilering av ([Debug] bFrameProfiler)",
+      "WAITING": "Måler…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "Gå til",
       "SUMMON": "Tilkall"

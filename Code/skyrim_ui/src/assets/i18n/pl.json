@@ -2,6 +2,16 @@
   "INFO": "Polska lokalizacja do Skyrim Together: Reborn! Wersja: 1.4.0. Autor:<strong>Nutyo</strong>",
 
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Nakładka wydajności",
+      "FPS": "fps",
+      "FRAME_MS": "ms/klatkę",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms pingu",
+      "ACTORS": "zsynchronizowane",
+      "PROFILER_OFF": "Profiler klatek wyłączony ([Debug] bFrameProfiler)",
+      "WAITING": "Pomiar…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "Idź do",
       "SUMMON": "Przywołaj"

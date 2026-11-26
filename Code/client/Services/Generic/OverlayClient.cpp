@@ -68,6 +68,11 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             const bool enabled = eventArgs->GetBool(0);
             World::Get().GetRunner().Queue([enabled]() { World::Get().GetOverlayService().SetPartyBarEnabled(enabled); });
         }
+        else if (eventName == "setPerfOverlay")
+        {
+            const bool enabled = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([enabled]() { World::Get().GetOverlayService().SetPerfOverlayEnabled(enabled); });
+        }
         else if (eventName == "setPingMarkers")
         {
             const bool enabled = eventArgs->GetBool(0);

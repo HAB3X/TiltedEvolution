@@ -1,9 +1,10 @@
 .app-debug {
   position: fixed;
   display: flex;
-  align-items: center;
   justify-content: flex-start;
-  height: 1.6vw;
+  // The performance line above the network one
+  flex-direction: column;
+  align-items: flex-start;
   padding: 1px;
   color: rgb(196, 196, 196);
 

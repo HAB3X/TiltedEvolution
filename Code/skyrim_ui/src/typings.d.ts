@@ -258,6 +258,9 @@ interface SkyrimTogether {
   on(event: 'partyDoor', callback: (member: string, place: string) => void): void;
 
   /** A party member asks this player to come to them. */
+  /** The performance overlay's numbers, each second while setPerfOverlay is on; -1 for the first three while the profiler is off. */
+  on(event: 'perfData', callback: (fps: number, frameMs: number, modMs: number, ping: number, actors: number) => void): void;
+
   on(event: 'partySummon', callback: (summonerId: number, summoner: string) => void): void;
 
   /** A go-to or summons was refused: reason (PartyTeleport::Refusal), the other player, seconds left of a cooldown. */
@@ -422,6 +425,8 @@ interface SkyrimTogether {
 
   off(event: 'partyDoor', callback?: (member: string, place: string) => void): void;
 
+  off(event: 'perfData', callback?: (fps: number, frameMs: number, modMs: number, ping: number, actors: number) => void): void;
+
   off(event: 'partySummon', callback?: (summonerId: number, summoner: string) => void): void;
 
   off(event: 'partyTeleportRefused', callback?: (reason: number, player: string, secondsLeft: number) => void): void;
@@ -517,6 +522,9 @@ interface SkyrimTogether {
 
   /** Whether the party bar is shown: the game works out members' distances only while it is. */
   setPartyBar(enabled: boolean): void;
+
+  /** Whether the performance overlay is shown: the game sends perfData only then. */
+  setPerfOverlay(enabled: boolean): void;
 
   /**
    * Disconnect from server or cancel connection.

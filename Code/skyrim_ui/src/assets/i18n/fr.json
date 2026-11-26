@@ -2,6 +2,16 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Affichage des performances",
+      "FPS": "ips",
+      "FRAME_MS": "ms/image",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms de ping",
+      "ACTORS": "synchronisés",
+      "PROFILER_OFF": "Profileur d'images désactivé ([Debug] bFrameProfiler)",
+      "WAITING": "Mesure en cours…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "Rejoindre",
       "SUMMON": "Appeler"

@@ -5,7 +5,8 @@ import {
   faWifi,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
-import { map, Observable, startWith } from 'rxjs';
+import { combineLatest, map, Observable, startWith } from 'rxjs';
+import { PerfData } from '../../models/perf-data';
 import { ScreenCorner, SettingService } from 'src/app/services/setting.service';
 import { Debug } from '../../models/debug';
 import { ClientService } from '../../services/client.service';
@@ -31,6 +32,9 @@ export class DebugComponent {
   faArrowUp: IconDefinition = faArrowUp;
 
   isShown$: Observable<boolean>;
+  debugShown$: Observable<boolean>;
+  perfShown$: Observable<boolean>;
+  perfData$: Observable<PerfData | null>;
   debugData$: Observable<Debug>;
   cornerClass$: Observable<string>;
 
@@ -38,7 +42,10 @@ export class DebugComponent {
     private readonly client: ClientService,
     private readonly settingService: SettingService,
   ) {
-    this.isShown$ = this.settingService.settings.isDebugShown;
+    this.debugShown$ = this.settingService.settings.isDebugShown;
+    this.perfShown$ = this.settingService.shown('perfOverlay');
+    this.isShown$ = combineLatest([this.debugShown$, this.perfShown$]).pipe(map(([debug, perf]) => debug || perf));
+    this.perfData$ = this.client.perfDataChange;
     this.debugData$ = this.client.debugDataChange.pipe(startWith(new Debug()));
     this.cornerClass$ = this.settingService.settings.debugAnchor.pipe(
       map(corner => cornerClasses[corner]),

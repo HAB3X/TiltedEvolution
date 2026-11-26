@@ -1,5 +1,6 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { SettingService } from './setting.service';
+import { PerfData } from '../models/perf-data';
 import { Ping } from '../utils/party-bar';
 import { TranslocoService } from '@jsverse/transloco';
 import { AsyncSubject, BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
@@ -98,6 +99,9 @@ export class ClientService implements OnDestroy {
 
   /** Debug data change. */
   public debugDataChange = new BehaviorSubject(new Debug());
+
+  /** The performance overlay's numbers, each second while it's shown; null before the first. */
+  public perfDataChange = new BehaviorSubject<PerfData | null>(null);
 
   /** Connect player to server change. */
   public playerConnectedChange = new Subject<Player>();
@@ -258,6 +262,7 @@ export class ClientService implements OnDestroy {
       this.settingService.shown('nameTags').subscribe(shown => skyrimtogether.setNameTags(shown));
       this.settingService.shown('pingMarkers').subscribe(shown => skyrimtogether.setPingMarkers(shown));
       this.settingService.shown('isPartyShown').subscribe(shown => skyrimtogether.setPartyBar(shown));
+      this.settingService.shown('perfOverlay').subscribe(shown => skyrimtogether.setPerfOverlay(shown));
     });
     skyrimtogether.on('init', this.onInit.bind(this));
     skyrimtogether.on('activate', this.onActivate.bind(this));
@@ -271,6 +276,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('setVersion', this.onSetVersion.bind(this));
     skyrimtogether.on('debug', this.onDebug.bind(this)); //not needed anymore
     skyrimtogether.on('debugData', this.onUpdateDebug.bind(this));
+    skyrimtogether.on('perfData', this.onPerfData.bind(this));
     skyrimtogether.on('playerConnected', this.onPlayerConnected.bind(this));
     skyrimtogether.on(
       'playerDisconnected',
@@ -335,6 +341,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('setVersion');
     skyrimtogether.off('debug');
     skyrimtogether.off('debugData');
+    skyrimtogether.off('perfData');
     skyrimtogether.off('playerConnected');
     skyrimtogether.off('playerDisconnected');
     skyrimtogether.off('setHealth');
@@ -975,6 +982,12 @@ export class ClientService implements OnDestroy {
   private onPartyPing(player: string, target: string, meters: number, direction: number, place: string) {
     this.zone.run(() => {
       this.partyPingChange.next({ player, target, meters, direction, place });
+    });
+  }
+
+  private onPerfData(fps: number, frameMs: number, modMs: number, ping: number, actors: number) {
+    this.zone.run(() => {
+      this.perfDataChange.next({ fps, frameMs, modMs, ping, actors });
     });
   }
 

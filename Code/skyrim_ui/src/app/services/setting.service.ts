@@ -156,6 +156,8 @@ export class SettingService {
     pingMessages: new ToggleSetting(this.storeService, 'ping_messages', true),
     /** Names above other players; the same key the /nametags chat command always used. */
     nameTags: new ToggleSetting(this.storeService, 'name_tags', true),
+    /** Frame rate, frame time, ping, synced actors and Skyrim Together's own cost per frame. */
+    perfOverlay: new ToggleSetting(this.storeService, 'perf_overlay', false),
     debugAnchor: new SelectSetting(
       this.storeService,
       'debug_anchor',
@@ -171,6 +173,7 @@ export class SettingService {
     'pingMarkers',
     'pingMessages',
     'nameTags',
+    'perfOverlay',
   ] as const;
 
   /** Whether an on-screen element shows: the player's choice, unless immersive mode hides it. */

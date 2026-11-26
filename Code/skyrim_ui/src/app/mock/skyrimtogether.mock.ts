@@ -38,6 +38,15 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     console.log(`ping markers: ${enabled ? 'on' : 'off'}`);
   }
 
+  setPerfOverlay(enabled: boolean): void {
+    clearInterval(this.perfTimer);
+    if (enabled) {
+      this.perfTimer = setInterval(() => this.emit('perfData', 58 + Math.random() * 4, 16.7, 0.4 + Math.random() * 0.3, 42, 37), 1000);
+    }
+  }
+
+  private perfTimer: ReturnType<typeof setInterval> | undefined;
+
   setPartyBar(enabled: boolean): void {
     console.log(`party bar: ${enabled ? 'on' : 'off'}`);
   }

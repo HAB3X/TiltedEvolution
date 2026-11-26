@@ -1,5 +1,15 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Performans katmanı",
+      "FPS": "fps",
+      "FRAME_MS": "ms/kare",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "eşitlenen",
+      "PROFILER_OFF": "Kare profil oluşturucu kapalı ([Debug] bFrameProfiler)",
+      "WAITING": "Ölçülüyor…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "Yanına git",
       "SUMMON": "Çağır"

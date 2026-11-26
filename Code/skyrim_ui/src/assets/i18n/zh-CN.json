@@ -2,6 +2,16 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "性能浮层",
+      "FPS": "帧/秒",
+      "FRAME_MS": "毫秒/帧",
+      "MOD_MS": "毫秒 Skyrim Together",
+      "PING": "毫秒延迟",
+      "ACTORS": "已同步",
+      "PROFILER_OFF": "帧分析器已关闭（[Debug] bFrameProfiler）",
+      "WAITING": "测量中…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "前往",
       "SUMMON": "召唤"

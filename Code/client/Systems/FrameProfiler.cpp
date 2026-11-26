@@ -42,7 +42,39 @@ std::array<float, kMaxFrames> s_frameMs{};
 size_t s_frameCount = 0;
 uint64_t s_lastFrame = 0;
 uint64_t s_reportStart = 0;
+
+// The per-second summary
+uint64_t s_secondStart = 0;
+uint32_t s_secondFrames = 0;
+uint64_t s_secondModTicks = 0;
+std::optional<Summary> s_lastSecond;
+
+uint64_t ModTicks() noexcept
+{
+    static Slot& s_worldUpdate = Register("World::Update");
+    return s_worldUpdate.TotalTicks.load(std::memory_order_relaxed);
+}
+
+void UpdateLastSecond(uint64_t aNow, double aMsPerTick) noexcept
+{
+    ++s_secondFrames;
+    const double cElapsedMs = (aNow - s_secondStart) * aMsPerTick;
+    if (cElapsedMs < 1000.0)
+        return;
+
+    const uint64_t cModTicks = ModTicks();
+    s_lastSecond = Summary{static_cast<float>(s_secondFrames * 1000.0 / cElapsedMs), static_cast<float>(cElapsedMs / s_secondFrames),
+                           static_cast<float>((cModTicks - s_secondModTicks) * aMsPerTick / s_secondFrames)};
+    s_secondStart = aNow;
+    s_secondFrames = 0;
+    s_secondModTicks = cModTicks;
+}
 } // namespace
+
+std::optional<Summary> LastSecond() noexcept
+{
+    return s_lastSecond;
+}
 
 bool IsEnabled() noexcept
 {
@@ -87,8 +119,12 @@ void OnFrame() noexcept
     {
         s_lastFrame = now;
         s_reportStart = now;
+        s_secondStart = now;
+        s_secondModTicks = ModTicks();
         return;
     }
+
+    UpdateLastSecond(now, s_msPerTick);
 
     const float frameMs = static_cast<float>((now - s_lastFrame) * s_msPerTick);
     s_lastFrame = now;

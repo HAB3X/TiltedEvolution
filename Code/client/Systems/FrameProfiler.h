@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <cstdint>
+#include <optional>
 
 // Cheap always-on frame profiler. Every report interval it logs the frame rate (average, 1% low, hitches) and how
 // many milliseconds per frame each profiled scope of Skyrim Together took, so a play session tells where frame time
@@ -17,6 +18,8 @@ struct Slot
     const char* Name;
     std::atomic<uint64_t> Ticks{0};
     std::atomic<uint64_t> Calls{0};
+    // Never reset, for the per-second summary
+    std::atomic<uint64_t> TotalTicks{0};
 };
 
 // Returns the slot for a scope name (one slot per call site, registered on first use)
@@ -27,6 +30,16 @@ Slot& Register(const char* acpName) noexcept;
 
 // Called once per game frame from the main thread; logs a report when the interval is over
 void OnFrame() noexcept;
+
+// The last whole second, for the overlay's performance line; empty while the profiler is off or before a second passed
+struct Summary
+{
+    float Fps;
+    float FrameMs;
+    // Milliseconds per frame in Skyrim Together's service updates ("World::Update")
+    float ModMs;
+};
+[[nodiscard]] std::optional<Summary> LastSecond() noexcept;
 
 struct Scope
 {
@@ -40,8 +53,10 @@ struct Scope
     {
         if (!m_pSlot)
             return;
-        m_pSlot->Ticks.fetch_add(Now() - m_start, std::memory_order_relaxed);
+        const uint64_t cTicks = Now() - m_start;
+        m_pSlot->Ticks.fetch_add(cTicks, std::memory_order_relaxed);
         m_pSlot->Calls.fetch_add(1, std::memory_order_relaxed);
+        m_pSlot->TotalTicks.fetch_add(cTicks, std::memory_order_relaxed);
     }
 
     Scope(const Scope&) = delete;

@@ -1,5 +1,15 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Leistungsanzeige",
+      "FPS": "fps",
+      "FRAME_MS": "ms/Bild",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms Ping",
+      "ACTORS": "synchronisiert",
+      "PROFILER_OFF": "Frame-Profiler aus ([Debug] bFrameProfiler)",
+      "WAITING": "Wird gemessen…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "Hingehen",
       "SUMMON": "Herbeirufen"

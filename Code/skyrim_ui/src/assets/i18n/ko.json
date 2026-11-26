@@ -1,5 +1,15 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "성능 오버레이",
+      "FPS": "fps",
+      "FRAME_MS": "ms/프레임",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms 핑",
+      "ACTORS": "동기화됨",
+      "PROFILER_OFF": "프레임 프로파일러 꺼짐 ([Debug] bFrameProfiler)",
+      "WAITING": "측정 중…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "찾아가기",
       "SUMMON": "부르기"

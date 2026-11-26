@@ -1,5 +1,15 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Překryv výkonu",
+      "FPS": "fps",
+      "FRAME_MS": "ms/snímek",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "synchronizováno",
+      "PROFILER_OFF": "Profiler snímků je vypnutý ([Debug] bFrameProfiler)",
+      "WAITING": "Měření…"
+    },
     "PARTY_MOVES": {
       "GO_TO": "Jít k",
       "SUMMON": "Přivolat"

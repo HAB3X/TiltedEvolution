@@ -61,6 +61,7 @@ export class SettingsComponent {
     { setting: 'pingMarkers', label: 'COMPONENT.IMMERSION.PING_MARKERS' },
     { setting: 'pingMessages', label: 'COMPONENT.IMMERSION.PING_MESSAGES' },
     { setting: 'nameTags', label: 'COMPONENT.IMMERSION.NAME_TAGS' },
+    { setting: 'perfOverlay', label: 'COMPONENT.PERF.SETTING' },
   ];
 
   public settings = this.settingService.settings;
