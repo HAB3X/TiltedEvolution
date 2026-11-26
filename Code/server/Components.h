@@ -9,6 +9,7 @@
 #include <Components/CellIdComponent.h>
 #include <Components/CharacterComponent.h>
 #include <Components/MovementComponent.h>
+#include <Components/MovementRelayComponent.h>
 #include <Components/AnimationComponent.h>
 #include <Components/InventoryComponent.h>
 #include <Components/QuestLogComponent.h>

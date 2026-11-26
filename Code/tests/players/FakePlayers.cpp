@@ -17,9 +17,13 @@
 #include <BuildInfo.h>
 #include <LanDiscovery.h>
 #include <WireProtocol.h>
+#include <Messages/AssignCharacterRequest.h>
+#include <Messages/AssignCharacterResponse.h>
 #include <Messages/AuthenticationRequest.h>
 #include <Messages/AuthenticationResponse.h>
 #include <Messages/ClientMessageFactory.h>
+#include <Messages/ClientReferencesMoveRequest.h>
+#include <Messages/EnterExteriorCellRequest.h>
 #include <Messages/HostWorldStateRequest.h>
 #include <Messages/NotifyHostWorldRequested.h>
 #include <Messages/NotifyHostWorldState.h>
@@ -38,6 +42,7 @@
 #include <Messages/RequestModeratePlayer.h>
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/ServerMessageFactory.h>
+#include <Messages/ServerReferencesMoveRequest.h>
 #include <Messages/TeleportCommandResponse.h>
 
 #include <WinSock2.h>
@@ -45,6 +50,7 @@
 #include <chrono>
 #include <cstdio>
 #include <functional>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -149,6 +155,17 @@ struct FakePlayer final : Client
         case kNotifyQuestUpdate: QuestUpdates.push_back(*static_cast<NotifyQuestUpdate*>(pMessage.get())); break;
         case kNotifyPartyTravel: Travel = *static_cast<NotifyPartyTravel*>(pMessage.get()); break;
         case kNotifyQuestDesync: Desyncs.push_back(*static_cast<NotifyQuestDesync*>(pMessage.get())); break;
+        case kAssignCharacterResponse:
+        {
+            const auto* pResponse = static_cast<AssignCharacterResponse*>(pMessage.get());
+            AssignedIds[pResponse->Cookie] = pResponse->ServerId;
+            break;
+        }
+        case kServerReferencesMoveRequest:
+            MovementBytes += aSize;
+            for (const auto& [cId, cMovement] : static_cast<ServerReferencesMoveRequest*>(pMessage.get())->Updates)
+                RelayedMovements.push_back(cMovement);
+            break;
         default: break;
         }
     }
@@ -178,6 +195,11 @@ struct FakePlayer final : Client
     std::vector<NotifyQuestUpdate> QuestUpdates;
     std::optional<NotifyPartyTravel> Travel;
     std::vector<NotifyQuestDesync> Desyncs;
+    // Server ids of the characters this player assigned, by cookie
+    std::map<uint32_t, uint32_t> AssignedIds;
+    // Movement relayed to this player, and the bytes it took
+    std::vector<Movement> RelayedMovements;
+    size_t MovementBytes = 0;
 };
 
 // Runs the player until the condition holds or the time is up
@@ -621,6 +643,115 @@ int RunDesyncMember(const std::string& acEndpoint, const std::string& acPassword
     return s_failures ? 1 : 0;
 }
 
+// Movement relay rates: an owner moves NPCs at several distances from a watcher, the watcher counts what the server
+// relays. The owner's own character is far away too, players are always relayed in full.
+const GameId kRelayWorld{0, 0x3C};
+const GameId kRelayCell{0, 0xD74};
+constexpr float kWatcherX = 100.f;
+constexpr float kNearX = 600.f, kMidX = 4100.f, kFarX = 8100.f, kOwnerX = 9500.f, kOutsideX = 21000.f;
+
+// Assigns a character at aX and waits for its server id; the player's own character is 0:14
+std::optional<uint32_t> AssignAt(FakePlayer& aPlayer, uint32_t aCookie, GameId aReference, float aX)
+{
+    AssignCharacterRequest request;
+    request.Cookie = aCookie;
+    request.ReferenceId = aReference;
+    request.CellId = kRelayCell;
+    request.WorldSpaceId = kRelayWorld;
+    request.Position = glm::vec3(aX, 0.f, 0.f);
+    aPlayer.Send(request);
+    if (!RunUntil(aPlayer, [&] { return aPlayer.AssignedIds.count(aCookie) != 0; }))
+        return std::nullopt;
+    return aPlayer.AssignedIds[aCookie];
+}
+
+void EnterRelayCell(FakePlayer& aPlayer, float aX)
+{
+    EnterExteriorCellRequest enter;
+    enter.WorldSpaceId = kRelayWorld;
+    enter.CellId = kRelayCell;
+    enter.CurrentCoords = GridCellCoords::CalculateGridCellCoords(aX, 0.f);
+    aPlayer.Send(enter);
+}
+
+int RunCrowdOwner(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer owner("FakeCrowdOwner", acPassword);
+    owner.Connect(acEndpoint);
+    Check("crowd owner logs in", RunUntil(owner, [&] { return owner.LoggedIn; }));
+    const auto cSelf = AssignAt(owner, 1, GameId(0, 0x14), kOwnerX);
+    Check("crowd owner gets its character", cSelf.has_value());
+    EnterRelayCell(owner, kOwnerX);
+
+    const std::vector<std::pair<uint32_t, float>> cActors{{0x2000, kNearX}, {0x2001, kMidX}, {0x2002, kFarX}, {0x2003, kOutsideX}};
+    std::map<uint32_t, float> ids;
+    if (cSelf)
+        ids[*cSelf] = kOwnerX;
+    for (const auto& [cBaseId, cX] : cActors)
+    {
+        if (const auto cId = AssignAt(owner, cBaseId, GameId(0, cBaseId), cX))
+            ids[*cId] = cX;
+    }
+    Check("its NPCs are assigned", ids.size() == cActors.size() + 1, std::to_string(ids.size()) + " characters");
+    Check("sees the watcher join", RunUntil(owner, [&] { return !owner.JoinedNames.empty(); }, 30s));
+    RunUntil(owner, [] { return false; }, 2s);
+
+    // Every actor walks a little each snapshot, at the 30 ms players and actors in combat are sent at
+    uint32_t snapshots = 0;
+    const auto cStart = std::chrono::steady_clock::now();
+    auto next = cStart;
+    while (std::chrono::steady_clock::now() - cStart < 6s)
+    {
+        owner.Update();
+        if (std::chrono::steady_clock::now() >= next)
+        {
+            next += 30ms;
+            ++snapshots;
+            ClientReferencesMoveRequest move;
+            move.Tick = owner.GetClock().GetCurrentTick();
+            for (const auto& [cId, cX] : ids)
+            {
+                auto& movement = move.Updates[cId];
+                movement.CellId = kRelayCell;
+                movement.WorldSpaceId = kRelayWorld;
+                movement.Position = glm::vec3(cX, static_cast<float>(snapshots % 50) * 4.f, 0.f);
+            }
+            owner.Send(move);
+        }
+        std::this_thread::sleep_for(1ms);
+    }
+    std::printf("sent %u snapshots of %zu characters\n", snapshots, ids.size());
+    RunUntil(owner, [] { return false; }, 5s);
+    return s_failures ? 1 : 0;
+}
+
+int RunCrowdWatcher(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer watcher("FakeCrowdWatcher", acPassword);
+    watcher.Connect(acEndpoint);
+    Check("crowd watcher logs in", RunUntil(watcher, [&] { return watcher.LoggedIn; }));
+    Check("crowd watcher gets its character", AssignAt(watcher, 1, GameId(0, 0x14), kWatcherX).has_value());
+    EnterRelayCell(watcher, kWatcherX);
+    RunUntil(watcher, [] { return false; }, 12s);
+
+    auto countAt = [&](float aX)
+    {
+        return std::count_if(watcher.RelayedMovements.begin(), watcher.RelayedMovements.end(), [aX](const Movement& acMovement) { return std::abs(acMovement.Position.x - aX) < 1.f; });
+    };
+    const auto cOwner = countAt(kOwnerX), cNear = countAt(kNearX), cMid = countAt(kMidX), cFar = countAt(kFarX), cOutside = countAt(kOutsideX);
+    const double cFull = static_cast<double>(std::max<ptrdiff_t>(cOwner, 1));
+    const std::string cCounts = "player " + std::to_string(cOwner) + ", near " + std::to_string(cNear) + ", mid " + std::to_string(cMid) + ", far " + std::to_string(cFar) +
+                                ", outside " + std::to_string(cOutside) + ", " + std::to_string(watcher.MovementBytes) + " bytes";
+    std::printf("relayed: %s\n", cCounts.c_str());
+    Check("the far player's movement is relayed in full", cOwner >= 150, cCounts);
+    Check("a nearby NPC's movement is relayed in full", cNear >= 0.9 * cFull, cCounts);
+    Check("a mid-distance NPC's is relayed about every third snapshot", cMid >= 0.2 * cFull && cMid <= 0.45 * cFull, cCounts);
+    Check("a far NPC's is relayed about every sixth snapshot", cFar >= 0.08 * cFull && cFar <= 0.25 * cFull, cCounts);
+    Check("an NPC out of range isn't relayed", cOutside == 0, cCounts);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -631,6 +762,7 @@ int RunDesyncMember(const std::string& acEndpoint, const std::string& acPassword
 // FakePlayers.exe questleader|questmember [address:port] [password]: start the leader first (sSharedQuestTypes=Main,Misc)
 // FakePlayers.exe travelleader|travelmember [address:port] [password]: start the leader first
 // FakePlayers.exe desyncleader|desyncmember [address:port] [password]: start the leader first
+// FakePlayers.exe crowdowner|crowdwatcher [address:port] [password]: start the owner first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -672,7 +804,11 @@ int main(int argc, char** argv)
         return RunDesyncLeader(cEndpoint, cPassword);
     if (cRole == "desyncmember")
         return RunDesyncMember(cEndpoint, cPassword);
+    if (cRole == "crowdowner")
+        return RunCrowdOwner(cEndpoint, cPassword);
+    if (cRole == "crowdwatcher")
+        return RunCrowdWatcher(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|crowdowner|crowdwatcher [address:port] [password]\n");
     return 2;
 }
