@@ -114,27 +114,43 @@ void InventoryService::OnInventoryChanges(const PacketEvent<RequestInventoryChan
     }
 
     auto& inventoryComponent = view.get<InventoryComponent>(*it);
+
+    // A dead NPC's loot only changes through looting and the owner's snapshots, so the server's copy settles races
+    // over a body as it does over a container
+    const auto* pCharacterComponent = m_world.try_get<CharacterComponent>(*it);
+    const bool cIsCorpse = pCharacterComponent && !pCharacterComponent->IsPlayer() && pCharacterComponent->IsDead();
+    const bool cIsLoot = cIsCorpse || m_world.all_of<ObjectComponent>(*it);
+
     Inventory::Entry applied = message.Item;
-    if (pOwnerComponent)
+    if (pOwnerComponent && !cIsCorpse)
         inventoryComponent.Content.AddOrRemoveEntry(message.Item);
     else
         applied.Count = inventoryComponent.Content.AddOrRemoveEntryClamped(message.Item);
 
-    // Two players took the same items out of a container at once: the later one gives back what the other got
-    if (m_world.all_of<ObjectComponent>(*it) && message.Item.Count < 0)
+    // Two players took the same items out of a container or off a body at once: the later one gives back what the
+    // other got. The body's owner's takes count, but it isn't asked to give back: its removals may be the NPC's scripts.
+    int32_t refusedCount = 0;
+    if (cIsLoot && message.Item.Count < 0)
     {
-        const int32_t cRefused = inventoryComponent.RefusedTake(acMessage.pPlayer->GetId(), message.Item, -message.Item.Count, -applied.Count, GameServer::Get()->GetTick());
-        if (cRefused > 0)
+        refusedCount = inventoryComponent.RefusedTake(acMessage.pPlayer->GetId(), message.Item, -message.Item.Count, -applied.Count, GameServer::Get()->GetTick());
+        if (cIsCorpse && !isRemoteNpcInteraction)
+            refusedCount = 0;
+        if (refusedCount > 0)
         {
             NotifyLootRefused refused;
             refused.ServerId = message.ServerId;
             refused.Item = message.Item;
-            refused.Item.Count = cRefused;
+            refused.Item.Count = refusedCount;
             acMessage.pPlayer->Send(refused);
-            spdlog::info("Player {:X} took {} of item {:X} from container {:X} another player had just taken, gives back {}", acMessage.pPlayer->GetId(),
-                         -message.Item.Count, message.Item.BaseId.BaseId, message.ServerId, cRefused);
+            spdlog::info("Player {:X} took {} of item {:X} from {} {:X} another player had just taken, gives back {}", acMessage.pPlayer->GetId(),
+                         -message.Item.Count, message.Item.BaseId.BaseId, cIsCorpse ? "body" : "container", message.ServerId, refusedCount);
         }
     }
+
+    // The body's owner holds the real loot: what the server didn't know of still leaves the owner's copy, only what
+    // another player got first doesn't
+    if (cIsCorpse && message.Item.Count < 0)
+        applied.Count = message.Item.Count + refusedCount;
 
     if (applied.Count == 0)
         return;
