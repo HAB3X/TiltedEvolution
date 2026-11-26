@@ -70,7 +70,20 @@
         "PAUSE": "Tüm oyuncular envanter ya da harita gibi bir menüdeyken dünya duraklar.",
         "REQUIRE_MODS_TITLE": "Arkadaşlarım modlarıma ihtiyaç duysun",
         "MODS_REQUIRED": "Arkadaşlarının ihtiyaç duyduğu modlar: {{count}}",
-        "MODS_REQUIRED_NONE": "Oyunun kendi dosyaları dışında modun yok, bu yüzden arkadaşlarının mod ihtiyacı yok."
+        "MODS_REQUIRED_NONE": "Oyunun kendi dosyaları dışında modun yok, bu yüzden arkadaşlarının mod ihtiyacı yok.",
+        "QUESTS_TITLE": "Paylaşılan görevler",
+        "QUESTS": "Seçilen türlerdeki görevlerin ilerlemesi gruptaki herkesle paylaşılır.",
+        "QUEST_TYPE_Main": "Ana görev",
+        "QUEST_TYPE_MagesGuild": "Winterhold Koleji",
+        "QUEST_TYPE_ThievesGuild": "Hırsızlar Loncası",
+        "QUEST_TYPE_DarkBrotherhood": "Karanlık Kardeşlik",
+        "QUEST_TYPE_Companions": "Yoldaşlar",
+        "QUEST_TYPE_Misc": "Çeşitli",
+        "QUEST_TYPE_Daedric": "Daedrik",
+        "QUEST_TYPE_Side": "Yan görevler",
+        "QUEST_TYPE_CivilWar": "İç Savaş",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Ağındaki oyunlar",
@@ -262,6 +275,17 @@
       "ALREADY_IN_GROUP": "Zaten bir gruptasın. Başka bir gruba katılmak için lütfen şuankinden çıkın.",
       "KICK_NO_PARTY_LEADER": "Parti lideri olmadığın için diğer oyuncuları atamazsın.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Parti lideri olmadığın için diğer oyuncuları parti lideri yapamazsın."
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "{{leader}} ile {{place}} konumuna seyahat edilsin mi?",
+      "QUESTION_NO_PLACE": "{{leader}} hızlı seyahat etti. Onunla gidilsin mi?",
+      "YES": "Evet",
+      "NO": "Hayır"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Görev ilerlemen grup lideri {{name}} ile farklı: {{quests}}.",
+      "WITH_MEMBER": "{{name}} adlı oyuncunun görev ilerlemesi seninkinden farklı: {{quests}}.",
+      "MORE": "{{quests}} ve {{count}} tane daha"
     },
     "ERROR": {
       "ERRORS": {

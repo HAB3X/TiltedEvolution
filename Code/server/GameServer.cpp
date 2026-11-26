@@ -175,6 +175,7 @@ ServerSettings GetSettings()
     settings.ConsoleCommandsAllowed = bAllowConsoleCommands;
     settings.VoipEnabled = bVoip;
     settings.HostWorld = bHostWorld && !bAnnounceServer;
+    settings.SharedQuestTypes = QuestService::GetSharedQuestTypes();
     return settings;
 }
 

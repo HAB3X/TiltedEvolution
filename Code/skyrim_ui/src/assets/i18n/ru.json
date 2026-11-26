@@ -70,7 +70,20 @@
         "PAUSE": "Мир ставится на паузу, пока все игроки в меню, например в инвентаре или на карте.",
         "REQUIRE_MODS_TITLE": "Друзьям нужны мои моды",
         "MODS_REQUIRED": "Моды, нужные друзьям: {{count}}",
-        "MODS_REQUIRED_NONE": "У вас нет модов, кроме файлов самой игры, поэтому друзьям ничего не нужно."
+        "MODS_REQUIRED_NONE": "У вас нет модов, кроме файлов самой игры, поэтому друзьям ничего не нужно.",
+        "QUESTS_TITLE": "Общие задания",
+        "QUESTS": "Прогресс в выбранных видах заданий общий для всей группы.",
+        "QUEST_TYPE_Main": "Основной сюжет",
+        "QUEST_TYPE_MagesGuild": "Коллегия Винтерхолда",
+        "QUEST_TYPE_ThievesGuild": "Гильдия воров",
+        "QUEST_TYPE_DarkBrotherhood": "Тёмное Братство",
+        "QUEST_TYPE_Companions": "Соратники",
+        "QUEST_TYPE_Misc": "Разное",
+        "QUEST_TYPE_Daedric": "Даэдрические",
+        "QUEST_TYPE_Side": "Побочные задания",
+        "QUEST_TYPE_CivilWar": "Гражданская война",
+        "QUEST_TYPE_Dawnguard": "Стража Рассвета",
+        "QUEST_TYPE_Dragonborn": "Драконорождённый"
       },
       "LAN": {
         "TITLE": "Игры в вашей сети",
@@ -265,6 +278,17 @@
       "ALREADY_IN_GROUP": "Вы уже состоите в группе. Чтобы подключиться к другой группе, покиньте текущую.",
       "KICK_NO_PARTY_LEADER": "Недостаточно прав, вы не можете выгонять других игроков",
       "MAKE_LEADER_NO_PARTY_LEADER": "Недостаточно прав, вы не можете назначить нового лидера"
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Отправиться с {{leader}} в {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} быстро переместился. Отправиться следом?",
+      "YES": "Да",
+      "NO": "Нет"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Ваш прогресс заданий отличается от прогресса лидера группы {{name}}: {{quests}}.",
+      "WITH_MEMBER": "Прогресс заданий игрока {{name}} отличается от вашего: {{quests}}.",
+      "MORE": "{{quests}} и ещё {{count}}"
     },
     "ERROR": {
       "ERRORS": {

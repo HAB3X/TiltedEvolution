@@ -68,7 +68,20 @@
         "PAUSE": "Svět se pozastaví, dokud jsou všichni hráči v nabídce, třeba v inventáři nebo na mapě.",
         "REQUIRE_MODS_TITLE": "Přátelé potřebují mé mody",
         "MODS_REQUIRED": "Módy, které přátelé potřebují: {{count}}",
-        "MODS_REQUIRED_NONE": "Kromě vlastních souborů hry nemáte žádné módy, přátelé tedy žádné nepotřebují."
+        "MODS_REQUIRED_NONE": "Kromě vlastních souborů hry nemáte žádné módy, přátelé tedy žádné nepotřebují.",
+        "QUESTS_TITLE": "Sdílené úkoly",
+        "QUESTS": "Postup ve vybraných druzích úkolů se sdílí s celou družinou.",
+        "QUEST_TYPE_Main": "Hlavní úkol",
+        "QUEST_TYPE_MagesGuild": "Akademie ve Winterholdu",
+        "QUEST_TYPE_ThievesGuild": "Cech zlodějů",
+        "QUEST_TYPE_DarkBrotherhood": "Temné bratrstvo",
+        "QUEST_TYPE_Companions": "Společníci",
+        "QUEST_TYPE_Misc": "Různé",
+        "QUEST_TYPE_Daedric": "Daedrické",
+        "QUEST_TYPE_Side": "Vedlejší úkoly",
+        "QUEST_TYPE_CivilWar": "Občanská válka",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Hry ve tvé síti",
@@ -258,6 +271,17 @@
       "ALREADY_IN_GROUP": "Již jste ve skupině. Chcete-li se připojit k jiné skupině, opusťte svou stávající skupinu.",
       "KICK_NO_PARTY_LEADER": "Nemůžete vyhodit ostatní hráče, protože nejste vůdcem skupiny.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Nemůžete povýšit hráče na lídra, protože nejste lídr skupiny."
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Cestovat s hráčem {{leader}} do {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} rychle cestoval. Cestovat s ním?",
+      "YES": "Ano",
+      "NO": "Ne"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Tvůj postup v úkolech se liší od vůdce družiny {{name}}: {{quests}}.",
+      "WITH_MEMBER": "Postup hráče {{name}} v úkolech se liší od tvého: {{quests}}.",
+      "MORE": "{{quests}} a {{count}} dalších"
     },
     "ERROR": {
       "ERRORS": {

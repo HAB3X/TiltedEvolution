@@ -147,7 +147,10 @@ bool LocalServerService::Start(const HostSettings& acSettings) noexcept
     {
         written = written && WritePrivateProfileStringW(L"Gameplay", L"bHostWorld", Bool(acSettings.HostWorld), cIni.c_str()) &&
                   WritePrivateProfileStringW(L"ModPolicy", L"bRequireMods", Bool(acSettings.RequireMods), cIni.c_str()) &&
-                  WritePrivateProfileStringW(L"Gameplay", L"bPauseWhenAllInMenus", Bool(acSettings.PauseInMenus), cIni.c_str());
+                  WritePrivateProfileStringW(L"Gameplay", L"bPauseWhenAllInMenus", Bool(acSettings.PauseInMenus), cIni.c_str()) &&
+                  WritePrivateProfileStringW(L"Gameplay", L"sSharedQuestTypes", Widen(acSettings.SharedQuestTypes).c_str(), cIni.c_str()) &&
+                  // The older Misc switch would share Misc quests even when the host leaves them out
+                  WritePrivateProfileStringW(L"Gameplay", L"bEnableMiscQuestSync", L"false", cIni.c_str());
     }
     if (!written)
     {
@@ -197,8 +200,8 @@ bool LocalServerService::Start(const HostSettings& acSettings) noexcept
     m_process = process.hProcess;
     m_classic = cClassic;
 
-    spdlog::info("[LocalServer]: started the {} server on port {}, host world {}, require mods {}, pause in menus {}", cClassic ? "classic" : "Plus", m_port,
-                 acSettings.HostWorld, acSettings.RequireMods, acSettings.PauseInMenus);
+    spdlog::info("[LocalServer]: started the {} server on port {}, host world {}, require mods {}, pause in menus {}, shared quests {}", cClassic ? "classic" : "Plus", m_port,
+                 acSettings.HostWorld, acSettings.RequireMods, acSettings.PauseInMenus, acSettings.SharedQuestTypes);
 
     // Reads the server's output for as long as it runs: it would stop when the pipe fills up. Its stdin stays open
     // here (inWrite is never closed), so that it doesn't see the end of its input.

@@ -243,6 +243,12 @@ interface SkyrimTogether {
     callback: SkyrimTogetherTypes.QuestUpdatedCallback,
   ): void;
 
+  /** The party leader fast travelled; place is empty when the game had no name for it. */
+  on(event: 'partyTravel', callback: (leader: string, place: string) => void): void;
+
+  /** Shared quests differ from another party member's: the first few named, and how many more. */
+  on(event: 'questDesync', callback: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
+
   /** Remove listener from when the application is first initialized. */
   off(event: 'init', callback?: SkyrimTogetherTypes.InitCallback): void;
 
@@ -388,6 +394,10 @@ interface SkyrimTogether {
     callback?: SkyrimTogetherTypes.QuestUpdatedCallback,
   ): void;
 
+  off(event: 'partyTravel', callback?: (leader: string, place: string) => void): void;
+
+  off(event: 'questDesync', callback?: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
+
   /**
    * Connect to server at given address and port.
    *
@@ -406,6 +416,7 @@ interface SkyrimTogether {
    * @param pvp Whether players can hurt each other.
    * @param pauseInMenus Whether the world pauses while every player is in a menu.
    * @param classic Whether to run the official-protocol server instead, which the regular Skyrim Together can join.
+   * @param sharedQuestTypes Comma separated quest categories shared with the party (Gameplay:sSharedQuestTypes).
    */
   hostServer(
     password: string,
@@ -414,6 +425,7 @@ interface SkyrimTogether {
     pvp: boolean,
     pauseInMenus: boolean,
     classic: boolean,
+    sharedQuestTypes: string,
   ): void;
 
   /**
@@ -451,6 +463,11 @@ interface SkyrimTogether {
    * Answer a host world server's offer: join the host's world, or keep this one and leave.
    */
   answerHostWorld(join: boolean): void;
+
+  /**
+   * A party member's answer to the leader's fast travel (the partyTravel event): yes moves them next to the leader.
+   */
+  answerPartyTravel(travel: boolean): void;
 
   /**
    * Disconnect from server or cancel connection.

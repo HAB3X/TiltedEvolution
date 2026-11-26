@@ -20,6 +20,7 @@ import { Sound, SoundService } from '../../services/sound.service';
 import { StoreService } from '../../services/store.service';
 import { UiRepository } from '../../store/ui.repository';
 import { decodeJoinCode } from '../../utils/join-code';
+import { DEFAULT_SHARED_QUEST_TYPES, parseSharedQuestTypes, QUEST_TYPES } from '../../models/shared-quests';
 
 @Component({
   selector: 'app-connect',
@@ -45,6 +46,9 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
   public pauseInMenus = false;
   /** Hosting for the regular Skyrim Together: the Plus-only options are off */
   public classic = false;
+  /** The quest categories the party shares, names the server knows (Gameplay:sSharedQuestTypes) */
+  public sharedQuestTypes = new Set<string>(DEFAULT_SHARED_QUEST_TYPES);
+  public readonly questTypes = QUEST_TYPES;
 
   /** One click setups for the host form */
   public readonly presets = {
@@ -136,7 +140,15 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
     this.password = this.storeService.get('last_connected_password', '');
     this.savePassword = this.password !== '';
     this.hostPassword = this.storeService.get('host_password', '');
-    Object.assign(this, this.client.savedHostOptions());
+    const saved = this.client.savedHostOptions();
+    Object.assign(this, { ...saved, sharedQuestTypes: new Set(parseSharedQuestTypes(saved.sharedQuestTypes)) });
+  }
+
+  public toggleQuestType(type: string): void {
+    this.sound.play(Sound.Ok);
+    if (!this.sharedQuestTypes.delete(type)) {
+      this.sharedQuestTypes.add(type);
+    }
   }
 
   public searchLan(): void {
@@ -219,6 +231,8 @@ export class ConnectComponent implements OnInit, OnDestroy, AfterViewInit {
       pvp: this.pvp,
       pauseInMenus: this.pauseInMenus,
       classic: this.classic,
+      // In the order the server lists them, so the setting reads the same every time
+      sharedQuestTypes: QUEST_TYPES.filter(type => this.sharedQuestTypes.has(type)).join(','),
     });
   }
 

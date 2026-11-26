@@ -69,7 +69,20 @@
         "PAUSE": "Le monde se met en pause tant que tous les joueurs sont dans un menu, comme l'inventaire ou la carte.",
         "REQUIRE_MODS_TITLE": "Mes amis ont besoin de mes mods",
         "MODS_REQUIRED": "Mods requis pour vos amis : {{count}}",
-        "MODS_REQUIRED_NONE": "Vous n'avez aucun mod en dehors des fichiers du jeu, vos amis n'en ont donc besoin d'aucun."
+        "MODS_REQUIRED_NONE": "Vous n'avez aucun mod en dehors des fichiers du jeu, vos amis n'en ont donc besoin d'aucun.",
+        "QUESTS_TITLE": "Quêtes partagées",
+        "QUESTS": "La progression des types de quête choisis est partagée avec tout le groupe.",
+        "QUEST_TYPE_Main": "Quête principale",
+        "QUEST_TYPE_MagesGuild": "Collège de Fortdhiver",
+        "QUEST_TYPE_ThievesGuild": "Guilde des voleurs",
+        "QUEST_TYPE_DarkBrotherhood": "Confrérie noire",
+        "QUEST_TYPE_Companions": "Compagnons",
+        "QUEST_TYPE_Misc": "Divers",
+        "QUEST_TYPE_Daedric": "Daedra",
+        "QUEST_TYPE_Side": "Quêtes secondaires",
+        "QUEST_TYPE_CivilWar": "Guerre civile",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Parties sur votre réseau",
@@ -257,6 +270,17 @@
       "ALREADY_IN_GROUP": "Vous êtes déjà dans un groupe. Pour rejoindre un autre groupe, veuillez quitter votre groupe actuel.",
       "KICK_NO_PARTY_LEADER": "Vous ne pouvez pas exclure les autres membres car vous n'êtes pas chef du groupe.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Vous ne pouvez pas faire d'un autre membre le chef, car vous n'êtes pas chef du groupe. "
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Voyager avec {{leader}} jusqu'à {{place}} ?",
+      "QUESTION_NO_PLACE": "{{leader}} a fait un voyage rapide. Le suivre ?",
+      "YES": "Oui",
+      "NO": "Non"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Ta progression des quêtes diffère de celle de ton chef de groupe {{name}} : {{quests}}.",
+      "WITH_MEMBER": "La progression des quêtes de {{name}} diffère de la tienne : {{quests}}.",
+      "MORE": "{{quests}} et {{count}} autres"
     },
     "ERROR": {
       "ERRORS": {

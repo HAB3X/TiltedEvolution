@@ -69,7 +69,20 @@
         "PAUSE": "Świat zatrzymuje się, gdy wszyscy gracze są w menu, np. w ekwipunku lub na mapie.",
         "REQUIRE_MODS_TITLE": "Znajomi potrzebują moich modów",
         "MODS_REQUIRED": "Mody potrzebne znajomym: {{count}}",
-        "MODS_REQUIRED_NONE": "Nie masz modów poza plikami samej gry, więc znajomi nie potrzebują żadnych."
+        "MODS_REQUIRED_NONE": "Nie masz modów poza plikami samej gry, więc znajomi nie potrzebują żadnych.",
+        "QUESTS_TITLE": "Wspólne zadania",
+        "QUESTS": "Postęp w wybranych rodzajach zadań jest wspólny dla całej drużyny.",
+        "QUEST_TYPE_Main": "Główny wątek",
+        "QUEST_TYPE_MagesGuild": "Kolegium Zimowej Twierdzy",
+        "QUEST_TYPE_ThievesGuild": "Gildia Złodziei",
+        "QUEST_TYPE_DarkBrotherhood": "Mroczne Bractwo",
+        "QUEST_TYPE_Companions": "Towarzysze",
+        "QUEST_TYPE_Misc": "Różne",
+        "QUEST_TYPE_Daedric": "Daedryczne",
+        "QUEST_TYPE_Side": "Zadania poboczne",
+        "QUEST_TYPE_CivilWar": "Wojna domowa",
+        "QUEST_TYPE_Dawnguard": "Straż Świtu",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Gry w twojej sieci",
@@ -262,6 +275,17 @@
       "ALREADY_IN_GROUP": "Jesteś już w grupie, by dołączyć do innej grupy wyjdź z grupy w której jesteś teraz.",
       "KICK_NO_PARTY_LEADER": "Nie możesz Wyrzucić innych graczy z grupy ponieważ nie jesteś liderem grupy.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Nie możesz sprawić by inny gracz w grupie stał się liderem, nie będąc samemu liderem."
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Podróżować z {{leader}} do: {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} użył szybkiej podróży. Podróżować razem?",
+      "YES": "Tak",
+      "NO": "Nie"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Twój postęp w zadaniach różni się od postępu lidera drużyny {{name}}: {{quests}}.",
+      "WITH_MEMBER": "Postęp gracza {{name}} w zadaniach różni się od twojego: {{quests}}.",
+      "MORE": "{{quests}} i {{count}} więcej"
     },
     "ERROR": {
       "ERRORS": {

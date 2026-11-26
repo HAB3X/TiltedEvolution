@@ -69,7 +69,20 @@
         "PAUSE": "所有玩家都在菜单（如物品栏或地图）中时，世界会暂停。",
         "REQUIRE_MODS_TITLE": "好友需要我的模组",
         "MODS_REQUIRED": "好友需要的模组：{{count}}",
-        "MODS_REQUIRED_NONE": "除游戏自带文件外你没有其他模组，因此好友无需任何模组。"
+        "MODS_REQUIRED_NONE": "除游戏自带文件外你没有其他模组，因此好友无需任何模组。",
+        "QUESTS_TITLE": "共享任务",
+        "QUESTS": "所选类型任务的进度会与队伍中的所有人共享。",
+        "QUEST_TYPE_Main": "主线任务",
+        "QUEST_TYPE_MagesGuild": "冬堡学院",
+        "QUEST_TYPE_ThievesGuild": "盗贼公会",
+        "QUEST_TYPE_DarkBrotherhood": "黑暗兄弟会",
+        "QUEST_TYPE_Companions": "同伴会",
+        "QUEST_TYPE_Misc": "杂项",
+        "QUEST_TYPE_Daedric": "魔神",
+        "QUEST_TYPE_Side": "支线任务",
+        "QUEST_TYPE_CivilWar": "内战",
+        "QUEST_TYPE_Dawnguard": "黎明守卫",
+        "QUEST_TYPE_Dragonborn": "龙裔"
       },
       "LAN": {
         "TITLE": "你网络中的游戏",
@@ -253,6 +266,17 @@
       "ALREADY_IN_GROUP": "您已在一个团队中。要加入其他团队，请离开现有团队。",
       "KICK_NO_PARTY_LEADER": "您不是队长，无法踢出其他人。",
       "MAKE_LEADER_NO_PARTY_LEADER": "您不是队长，无法将队长转移至其他人。"
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "与 {{leader}} 一起前往{{place}}？",
+      "QUESTION_NO_PLACE": "{{leader}} 已快速旅行。要一起前往吗？",
+      "YES": "是",
+      "NO": "否"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "你的任务进度与队长 {{name}} 不同：{{quests}}。",
+      "WITH_MEMBER": "{{name}} 的任务进度与你不同：{{quests}}。",
+      "MORE": "{{quests}} 等另外 {{count}} 个"
     },
     "ERROR": {
       "ERRORS": {

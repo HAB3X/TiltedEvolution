@@ -68,7 +68,20 @@
         "PAUSE": "모든 플레이어가 인벤토리나 지도 같은 메뉴에 있는 동안 세계가 일시정지됩니다.",
         "REQUIRE_MODS_TITLE": "친구에게 내 모드 필요",
         "MODS_REQUIRED": "친구에게 필요한 모드: {{count}}",
-        "MODS_REQUIRED_NONE": "게임 기본 파일 외에 모드가 없으므로 친구에게 필요한 모드가 없습니다."
+        "MODS_REQUIRED_NONE": "게임 기본 파일 외에 모드가 없으므로 친구에게 필요한 모드가 없습니다.",
+        "QUESTS_TITLE": "공유 퀘스트",
+        "QUESTS": "선택한 종류의 퀘스트 진행 상황을 파티원 모두와 공유합니다.",
+        "QUEST_TYPE_Main": "메인 퀘스트",
+        "QUEST_TYPE_MagesGuild": "윈터홀드 대학",
+        "QUEST_TYPE_ThievesGuild": "도적 길드",
+        "QUEST_TYPE_DarkBrotherhood": "암흑 형제단",
+        "QUEST_TYPE_Companions": "동료단",
+        "QUEST_TYPE_Misc": "기타",
+        "QUEST_TYPE_Daedric": "데이드라",
+        "QUEST_TYPE_Side": "사이드 퀘스트",
+        "QUEST_TYPE_CivilWar": "내전",
+        "QUEST_TYPE_Dawnguard": "던가드",
+        "QUEST_TYPE_Dragonborn": "드래곤본"
       },
       "LAN": {
         "TITLE": "내 네트워크의 게임",
@@ -258,6 +271,17 @@
       "ALREADY_IN_GROUP": "귀하는 이미 그룹에 속해 있습니다. 다른 그룹에 참가하려면 현재 그룹을 탈퇴하세요.",
       "KICK_NO_PARTY_LEADER": "귀하는 파티 리더가 아니므로 다른 멤버를 추방할 수 없습니다.",
       "MAKE_LEADER_NO_PARTY_LEADER": "귀하는 파티 리더가 아니므로 다른 멤버를 리더로 임명할 수 없습니다."
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "{{leader}}님과 함께 {{place}}(으)로 이동할까요?",
+      "QUESTION_NO_PLACE": "{{leader}}님이 빠른 이동을 했습니다. 함께 이동할까요?",
+      "YES": "예",
+      "NO": "아니요"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "퀘스트 진행 상황이 파티장 {{name}}님과 다릅니다: {{quests}}.",
+      "WITH_MEMBER": "{{name}}님의 퀘스트 진행 상황이 당신과 다릅니다: {{quests}}.",
+      "MORE": "{{quests}} 외 {{count}}개"
     },
     "ERROR": {
       "ERRORS": {

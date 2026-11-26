@@ -97,6 +97,7 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     pvp: boolean,
     pauseInMenus: boolean,
     classic: boolean,
+    sharedQuestTypes: string,
   ): void {
     this.connect('127.0.0.1', 10578, password);
     setTimeout(() => this.emit('hostAddress', '203.0.113.7:10578'), 1000);
@@ -400,6 +401,18 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
 
   mockQuestUpdate() {
     this.emit('questUpdated');
+  }
+
+  mockPartyTravel() {
+    this.emit('partyTravel', 'Lydia', 'Riverwood');
+  }
+
+  mockQuestDesync() {
+    this.emit('questDesync', 'Lydia', true, 'Bleak Falls Barrow, The Golden Claw, Dragon Rising, The Way of the Voice, Diplomatic Immunity', 3);
+  }
+
+  answerPartyTravel(travel: boolean): void {
+    console.log(`travel together: ${travel ? 'yes' : 'no'}`);
   }
 
   inviteToPlayerMockParty(playerId: number) {

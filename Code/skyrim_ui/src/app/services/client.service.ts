@@ -9,6 +9,7 @@ import { ChatService } from './chat.service';
 import { StoreService } from './store.service';
 import { ErrorEvents, ErrorService } from './error.service';
 import { LoadingService } from './loading.service';
+import { DEFAULT_SHARED_QUEST_TYPES } from '../models/shared-quests';
 
 /** Client game service. */
 /** What joining a host's world would change. */
@@ -40,6 +41,8 @@ export interface HostOptions {
   pauseInMenus: boolean;
   /** An official-protocol server that the regular Skyrim Together can join; the Plus-only options are off */
   classic: boolean;
+  /** Comma separated quest categories the party shares (Gameplay:sSharedQuestTypes) */
+  sharedQuestTypes: string;
 }
 
 /** A server on the local network, as it answered a search. */
@@ -109,6 +112,12 @@ export class ClientService implements OnDestroy {
   /** Local quest started or updated while not in a party. */
   public questUpdatedChange = new Subject<void>();
 
+  /** The party leader fast travelled, see answerPartyTravel. */
+  public partyTravelChange = new Subject<{ leader: string; place: string }>();
+
+  /** Shared quests differ from another party member's (the leader's, or a member's for the leader). */
+  public questDesyncChange = new Subject<{ otherPlayer: string; otherIsLeader: boolean; quests: string; more: number }>();
+
   /** Disconnect player to server change. */
   public playerDisconnectedChange = new Subject<Player>();
 
@@ -131,6 +140,11 @@ export class ClientService implements OnDestroy {
 
   /** A host world server's offer, waiting for the joiner's answer; null when there's none. */
   public hostWorldOfferChange = new BehaviorSubject<HostWorldOffer | null>(null);
+
+  /** Whether to travel with the party leader, after partyTravelChange. */
+  public answerPartyTravel(travel: boolean): void {
+    skyrimtogether.answerPartyTravel(travel);
+  }
 
   /** The joiner's answer to the host world offer. */
   public answerHostWorld(join: boolean): void {
@@ -252,6 +266,8 @@ export class ClientService implements OnDestroy {
       this.onPartyInviteReceived.bind(this),
     );
     skyrimtogether.on('questUpdated', this.onQuestUpdated.bind(this));
+    skyrimtogether.on('partyTravel', this.onPartyTravel.bind(this));
+    skyrimtogether.on('questDesync', this.onQuestDesync.bind(this));
   }
 
   /**
@@ -291,6 +307,8 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('partyLeft');
     skyrimtogether.off('partyInviteReceived');
     skyrimtogether.off('questUpdated');
+    skyrimtogether.off('partyTravel');
+    skyrimtogether.off('questDesync');
   }
 
   /**
@@ -339,6 +357,7 @@ export class ClientService implements OnDestroy {
       pvp: this.storeService.getBool('host_pvp', false),
       pauseInMenus: this.storeService.getBool('host_pause_in_menus', false),
       classic: this.storeService.getBool('host_classic', false),
+      sharedQuestTypes: this.storeService.get('host_quest_types', DEFAULT_SHARED_QUEST_TYPES.join(',')),
     };
   }
 
@@ -350,6 +369,7 @@ export class ClientService implements OnDestroy {
     this.storeService.set('host_pvp', String(options.pvp));
     this.storeService.set('host_pause_in_menus', String(options.pauseInMenus));
     this.storeService.set('host_classic', String(options.classic));
+    this.storeService.set('host_quest_types', options.sharedQuestTypes);
     skyrimtogether.hostServer(
       password,
       options.hostWorld,
@@ -357,6 +377,7 @@ export class ClientService implements OnDestroy {
       options.pvp,
       options.pauseInMenus,
       options.classic,
+      options.sharedQuestTypes,
     );
     this.hostingChange.next(true);
     this.isConnectionInProgressChange.next(true);
@@ -883,6 +904,18 @@ export class ClientService implements OnDestroy {
   private onQuestUpdated() {
     this.zone.run(() => {
       this.questUpdatedChange.next();
+    });
+  }
+
+  private onPartyTravel(leader: string, place: string) {
+    this.zone.run(() => {
+      this.partyTravelChange.next({ leader, place });
+    });
+  }
+
+  private onQuestDesync(otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) {
+    this.zone.run(() => {
+      this.questDesyncChange.next({ otherPlayer, otherIsLeader, quests, more });
     });
   }
 }

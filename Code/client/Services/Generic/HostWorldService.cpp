@@ -30,14 +30,6 @@ constexpr char kOwnWorldSave[] = "BeforeHostWorld";
 // How long to wait for the player to be free to save (not in combat or a menu)
 constexpr std::chrono::seconds kOwnWorldSaveTimeout{60};
 
-// The quests a joiner takes over: the ones the party syncs, without the background (None) and Miscellaneous ones,
-// which the server only relays with Gameplay:bEnableMiscQuestSync, and which run per player for things like radiant
-// favours and the game's own systems
-bool IsHostWorldQuest(TESQuest* apQuest) noexcept
-{
-    return apQuest->type != TESQuest::Type::None && apQuest->type != TESQuest::Type::Miscellaneous && !QuestService::IsNonSyncableQuest(apQuest);
-}
-
 bool IsCompleted(const TESQuest* apQuest) noexcept
 {
     return (apQuest->flags & TESQuest::Flags::Completed) != 0;
@@ -128,17 +120,8 @@ HostWorldState HostWorldService::CollectWorld() const noexcept
     const auto& modSystem = m_world.GetModSystem();
     HostWorldState state;
 
-    for (TESQuest* pQuest : ModManager::Get()->quests)
-    {
-        GameId id;
-        if (!IsHostWorldQuest(pQuest) || !modSystem.GetServerModId(pQuest->formID, id))
-            continue;
-
-        if (IsCompleted(pQuest))
-            state.CompletedQuests.Entries.push_back({id, pQuest->currentStage});
-        else if (!pQuest->IsStopped())
-            state.RunningQuests.Entries.push_back({id, pQuest->currentStage});
-    }
+    // The quests a joiner takes over
+    QuestService::CollectSharedQuests(state.RunningQuests, state.CompletedQuests);
 
     for (BGSLocation* pLocation : ModManager::Get()->locations)
     {
@@ -280,7 +263,7 @@ uint32_t HostWorldService::ApplyQuests(const HostWorldState& acState, Mode aMode
     ScopedQuestOverride _;
     for (TESQuest* pQuest : ModManager::Get()->quests)
     {
-        if (IsHostWorldQuest(pQuest) && !pQuest->IsStopped() && !IsCompleted(pQuest) && !hostQuests.contains(pQuest->formID))
+        if (QuestService::IsSharedQuest(pQuest) && !pQuest->IsStopped() && !IsCompleted(pQuest) && !hostQuests.contains(pQuest->formID))
         {
             ++changed;
             if (aMode == Mode::Count)

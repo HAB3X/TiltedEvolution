@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SharedQuests.h>
+
 using TiltedPhoques::Buffer;
 
 struct ServerSettings
@@ -22,4 +24,6 @@ struct ServerSettings
     bool VoipEnabled{};
     // Joiners take over the party leader's quests, cleared locations and unique NPC deaths, and start next to them
     bool HostWorld{};
+    // The quest categories the party shares, a SharedQuests mask (Gameplay:sSharedQuestTypes)
+    uint32_t SharedQuestTypes{SharedQuests::kDefault};
 };

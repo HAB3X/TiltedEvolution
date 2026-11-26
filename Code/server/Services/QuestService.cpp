@@ -6,18 +6,45 @@
 
 #include <Messages/RequestQuestUpdate.h>
 #include <Messages/NotifyQuestUpdate.h>
+#include <Messages/NotifyQuestDesync.h>
+#include <Messages/RequestQuestStages.h>
+
+#include <QuestDesync.h>
 
 #include <Setting.h>
+#include <SharedQuests.h>
 namespace
 {
-Console::Setting bEnableMiscQuestSync{"Gameplay:bEnableMiscQuestSync", "(Experimental) Syncs miscellaneous quests when possible", false};
+Console::StringSetting sSharedQuestTypes{"Gameplay:sSharedQuestTypes",
+                                         "Quest categories shared with the party, comma separated: Main, MagesGuild, ThievesGuild, DarkBrotherhood, Companions, Misc, "
+                                         "Daedric, Side, CivilWar, Dawnguard, Dragonborn (Misc also covers quests with no category)",
+                                         SharedQuests::kDefaultText};
+// The older switch for Misc, kept so servers that turned it on keep sharing them
+Console::Setting bEnableMiscQuestSync{"Gameplay:bEnableMiscQuestSync", "(Experimental) Syncs miscellaneous quests when possible, as if Misc were in sSharedQuestTypes", false};
 
+}
+
+uint32_t QuestService::GetSharedQuestTypes() noexcept
+{
+    // Parsed again only when the setting changes, so a bad name is reported once
+    static std::string s_parsedText;
+    static uint32_t s_mask = SharedQuests::kDefault;
+    if (s_parsedText != sSharedQuestTypes.value())
+    {
+        s_parsedText = sSharedQuestTypes.value();
+        std::vector<std::string> unknown;
+        s_mask = SharedQuests::Parse(s_parsedText, unknown);
+        for (const std::string& cName : unknown)
+            spdlog::warn("Gameplay:sSharedQuestTypes: unknown quest category '{}', ignored", cName);
+    }
+    return s_mask | (bEnableMiscQuestSync ? SharedQuests::Bit(SharedQuests::kMisc) : 0u);
 }
 
 QuestService::QuestService(World& aWorld, entt::dispatcher& aDispatcher)
     : m_world(aWorld)
 {
     m_questUpdateConnection = aDispatcher.sink<PacketEvent<RequestQuestUpdate>>().connect<&QuestService::OnQuestChanges>(this);
+    m_questStagesConnection = aDispatcher.sink<PacketEvent<RequestQuestStages>>().connect<&QuestService::OnQuestStages>(this);
 }
 
 void QuestService::OnQuestChanges(const PacketEvent<RequestQuestUpdate>& acMessage) noexcept
@@ -37,12 +64,11 @@ void QuestService::OnQuestChanges(const PacketEvent<RequestQuestUpdate>& acMessa
     notify.Status = message.Status;
     notify.ClientQuestType = message.ClientQuestType;
 
-    if (notify.ClientQuestType == 0 ||  notify.ClientQuestType == 6) // Types None or Miscellaneous. Hard-coded to avoid client header file.
+    if (!SharedQuests::IsShared(GetSharedQuestTypes(), message.ClientQuestType))
     {
-        if (!bEnableMiscQuestSync)
-            return;
-        spdlog::debug("{}: syncing type none/misc quest to party, gameId {:X} questStage {} questStatus {} questType {}",
-                     __FUNCTION__, notify.Id.LogFormat(), notify.Stage, notify.Status, notify.ClientQuestType);
+        spdlog::debug("{}: quest category {} isn't shared, not relaying gameId {:X} questStage {} questStatus {}", __FUNCTION__, message.ClientQuestType,
+                      notify.Id.LogFormat(), notify.Stage, notify.Status);
+        return;
     }
 
     if (message.Status == RequestQuestUpdate::Started || message.Status == RequestQuestUpdate::StageUpdate)
@@ -111,4 +137,75 @@ void QuestService::OnQuestChanges(const PacketEvent<RequestQuestUpdate>& acMessa
     }
 
     GameServer::Get()->SendToParty(notify, partyComponent, acMessage.GetSender());
+}
+
+void QuestService::OnQuestStages(const PacketEvent<RequestQuestStages>& acMessage) noexcept
+{
+    Player* pPlayer = acMessage.pPlayer;
+    pPlayer->GetQuestLogComponent().ReportedStages = acMessage.Packet.Stages;
+
+    PartyService& partyService = m_world.GetPartyService();
+    const PartyService::Party* pParty = partyService.GetPlayerParty(pPlayer);
+    if (!pParty)
+        return;
+
+    Player* pLeader = m_world.GetPlayerManager().GetById(pParty->LeaderPlayerId);
+    if (!pLeader)
+        return;
+
+    if (pLeader != pPlayer)
+    {
+        CheckDesync(*pLeader, *pPlayer);
+        return;
+    }
+
+    for (Player* pMember : pParty->Members)
+    {
+        if (pMember != pLeader)
+            CheckDesync(*pLeader, *pMember);
+    }
+}
+
+void QuestService::CheckDesync(const Player& acLeader, Player& aMember) const noexcept
+{
+    const auto& cLeaderLog = acLeader.GetQuestLogComponent().ReportedStages;
+    auto& memberLog = aMember.GetQuestLogComponent();
+    if (!cLeaderLog || !memberLog.ReportedStages)
+        return;
+
+    // A new leader starts a new comparison
+    if (memberLog.DesyncLeaderId != acLeader.GetId())
+    {
+        memberLog.DesyncLeaderId = acLeader.GetId();
+        memberLog.LastDifferences.clear();
+        memberLog.NotifiedDifferences.clear();
+    }
+
+    Vector<GameId> differences = QuestDesync::Differences(*cLeaderLog, *memberLog.ReportedStages);
+    Vector<GameId> lasting = QuestDesync::InBoth(memberLog.LastDifferences, differences);
+    memberLog.LastDifferences = std::move(differences);
+
+    // Only when what differs changes, so the same desync is reported once
+    if (lasting == memberLog.NotifiedDifferences)
+        return;
+    memberLog.NotifiedDifferences = lasting;
+    if (lasting.empty())
+    {
+        spdlog::info("[QuestDesync]: {}'s quests match their leader {}'s again", aMember.GetUsername().c_str(), acLeader.GetUsername().c_str());
+        return;
+    }
+
+    spdlog::info("[QuestDesync]: {} shared quests differ between {} and their leader {}", lasting.size(), aMember.GetUsername().c_str(), acLeader.GetUsername().c_str());
+
+    NotifyQuestDesync toMember;
+    toMember.OtherPlayer = acLeader.GetUsername();
+    toMember.OtherIsLeader = true;
+    toMember.Quests = lasting;
+    aMember.Send(toMember);
+
+    NotifyQuestDesync toLeader;
+    toLeader.OtherPlayer = aMember.GetUsername();
+    toLeader.OtherIsLeader = false;
+    toLeader.Quests = std::move(lasting);
+    acLeader.Send(toLeader);
 }

@@ -14,10 +14,12 @@ struct HostSettings
     bool RequireMods{};
     // Players can hurt each other (Gameplay:bEnablePvp)
     bool Pvp{};
+    // The quest categories the party shares, SharedQuests names (Gameplay:sSharedQuestTypes)
+    std::string SharedQuestTypes;
     // The world pauses while every player is in a menu (Gameplay:bPauseWhenAllInMenus)
     bool PauseInMenus{};
     // Runs the official-protocol server in the classic folder instead, so players with the regular Skyrim Together
-    // v1.8.4 can join; the Plus-only settings above (host world, required mods, pause) don't exist there
+    // v1.8.4 can join; the Plus-only settings above (host world, required mods, shared quests, pause) don't exist there
     bool Classic{};
 };
 

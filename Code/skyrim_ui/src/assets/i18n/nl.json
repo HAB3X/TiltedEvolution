@@ -69,7 +69,20 @@
         "PAUSE": "De wereld pauzeert zolang alle spelers in een menu zitten, zoals de inventaris of de kaart.",
         "REQUIRE_MODS_TITLE": "Vrienden hebben mijn mods nodig",
         "MODS_REQUIRED": "Mods die vrienden nodig hebben: {{count}}",
-        "MODS_REQUIRED_NONE": "Je hebt geen mods naast die van het spel zelf, dus vrienden hebben er geen nodig."
+        "MODS_REQUIRED_NONE": "Je hebt geen mods naast die van het spel zelf, dus vrienden hebben er geen nodig.",
+        "QUESTS_TITLE": "Gedeelde quests",
+        "QUESTS": "De voortgang in de gekozen soorten quests wordt met de hele groep gedeeld.",
+        "QUEST_TYPE_Main": "Hoofdquest",
+        "QUEST_TYPE_MagesGuild": "College van Winterhold",
+        "QUEST_TYPE_ThievesGuild": "Dievengilde",
+        "QUEST_TYPE_DarkBrotherhood": "Duistere Broederschap",
+        "QUEST_TYPE_Companions": "Gezellen",
+        "QUEST_TYPE_Misc": "Overig",
+        "QUEST_TYPE_Daedric": "Daedrisch",
+        "QUEST_TYPE_Side": "Zijquests",
+        "QUEST_TYPE_CivilWar": "Burgeroorlog",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Spellen in je netwerk",
@@ -236,6 +249,17 @@
       "ALREADY_IN_GROUP": "Je bent nu in een groep. Verlaat deze groep om aan een andere groep deel te nemen.",
       "KICK_NO_PARTY_LEADER": "Je kan geen spelers uit de groep gooien omdat je niet de groepsleider bent.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Je kan geen lid de leider maken omdat jij niet de groepsleider bent."
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Met {{leader}} naar {{place}} reizen?",
+      "QUESTION_NO_PLACE": "{{leader}} is snel gereisd. Meereizen?",
+      "YES": "Ja",
+      "NO": "Nee"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Je questvoortgang verschilt van die van je groepsleider {{name}}: {{quests}}.",
+      "WITH_MEMBER": "De questvoortgang van {{name}} verschilt van die van jou: {{quests}}.",
+      "MORE": "{{quests}} en nog {{count}}"
     },
     "ERROR": {
       "ERRORS": {

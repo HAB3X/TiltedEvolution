@@ -99,6 +99,27 @@
       </label>
     </div>
 
+    @if (!classic) {
+      <div class="quest-types">
+        <div>
+          <h3 class="section-title">{{ 'COMPONENT.CONNECT.HOST.QUESTS_TITLE' | transloco }}</h3>
+          <p class="muted quest-types-hint">{{ 'COMPONENT.CONNECT.HOST.QUESTS' | transloco }}</p>
+        </div>
+        <div class="quest-type-list">
+          @for (type of questTypes; track type) {
+            <button
+              class="quest-type"
+              [class.chosen]="sharedQuestTypes.has(type)"
+              [attr.aria-pressed]="sharedQuestTypes.has(type)"
+              (click)="toggleQuestType(type)"
+            >
+              {{ 'COMPONENT.CONNECT.HOST.QUEST_TYPE_' + type | transloco }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+
     <div class="actions">
       <button class="btn btn-primary" [disabled]="connecting" (click)="host()">
         {{ 'COMPONENT.CONNECT.HOST.START' | transloco }}

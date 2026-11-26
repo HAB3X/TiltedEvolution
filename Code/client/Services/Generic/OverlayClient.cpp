@@ -11,6 +11,7 @@
 #include <Services/PartySaves.h>
 #include <Services/NameTagService.h>
 #include <Services/HostWorldService.h>
+#include <Services/TravelTogetherService.h>
 
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/TeleportRequest.h>
@@ -56,6 +57,11 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             const bool join = eventArgs->GetBool(0);
             World::Get().GetRunner().Queue([join]() { World::Get().ctx().at<HostWorldService>().Answer(join); });
         }
+        else if (eventName == "answerPartyTravel")
+        {
+            const bool travel = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([travel]() { World::Get().ctx().at<TravelTogetherService>().Answer(travel); });
+        }
         else if (eventName == "setNameTags")
         {
             const bool enabled = eventArgs->GetBool(0);
@@ -79,6 +85,7 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             settings.Pvp = eventArgs->GetBool(3);
             settings.PauseInMenus = eventArgs->GetBool(4);
             settings.Classic = eventArgs->GetBool(5);
+            settings.SharedQuestTypes = eventArgs->GetString(6).ToString();
             World::Get().GetRunner().Queue([settings]() { World::Get().ctx().at<LocalServerService>().Host(settings); });
         }
         else if (eventName == "disconnect")

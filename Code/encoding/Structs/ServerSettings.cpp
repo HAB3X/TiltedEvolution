@@ -6,7 +6,7 @@ using TiltedPhoques::Serialization;
 
 bool ServerSettings::operator==(const ServerSettings& acRhs) const noexcept
 {
-    return Difficulty == acRhs.Difficulty && GreetingsEnabled == acRhs.GreetingsEnabled && PvpEnabled == acRhs.PvpEnabled && SyncPlayerHomes == acRhs.SyncPlayerHomes && DeathSystemEnabled == acRhs.DeathSystemEnabled && AutoPartyJoin == acRhs.AutoPartyJoin && ConsoleCommandsAllowed == acRhs.ConsoleCommandsAllowed && VoipEnabled == acRhs.VoipEnabled && HostWorld == acRhs.HostWorld;
+    return Difficulty == acRhs.Difficulty && GreetingsEnabled == acRhs.GreetingsEnabled && PvpEnabled == acRhs.PvpEnabled && SyncPlayerHomes == acRhs.SyncPlayerHomes && DeathSystemEnabled == acRhs.DeathSystemEnabled && AutoPartyJoin == acRhs.AutoPartyJoin && ConsoleCommandsAllowed == acRhs.ConsoleCommandsAllowed && VoipEnabled == acRhs.VoipEnabled && HostWorld == acRhs.HostWorld && SharedQuestTypes == acRhs.SharedQuestTypes;
 }
 
 bool ServerSettings::operator!=(const ServerSettings& acRhs) const noexcept
@@ -29,6 +29,7 @@ void ServerSettings::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noe
     Serialization::WriteBool(aWriter, ConsoleCommandsAllowed);
     Serialization::WriteBool(aWriter, VoipEnabled);
     Serialization::WriteBool(aWriter, HostWorld);
+    Serialization::WriteVarInt(aWriter, SharedQuestTypes);
 }
 
 void ServerSettings::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcept
@@ -40,15 +41,17 @@ void ServerSettings::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcep
     DeathSystemEnabled = Serialization::ReadBool(aReader);
     SyncPlayerCalendar = Serialization::ReadBool(aReader);
     AutoPartyJoin = Serialization::ReadBool(aReader);
-    // On official v1.8.4: the console works, and there's no voice chat or host world
+    // On official v1.8.4: the console works, there's no voice chat or host world, and quests are shared as they always were
     if (Wire::IsOfficial184())
     {
         ConsoleCommandsAllowed = true;
         VoipEnabled = false;
         HostWorld = false;
+        SharedQuestTypes = SharedQuests::kDefault;
         return;
     }
     ConsoleCommandsAllowed = Serialization::ReadBool(aReader);
     VoipEnabled = Serialization::ReadBool(aReader);
     HostWorld = Serialization::ReadBool(aReader);
+    SharedQuestTypes = Serialization::ReadVarInt(aReader) & 0xFFFFFFFF;
 }

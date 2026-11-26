@@ -68,7 +68,20 @@
         "PAUSE": "Die Welt pausiert, solange alle Spieler in einem Menü sind, etwa Inventar oder Karte.",
         "REQUIRE_MODS_TITLE": "Freunde brauchen meine Mods",
         "MODS_REQUIRED": "Mods, die Freunde brauchen: {{count}}",
-        "MODS_REQUIRED_NONE": "Du hast keine Mods außer den Dateien des Spiels, also brauchen Freunde keine."
+        "MODS_REQUIRED_NONE": "Du hast keine Mods außer den Dateien des Spiels, also brauchen Freunde keine.",
+        "QUESTS_TITLE": "Geteilte Quests",
+        "QUESTS": "Der Fortschritt in den gewählten Questarten wird mit allen in der Gruppe geteilt.",
+        "QUEST_TYPE_Main": "Hauptquest",
+        "QUEST_TYPE_MagesGuild": "Akademie von Winterfeste",
+        "QUEST_TYPE_ThievesGuild": "Diebesgilde",
+        "QUEST_TYPE_DarkBrotherhood": "Dunkle Bruderschaft",
+        "QUEST_TYPE_Companions": "Gefährten",
+        "QUEST_TYPE_Misc": "Verschiedenes",
+        "QUEST_TYPE_Daedric": "Daedra",
+        "QUEST_TYPE_Side": "Nebenquests",
+        "QUEST_TYPE_CivilWar": "Bürgerkrieg",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Spiele in deinem Netzwerk",
@@ -262,6 +275,17 @@
       "ALREADY_IN_GROUP": "Du bist bereits in einer Gruppe. Um einer anderen Gruppe beizutreten, musst du zuerst deine aktuelle Gruppe verlassen.",
       "KICK_NO_PARTY_LEADER": "Wenn du nicht der Gruppenleiter bist, kannst du keine anderen Gruppenmitglieder rauswerfen.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Wenn du nicht der Gruppenleiter bist, kannst du niemand anderen zum Gruppenleiter machen."
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Mit {{leader}} nach {{place}} reisen?",
+      "QUESTION_NO_PLACE": "{{leader}} hat eine Schnellreise gemacht. Mitreisen?",
+      "YES": "Ja",
+      "NO": "Nein"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Dein Questfortschritt weicht von dem deines Gruppenleiters {{name}} ab: {{quests}}.",
+      "WITH_MEMBER": "Der Questfortschritt von {{name}} weicht von deinem ab: {{quests}}.",
+      "MORE": "{{quests}} und {{count}} weitere"
     },
     "ERROR": {
       "ERRORS": {

@@ -68,7 +68,20 @@
         "PAUSE": "Verden pauses mens alle spillerne er i en meny, som inventaret eller kartet.",
         "REQUIRE_MODS_TITLE": "Venner trenger modene mine",
         "MODS_REQUIRED": "Spillendringer vennene trenger: {{count}}",
-        "MODS_REQUIRED_NONE": "Du har ingen spillendringer utover spillets egne, så vennene trenger ingen."
+        "MODS_REQUIRED_NONE": "Du har ingen spillendringer utover spillets egne, så vennene trenger ingen.",
+        "QUESTS_TITLE": "Delte oppdrag",
+        "QUESTS": "Fremgangen i de valgte typene oppdrag deles med alle i gruppen.",
+        "QUEST_TYPE_Main": "Hovedoppdrag",
+        "QUEST_TYPE_MagesGuild": "Akademiet i Winterhold",
+        "QUEST_TYPE_ThievesGuild": "Tyvelauget",
+        "QUEST_TYPE_DarkBrotherhood": "Det mørke brorskapet",
+        "QUEST_TYPE_Companions": "Følgesvennene",
+        "QUEST_TYPE_Misc": "Diverse",
+        "QUEST_TYPE_Daedric": "Daedriske",
+        "QUEST_TYPE_Side": "Sideoppdrag",
+        "QUEST_TYPE_CivilWar": "Borgerkrigen",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Spill på nettverket ditt",
@@ -258,6 +271,17 @@
       "ALREADY_IN_GROUP": "Du er allerede i en gruppe. Forlat din nåverende gruppe og prøv igjen.",
       "KICK_NO_PARTY_LEADER": "Kun gruppelederen kan hive ut andre medlemmer.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Kun gruppelederen kan gjøre andre til leder."
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Reise med {{leader}} til {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} hurtigreiste. Reise med?",
+      "YES": "Ja",
+      "NO": "Nei"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Oppdragsfremgangen din er ulik den til gruppelederen {{name}}: {{quests}}.",
+      "WITH_MEMBER": "Oppdragsfremgangen til {{name}} er ulik din: {{quests}}.",
+      "MORE": "{{quests}} og {{count}} til"
     },
     "ERROR": {
       "ERRORS": {

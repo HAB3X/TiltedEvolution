@@ -63,6 +63,8 @@ enum ClientOpcode : unsigned char
     kRequestModeratePlayer,
     kRequestTimeSkip,
     kRequestPause,
+    kRequestPartyTravel,
+    kRequestQuestStages,
     kClientOpcodeMax
 };
 
@@ -130,5 +132,7 @@ enum ServerOpcode : unsigned char
     kNotifyHostWorldState,
     kNotifyTimeSkip,
     kNotifyPause,
+    kNotifyPartyTravel,
+    kNotifyQuestDesync,
     kServerOpcodeMax
 };

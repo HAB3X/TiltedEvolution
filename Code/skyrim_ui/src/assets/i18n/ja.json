@@ -68,7 +68,20 @@
         "PAUSE": "全員がインベントリやマップなどのメニューを開いている間、世界が一時停止します。",
         "REQUIRE_MODS_TITLE": "フレンドに自分のMODを要求",
         "MODS_REQUIRED": "フレンドに必要なMOD: {{count}}",
-        "MODS_REQUIRED_NONE": "ゲーム本体以外のMODがないため、フレンドに必要なMODはありません。"
+        "MODS_REQUIRED_NONE": "ゲーム本体以外のMODがないため、フレンドに必要なMODはありません。",
+        "QUESTS_TITLE": "共有するクエスト",
+        "QUESTS": "選んだ種類のクエストの進行状況をパーティー全員で共有します。",
+        "QUEST_TYPE_Main": "メインクエスト",
+        "QUEST_TYPE_MagesGuild": "ウィンターホールド大学",
+        "QUEST_TYPE_ThievesGuild": "盗賊ギルド",
+        "QUEST_TYPE_DarkBrotherhood": "闇の一党",
+        "QUEST_TYPE_Companions": "同胞団",
+        "QUEST_TYPE_Misc": "その他",
+        "QUEST_TYPE_Daedric": "デイドラ",
+        "QUEST_TYPE_Side": "サイドクエスト",
+        "QUEST_TYPE_CivilWar": "内戦",
+        "QUEST_TYPE_Dawnguard": "ドーンガード",
+        "QUEST_TYPE_Dragonborn": "ドラゴンボーン"
       },
       "LAN": {
         "TITLE": "ネットワーク上のゲーム",
@@ -258,6 +271,17 @@
       "ALREADY_IN_GROUP": "既にパーティーに入っています。 現在入っているパーティーを抜けてから他のパーティーに入りましょう。",
       "KICK_NO_PARTY_LEADER": "パーティーリーダーでない為、他のプレイヤーをキックすることは出来ません。",
       "MAKE_LEADER_NO_PARTY_LEADER": "パーティーリーダーでない為、他のプレイヤーをリーダーにすることは出来ません。"
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "{{leader}}と一緒に{{place}}へ移動しますか？",
+      "QUESTION_NO_PLACE": "{{leader}}がファストトラベルしました。一緒に移動しますか？",
+      "YES": "はい",
+      "NO": "いいえ"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "あなたのクエスト進行がパーティーリーダー{{name}}と異なります: {{quests}}。",
+      "WITH_MEMBER": "{{name}}のクエスト進行があなたと異なります: {{quests}}。",
+      "MORE": "{{quests}} 他{{count}}件"
     },
     "ERROR": {
       "ERRORS": {

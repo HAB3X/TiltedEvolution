@@ -69,7 +69,20 @@
         "PAUSE": "El mundo se pausa mientras todos los jugadores están en un menú, como el inventario o el mapa.",
         "REQUIRE_MODS_TITLE": "Mis amigos necesitan mis mods",
         "MODS_REQUIRED": "Mods que necesitan tus amigos: {{count}}",
-        "MODS_REQUIRED_NONE": "No tienes mods aparte de los del propio juego, así que tus amigos no necesitan ninguno."
+        "MODS_REQUIRED_NONE": "No tienes mods aparte de los del propio juego, así que tus amigos no necesitan ninguno.",
+        "QUESTS_TITLE": "Misiones compartidas",
+        "QUESTS": "El progreso de los tipos de misión elegidos se comparte con todo el grupo.",
+        "QUEST_TYPE_Main": "Misión principal",
+        "QUEST_TYPE_MagesGuild": "Colegio de Hibernalia",
+        "QUEST_TYPE_ThievesGuild": "Gremio de Ladrones",
+        "QUEST_TYPE_DarkBrotherhood": "Hermandad Oscura",
+        "QUEST_TYPE_Companions": "Compañeros",
+        "QUEST_TYPE_Misc": "Varios",
+        "QUEST_TYPE_Daedric": "Daédricas",
+        "QUEST_TYPE_Side": "Misiones secundarias",
+        "QUEST_TYPE_CivilWar": "Guerra civil",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Partidas en tu red",
@@ -254,6 +267,17 @@
       "ALREADY_IN_GROUP": "Ya formas parte de un grupo. Para unirte a otro grupo debes abandonar el grupo actual.",
       "KICK_NO_PARTY_LEADER": "No puedes expulsar a otros miembros ya que no eres el líder del grupo.",
       "MAKE_LEADER_NO_PARTY_LEADER": "No puedes hacer que otro miembro sea líder, ya que no eres el líder del grupo."
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "¿Viajar con {{leader}} a {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} ha viajado rápido. ¿Viajar con él?",
+      "YES": "Sí",
+      "NO": "No"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Tu progreso en las misiones difiere del de tu líder de grupo {{name}}: {{quests}}.",
+      "WITH_MEMBER": "El progreso de {{name}} en las misiones difiere del tuyo: {{quests}}.",
+      "MORE": "{{quests}} y {{count}} más"
     },
     "ERROR": {
       "ERRORS": {

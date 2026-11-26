@@ -70,7 +70,20 @@
         "PAUSE": "Världen pausas medan alla spelare är i en meny, som inventariet eller kartan.",
         "REQUIRE_MODS_TITLE": "Vänner behöver mina moddar",
         "MODS_REQUIRED": "Mods som vännerna behöver: {{count}}",
-        "MODS_REQUIRED_NONE": "Du har inga mods utöver spelets egna, så vännerna behöver inga."
+        "MODS_REQUIRED_NONE": "Du har inga mods utöver spelets egna, så vännerna behöver inga.",
+        "QUESTS_TITLE": "Delade uppdrag",
+        "QUESTS": "Framstegen i de valda typerna av uppdrag delas med alla i gruppen.",
+        "QUEST_TYPE_Main": "Huvuduppdrag",
+        "QUEST_TYPE_MagesGuild": "Akademin i Winterhold",
+        "QUEST_TYPE_ThievesGuild": "Tjuvgillet",
+        "QUEST_TYPE_DarkBrotherhood": "Mörka brödraskapet",
+        "QUEST_TYPE_Companions": "Följeslagarna",
+        "QUEST_TYPE_Misc": "Övrigt",
+        "QUEST_TYPE_Daedric": "Daedriska",
+        "QUEST_TYPE_Side": "Sidouppdrag",
+        "QUEST_TYPE_CivilWar": "Inbördeskriget",
+        "QUEST_TYPE_Dawnguard": "Dawnguard",
+        "QUEST_TYPE_Dragonborn": "Dragonborn"
       },
       "LAN": {
         "TITLE": "Spel i ditt nätverk",
@@ -265,6 +278,17 @@
       "ALREADY_IN_GROUP": "Du är redan i ett party. För att gå med i ett annat party, lämna ditt nuvarande party.",
       "KICK_NO_PARTY_LEADER": "Du kan inte slänga ut andra medlemmar då du inte är partyledaren.",
       "MAKE_LEADER_NO_PARTY_LEADER": "Du kan inte göra en annan medlem till ledare då du inte är partyledaren."
+    },
+    "TRAVEL_TOGETHER": {
+      "QUESTION": "Resa med {{leader}} till {{place}}?",
+      "QUESTION_NO_PLACE": "{{leader}} snabbreste. Resa med?",
+      "YES": "Ja",
+      "NO": "Nej"
+    },
+    "QUEST_DESYNC": {
+      "WITH_LEADER": "Dina uppdragsframsteg skiljer sig från gruppledaren {{name}}s: {{quests}}.",
+      "WITH_MEMBER": "{{name}}s uppdragsframsteg skiljer sig från dina: {{quests}}.",
+      "MORE": "{{quests}} och {{count}} till"
     },
     "ERROR": {
       "ERRORS": {

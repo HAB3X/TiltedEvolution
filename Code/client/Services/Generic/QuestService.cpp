@@ -22,6 +22,7 @@
 
 #include <Messages/RequestQuestUpdate.h>
 #include <Messages/NotifyQuestUpdate.h>
+#include <Structs/QuestLog.h>
 
 static TESQuest* FindQuestByNameId(const String& name)
 {
@@ -659,6 +660,33 @@ bool QuestService::IsNonSyncableQuest(TESQuest* apQuest)
     // known exceptions that should be excluded that are in the table.
     return    apQuest->stages.Empty() 
            || std::find(kNonSyncableQuestIds.begin(), kNonSyncableQuestIds.end(), apQuest->formID) != kNonSyncableQuestIds.end();
+}
+
+static_assert(SharedQuests::kMisc == static_cast<uint8_t>(TESQuest::Type::Miscellaneous) && SharedQuests::kDragonborn == static_cast<uint8_t>(TESQuest::Type::DLC02_Dragonborn),
+              "SharedQuests mirrors TESQuest::Type");
+
+// Never the background (None) quests, even when Miscellaneous is shared: they include the game's own systems that run
+// per player
+bool QuestService::IsSharedQuest(TESQuest* apQuest) noexcept
+{
+    const uint8_t cType = static_cast<uint8_t>(apQuest->type);
+    return apQuest->type != TESQuest::Type::None && SharedQuests::IsShared(World::Get().GetServerSettings().SharedQuestTypes, cType) && !IsNonSyncableQuest(apQuest);
+}
+
+void QuestService::CollectSharedQuests(QuestLog& aRunning, QuestLog& aCompleted) noexcept
+{
+    const auto& modSystem = World::Get().GetModSystem();
+    for (TESQuest* pQuest : ModManager::Get()->quests)
+    {
+        GameId id;
+        if (!IsSharedQuest(pQuest) || !modSystem.GetServerModId(pQuest->formID, id))
+            continue;
+
+        if (pQuest->IsCompleted())
+            aCompleted.Entries.push_back({id, pQuest->currentStage});
+        else if (!pQuest->IsStopped())
+            aRunning.Entries.push_back({id, pQuest->currentStage});
+    }
 }
 
 void QuestService::DebugDumpQuests()
