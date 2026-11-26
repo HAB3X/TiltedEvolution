@@ -65,16 +65,7 @@ String BuildSaveName(const char* apPrefix, const String& acSuffix) noexcept
 {
     String name = apPrefix;
     name += '_';
-
-    // Characters share the save folder, and a file name only allows so much
-    if (const char* cpPlayerName = PlayerCharacter::Get()->baseForm->GetName())
-    {
-        for (; *cpPlayerName; ++cpPlayerName)
-        {
-            if (std::isalnum(static_cast<unsigned char>(*cpPlayerName)))
-                name += *cpPlayerName;
-        }
-    }
+    name += BGSSaveLoadManager::CoopSaveCharacter();
 
     if (!acSuffix.empty())
     {
@@ -94,6 +85,22 @@ bool TP_MAKE_THISCALL(HookSaveImpl, BGSSaveLoadManager, int32_t aDeviceId, uint3
         World::Get().GetRunner().Trigger(LocalSaveEvent{});
 
     return cSaved;
+}
+
+String BGSSaveLoadManager::CoopSaveCharacter() noexcept
+{
+    // Characters share the save folder, and a file name only allows so much
+    String character;
+    const PlayerCharacter* pPlayer = PlayerCharacter::Get();
+    if (const char* cpPlayerName = pPlayer && pPlayer->baseForm ? pPlayer->baseForm->GetName() : nullptr)
+    {
+        for (; *cpPlayerName; ++cpPlayerName)
+        {
+            if (std::isalnum(static_cast<unsigned char>(*cpPlayerName)))
+                character += *cpPlayerName;
+        }
+    }
+    return character;
 }
 
 BGSSaveLoadManager* BGSSaveLoadManager::Get() noexcept

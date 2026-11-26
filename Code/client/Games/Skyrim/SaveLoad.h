@@ -19,6 +19,10 @@ struct BGSSaveLoadManager
     static bool IsSaveQueued() noexcept;
     static void CancelQueuedSave() noexcept;
 
+    // The character's part of co-op save names (<label>_<character>...): their name's letters and digits; empty
+    // without a character
+    static String CoopSaveCharacter() noexcept;
+
     // Saving makes the game wait for the script VM, so this must run on the main thread. Running it
     // from the VM's update, where UpdateEvent comes from, would freeze the game.
     static void ProcessQueuedSave() noexcept;
