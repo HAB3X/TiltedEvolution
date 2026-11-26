@@ -9,16 +9,34 @@
     },
     "CONNECT": {
       "INFO": {
-        "SERVER_ADDRESS": "Sunucunun tam adresine bağlanın. <strong>address:port</strong> Formatını kullanın. Varsayılan port <strong>10578</strong>.",
+        "SERVER_ADDRESS": "Bir sunucuya katılma koduyla ya da <strong>adres:port</strong> biçimindeki tam adresiyle bağlan. Varsayılan port <strong>10578</strong>.",
         "HELGEN": "Helgen introsunu bitirmediyseniz hiçbir sunucuya BAĞLANMAYIN. İlk öne Helgen'den kaçtığınıza emin olun."
       },
-      "ADDRESS": "Adres",
+      "ADDRESS": "Katılma kodu veya adres",
       "PASSWORD": "Şifre",
       "SAVE_PASSWORD": "Şifreyi Kaydet?",
       "HIDE_PASSWORD": "Şifreyi Gizle?",
       "CONNECT": "Bağlan",
       "CANCEL": "İptal",
       "PUBLIC_SERVERS": "Herkese Açık Sunucular",
+      "HOST": {
+        "OPEN": "Oyun kur",
+        "PASSWORD": "Arkadaşlarının yazacağı şifre",
+        "PASSWORD_PLACEHOLDER": "Şifresiz için boş bırak",
+        "INFO": "Bu bilgisayarda bir sunucu başlatır ve ona katılır. Arkadaşların IP adresin, 10578 portu ve bu şifreyle bağlanır. İnternet üzerinden modem genelde portu kendisi açar; açmazsa UDP 10578 portunu yönlendir.",
+        "HOST_WORLD": "Arkadaşlarım benim dünyama girsin (görevlerim, temizlenmiş zindanlar ve ölü NPC'ler)",
+        "START": "Kur",
+        "BACK": "Geri"
+      },
+      "LAN": {
+        "TITLE": "Ağındaki oyunlar",
+        "REFRESH": "Yenile",
+        "SEARCHING": "Oyunlar aranıyor…",
+        "NONE": "Ağında oyun bulunamadı.",
+        "PASSWORD": "şifre",
+        "HOST_WORLD": "kurucunun dünyası",
+        "JOIN": "Katıl"
+      },
       "ERROR": {
         "CONNECTION": "Belirtilen sunucuya bağlanılamadı. Lütfen doğru adresi girdiğinize ve bağlantı sorununuzun olmadığına emin olun.",
         "VERSION_MISMATCH": "Sunucuya bağlanamazsınız çünkü aynı Skyrim Together versiyonlarına sahip değilsiniz.",
@@ -32,6 +50,15 @@
     },
     "ERROR": {
       "OK": "Tamam"
+    },
+    "INVITE": {
+      "CODE_INFO": "Arkadaşların bu katılma kodunu Bağlan ekranına yazar:",
+      "PASSWORD": "Şifre:",
+      "NO_CODE": "Katılma kodu yok: modemin portu açmadı (sohbete bak). Ağın dışındaki arkadaşların genel IP adresine ve yönlendirilmiş UDP 10578 portuna ihtiyaç duyar.",
+      "LAN_INFO": "Ağındaki arkadaşların oyununu Ağındaki oyunlar bölümünde bulur.",
+      "COPY": "Daveti kopyala",
+      "COPIED": "Kopyalandı",
+      "CLOSE": "Kapat"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Gelen mesaj",
@@ -84,6 +111,7 @@
       "REVEAL_PLAYERS": "Oyuncuları Göster",
       "RECONNECT": "Geri Bağlan",
       "PLAYER_MANAGER": "Oyuncu Yöneticisi",
+      "INVITE": "Davet et",
       "SETTINGS": "Ayarlar",
       "CONNECTION_IN_PROGRESS": "Bağlanılıyor..."
     },

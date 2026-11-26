@@ -7,16 +7,34 @@
     },
     "CONNECT": {
       "INFO": {
-        "SERVER_ADDRESS": "Připojení k serveru pomocí jeho úplné adresy. Použijte format <strong>adresa:port</strong>. Výchozí port je <strong>10578</strong>.",
+        "SERVER_ADDRESS": "Připoj se k serveru kódem připojení nebo celou adresou ve tvaru <strong>adresa:port</strong>. Výchozí port je <strong>10578</strong>.",
         "HELGEN": "Nepřipojujte se k žádnému serveru, pokud se stále nacházíte v úvodní sekvenci hry. Nejprve se ujistěte, že jste právě utekli z Helgenu."
       },
-      "ADDRESS": "Adresa",
+      "ADDRESS": "Kód připojení nebo adresa",
       "PASSWORD": "Heslo",
       "SAVE_PASSWORD": "Uložit heslo?",
       "HIDE_PASSWORD": "Skrýt heslo?",
       "CONNECT": "Připojit",
       "CANCEL": "Zrušit",
       "PUBLIC_SERVERS": "Veřejné servery",
+      "HOST": {
+        "OPEN": "Hostovat hru",
+        "PASSWORD": "Heslo, které zadají tví přátelé",
+        "PASSWORD_PLACEHOLDER": "Nech prázdné pro hru bez hesla",
+        "INFO": "Spustí server na tomto počítači a připojí se k němu. Přátelé se připojí přes tvou IP adresu, port 10578 a toto heslo. Přes internet router obvykle port otevře sám, jinak přesměruj UDP port 10578.",
+        "HOST_WORLD": "Přátelé vstoupí do mého světa (moje úkoly, vyčištěné kobky a mrtvé postavy)",
+        "START": "Hostovat",
+        "BACK": "Zpět"
+      },
+      "LAN": {
+        "TITLE": "Hry ve tvé síti",
+        "REFRESH": "Obnovit",
+        "SEARCHING": "Hledám hry…",
+        "NONE": "Ve tvé síti nebyly nalezeny žádné hry.",
+        "PASSWORD": "heslo",
+        "HOST_WORLD": "svět hostitele",
+        "JOIN": "Připojit"
+      },
       "ERROR": {
         "CONNECTION": "Nepodařilo se připojit k zadanému serveru. Ujistěte se, že jste zadali správnou adresu a že nemáte problémy se sítí.",
         "VERSION_MISMATCH": "Nelze se připojit k serveru, protože nemáte stejnou verzi Skyrim Together.",
@@ -30,6 +48,15 @@
     },
     "ERROR": {
       "OK": "Ok"
+    },
+    "INVITE": {
+      "CODE_INFO": "Přátelé zadají tento kód v okně Připojit:",
+      "PASSWORD": "Heslo:",
+      "NO_CODE": "Žádný kód: router neotevřel port (viz chat). Přátelé mimo tvou síť potřebují tvou veřejnou IP adresu a přesměrovaný UDP port 10578.",
+      "LAN_INFO": "Přátelé ve tvé síti najdou tvou hru v části Hry ve tvé síti.",
+      "COPY": "Kopírovat pozvánku",
+      "COPIED": "Zkopírováno",
+      "CLOSE": "Zavřít"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Zpráva od",
@@ -81,6 +108,7 @@
       "DISCONNECT": "Odpojit",
       "RECONNECT": "Znovu připojit",
       "PLAYER_MANAGER": "Správa hráčů",
+      "INVITE": "Pozvat",
       "SETTINGS": "Nastavení",
       "CONNECTION_IN_PROGRESS": "Připojení probíhá..."
     },

@@ -7,16 +7,34 @@
     },
     "CONNECT": {
       "INFO": {
-        "SERVER_ADDRESS": "Koble til en server med nettaddressen. Bruk formatet <strong>addresse:port</strong>. Standardporten er <strong>10578</strong>.",
+        "SERVER_ADDRESS": "Koble til en server med en tilkoblingskode eller hele adressen som <strong>adresse:port</strong>. Standardporten er <strong>10578</strong>.",
         "HELGEN": "Du må IKKE koble til en server før du er ferdig med introen. Du må ha flyktet fra Helgen først."
       },
-      "ADDRESS": "Nettadresse",
+      "ADDRESS": "Tilkoblingskode eller adresse",
       "PASSWORD": "Passord",
       "SAVE_PASSWORD": "Lagre passordet?",
       "HIDE_PASSWORD": "Skjul passordet?",
       "CONNECT": "Koblte til",
       "CANCEL": "Avbryt",
       "PUBLIC_SERVERS": "Offentlige servere",
+      "HOST": {
+        "OPEN": "Vær vert",
+        "PASSWORD": "Passord vennene dine skriver",
+        "PASSWORD_PLACEHOLDER": "La stå tomt for ingen passord",
+        "INFO": "Starter en server på denne datamaskinen og kobler til den. Venner kobler til med IP-adressen din, port 10578 og dette passordet. Over internett åpner ruteren vanligvis porten selv, ellers videresend UDP-port 10578.",
+        "HOST_WORLD": "Venner kommer inn i min verden (mine oppdrag, ryddede grotter og døde NPC-er)",
+        "START": "Start",
+        "BACK": "Tilbake"
+      },
+      "LAN": {
+        "TITLE": "Spill på nettverket ditt",
+        "REFRESH": "Oppdater",
+        "SEARCHING": "Leter etter spill…",
+        "NONE": "Fant ingen spill på nettverket ditt.",
+        "PASSWORD": "passord",
+        "HOST_WORLD": "vertens verden",
+        "JOIN": "Bli med"
+      },
       "ERROR": {
         "CONNECTION": "Kunne ikke koble til den valgte serveren. Forsikre deg om at du har skrevet inn den rette nettaddressen og at du har netttilgang.",
         "VERSION_MISMATCH": "Du kan kun koble til servere som kjører samme version av Skyrim Together som deg.",
@@ -30,6 +48,15 @@
     },
     "ERROR": {
       "OK": "Ok"
+    },
+    "INVITE": {
+      "CODE_INFO": "Venner skriver denne tilkoblingskoden under Koble til:",
+      "PASSWORD": "Passord:",
+      "NO_CODE": "Ingen tilkoblingskode: ruteren åpnet ikke porten (se chatten). Venner utenfor nettverket ditt trenger den offentlige IP-adressen din og videresendt UDP-port 10578.",
+      "LAN_INFO": "Venner på nettverket ditt finner spillet ditt under Spill på nettverket ditt.",
+      "COPY": "Kopier invitasjon",
+      "COPIED": "Kopiert",
+      "CLOSE": "Lukk"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Message from",
@@ -81,6 +108,7 @@
       "DISCONNECT": "Koble fra",
       "RECONNECT": "Koble til på nytt",
       "PLAYER_MANAGER": "Spillerliste",
+      "INVITE": "Inviter",
       "SETTINGS": "Innstillinger",
       "CONNECTION_IN_PROGRESS": "Kobler til..."
     },

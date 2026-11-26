@@ -9,15 +9,33 @@
     },
     "CONNECT": {
       "INFO": {
-        "SERVER_ADDRESS": "połącz się do serwera używając jego pełnego adresu. Użyj formatu <strong>address:port</strong>. Standardowy port to <strong>10578</strong>.",
+        "SERVER_ADDRESS": "Połącz się z serwerem kodem dołączenia lub pełnym adresem w formacie <strong>adres:port</strong>. Domyślny port to <strong>10578</strong>.",
         "HELGEN": "NIE Podłączaj się do żadnego serwera, kiedy jesteś w sekwencji intra w Helgen. Upewnij się, że wpierw uciekłeś z Helgen"
       },
-      "ADDRESS": "Adres",
+      "ADDRESS": "Kod dołączenia lub adres",
       "PASSWORD": "Hasło",
       "SAVE_PASSWORD": "Zapisz Hasło?",
       "CONNECT": "połącz",
       "CANCEL": "Anuluj",
       "PUBLIC_SERVERS": "Serwery Publiczne",
+      "HOST": {
+        "OPEN": "Hostuj grę",
+        "PASSWORD": "Hasło, które wpiszą twoi znajomi",
+        "PASSWORD_PLACEHOLDER": "Zostaw puste, aby nie używać hasła",
+        "INFO": "Uruchamia serwer na tym komputerze i dołącza do niego. Znajomi łączą się przez twój adres IP, port 10578 i to hasło. Przez internet router zwykle sam otwiera port; jeśli nie, przekieruj port UDP 10578.",
+        "HOST_WORLD": "Znajomi wchodzą do mojego świata (moje zadania, oczyszczone lochy i martwe postacie)",
+        "START": "Hostuj",
+        "BACK": "Wróć"
+      },
+      "LAN": {
+        "TITLE": "Gry w twojej sieci",
+        "REFRESH": "Odśwież",
+        "SEARCHING": "Szukanie gier…",
+        "NONE": "Nie znaleziono gier w twojej sieci.",
+        "PASSWORD": "hasło",
+        "HOST_WORLD": "świat hosta",
+        "JOIN": "Dołącz"
+      },
       "ERROR": {
         "CONNECTION": "Nie można było cię połączyć to danego serwera. Upewnij się, że wpisałeś poprawny adres i że nie spotykają cię żadnę problemy z twoją siecią",
         "VERSION_MISMATCH": "Nie można było cię połączyć do danego serwera, ponieważ nie jest na tej samej wersji Skyrima Together co ty.",
@@ -31,6 +49,15 @@
     },
     "ERROR": {
       "OK": "Ok"
+    },
+    "INVITE": {
+      "CODE_INFO": "Znajomi wpisują ten kod w oknie Połącz:",
+      "PASSWORD": "Hasło:",
+      "NO_CODE": "Brak kodu: router nie otworzył portu (zobacz czat). Znajomi spoza twojej sieci potrzebują twojego publicznego IP i przekierowanego portu UDP 10578.",
+      "LAN_INFO": "Znajomi w twojej sieci znajdą twoją grę w sekcji Gry w twojej sieci.",
+      "COPY": "Kopiuj zaproszenie",
+      "COPIED": "Skopiowano",
+      "CLOSE": "Zamknij"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Wiadomość od",
@@ -86,6 +113,7 @@
       "REVEAL_PLAYERS": "Podświetl Graczy",
       "RECONNECT": "Odłącz się i połącz z powrotem",
       "PLAYER_MANAGER": "Menedżer Graczy",
+      "INVITE": "Zaproś",
       "SETTINGS": "Ustawienia",
       "CONNECTION_IN_PROGRESS": "Podłączanie jest w trakcie"
     },

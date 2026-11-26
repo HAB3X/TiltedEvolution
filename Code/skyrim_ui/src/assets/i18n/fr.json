@@ -9,15 +9,33 @@
     },
     "CONNECT": {
       "INFO": {
-        "SERVER_ADDRESS": "Connectez-vous à un serveur en utilisant son adresse complète. Utilisez le format  <strong>addresse:port</strong>. Le port par défaut est : <strong>10578</strong>.",
+        "SERVER_ADDRESS": "Connectez-vous à un serveur avec un code de partie ou son adresse complète au format <strong>adresse:port</strong>. Le port par défaut est <strong>10578</strong>.",
         "HELGEN": "Ne vous connectez PAS à un serveur si vous êtes toujours dans la séquence d'introduction de Helgen. Assurez-vous d'abord d'avoir fui Helgen."
       },
-      "ADDRESS": "Addresse",
+      "ADDRESS": "Code de partie ou adresse",
       "PASSWORD": "Mot de passe",
       "SAVE_PASSWORD": "Enregistrer le mot de passe ?",
       "CONNECT": "Connexion",
       "CANCEL": "Annuler",
       "PUBLIC_SERVERS": "Serveurs publics",
+      "HOST": {
+        "OPEN": "Héberger une partie",
+        "PASSWORD": "Mot de passe que vos amis taperont",
+        "PASSWORD_PLACEHOLDER": "Laisser vide pour aucun mot de passe",
+        "INFO": "Lance un serveur sur cet ordinateur et le rejoint. Vos amis se connectent avec votre adresse IP, le port 10578 et ce mot de passe. Par Internet, le routeur ouvre généralement le port tout seul ; sinon, redirigez le port UDP 10578.",
+        "HOST_WORLD": "Mes amis rejoignent mon monde (mes quêtes, donjons nettoyés et PNJ morts)",
+        "START": "Héberger",
+        "BACK": "Retour"
+      },
+      "LAN": {
+        "TITLE": "Parties sur votre réseau",
+        "REFRESH": "Actualiser",
+        "SEARCHING": "Recherche de parties…",
+        "NONE": "Aucune partie trouvée sur votre réseau.",
+        "PASSWORD": "mot de passe",
+        "HOST_WORLD": "monde de l'hôte",
+        "JOIN": "Rejoindre"
+      },
       "ERROR": {
         "CONNECTION": "Impossible de se connecter au serveur spécifié. Veuillez vous assurer que vous avez correctement entré l'adresse et que vous ne rencontrez pas de problèmes de réseau.",
         "VERSION_MISMATCH": "Vous ne pouvez pas vous connecter au serveur car il ne dispose pas de la même version de Skyrim Together que vous.",
@@ -31,6 +49,15 @@
     },
     "ERROR": {
       "OK": "Ok"
+    },
+    "INVITE": {
+      "CODE_INFO": "Vos amis tapent ce code de partie dans Connexion :",
+      "PASSWORD": "Mot de passe :",
+      "NO_CODE": "Pas de code de partie : votre routeur n'a pas ouvert le port (voir le chat). Vos amis hors de votre réseau ont besoin de votre adresse IP publique et du port UDP 10578 redirigé sur votre routeur.",
+      "LAN_INFO": "Vos amis sur votre réseau trouvent votre partie dans Parties sur votre réseau.",
+      "COPY": "Copier l'invitation",
+      "COPIED": "Copié",
+      "CLOSE": "Fermer"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Message de",
@@ -86,6 +113,7 @@
       "REVEAL_PLAYERS": "Révéler les joueurs",
       "RECONNECT": "Reconnexion",
       "PLAYER_MANAGER": "Gestion des joueurs",
+      "INVITE": "Inviter",
       "SETTINGS": "Paramètres",
       "CONNECTION_IN_PROGRESS": "Connexion en cours"
     },

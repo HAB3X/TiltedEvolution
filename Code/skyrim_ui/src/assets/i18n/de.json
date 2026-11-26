@@ -7,16 +7,34 @@
     },
     "CONNECT": {
       "INFO": {
-        "SERVER_ADDRESS": "Verbinden dich mit einem Server über dessen vollständige Adresse. Verwende das Format  <strong>addresse:port</strong>. Standardwert für den Port ist <strong>10578</strong>.",
+        "SERVER_ADDRESS": "Verbinde dich mit einem Server über einen Beitrittscode oder seine vollständige Adresse im Format <strong>Adresse:Port</strong>. Der Standardport ist <strong>10578</strong>.",
         "HELGEN": "Stelle KEINE Verbindung zu einem Server her, wenn du dich noch in der Helgen-Intro-Sequenz befindest. Vergewissere dich, dass du bereits aus Helgen entkommen bist."
       },
-      "ADDRESS": "Adresse",
+      "ADDRESS": "Beitrittscode oder Adresse",
       "PASSWORD": "Passwort",
       "SAVE_PASSWORD": "Passwort speichern?",
       "HIDE_PASSWORD": "Passwort ausblenden?",
       "CONNECT": "Verbinden",
       "CANCEL": "Abbrechen",
       "PUBLIC_SERVERS": "Öffentliche Server",
+      "HOST": {
+        "OPEN": "Spiel hosten",
+        "PASSWORD": "Passwort, das deine Freunde eingeben",
+        "PASSWORD_PLACEHOLDER": "Leer lassen für kein Passwort",
+        "INFO": "Startet einen Server auf diesem Computer und tritt ihm bei. Freunde verbinden sich mit deiner IP-Adresse, Port 10578 und diesem Passwort. Über das Internet öffnet der Router den Port meist selbst, sonst UDP-Port 10578 weiterleiten.",
+        "HOST_WORLD": "Freunde betreten meine Welt (meine Quests, geräumten Dungeons und toten NPCs)",
+        "START": "Hosten",
+        "BACK": "Zurück"
+      },
+      "LAN": {
+        "TITLE": "Spiele in deinem Netzwerk",
+        "REFRESH": "Aktualisieren",
+        "SEARCHING": "Suche nach Spielen…",
+        "NONE": "Keine Spiele in deinem Netzwerk gefunden.",
+        "PASSWORD": "Passwort",
+        "HOST_WORLD": "Welt des Hosts",
+        "JOIN": "Beitreten"
+      },
       "ERROR": {
         "CONNECTION": "Es konnte keine Verbindung mit dem angegebenen Server hergestellt werden. Bitte vergewissere dich, dass du die richtige Adresse eingegeben hast und dass keine Netzwerkprobleme vorliegen.",
         "VERSION_MISMATCH": "Es konnte keine Verbindung mit dem Server hergestellt werden, weil dieser eine andere Version von Skyrim Together verwendet.",
@@ -30,6 +48,15 @@
     },
     "ERROR": {
       "OK": "Ok"
+    },
+    "INVITE": {
+      "CODE_INFO": "Freunde geben diesen Beitrittscode unter Verbinden ein:",
+      "PASSWORD": "Passwort:",
+      "NO_CODE": "Kein Beitrittscode: Dein Router hat den Port nicht geöffnet (siehe Chat). Freunde außerhalb deines Netzwerks brauchen deine öffentliche IP-Adresse und den weitergeleiteten UDP-Port 10578.",
+      "LAN_INFO": "Freunde in deinem Netzwerk finden dein Spiel unter Spiele in deinem Netzwerk.",
+      "COPY": "Einladung kopieren",
+      "COPIED": "Kopiert",
+      "CLOSE": "Schließen"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Nachricht von",
@@ -85,6 +112,7 @@
       "REVEAL_PLAYERS": "Spieler hervorheben",
       "RECONNECT": "Neuverbinden",
       "PLAYER_MANAGER": "Spielerverwaltung",
+      "INVITE": "Einladen",
       "SETTINGS": "Einstellungen",
       "CONNECTION_IN_PROGRESS": "Verbindungsaufbau läuft..."
     },

@@ -9,16 +9,34 @@
     },
     "CONNECT": {
       "INFO": {
-        "SERVER_ADDRESS": "Anslut till en server med hela adressen. Använd formatet <strong>address:port</strong>. Standardporten är <strong>10578</strong>.",
+        "SERVER_ADDRESS": "Anslut till en server med en anslutningskod eller hela adressen som <strong>adress:port</strong>. Standardporten är <strong>10578</strong>.",
         "HELGEN": "Anslut INTE till någon server om du fortfarande är i Helgen eller introsekvensen. Kontrollera att du flytt från Helgen och är utanför grottan."
       },
-      "ADDRESS": "Adress",
+      "ADDRESS": "Anslutningskod eller adress",
       "PASSWORD": "Lösenord",
       "SAVE_PASSWORD": "Spara lösenord?",
       "HIDE_PASSWORD": "Dölj lösenord?",
       "CONNECT": "Anslut",
       "CANCEL": "Avbryt",
       "PUBLIC_SERVERS": "Publika servrar",
+      "HOST": {
+        "OPEN": "Vara värd",
+        "PASSWORD": "Lösenord som dina vänner skriver",
+        "PASSWORD_PLACEHOLDER": "Lämna tomt för inget lösenord",
+        "INFO": "Startar en server på den här datorn och ansluter till den. Vänner ansluter med din IP-adress, port 10578 och det här lösenordet. Över internet öppnar routern oftast porten själv, annars vidarebefordra UDP-port 10578.",
+        "HOST_WORLD": "Vänner går in i min värld (mina uppdrag, rensade grottor och döda NPC:er)",
+        "START": "Starta",
+        "BACK": "Tillbaka"
+      },
+      "LAN": {
+        "TITLE": "Spel i ditt nätverk",
+        "REFRESH": "Uppdatera",
+        "SEARCHING": "Letar efter spel…",
+        "NONE": "Inga spel hittades i ditt nätverk.",
+        "PASSWORD": "lösenord",
+        "HOST_WORLD": "värdens värld",
+        "JOIN": "Anslut"
+      },
       "ERROR": {
         "CONNECTION": "Kunde inte ansluta till den specifika servern. Kontrollera att du skrivit in korrekt adress och att du inte har nätverksproblem för tillfället.",
         "VERSION_MISMATCH": "Du kan inte ansluta till servern eftersom den inte har samma version av Skyrim Together som du.",
@@ -32,6 +50,15 @@
     },
     "ERROR": {
       "OK": "Ok"
+    },
+    "INVITE": {
+      "CODE_INFO": "Vänner skriver den här anslutningskoden under Anslut:",
+      "PASSWORD": "Lösenord:",
+      "NO_CODE": "Ingen anslutningskod: routern öppnade inte porten (se chatten). Vänner utanför ditt nätverk behöver din publika IP-adress och vidarebefordrad UDP-port 10578.",
+      "LAN_INFO": "Vänner i ditt nätverk hittar ditt spel under Spel i ditt nätverk.",
+      "COPY": "Kopiera inbjudan",
+      "COPIED": "Kopierad",
+      "CLOSE": "Stäng"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Meddelande från",
@@ -87,6 +114,7 @@
       "REVEAL_PLAYERS": "Lys upp spelare",
       "RECONNECT": "Återanslut",
       "PLAYER_MANAGER": "Hantera Spelare",
+      "INVITE": "Bjud in",
       "SETTINGS": "Inställningar",
       "CONNECTION_IN_PROGRESS": "Anslutning pågår..."
     },

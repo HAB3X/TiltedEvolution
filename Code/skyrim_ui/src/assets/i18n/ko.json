@@ -7,16 +7,34 @@
     },
     "CONNECT": {
       "INFO": {
-        "SERVER_ADDRESS": "전체 주소를 사용하여 서버에 연결합니다. <strong>주소:포트</strong> 형식을 사용하세요. 포트의 기본값은 <strong>10578</strong>입니다.",
+        "SERVER_ADDRESS": "참가 코드나 <strong>주소:포트</strong> 형식의 전체 주소로 서버에 접속합니다. 기본 포트는 <strong>10578</strong>입니다.",
         "HELGEN": "아직 헬겐 인트로 시퀀스에 있는 경우 서버에 연결하지 마세요. 먼저 헬겐에서 탈출했는지 확인하세요."
       },
-      "ADDRESS": "주소",
+      "ADDRESS": "참가 코드 또는 주소",
       "PASSWORD": "암호",
       "SAVE_PASSWORD": "암호 저장 여부?",
       "HIDE_PASSWORD": "암호 숨김 여부?",
       "CONNECT": "연결",
       "CANCEL": "취소",
       "PUBLIC_SERVERS": "공개 서버",
+      "HOST": {
+        "OPEN": "게임 호스트",
+        "PASSWORD": "친구가 입력할 비밀번호",
+        "PASSWORD_PLACEHOLDER": "비밀번호 없이 하려면 비워 두세요",
+        "INFO": "이 컴퓨터에서 서버를 시작하고 접속합니다. 친구들은 당신의 IP 주소, 포트 10578, 이 비밀번호로 접속합니다. 인터넷으로는 보통 공유기가 포트를 자동으로 엽니다. 열리지 않으면 UDP 포트 10578을 포워딩하세요.",
+        "HOST_WORLD": "친구가 내 세계에 들어오기 (내 퀘스트, 클리어한 던전, 죽은 NPC)",
+        "START": "호스트",
+        "BACK": "뒤로"
+      },
+      "LAN": {
+        "TITLE": "내 네트워크의 게임",
+        "REFRESH": "새로고침",
+        "SEARCHING": "게임 찾는 중…",
+        "NONE": "내 네트워크에서 게임을 찾지 못했습니다.",
+        "PASSWORD": "비밀번호",
+        "HOST_WORLD": "호스트의 세계",
+        "JOIN": "참가"
+      },
       "ERROR": {
         "CONNECTION": "지정된 서버에 연결할 수 없습니다. 올바른 주소를 입력했는지, 네트워크 문제가 발생하고 있지 않은지 확인하세요",
         "VERSION_MISMATCH": "귀하와 동일한 버전의 Skyrim Together가 없기 때문에 서버에 연결할 수 없습니다.",
@@ -30,6 +48,15 @@
     },
     "ERROR": {
       "OK": "Ok"
+    },
+    "INVITE": {
+      "CODE_INFO": "친구는 접속 화면에 이 참가 코드를 입력합니다:",
+      "PASSWORD": "비밀번호:",
+      "NO_CODE": "참가 코드 없음: 공유기가 포트를 열지 않았습니다(채팅 참고). 네트워크 밖의 친구에게는 공인 IP 주소와 포워딩된 UDP 포트 10578이 필요합니다.",
+      "LAN_INFO": "같은 네트워크의 친구는 내 네트워크의 게임에서 게임을 찾을 수 있습니다.",
+      "COPY": "초대 복사",
+      "COPIED": "복사됨",
+      "CLOSE": "닫기"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "메시지 보낸 사람:",
@@ -81,6 +108,7 @@
       "DISCONNECT": "연결 해제",
       "RECONNECT": "재연결",
       "PLAYER_MANAGER": "플레이어 관리자",
+      "INVITE": "초대",
       "SETTINGS": "설정",
       "CONNECTION_IN_PROGRESS": "연결 진행중..."
     },

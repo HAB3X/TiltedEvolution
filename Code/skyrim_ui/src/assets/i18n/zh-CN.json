@@ -9,15 +9,33 @@
     },
     "CONNECT": {
       "INFO": {
-        "SERVER_ADDRESS": "使用完整的地址连接至服务器。格式为<strong>IP地址:端口</strong>。默认端口为<strong>10578</strong>。",
+        "SERVER_ADDRESS": "使用加入码，或 <strong>地址:端口</strong> 格式的完整地址连接服务器。默认端口为 <strong>10578</strong>。",
         "HELGEN": "如果您在海尔根序章中，<strong>不要</strong>连接至任何服务器。请先逃出海尔根。"
       },
-      "ADDRESS": "地址",
+      "ADDRESS": "加入码或地址",
       "PASSWORD": "密码",
       "SAVE_PASSWORD": "保存密码",
       "CONNECT": "连接",
       "CANCEL": "取消",
       "PUBLIC_SERVERS": "公开服务器",
+      "HOST": {
+        "OPEN": "主持游戏",
+        "PASSWORD": "好友需要输入的密码",
+        "PASSWORD_PLACEHOLDER": "留空表示不设密码",
+        "INFO": "在这台电脑上启动服务器并加入。好友通过你的 IP 地址、端口 10578 和此密码连接。通过互联网时路由器通常会自动打开端口；否则请转发 UDP 端口 10578。",
+        "HOST_WORLD": "好友进入我的世界（我的任务、已清理的地下城和已死亡的 NPC）",
+        "START": "主持",
+        "BACK": "返回"
+      },
+      "LAN": {
+        "TITLE": "你网络中的游戏",
+        "REFRESH": "刷新",
+        "SEARCHING": "正在搜索游戏…",
+        "NONE": "在你的网络中没有找到游戏。",
+        "PASSWORD": "密码",
+        "HOST_WORLD": "主机的世界",
+        "JOIN": "加入"
+      },
       "ERROR": {
         "CONNECTION": "无法连接至指定的服务器。请确认输入了正确的地址，且没有网络问题。",
         "VERSION_MISMATCH": "无法连接至服务器。服务器的Skyrim Together版本与您的不同。",
@@ -31,6 +49,15 @@
     },
     "ERROR": {
       "OK": "确定"
+    },
+    "INVITE": {
+      "CODE_INFO": "好友在「连接」中输入此加入码：",
+      "PASSWORD": "密码：",
+      "NO_CODE": "没有加入码：路由器没有打开端口（见聊天）。你网络外的好友需要你的公网 IP 地址，并在路由器上转发 UDP 端口 10578。",
+      "LAN_INFO": "同一网络的好友可以在「你网络中的游戏」中找到你的游戏。",
+      "COPY": "复制邀请",
+      "COPIED": "已复制",
+      "CLOSE": "关闭"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "消息自",
@@ -82,6 +109,7 @@
       "DISCONNECT": "断开连接",
       "RECONNECT": "重新连接",
       "PLAYER_MANAGER": "玩家管理",
+      "INVITE": "邀请",
       "SETTINGS": "设置",
       "CONNECTION_IN_PROGRESS": "连接中"
     },

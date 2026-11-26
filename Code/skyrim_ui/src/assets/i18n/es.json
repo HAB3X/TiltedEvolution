@@ -9,15 +9,33 @@
     },
     "CONNECT": {
       "INFO": {
-        "SERVER_ADDRESS": "Conéctate a un servidor utilizando la dirección completa. Usa el formato <strong>dirección:puerto</strong>. El puerto por defecto es: <strong>10578</strong>.",
+        "SERVER_ADDRESS": "Conéctate a un servidor con un código de partida o su dirección completa con el formato <strong>dirección:puerto</strong>. El puerto por defecto es <strong>10578</strong>.",
         "HELGEN": "NO te conectes a ningún servidor si todavía te encuentras en la misión de introducción de Helgen. Asegúrate de haber escapado de Helgen primero."
       },
-      "ADDRESS": "Dirección",
+      "ADDRESS": "Código de partida o dirección",
       "PASSWORD": "Contraseña",
       "SAVE_PASSWORD": "¿Guardar contraseña?",
       "CONNECT": "Conectar",
       "CANCEL": "Cancelar",
       "PUBLIC_SERVERS": "Servidores públicos",
+      "HOST": {
+        "OPEN": "Hospedar partida",
+        "PASSWORD": "Contraseña que escribirán tus amigos",
+        "PASSWORD_PLACEHOLDER": "Déjalo vacío para no usar contraseña",
+        "INFO": "Inicia un servidor en este equipo y se une a él. Tus amigos se conectan con tu dirección IP, el puerto 10578 y esta contraseña. Por internet, el router suele abrir el puerto solo; si no, redirige el puerto UDP 10578.",
+        "HOST_WORLD": "Mis amigos entran en mi mundo (mis misiones, mazmorras despejadas y PNJ muertos)",
+        "START": "Hospedar",
+        "BACK": "Volver"
+      },
+      "LAN": {
+        "TITLE": "Partidas en tu red",
+        "REFRESH": "Actualizar",
+        "SEARCHING": "Buscando partidas…",
+        "NONE": "No se encontraron partidas en tu red.",
+        "PASSWORD": "contraseña",
+        "HOST_WORLD": "mundo del anfitrión",
+        "JOIN": "Unirse"
+      },
       "ERROR": {
         "CONNECTION": "No se ha podido conectar con el servidor especificado. Asegúrate de haber introducido la dirección correctamente y de no tener problemas de conexión.",
         "VERSION_MISMATCH": "No puedes conectarte al servidor ya que no posees la misma versión de Skyrim Together que el servidor.",
@@ -31,6 +49,15 @@
     },
     "ERROR": {
       "OK": "Ok"
+    },
+    "INVITE": {
+      "CODE_INFO": "Tus amigos escriben este código de partida en Conectar:",
+      "PASSWORD": "Contraseña:",
+      "NO_CODE": "Sin código de partida: tu router no abrió el puerto (mira el chat). Los amigos fuera de tu red necesitan tu IP pública y el puerto UDP 10578 redirigido en tu router.",
+      "LAN_INFO": "Los amigos de tu red encuentran tu partida en Partidas en tu red.",
+      "COPY": "Copiar invitación",
+      "COPIED": "Copiado",
+      "CLOSE": "Cerrar"
     },
     "NOTIFICATIONS": {
       "MESSAGE_FROM": "Mensaje de",
@@ -83,6 +110,7 @@
       "REVEAL_PLAYERS": "Revelar jugadores",
       "RECONNECT": "Reconectar",
       "PLAYER_MANAGER": "Gestionar jugadores",
+      "INVITE": "Invitar",
       "SETTINGS": "Parámetros",
       "CONNECTION_IN_PROGRESS": "Conexión en progreso..."
     },
