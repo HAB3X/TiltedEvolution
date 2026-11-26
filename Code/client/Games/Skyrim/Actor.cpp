@@ -1266,6 +1266,8 @@ char TP_MAKE_THISCALL(HookActorProcess, Actor, float aDeltaTime)
         return 0;
     }
 
+    // The game's own AI and animation of the actors this game runs, the rest of the scope above is Skyrim Together's
+    TP_PROFILE_SCOPE("Game: actor updates, AI we run");
     return TiltedPhoques::ThisCall(RealActorProcess, apThis, aDeltaTime);
 }
 
