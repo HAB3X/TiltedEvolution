@@ -210,6 +210,9 @@ interface SkyrimTogether {
 
   on(event: 'lanServers', callback: SkyrimTogetherTypes.LanServersCallback): void;
 
+  /** The public address:port of the game this player hosts. */
+  on(event: 'hostAddress', callback: (address: string) => void): void;
+
   on(event: 'dummyData', callback: SkyrimTogetherTypes.DummyDataCallback): void;
 
   on(event: 'partyInfo', callback: SkyrimTogetherTypes.PartyInfoCallback): void;
@@ -337,6 +340,8 @@ interface SkyrimTogether {
   off(event: 'triggerError', callback?: SkyrimTogetherTypes.TriggerError): void;
 
   off(event: 'lanServers', callback?: SkyrimTogetherTypes.LanServersCallback): void;
+
+  off(event: 'hostAddress', callback?: (address: string) => void): void;
 
   off(
     event: 'dummyData',

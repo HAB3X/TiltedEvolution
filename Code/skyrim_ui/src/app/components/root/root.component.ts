@@ -50,6 +50,7 @@ export class RootComponent implements OnInit {
   menuOpen$ = this.client.openingMenuChange.asObservable();
   inGame$ = this.client.inGameStateChange.asObservable();
   active$ = this.client.activationStateChange.asObservable();
+  hosting$ = this.client.hostingChange.asObservable();
   connectionInProgress$ =
     this.client.isConnectionInProgressChange.asObservable();
   revealingInProgress$ = false;

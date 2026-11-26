@@ -1,0 +1,26 @@
+@let code = code$ | async;
+@if (code) {
+  <p>{{ 'COMPONENT.INVITE.CODE_INFO' | transloco }}</p>
+  <p class="code">{{ code }}</p>
+  @if (password) {
+    <p>
+      {{ 'COMPONENT.INVITE.PASSWORD' | transloco }} <strong>{{ password }}</strong>
+    </p>
+  }
+} @else {
+  <p>{{ 'COMPONENT.INVITE.NO_CODE' | transloco }}</p>
+}
+<p class="hint">{{ 'COMPONENT.INVITE.LAN_INFO' | transloco }}</p>
+<app-action-buttons>
+  @if (code) {
+    <button (click)="copy(code)" data-style-ornament="simple">
+      {{
+        (copied ? 'COMPONENT.INVITE.COPIED' : 'COMPONENT.INVITE.COPY')
+          | transloco
+      }}
+    </button>
+  }
+  <button (click)="close()" data-style-ornament="simple">
+    {{ 'COMPONENT.INVITE.CLOSE' | transloco }}
+  </button>
+</app-action-buttons>

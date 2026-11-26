@@ -39,6 +39,15 @@
           {{ 'COMPONENT.ROOT.RECONNECT' | transloco }}
         </button>
         -->
+        @if (hosting$ | async) {
+          <button
+            data-style-ornament="inverted"
+            [attr.data-style-active]="(view$ | async) === RootView.INVITE"
+            (click)="setView(RootView.INVITE)"
+          >
+            {{ 'COMPONENT.ROOT.INVITE' | transloco }}
+          </button>
+        }
         <button
           data-style-ornament="inverted"
           [attr.data-style-active]="(view$ | async) === RootView.PLAYER_MANAGER"
@@ -105,6 +114,11 @@
       @case (RootView.DISCONNECT) {
         <app-popup>
           <app-disconnect (done)="closeView()"></app-disconnect>
+        </app-popup>
+      }
+      @case (RootView.INVITE) {
+        <app-popup>
+          <app-invite (done)="closeView()"></app-invite>
         </app-popup>
       }
       @case (RootView.SERVER_LIST) {

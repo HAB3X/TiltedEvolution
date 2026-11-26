@@ -89,6 +89,17 @@ export class ClientService implements OnDestroy {
   /** Receive error from core */
   public triggerError = new ReplaySubject<ErrorEvents>(1);
 
+  /** The public address:port of the game this player hosts, once the router has said it. */
+  public hostAddressChange = new BehaviorSubject<string | null>(null);
+
+  /** Whether this player hosts the game they're connected to (Host a game). */
+  public hostingChange = new BehaviorSubject(false);
+
+  /** The password of the game this player hosts. */
+  public get hostedPassword(): string {
+    return this.hostingChange.getValue() ? this._password : '';
+  }
+
   /** Servers found on the local network by the last search, null while searching. */
   public lanServersChange = new BehaviorSubject<LanServer[] | null>([]);
 
@@ -161,6 +172,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('protocolMismatch', this.onProtocolMismatch.bind(this));
     skyrimtogether.on('triggerError', this.onTriggerError.bind(this));
     skyrimtogether.on('lanServers', this.onLanServers.bind(this));
+    skyrimtogether.on('hostAddress', this.onHostAddress.bind(this));
     skyrimtogether.on('dummyData', this.onDummyData.bind(this));
     skyrimtogether.on('partyInfo', this.onPartyInfo.bind(this));
     skyrimtogether.on('partyCreated', this.onPartyCreated.bind(this));
@@ -199,6 +211,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('protocolMismatch');
     skyrimtogether.off('triggerError');
     skyrimtogether.off('lanServers');
+    skyrimtogether.off('hostAddress');
     skyrimtogether.off('dummyData');
     skyrimtogether.off('partyInfo');
     skyrimtogether.off('partyCreated');
@@ -223,6 +236,7 @@ export class ClientService implements OnDestroy {
   /** Start the server next to the game and connect to it once it's up. */
   public hostServer(password: string, hostWorld: boolean): void {
     skyrimtogether.hostServer(password, hostWorld);
+    this.hostingChange.next(true);
     this.isConnectionInProgressChange.next(true);
     this._host = '127.0.0.1';
     this._port = 10578;
@@ -231,6 +245,7 @@ export class ClientService implements OnDestroy {
 
   public connect(host: string, port: number, password = ''): void {
     skyrimtogether.connect(host, port, password);
+    this.hostingChange.next(false);
     this.isConnectionInProgressChange.next(true);
     this._host = host;
     this._port = port;
@@ -589,6 +604,12 @@ export class ClientService implements OnDestroy {
   private onProtocolMismatch() {
     this.zone.run(() => {
       this.protocolMismatchChange.next(true);
+    });
+  }
+
+  private onHostAddress(address: string) {
+    this.zone.run(() => {
+      this.hostAddressChange.next(address);
     });
   }
 

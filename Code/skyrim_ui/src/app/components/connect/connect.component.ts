@@ -17,6 +17,7 @@ import { ErrorService } from '../../services/error.service';
 import { Sound, SoundService } from '../../services/sound.service';
 import { StoreService } from '../../services/store.service';
 import { UiRepository } from '../../store/ui.repository';
+import { decodeJoinCode } from '../../utils/join-code';
 
 @Component({
   selector: 'app-connect',
@@ -120,7 +121,11 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
   }
 
   async connect(): Promise<void> {
-    const address = this.address.trim().match(/^(.+?)(?::([0-9]+))?$/);
+    // A join code stands for an address and port
+    const joinCode = decodeJoinCode(this.address);
+    const address = joinCode
+      ? ['', joinCode.address, String(joinCode.port)]
+      : this.address.trim().match(/^(.+?)(?::([0-9]+))?$/);
 
     if (!address) {
       this.sound.play(Sound.Fail);

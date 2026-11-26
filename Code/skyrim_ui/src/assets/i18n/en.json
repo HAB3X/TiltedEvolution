@@ -9,10 +9,10 @@
     },
     "CONNECT": {
       "INFO": {
-        "SERVER_ADDRESS": "Connect to a server using its full address. Use the format <strong>address:port</strong>. The port defaults to <strong>10578</strong>.",
+        "SERVER_ADDRESS": "Connect to a server with a join code, or its full address as <strong>address:port</strong>. The port defaults to <strong>10578</strong>.",
         "HELGEN": "Do NOT connect to any server if you are still in the Helgen intro sequence. Make sure you just escaped Helgen first."
       },
-      "ADDRESS": "Address",
+      "ADDRESS": "Join code or address",
       "PASSWORD": "Password",
       "SAVE_PASSWORD": "Save Password?",
       "HIDE_PASSWORD": "Hide Password?",
@@ -42,6 +42,15 @@
         "VERSION_MISMATCH": "You cannot connect to the server because it does not have the same version of Skyrim Together as you.",
         "INVALID_ADDRESS": "The address is of invalid format."
       }
+    },
+    "INVITE": {
+      "CODE_INFO": "Friends type this join code in Connect:",
+      "PASSWORD": "Password:",
+      "NO_CODE": "No join code: your router didn't open the port (see chat). Friends outside your network need your public IP address and UDP port 10578 forwarded on your router.",
+      "LAN_INFO": "Friends on your network find your game under Games on your network.",
+      "COPY": "Copy invite",
+      "COPIED": "Copied",
+      "CLOSE": "Close"
     },
     "DISCONNECT": {
       "PROMPT": "Are you sure you want to disconnect?",
@@ -105,6 +114,7 @@
       "REVEAL_PLAYERS": "Reveal Players",
       "RECONNECT": "Reconnect",
       "PLAYER_MANAGER": "Player Manager",
+      "INVITE": "Invite",
       "SETTINGS": "Settings",
       "CONNECTION_IN_PROGRESS": "Connection in progress..."
     },
