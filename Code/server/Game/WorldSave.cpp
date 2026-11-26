@@ -11,8 +11,20 @@ using TiltedPhoques::Serialization;
 namespace
 {
 constexpr char kMagic[] = "STWORLD";
-constexpr uint8_t kVersion = 2;
+constexpr uint8_t kVersion = 3;
+// The oldest version still read: it has no players' copies of bodies
+constexpr uint8_t kOldestVersion = 2;
 constexpr char kEnd[] = "END";
+
+void WriteCopies(Buffer::Writer& aWriter, const Vector<WorldSave::PlayerCopy>& acCopies)
+{
+    Serialization::WriteVarInt(aWriter, acCopies.size());
+    for (const WorldSave::PlayerCopy& cCopy : acCopies)
+    {
+        Serialization::WriteString(aWriter, cCopy.Name);
+        cCopy.Content.Serialize(aWriter);
+    }
+}
 
 void WriteRaw(Buffer::Writer& aWriter, const char* apText, size_t aSize)
 {
@@ -49,6 +61,7 @@ std::string WorldSave::Serialize() const noexcept
         {
             cActor.Id.Serialize(writer);
             cActor.Loot.Serialize(writer);
+            WriteCopies(writer, cActor.PlayerCopies);
         }
 
         Serialization::WriteVarInt(writer, Containers.size());
@@ -58,12 +71,7 @@ std::string WorldSave::Serialize() const noexcept
             Serialization::WriteVarInt(writer, cContainer.MergedPlayers.size());
             for (const String& cName : cContainer.MergedPlayers)
                 Serialization::WriteString(writer, cName);
-            Serialization::WriteVarInt(writer, cContainer.PlayerCopies.size());
-            for (const PlayerCopy& cCopy : cContainer.PlayerCopies)
-            {
-                Serialization::WriteString(writer, cCopy.Name);
-                cCopy.Content.Serialize(writer);
-            }
+            WriteCopies(writer, cContainer.PlayerCopies);
         }
 
         if (writer.WriteBytes(reinterpret_cast<const uint8_t*>(kEnd), sizeof(kEnd)))
@@ -76,7 +84,7 @@ std::optional<WorldSave> WorldSave::Parse(const std::string& acBytes) noexcept
     Buffer buffer(reinterpret_cast<const uint8_t*>(acBytes.data()), acBytes.size());
     Buffer::Reader reader(&buffer);
     uint64_t version = 0;
-    if (!ReadRaw(reader, kMagic, sizeof(kMagic) - 1) || !reader.ReadBits(version, 8) || version != kVersion)
+    if (!ReadRaw(reader, kMagic, sizeof(kMagic) - 1) || !reader.ReadBits(version, 8) || version < kOldestVersion || version > kVersion)
         return std::nullopt;
 
     // A count can't be larger than the bytes left, whatever a damaged file says
@@ -84,6 +92,21 @@ std::optional<WorldSave> WorldSave::Parse(const std::string& acBytes) noexcept
     {
         aCount = Serialization::ReadVarInt(reader);
         return aCount <= acBytes.size();
+    };
+
+    auto readCopies = [&](Vector<PlayerCopy>& aCopies)
+    {
+        size_t copies = 0;
+        if (!readCount(copies))
+            return false;
+        for (size_t j = 0; j < copies; ++j)
+        {
+            PlayerCopy copy;
+            copy.Name = Serialization::ReadString(reader);
+            copy.Content.Deserialize(reader);
+            aCopies.push_back(std::move(copy));
+        }
+        return true;
     };
 
     WorldSave save;
@@ -106,6 +129,8 @@ std::optional<WorldSave> WorldSave::Parse(const std::string& acBytes) noexcept
         DeadActor actor;
         actor.Id.Deserialize(reader);
         actor.Loot.Deserialize(reader);
+        if (version >= 3 && !readCopies(actor.PlayerCopies))
+            return std::nullopt;
         save.DeadActors.push_back(std::move(actor));
     }
 
@@ -120,16 +145,8 @@ std::optional<WorldSave> WorldSave::Parse(const std::string& acBytes) noexcept
             return std::nullopt;
         for (size_t j = 0; j < names; ++j)
             container.MergedPlayers.push_back(Serialization::ReadString(reader));
-        size_t copies = 0;
-        if (!readCount(copies))
+        if (!readCopies(container.PlayerCopies))
             return std::nullopt;
-        for (size_t j = 0; j < copies; ++j)
-        {
-            PlayerCopy copy;
-            copy.Name = Serialization::ReadString(reader);
-            copy.Content.Deserialize(reader);
-            container.PlayerCopies.push_back(std::move(copy));
-        }
         save.Containers.push_back(std::move(container));
     }
 

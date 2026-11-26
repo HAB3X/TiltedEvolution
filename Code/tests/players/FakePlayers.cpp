@@ -41,6 +41,7 @@
 #include <Messages/RequestCrimeAuthority.h>
 #include <Messages/RequestRevive.h>
 #include <Messages/NotifyRevive.h>
+#include <Messages/RequestDeathStateChange.h>
 #include <Messages/RequestOwnershipClaim.h>
 #include <Messages/CharacterSpawnRequest.h>
 #include <Messages/NotifyInventoryChanges.h>
@@ -216,6 +217,7 @@ struct FakePlayer final : Client
             const auto* pResponse = static_cast<AssignCharacterResponse*>(pMessage.get());
             AssignedIds[pResponse->Cookie] = pResponse->ServerId;
             AssignedEpochs[pResponse->Cookie] = pResponse->OwnershipEpoch;
+            AssignedInventories[pResponse->Cookie] = pResponse->CurrentInventory;
             break;
         }
         case kNotifyLootRefused: LootRefusals.push_back(*static_cast<NotifyLootRefused*>(pMessage.get())); break;
@@ -296,6 +298,7 @@ struct FakePlayer final : Client
     // Server ids of the characters this player assigned, by cookie
     std::map<uint32_t, uint32_t> AssignedIds;
     std::map<uint32_t, uint32_t> AssignedEpochs;
+    std::map<uint32_t, Inventory> AssignedInventories;
     // Movement relayed to this player, and the bytes it took
     std::vector<Movement> RelayedMovements;
     size_t MovementBytes = 0;
@@ -1962,6 +1965,134 @@ int RunReviveMember(const std::string& acEndpoint, const std::string& acPassword
     return s_failures ? 1 : 0;
 }
 
+// Per player loot on bodies: the owner kills an NPC, its game adds a death item (everyone's), then the owner loots the
+// sword and the shield; the looter isn't told of that, takes its own sword at once without giving it back, and its
+// copy still has the shield the owner took
+constexpr uint32_t kOwnBodyCookie = 0x5000;
+const GameId kFireSalts{0, 0x3AD5E};
+const GameId kLootShield{0, 0x12EB6};
+
+bool HasInventoryChange(const FakePlayer& acPlayer, uint32_t aServerId, const GameId& acItem)
+{
+    return std::any_of(acPlayer.InventoryChanges.begin(), acPlayer.InventoryChanges.end(),
+                       [&](const NotifyInventoryChanges& acChange) { return acChange.ServerId == aServerId && acChange.Item.BaseId == acItem; });
+}
+
+bool InventoryHas(const Inventory& acInventory, const GameId& acItem)
+{
+    return std::any_of(acInventory.Entries.begin(), acInventory.Entries.end(), [&](const Inventory::Entry& acEntry) { return acEntry.BaseId == acItem && acEntry.Count > 0; });
+}
+
+int RunOwnBodyOwner(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer owner("FakeOwnBodyOwner", acPassword);
+    owner.Connect(acEndpoint);
+    Check("body owner logs in", RunUntil(owner, [&] { return owner.LoggedIn; }));
+    Check("body owner gets its character", AssignAt(owner, 1, GameId(0, 0x14), kBodyX).has_value());
+    EnterRelayCell(owner, kBodyX);
+    Check("sees the looter join", RunUntil(owner, [&] { return !owner.JoinedNames.empty(); }, 30s));
+    RunUntil(owner, [] { return false; }, 3s);
+
+    AssignCharacterRequest npc;
+    npc.Cookie = kOwnBodyCookie;
+    npc.ReferenceId = GameId(0, kOwnBodyCookie);
+    npc.CellId = kRelayCell;
+    npc.WorldSpaceId = kRelayWorld;
+    npc.Position = glm::vec3(kBodyX, 0.f, 0.f);
+    Inventory::Entry sword{};
+    sword.BaseId = kLootSword;
+    sword.Count = 1;
+    npc.CurrentActorData.InitialInventory.Entries.push_back(sword);
+    Inventory::Entry shield = sword;
+    shield.BaseId = kLootShield;
+    npc.CurrentActorData.InitialInventory.Entries.push_back(shield);
+    owner.Send(npc);
+    Check("the NPC is assigned", RunUntil(owner, [&] { return owner.AssignedIds.count(kOwnBodyCookie) != 0; }));
+    if (!owner.AssignedIds.count(kOwnBodyCookie))
+        return 1;
+    const uint32_t cId = owner.AssignedIds[kOwnBodyCookie];
+    const uint32_t cEpoch = owner.AssignedEpochs[kOwnBodyCookie];
+    // The looter's game shows it first
+    RunUntil(owner, [] { return false; }, 2s);
+
+    RequestDeathStateChange death;
+    death.Id = cId;
+    death.OwnershipEpoch = cEpoch;
+    death.IsDead = true;
+    owner.Send(death);
+
+    RequestInventoryChanges deathItem;
+    deathItem.ServerId = cId;
+    deathItem.OwnershipEpoch = cEpoch;
+    deathItem.Item.BaseId = kFireSalts;
+    deathItem.Item.Count = 1;
+    deathItem.UpdateClients = true;
+    owner.Send(deathItem);
+
+    RequestInventoryChanges take = deathItem;
+    take.Item.BaseId = kLootSword;
+    take.Item.Count = -1;
+    owner.Send(take);
+    take.Item.BaseId = kLootShield;
+    owner.Send(take);
+    RunUntil(owner, [] { return false; }, 12s);
+    Check("the owner keeps its sword", owner.LootRefusals.empty(), std::to_string(owner.LootRefusals.size()) + " refusals");
+    return s_failures ? 1 : 0;
+}
+
+int RunOwnBodyLooter(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer looter("FakeOwnBodyLooter", acPassword);
+    looter.Connect(acEndpoint);
+    Check("body looter logs in", RunUntil(looter, [&] { return looter.LoggedIn; }));
+    Check("body looter gets its character", AssignAt(looter, 1, GameId(0, 0x14), kBodyX + 50.f).has_value());
+    EnterRelayCell(looter, kBodyX + 50.f);
+
+    std::optional<CharacterSpawnRequest> npc;
+    Check("is sent the owner's NPC", RunUntil(
+                                         looter,
+                                         [&]
+                                         {
+                                             for (const auto& [cId, cSpawn] : looter.Spawns)
+                                             {
+                                                 if (!cSpawn.IsPlayer)
+                                                     npc = cSpawn;
+                                             }
+                                             return npc.has_value();
+                                         },
+                                         30s));
+    if (!npc)
+        return 1;
+
+    Check("the body's death item reaches every player", RunUntil(looter, [&] { return HasInventoryChange(looter, npc->ServerId, kFireSalts); }, 20s));
+
+    // Right away, while the owner's take of the same sword would make it give its back without per player loot
+    RequestInventoryChanges take;
+    take.ServerId = npc->ServerId;
+    take.OwnershipEpoch = npc->OwnershipEpoch;
+    take.Item.BaseId = kLootSword;
+    take.Item.Count = -1;
+    take.UpdateClients = true;
+    looter.Send(take);
+    RunUntil(looter, [] { return false; }, 3s);
+    Check("takes its own sword without giving it back", looter.LootRefusals.empty(), std::to_string(looter.LootRefusals.size()) + " refusals");
+    Check("the owner's looting isn't sent to others", !HasInventoryChange(looter, npc->ServerId, kLootSword) && !HasInventoryChange(looter, npc->ServerId, kLootShield));
+
+    AssignCharacterRequest again;
+    again.Cookie = kOwnBodyCookie;
+    again.ReferenceId = GameId(0, kOwnBodyCookie);
+    again.CellId = kRelayCell;
+    again.WorldSpaceId = kRelayWorld;
+    again.Position = glm::vec3(kBodyX, 0.f, 0.f);
+    looter.Send(again);
+    const bool cAnswered = RunUntil(looter, [&] { return looter.AssignedInventories.count(kOwnBodyCookie) != 0; });
+    const Inventory* pCopy = cAnswered ? &looter.AssignedInventories[kOwnBodyCookie] : nullptr;
+    Check("its own copy has the death item and the shield the owner took, not the sword it took", pCopy && InventoryHas(*pCopy, kFireSalts) && InventoryHas(*pCopy, kLootShield) && !InventoryHas(*pCopy, kLootSword),
+          pCopy ? std::to_string(pCopy->Entries.size()) + " entries" : "no answer");
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -1992,6 +2123,7 @@ int RunReviveMember(const std::string& acEndpoint, const std::string& acPassword
 // FakePlayers.exe catchupleader|catchupmember [address:port] [password]: start the leader first
 // FakePlayers.exe crimeleader|crimemember [address:port] [password]: start the leader first
 // FakePlayers.exe reviveleader|revivemember [address:port] [password]: start the leader first
+// FakePlayers.exe ownbodyowner|ownbodylooter [address:port] [password]: start the owner first (bPerPlayerLoot=true)
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -2101,6 +2233,10 @@ int main(int argc, char** argv)
         return RunShareMember(cEndpoint, cPassword);
     if (cRole == "catchupleader")
         return RunCatchUpLeader(cEndpoint, cPassword);
+    if (cRole == "ownbodyowner")
+        return RunOwnBodyOwner(cEndpoint, cPassword);
+    if (cRole == "ownbodylooter")
+        return RunOwnBodyLooter(cEndpoint, cPassword);
     if (cRole == "reviveleader")
         return RunReviveLeader(cEndpoint, cPassword);
     if (cRole == "revivemember")
@@ -2111,6 +2247,6 @@ int main(int argc, char** argv)
         return RunCrimeMember(cEndpoint, cPassword);
     if (cRole == "catchupmember")
         return RunCatchUpMember(cEndpoint, cPassword);
-    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|crimeleader|crimemember|reviveleader|revivemember|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|crimeleader|crimemember|reviveleader|revivemember|ownbodyowner|ownbodylooter|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
     return 2;
 }

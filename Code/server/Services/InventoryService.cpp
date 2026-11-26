@@ -29,6 +29,18 @@ bool InventoryService::IsPerPlayerLoot() noexcept
     return bPerPlayerLoot;
 }
 
+bool InventoryService::IsPerPlayerBody(const World& acWorld, const entt::entity aEntity) noexcept
+{
+    const auto* pCharacter = acWorld.try_get<CharacterComponent>(aEntity);
+    return bPerPlayerLoot && pCharacter && pCharacter->IsDead() && !pCharacter->IsPlayer() && !pCharacter->IsPlayerSummon();
+}
+
+const Inventory& InventoryService::InventoryFor(const World& acWorld, const entt::entity aEntity, const Player& acPlayer) noexcept
+{
+    const auto& cInventory = acWorld.get<InventoryComponent>(aEntity);
+    return IsPerPlayerBody(acWorld, aEntity) ? cInventory.ContentFor(acPlayer.GetUsername()) : cInventory.Content;
+}
+
 InventoryService::InventoryService(World& aWorld, entt::dispatcher& aDispatcher)
     : m_world(aWorld)
 {
@@ -133,6 +145,23 @@ void InventoryService::OnInventoryChanges(const PacketEvent<RequestInventoryChan
         return;
     }
 
+    // Per player loot on a body: the looter's own copy, unless it is the body's own death loot (ChangeBody)
+    if (IsPerPlayerBody(m_world, *it))
+    {
+        const bool cIsOwner = pOwnerComponent && pOwnerComponent->GetOwner() == acMessage.pPlayer;
+        const auto cChange = inventoryComponent.ChangeBody(acMessage.pPlayer->GetUsername(), cIsOwner, message.Item, GameServer::Get()->GetTick());
+        if (!cChange.Shared || cChange.Applied == 0)
+            return;
+
+        NotifyInventoryChanges notify;
+        notify.ServerId = message.ServerId;
+        notify.OwnershipEpoch = message.OwnershipEpoch;
+        notify.Item = message.Item;
+        if (!GameServer::Get()->SendToPlayersInRange(notify, *it, acMessage.GetSender()))
+            spdlog::error("{}: SendToPlayersInRange failed", __FUNCTION__);
+        return;
+    }
+
     // A dead NPC's loot only changes through looting and the owner's snapshots, so the server's copy settles races
     // over a body as it does over a container
     const auto* pCharacterComponent = m_world.try_get<CharacterComponent>(*it);
@@ -206,6 +235,13 @@ void InventoryService::OnInventorySnapshot(const PacketEvent<RequestInventorySna
         spdlog::debug(
             "Rejected inventory snapshot from player {:X} for actor {:X}; current owner is {:X} and requested epoch {} does not match {}",
             acMessage.pPlayer->GetId(), message.ServerId, ownerId, message.OwnershipEpoch, ownerComponent.OwnershipEpoch);
+        return;
+    }
+
+    // A per player body: the owner's game only shows what the owner looted, which is their own copy
+    if (IsPerPlayerBody(m_world, *it))
+    {
+        view.get<InventoryComponent>(*it).PlayerCopies[acMessage.pPlayer->GetUsername()] = message.CurrentInventory;
         return;
     }
 

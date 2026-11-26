@@ -10,6 +10,8 @@ struct RequestInventorySnapshot;
 struct RequestEquipmentChanges;
 struct DrawWeaponRequest;
 struct PlayerLeaveCellEvent;
+struct Player;
+#include <Structs/Inventory.h>
 
 /**
  * @brief Relays inventory/equipment changes and updates the server side state.
@@ -21,6 +23,10 @@ public:
 
     // Gameplay:bPerPlayerLoot: each player gets their own copy of every loot container instead of first come first served
     [[nodiscard]] static bool IsPerPlayerLoot() noexcept;
+    // A dead NPC whose loot each player has their own copy of (per player loot)
+    [[nodiscard]] static bool IsPerPlayerBody(const World& acWorld, entt::entity aEntity) noexcept;
+    // The inventory apPlayer is shown of a character: their own copy of a per player body, else the one everyone sees
+    [[nodiscard]] static const Inventory& InventoryFor(const World& acWorld, entt::entity aEntity, const Player& acPlayer) noexcept;
 
     /**
      * @brief Relays inventory changes to other clients and updates server side inventories.

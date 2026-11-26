@@ -1,4 +1,5 @@
 #include <Services/CharacterService.h>
+#include <Services/InventoryService.h>
 #include <Components.h>
 #include <GameServer.h>
 #include <World.h>
@@ -89,7 +90,7 @@ CharacterService::CharacterService(World& aWorld, entt::dispatcher& aDispatcher)
 {
 }
 
-void CharacterService::Serialize(World& aRegistry, entt::entity aEntity, CharacterSpawnRequest* apSpawnRequest) noexcept
+void CharacterService::Serialize(World& aRegistry, entt::entity aEntity, CharacterSpawnRequest* apSpawnRequest, const Player* apRecipient) noexcept
 {
     const auto& characterComponent = aRegistry.get<CharacterComponent>(aEntity);
 
@@ -119,7 +120,7 @@ void CharacterService::Serialize(World& aRegistry, entt::entity aEntity, Charact
     const auto* pInventoryComponent = aRegistry.try_get<InventoryComponent>(aEntity);
     if (pInventoryComponent)
     {
-        apSpawnRequest->InventoryContent = pInventoryComponent->Content;
+        apSpawnRequest->InventoryContent = apRecipient ? InventoryService::InventoryFor(aRegistry, aEntity, *apRecipient) : pInventoryComponent->Content;
     }
 
     const auto* pActorValuesComponent = aRegistry.try_get<ActorValuesComponent>(aEntity);
@@ -180,6 +181,8 @@ void CharacterService::OnCharacterExteriorCellChange(const CharacterExteriorCell
         }
         else if (pPlayer->GetCellComponent().WorldSpaceId == acEvent.WorldSpaceId && GridCellCoords::IsCellInGridCell(acEvent.CurrentCoords, pPlayer->GetCellComponent().CenterCoords, false))
         {
+            if (m_world.all_of<InventoryComponent>(acEvent.Entity))
+                spawnMessage.InventoryContent = InventoryService::InventoryFor(m_world, acEvent.Entity, *pPlayer);
             pPlayer->Send(spawnMessage);
         }
     }
@@ -199,7 +202,11 @@ void CharacterService::OnCharacterInteriorCellChange(const CharacterInteriorCell
             continue;
 
         if (acEvent.NewCell == pPlayer->GetCellComponent().Cell)
+        {
+            if (m_world.all_of<InventoryComponent>(acEvent.Entity))
+                spawnMessage.InventoryContent = InventoryService::InventoryFor(m_world, acEvent.Entity, *pPlayer);
             pPlayer->Send(spawnMessage);
+        }
         else
             pPlayer->Send(removeMessage);
     }
@@ -251,7 +258,7 @@ void CharacterService::OnAssignCharacterRequest(const PacketEvent<AssignCharacte
             AssignCharacterResponse response{};
             response.Cookie = message.Cookie;
             response.Owner = isOwner;
-            PopulateAssignmentResponse(*itor, response);
+            PopulateAssignmentResponse(*itor, response, *acMessage.pPlayer);
             acMessage.pPlayer->Send(response);
 
             // The assignment response establishes a remote component before the grant arrives.
@@ -428,7 +435,7 @@ void CharacterService::OnCharacterRemoveEvent(const CharacterRemoveEvent& acEven
         // Only actors from plugins have a FormIdComponent; players and temporaries never get one.
         if (pCharacter && pFormId && pInventory && pCharacter->IsDead() && !pCharacter->IsPlayerSummon())
         {
-            m_deadActors[pFormId->Id] = pInventory->Content;
+            m_deadActors[pFormId->Id] = {pInventory->Content, pInventory->PlayerCopies};
             spdlog::debug("Kept death of {:x}:{:x} after removing actor {:X}", pFormId->Id.ModId, pFormId->Id.BaseId, acEvent.ServerId);
         }
     }
@@ -467,6 +474,8 @@ void CharacterService::OnOwnershipClaimRequest(const PacketEvent<RequestOwnershi
         notify.OwnerPlayerId = pOwner->GetId();
         notify.OwnershipEpoch = ownerComponent.OwnershipEpoch;
         notify.CurrentActorData = BuildActorData(cEntity);
+        if (m_world.all_of<InventoryComponent>(cEntity))
+            notify.CurrentActorData.InitialInventory = InventoryService::InventoryFor(m_world, cEntity, *acMessage.pPlayer);
         notify.LeveledNpcPickId = view.get<CharacterComponent>(*it).LeveledNpcPickId.Id;
         acMessage.pPlayer->Send(notify);
         return;
@@ -549,8 +558,7 @@ void CharacterService::OnCharacterSpawned(const CharacterSpawnedEvent& acEvent) 
     Serialize(m_world, acEvent.Entity, &message);
 
     const auto& ownerComp = m_world.get<OwnerComponent>(acEvent.Entity);
-    if (!GameServer::Get()->SendToPlayersInRange(message, acEvent.Entity, ownerComp.GetOwner()))
-        spdlog::error("{}: SendToPlayersInRange failed", __FUNCTION__);
+    SendToPlayersInRangeShowingLoot(message, message.InventoryContent, acEvent.Entity, ownerComp.GetOwner());
 
     GameServer::Get()->GetWorld().GetScriptService().HandleCharacterSpawn(acEvent.Entity);
 }
@@ -774,7 +782,7 @@ void CharacterService::OnRequestRespawn(const PacketEvent<RequestRespawn>& acMes
     else
     {
         CharacterSpawnRequest message;
-        Serialize(m_world, *it, &message);
+        Serialize(m_world, *it, &message, acMessage.GetSender());
 
         acMessage.GetSender()->Send(message);
     }
@@ -910,7 +918,8 @@ void CharacterService::CreateCharacter(const PacketEvent<AssignCharacterRequest>
         if (const auto deadIt = m_deadActors.find(gameId); deadIt != m_deadActors.end())
         {
             characterComponent.SetDead(true);
-            inventoryComponent.Content = std::move(deadIt->second);
+            inventoryComponent.Content = std::move(deadIt->second.Content);
+            inventoryComponent.PlayerCopies = std::move(deadIt->second.PlayerCopies);
             m_deadActors.erase(deadIt);
             forceDead = true;
             spdlog::debug("FormId: {:x}:{:x} was killed while nobody had it loaded, assigning it dead", gameId.ModId, gameId.BaseId);
@@ -920,7 +929,7 @@ void CharacterService::CreateCharacter(const PacketEvent<AssignCharacterRequest>
     AssignCharacterResponse response{};
     response.Cookie = message.Cookie;
     response.Owner = true;
-    PopulateAssignmentResponse(cEntity, response);
+    PopulateAssignmentResponse(cEntity, response, *acMessage.pPlayer);
     response.ForceDead = forceDead;
 
     pServer->Send(acMessage.pPlayer->GetConnectionId(), response);
@@ -929,7 +938,7 @@ void CharacterService::CreateCharacter(const PacketEvent<AssignCharacterRequest>
     dispatcher.trigger(CharacterSpawnedEvent(cEntity));
 }
 
-void CharacterService::PopulateAssignmentResponse(const entt::entity aEntity, AssignCharacterResponse& aResponse) const noexcept
+void CharacterService::PopulateAssignmentResponse(const entt::entity aEntity, AssignCharacterResponse& aResponse, const Player& acRecipient) const noexcept
 {
     aResponse.ServerId = World::ToInteger(aEntity);
 
@@ -939,8 +948,8 @@ void CharacterService::PopulateAssignmentResponse(const entt::entity aEntity, As
     if (const auto* pActorValuesComponent = m_world.try_get<ActorValuesComponent>(aEntity))
         aResponse.AllActorValues = pActorValuesComponent->CurrentActorValues;
 
-    if (const auto* pInventoryComponent = m_world.try_get<InventoryComponent>(aEntity))
-        aResponse.CurrentInventory = pInventoryComponent->Content;
+    if (m_world.all_of<InventoryComponent>(aEntity))
+        aResponse.CurrentInventory = InventoryService::InventoryFor(m_world, aEntity, acRecipient);
 
     if (const auto* pCharacterComponent = m_world.try_get<CharacterComponent>(aEntity))
     {
@@ -1095,12 +1104,15 @@ bool CharacterService::TransferOwnership(Player* apPlayer, const entt::entity aE
     if (aResetInvalidOwners)
         ownerComponent.InvalidOwners.clear();
 
-    if (!GameServer::Get()->SendToPlayersInRange(notify, aEntity, pOldOwner))
-        spdlog::error("Failed to broadcast ownership transfer for actor {:X}", notify.ServerId);
+    SendToPlayersInRangeShowingLoot(notify, notify.CurrentActorData.InitialInventory, aEntity, pOldOwner);
 
     // The former owner may already be out of range, so notify it directly as well.
     if (pOldOwner)
+    {
+        if (m_world.all_of<InventoryComponent>(aEntity))
+            notify.CurrentActorData.InitialInventory = InventoryService::InventoryFor(m_world, aEntity, *pOldOwner);
         pOldOwner->Send(notify);
+    }
 
     spdlog::debug(
         "Transferred ownership of actor {:X} from player {:X} to player {:X} for {} (epoch {} to {})",
@@ -1142,6 +1154,26 @@ void CharacterService::TransferToNextOwner(const entt::entity aEntity, const Own
 
     spdlog::debug("Removing actor {:X} after {} because no eligible owner remains", World::ToInteger(aEntity), pReasonName);
     m_world.GetDispatcher().trigger(CharacterRemoveEvent(World::ToInteger(aEntity)));
+}
+
+void CharacterService::SendToPlayersInRangeShowingLoot(ServerMessage& aMessage, Inventory& aInventory, const entt::entity aEntity, const Player* apExcluded) const noexcept
+{
+    if (!InventoryService::IsPerPlayerBody(m_world, aEntity))
+    {
+        if (!GameServer::Get()->SendToPlayersInRange(aMessage, aEntity, apExcluded))
+            spdlog::error("{}: SendToPlayersInRange failed for actor {:X}", __FUNCTION__, World::ToInteger(aEntity));
+        return;
+    }
+
+    const auto& cCell = m_world.get<CellIdComponent>(aEntity);
+    const bool cIsDragon = m_world.get<CharacterComponent>(aEntity).IsDragon();
+    for (Player* pPlayer : m_world.GetPlayerManager())
+    {
+        if (pPlayer == apExcluded || !cCell.IsInRange(pPlayer->GetCellComponent(), cIsDragon))
+            continue;
+        aInventory = InventoryService::InventoryFor(m_world, aEntity, *pPlayer);
+        pPlayer->Send(aMessage);
+    }
 }
 
 ActorData CharacterService::BuildActorData(const entt::entity acEntity) const noexcept

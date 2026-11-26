@@ -39,11 +39,19 @@ struct CharacterService
 
     TP_NOCOPYMOVE(CharacterService);
 
-    static void Serialize(World& aRegistry, entt::entity aEntity, CharacterSpawnRequest* apSpawnRequest) noexcept;
+    // apRecipient: who it is for, so a per player body shows their own loot (InventoryService::InventoryFor)
+    static void Serialize(World& aRegistry, entt::entity aEntity, CharacterSpawnRequest* apSpawnRequest, const Player* apRecipient = nullptr) noexcept;
+
+    // A killed NPC's loot: what everyone finds, and under per player loot each player's own copy
+    struct DeadLoot
+    {
+        Inventory Content{};
+        Map<String, Inventory> PlayerCopies{};
+    };
 
     // NPCs killed whose entity is gone, with their loot (see m_deadActors): the world save keeps them between runs
-    [[nodiscard]] const Map<GameId, Inventory>& GetDeadActors() const noexcept { return m_deadActors; }
-    void RestoreDeadActors(Map<GameId, Inventory> aDeadActors) noexcept { m_deadActors = std::move(aDeadActors); }
+    [[nodiscard]] const Map<GameId, DeadLoot>& GetDeadActors() const noexcept { return m_deadActors; }
+    void RestoreDeadActors(Map<GameId, DeadLoot> aDeadActors) noexcept { m_deadActors = std::move(aDeadActors); }
 
 protected:
     enum class OwnershipTransferReason : uint8_t
@@ -80,7 +88,9 @@ protected:
 
     void CreateCharacter(const PacketEvent<AssignCharacterRequest>& acMessage) const noexcept;
     bool ShouldSuppressEncounter(const PacketEvent<AssignCharacterRequest>& acMessage) const noexcept;
-    void PopulateAssignmentResponse(entt::entity aEntity, AssignCharacterResponse& aResponse) const noexcept;
+    void PopulateAssignmentResponse(entt::entity aEntity, AssignCharacterResponse& aResponse, const Player& acRecipient) const noexcept;
+    // Sends to the players in range but apExcluded, each shown their own loot when the character is a per player body
+    void SendToPlayersInRangeShowingLoot(ServerMessage& aMessage, Inventory& aInventory, entt::entity aEntity, const Player* apExcluded) const noexcept;
     static const char* GetOwnershipTransferReasonName(OwnershipTransferReason aReason) noexcept;
     bool CanClaimOwnership(Player* apPlayer, entt::entity aEntity, uint32_t aExpectedOwnershipEpoch, OwnershipTransferReason aReason) const noexcept;
     bool TransferOwnership(Player* apPlayer, entt::entity aEntity, OwnershipTransferReason aReason, bool aResetInvalidOwners = true) const noexcept;
@@ -96,7 +106,7 @@ private:
 
     // Dead actors whose server entity was destroyed, so a later loader gets them dead and with their looted inventory.
     // shortcut: lives until server restart, so an NPC respawned by a cell reset comes back dead; store game time to expire if it matters.
-    mutable Map<GameId, Inventory> m_deadActors;
+    mutable Map<GameId, DeadLoot> m_deadActors;
 
     entt::scoped_connection m_updateConnection;
     entt::scoped_connection m_exteriorCellChangeEventConnection;

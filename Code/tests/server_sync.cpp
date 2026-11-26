@@ -123,3 +123,55 @@ TEST_CASE("With per player loot, each player takes from their own copy of a cont
     REQUIRE(chest.ChangePlayerCopy("Serana", take) == -1);
     REQUIRE(chest.ContentFor("Serana").Entries.empty());
 }
+
+TEST_CASE("Per player loot on bodies", "[server.loot]")
+{
+    InventoryComponent body;
+    Inventory::Entry sword{};
+    sword.BaseId = GameId(0, 0x12EB7);
+    sword.Count = 1;
+    body.Content.Entries.push_back(sword);
+    body.DeathTick = 1000;
+
+    Inventory::Entry salts = sword;
+    salts.BaseId = GameId(0, 0x3AD5E);
+    Inventory::Entry take = sword;
+    take.Count = -1;
+
+    GIVEN("A player looting it takes from their own copy only")
+    {
+        const auto cChange = body.ChangeBody("Lydia", false, take, 1500);
+        REQUIRE(cChange.Applied == -1);
+        REQUIRE_FALSE(cChange.Shared);
+        REQUIRE(body.ContentFor("Lydia").Entries.empty());
+        REQUIRE(body.ContentFor("Serana").Entries.size() == 1);
+        // The owner looting is no different
+        REQUIRE_FALSE(body.ChangeBody("Serana", true, take, 9000).Shared);
+        REQUIRE(body.ContentFor("Serana").Entries.empty());
+        REQUIRE(body.Content.Entries.size() == 1);
+    }
+
+    GIVEN("The owner's game adding death items right after the death gives them to everyone, copies too")
+    {
+        body.ChangeBody("Lydia", false, take, 1200);
+        const auto cChange = body.ChangeBody("Serana", true, salts, 1000 + InventoryComponent::kDeathItemsWindow);
+        REQUIRE(cChange.Shared);
+        REQUIRE(body.Content.Entries.size() == 2);
+        REQUIRE(body.ContentFor("Lydia").Entries.size() == 1);
+        REQUIRE(body.ContentFor("Lydia").Entries[0].BaseId == salts.BaseId);
+    }
+
+    GIVEN("Items put in later, or by someone else, stay in that player's copy")
+    {
+        REQUIRE_FALSE(body.ChangeBody("Serana", true, salts, 1001 + InventoryComponent::kDeathItemsWindow).Shared);
+        REQUIRE_FALSE(body.ChangeBody("Lydia", false, salts, 1100).Shared);
+        REQUIRE(body.Content.Entries.size() == 1);
+        REQUIRE(body.ContentFor("Lydia").Entries.size() == 2);
+    }
+
+    GIVEN("A body never seen alive has no death items window")
+    {
+        body.DeathTick = 0;
+        REQUIRE_FALSE(body.ChangeBody("Serana", true, salts, 10).Shared);
+    }
+}

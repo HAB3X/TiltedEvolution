@@ -57,7 +57,7 @@ void UpdateCharacterVisibility(World& aWorld, Player* apPlayer, const CellIdComp
         }
 
         CharacterSpawnRequest spawnMessage;
-        CharacterService::Serialize(aWorld, character, &spawnMessage);
+        CharacterService::Serialize(aWorld, character, &spawnMessage, apPlayer);
         apPlayer->Send(spawnMessage);
     }
 }
@@ -117,7 +117,7 @@ void PlayerService::HandleGridCellShift(const PacketEvent<ShiftGridCellRequest>&
             }
 
             CharacterSpawnRequest spawnMessage;
-            CharacterService::Serialize(m_world, *character, &spawnMessage);
+            CharacterService::Serialize(m_world, *character, &spawnMessage, otherPlayer);
             otherPlayer->Send(spawnMessage);
         }
     }

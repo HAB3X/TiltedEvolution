@@ -112,6 +112,12 @@ void ActorValueService::OnDeathStateChange(const PacketEvent<RequestDeathStateCh
         return;
 
     auto& characterComponent = characterView.get<CharacterComponent>(*it);
+    // Per player loot: what the game adds to the body right after the death is everyone's (InventoryComponent::ChangeBody)
+    if (message.IsDead && !characterComponent.IsDead())
+    {
+        if (auto* pInventory = m_world.try_get<InventoryComponent>(*it))
+            pInventory->DeathTick = GameServer::Get()->GetTick();
+    }
     characterComponent.SetDead(message.IsDead);
     spdlog::debug("Updating death state {:x}:{}", message.Id, message.IsDead);
 

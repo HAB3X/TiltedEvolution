@@ -13,7 +13,7 @@ TEST_CASE("World saves", "[server.world_save]")
     gold.BaseId = GameId(0, 0xF);
     gold.Count = 250;
     loot.Entries.push_back(gold);
-    save.DeadActors.push_back({GameId(0, 0x1A69C), loot});
+    save.DeadActors.push_back({GameId(0, 0x1A69C), loot, {{"Serana", Inventory{}}}});
 
     WorldSave::Container chest;
     chest.Object.Id = GameId(1, 0x812);
@@ -34,4 +34,11 @@ TEST_CASE("World saves", "[server.world_save]")
     REQUIRE_FALSE(WorldSave::Parse("STWORLD\x02").has_value());
     REQUIRE_FALSE(WorldSave::Parse("not a world").has_value());
     REQUIRE(WorldSave::Parse(WorldSave{}.Serialize()) == WorldSave{});
+
+    // A version 2 file, from before bodies kept players' copies, still loads
+    WorldSave containersOnly = save;
+    containersOnly.DeadActors.clear();
+    std::string version2 = containersOnly.Serialize();
+    version2[7] = 2;
+    REQUIRE(WorldSave::Parse(version2) == containersOnly);
 }

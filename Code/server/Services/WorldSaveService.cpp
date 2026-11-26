@@ -83,15 +83,21 @@ void WorldSaveService::Save() noexcept
         save.Plugins.push_back({cName, cEntry.id, true});
 
     // Killed and unloaded, then killed and still loaded
-    Map<GameId, Inventory> deadActors = m_world.GetCharacterService().GetDeadActors();
+    Map<GameId, CharacterService::DeadLoot> deadActors = m_world.GetCharacterService().GetDeadActors();
     for (auto entity : m_world.view<CharacterComponent, FormIdComponent, InventoryComponent>())
     {
         const auto& cCharacter = m_world.get<CharacterComponent>(entity);
+        const auto& cInventory = m_world.get<InventoryComponent>(entity);
         if (cCharacter.IsDead() && !cCharacter.IsPlayerSummon())
-            deadActors[m_world.get<FormIdComponent>(entity).Id] = m_world.get<InventoryComponent>(entity).Content;
+            deadActors[m_world.get<FormIdComponent>(entity).Id] = {cInventory.Content, cInventory.PlayerCopies};
     }
     for (const auto& [cId, cLoot] : deadActors)
-        save.DeadActors.push_back({cId, cLoot});
+    {
+        WorldSave::DeadActor actor{cId, cLoot.Content};
+        for (const auto& [cName, cCopy] : cLoot.PlayerCopies)
+            actor.PlayerCopies.push_back({cName, cCopy});
+        save.DeadActors.push_back(std::move(actor));
+    }
 
     for (auto entity : m_world.view<FormIdComponent, ObjectComponent, CellIdComponent, InventoryComponent>())
     {
@@ -175,9 +181,14 @@ void WorldSaveService::Load() noexcept
         }
     }
 
-    Map<GameId, Inventory> deadActors;
+    Map<GameId, CharacterService::DeadLoot> deadActors;
     for (const WorldSave::DeadActor& cActor : cSave->DeadActors)
-        deadActors[cActor.Id] = cActor.Loot;
+    {
+        auto& loot = deadActors[cActor.Id];
+        loot.Content = cActor.Loot;
+        for (const WorldSave::PlayerCopy& cCopy : cActor.PlayerCopies)
+            loot.PlayerCopies[cCopy.Name] = cCopy.Content;
+    }
     m_world.GetCharacterService().RestoreDeadActors(std::move(deadActors));
 
     for (const WorldSave::Container& cContainer : cSave->Containers)

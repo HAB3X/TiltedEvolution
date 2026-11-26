@@ -30,6 +30,32 @@ struct InventoryComponent
         return it.value().AddOrRemoveEntryClamped(acItem);
     }
 
+    // Per player loot on a body: when it was seen dying (server ms), 0 for one never seen alive
+    uint64_t DeathTick{};
+    // What the body's owner's game adds this soon after the death is the body's own loot (the game's death items, death
+    // scripts), so everyone's copy gets it; anything else is the player looting or stashing in their own copy
+    static constexpr uint64_t kDeathItemsWindow = 5000;
+
+    struct BodyChange
+    {
+        int32_t Applied{};
+        // Everyone's: other players' games need it too
+        bool Shared{};
+    };
+
+    // A player's change to a body under per player loot (see kDeathItemsWindow)
+    BodyChange ChangeBody(const String& acPlayerName, const bool aIsOwner, const Inventory::Entry& acItem, const uint64_t aNow) noexcept
+    {
+        if (aIsOwner && acItem.Count > 0 && DeathTick != 0 && aNow <= DeathTick + kDeathItemsWindow)
+        {
+            Content.AddOrRemoveEntry(acItem);
+            for (auto it = PlayerCopies.begin(); it != PlayerCopies.end(); ++it)
+                it.value().AddOrRemoveEntry(acItem);
+            return {acItem.Count, true};
+        }
+        return {ChangePlayerCopy(acPlayerName, acItem), false};
+    }
+
     // Two players taking the same items out of a container at once both get them in their game. The later one's
     // take finds the server's copy short; what other players took just before is that player's to give back. A
     // shortfall nobody else explains is the server not knowing the item, and the player keeps it, as before.
