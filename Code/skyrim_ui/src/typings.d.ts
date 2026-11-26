@@ -371,6 +371,14 @@ interface SkyrimTogether {
   connect(host: string, port: number, password: string): void;
 
   /**
+   * Start the server next to the game and connect to it.
+   *
+   * @param password Password friends join with.
+   * @param hostWorld Whether friends who join take over the host's world.
+   */
+  hostServer(password: string, hostWorld: boolean): void;
+
+  /**
    * Disconnect from server or cancel connection.
    */
   disconnect(): void;

@@ -1,59 +1,101 @@
-<div class="container">
-  <div class="instructions">
-    <p [innerHtml]="'COMPONENT.CONNECT.INFO.SERVER_ADDRESS' | transloco"></p>
-    <p class="warning">
-      {{ 'COMPONENT.CONNECT.INFO.HELGEN' | transloco }}
-    </p>
+@if (hosting) {
+  <div class="container">
+    <div class="instructions">
+      <p>{{ 'COMPONENT.CONNECT.HOST.INFO' | transloco }}</p>
+    </div>
+    <input
+      type="text"
+      [placeholder]="'COMPONENT.CONNECT.PASSWORD' | transloco"
+      spellcheck="false"
+      [(ngModel)]="hostPassword"
+      (keydown.enter)="host()"
+    />
+    <div class="password-options">
+      <span>
+        <input type="checkbox" id="host-world" [(ngModel)]="hostWorld" />
+        <label for="host-world">{{
+          'COMPONENT.CONNECT.HOST.HOST_WORLD' | transloco
+        }}</label>
+      </span>
+    </div>
+    <app-action-buttons>
+      <button
+        [disabled]="connecting"
+        (click)="host()"
+        data-style-ornament="simple"
+      >
+        {{ 'COMPONENT.CONNECT.HOST.START' | transloco }}
+      </button>
+      <button
+        [disabled]="connecting"
+        (click)="showHost(false)"
+        data-style-ornament="simple"
+      >
+        {{ 'COMPONENT.CONNECT.HOST.BACK' | transloco }}
+      </button>
+    </app-action-buttons>
   </div>
+} @else {
+  <div class="container">
+    <div class="instructions">
+      <p [innerHtml]="'COMPONENT.CONNECT.INFO.SERVER_ADDRESS' | transloco"></p>
+      <p class="warning">
+        {{ 'COMPONENT.CONNECT.INFO.HELGEN' | transloco }}
+      </p>
+    </div>
 
-  <input
-    #input
-    type="text"
-    [placeholder]="'COMPONENT.CONNECT.ADDRESS' | transloco"
-    (keydown.enter)="connect()"
-    [(ngModel)]="address"
-    spellcheck="false"
-  />
-  <input
-    [type]="hidePassword ? 'password' : 'text'"
-    [placeholder]="'COMPONENT.CONNECT.PASSWORD' | transloco"
-    spellcheck="false"
-    [(ngModel)]="password"
-    (keydown.enter)="connect()"
-  />
-  <div class="password-options">
-    <span>
-      <input type="checkbox" id="save-password" [(ngModel)]="savePassword" />
-      <label for="save-password">{{
-        'COMPONENT.CONNECT.SAVE_PASSWORD' | transloco
-      }}</label>
-    </span>
-    <span>
-      <input type="checkbox" id="hide-password" [(ngModel)]="hidePassword" />
-      <label for="hide-password">{{
-        'COMPONENT.CONNECT.HIDE_PASSWORD' | transloco
-      }}</label>
-    </span>
+    <input
+      #input
+      type="text"
+      [placeholder]="'COMPONENT.CONNECT.ADDRESS' | transloco"
+      (keydown.enter)="connect()"
+      [(ngModel)]="address"
+      spellcheck="false"
+    />
+    <input
+      [type]="hidePassword ? 'password' : 'text'"
+      [placeholder]="'COMPONENT.CONNECT.PASSWORD' | transloco"
+      spellcheck="false"
+      [(ngModel)]="password"
+      (keydown.enter)="connect()"
+    />
+    <div class="password-options">
+      <span>
+        <input type="checkbox" id="save-password" [(ngModel)]="savePassword" />
+        <label for="save-password">{{
+          'COMPONENT.CONNECT.SAVE_PASSWORD' | transloco
+        }}</label>
+      </span>
+      <span>
+        <input type="checkbox" id="hide-password" [(ngModel)]="hidePassword" />
+        <label for="hide-password">{{
+          'COMPONENT.CONNECT.HIDE_PASSWORD' | transloco
+        }}</label>
+      </span>
+    </div>
+
+    <app-action-buttons>
+      <button
+        [disabled]="connecting"
+        (click)="connect()"
+        data-style-ornament="simple"
+      >
+        {{ 'COMPONENT.CONNECT.CONNECT' | transloco }}
+      </button>
+      <button
+        [disabled]="connecting"
+        (click)="cancel()"
+        data-style-ornament="simple"
+      >
+        {{ 'COMPONENT.CONNECT.CANCEL' | transloco }}
+      </button>
+    </app-action-buttons>
+    <hr />
+    <button (click)="openServerList()" data-style-ornament="simple">
+      {{ 'COMPONENT.CONNECT.PUBLIC_SERVERS' | transloco }}
+    </button>
+    <button (click)="showHost(true)" data-style-ornament="simple">
+      {{ 'COMPONENT.CONNECT.HOST.OPEN' | transloco }}
+    </button>
   </div>
-
-  <app-action-buttons>
-    <button
-      [disabled]="connecting"
-      (click)="connect()"
-      data-style-ornament="simple"
-    >
-      {{ 'COMPONENT.CONNECT.CONNECT' | transloco }}
-    </button>
-    <button
-      [disabled]="connecting"
-      (click)="cancel()"
-      data-style-ornament="simple"
-    >
-      {{ 'COMPONENT.CONNECT.CANCEL' | transloco }}
-    </button>
-  </app-action-buttons>
-  <hr />
-  <button (click)="openServerList()" data-style-ornament="simple">
-    {{ 'COMPONENT.CONNECT.PUBLIC_SERVERS' | transloco }}
-  </button>
-</div>
+}

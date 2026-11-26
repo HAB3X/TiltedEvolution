@@ -19,6 +19,13 @@
       "CONNECT": "Connect",
       "CANCEL": "Cancel",
       "PUBLIC_SERVERS": "Public servers",
+      "HOST": {
+        "OPEN": "Host a game",
+        "INFO": "Start a server on this computer and join it. Friends connect to your IP address with port 10578 and this password. Over the internet, forward UDP port 10578 on your router.",
+        "HOST_WORLD": "Friends join my world (my quests, cleared dungeons and dead NPCs)",
+        "START": "Host",
+        "BACK": "Back"
+      },
       "ERROR": {
         "CONNECTION": "Could not connect to the specified server. Please make sure you've entered the correct address and that you're not experiencing network issues",
         "VERSION_MISMATCH": "You cannot connect to the server because it does not have the same version of Skyrim Together as you.",

@@ -33,6 +33,11 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
 
   public connecting = false;
 
+  /** Showing the host form instead of the connect form. */
+  public hosting = false;
+  public hostPassword = '';
+  public hostWorld = true;
+
   @Output() public done = new EventEmitter<void>();
 
   public constructor(
@@ -80,6 +85,8 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
     this.address = this.storeService.get('last_connected_address', '');
     this.password = this.storeService.get('last_connected_password', '');
     this.savePassword = this.password !== '';
+    this.hostPassword = this.storeService.get('host_password', '');
+    this.hostWorld = this.storeService.getBool('host_world', true);
   }
 
   public ngAfterViewInit(): void {
@@ -122,6 +129,19 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
       address[2] ? Number.parseInt(address[2]) : 10578,
       this.password,
     );
+  }
+
+  public showHost(hosting: boolean): void {
+    this.sound.play(Sound.Ok);
+    this.hosting = hosting;
+  }
+
+  public host(): void {
+    this.connecting = true;
+    this.storeService.set('host_password', this.hostPassword);
+    this.storeService.set('host_world', String(this.hostWorld));
+    this.sound.play(Sound.Ok);
+    this.client.hostServer(this.hostPassword, this.hostWorld);
   }
 
   public cancel(): void {

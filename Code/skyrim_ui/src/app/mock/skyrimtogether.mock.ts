@@ -30,6 +30,10 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
   private localPlayerId: number;
   public readonly players$ = playerStore.pipe(selectAllEntities());
 
+  hostServer(password: string, hostWorld: boolean): void {
+    this.connect('127.0.0.1', 10578, password);
+  }
+
   connect(host: string, port: number, password: string): void {
     if (!this.connected) {
       let error: ErrorEvents | boolean;

@@ -198,6 +198,15 @@ export class ClientService implements OnDestroy {
    * @param port Port.
    * @param password Password or admin password
    */
+  /** Start the server next to the game and connect to it once it's up. */
+  public hostServer(password: string, hostWorld: boolean): void {
+    skyrimtogether.hostServer(password, hostWorld);
+    this.isConnectionInProgressChange.next(true);
+    this._host = '127.0.0.1';
+    this._port = 10578;
+    this._password = password;
+  }
+
   public connect(host: string, port: number, password = ''): void {
     skyrimtogether.connect(host, port, password);
     this.isConnectionInProgressChange.next(true);

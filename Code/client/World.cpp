@@ -25,6 +25,7 @@
 #include <Services/PartyCheckpointService.h>
 #include <Services/VoiceService.h>
 #include <Services/HostWorldService.h>
+#include <Services/LocalServerService.h>
 
 #include <Events/PreUpdateEvent.h>
 #include <Events/UpdateEvent.h>
@@ -62,6 +63,7 @@ World::World()
     ctx().emplace<PartyCheckpointService>(*this, m_dispatcher, m_transport);
     ctx().emplace<VoiceService>(*this, m_dispatcher, m_transport);
     ctx().emplace<HostWorldService>(*this, m_dispatcher, m_transport);
+    ctx().emplace<LocalServerService>(*this);
 
     BehaviorVar::Get()->Init();
 }

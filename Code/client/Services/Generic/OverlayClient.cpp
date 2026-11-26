@@ -6,6 +6,7 @@
 #include <Services/OverlayClient.h>
 #include <Services/TransportService.h>
 #include <Services/VoiceService.h>
+#include <Services/LocalServerService.h>
 
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/TeleportRequest.h>
@@ -45,6 +46,12 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
 
         if (eventName == "connect")
             ProcessConnectMessage(eventArgs);
+        else if (eventName == "hostServer")
+        {
+            const std::string password = eventArgs->GetString(0).ToString();
+            const bool hostWorld = eventArgs->GetBool(1);
+            World::Get().GetRunner().Queue([password, hostWorld]() { World::Get().ctx().at<LocalServerService>().Host(password, hostWorld); });
+        }
         else if (eventName == "disconnect")
             ProcessDisconnectMessage();
         else if (eventName == "revealPlayers")
