@@ -124,15 +124,13 @@ void PartyService::OnPartyInfo(const NotifyPartyInfo& acPartyInfo) noexcept
         m_leaderPlayerId = acPartyInfo.LeaderPlayerId;
         m_partyMembers = acPartyInfo.PlayerIds;
 
-        // TODO: this can be done a bit prettier
-        if (m_isLeader)
-        {
-            TESGlobal* pWorldEncountersEnabled = Cast<TESGlobal>(TESForm::GetById(0xB8EC1));
-            if (pWorldEncountersEnabled)
-                pWorldEncountersEnabled->f = 1.f;
-            else
-                spdlog::warn("[PartyService]: WorldEncountersEnabled global (0xB8EC1) not found");
-        }
+        // Only the leader's game spawns world encounters, which the party sees through the sync. A leader who hands
+        // the party over stops, or both games would spawn their own copy of each encounter.
+        TESGlobal* pWorldEncountersEnabled = Cast<TESGlobal>(TESForm::GetById(0xB8EC1));
+        if (pWorldEncountersEnabled)
+            pWorldEncountersEnabled->f = m_isLeader ? 1.f : 0.f;
+        else
+            spdlog::warn("[PartyService]: WorldEncountersEnabled global (0xB8EC1) not found");
 
         auto pArguments = CefListValue::Create();
 
