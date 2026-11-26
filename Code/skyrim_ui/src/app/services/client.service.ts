@@ -10,6 +10,7 @@ import { StoreService } from './store.service';
 import { ErrorEvents, ErrorService } from './error.service';
 import { LoadingService } from './loading.service';
 import { reconnectDelay } from '../utils/reconnect';
+import { CrashDump, crashIssueUrl } from '../utils/crash-report';
 
 /** Client game service. */
 /** What joining a host's world would change. */
@@ -64,6 +65,8 @@ export interface LastSession {
 }
 
 const LAST_SESSION_KEY = 'last_session';
+/** The crash dump the player was last asked about */
+const CRASH_ASKED_KEY = 'crash_report_asked';
 
 /** What the host chose on the Host page, besides the password */
 export interface HostOptions {
@@ -171,6 +174,9 @@ export class ClientService implements OnDestroy {
 
   /** A host world server's offer, waiting for the joiner's answer; null when there's none. */
   public hostWorldOfferChange = new BehaviorSubject<HostWorldOffer | null>(null);
+
+  /** A crash dump this player hasn't been asked about yet (see reportCrash); null when there's none. */
+  public crashDumpChange = new BehaviorSubject<CrashDump | null>(null);
 
   /** The open vote, or the last one for a few seconds after it ended; else null. */
   public voteChange = new BehaviorSubject<Vote | null>(null);
@@ -293,6 +299,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('hostWorldOffer', this.onHostWorldOffer.bind(this));
     skyrimtogether.on('hostWorldSync', this.onHostWorldSync.bind(this));
     skyrimtogether.on('vote', this.onVote.bind(this));
+    skyrimtogether.on('crashDump', this.onCrashDump.bind(this));
 
     try {
       this.lastSessionChange.next(
@@ -345,6 +352,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('hostWorldOffer');
     skyrimtogether.off('hostWorldSync');
     skyrimtogether.off('vote');
+    skyrimtogether.off('crashDump');
     skyrimtogether.off('dummyData');
     skyrimtogether.off('partyInfo');
     skyrimtogether.off('partyCreated');
@@ -363,6 +371,21 @@ export class ClientService implements OnDestroy {
   /** Kick a player from the game this player hosts, or ban them. */
   public moderatePlayer(playerId: number, ban: boolean): void {
     skyrimtogether.moderatePlayer(playerId, ban);
+  }
+
+  /**
+   * Answers the crash question: with report, opens a pre-filled GitHub issue and says in chat which file to attach.
+   */
+  public answerCrashReport(report: boolean): void {
+    const dump = this.crashDumpChange.getValue();
+    if (!dump) {
+      return;
+    }
+    this.crashDumpChange.next(null);
+    if (report) {
+      skyrimtogether.openUrl(crashIssueUrl(dump));
+      this.chatService.pushSystemMessage('SERVICE.CRASH.ATTACH', { file: dump.file, folder: dump.folder });
+    }
   }
 
   /** Ask the others to vote on kicking a player (see voteChange). */
@@ -930,6 +953,16 @@ export class ClientService implements OnDestroy {
           this._hostWorldSyncTimer = null;
           this.hostWorldSyncChange.next(null);
         }, HOST_WORLD_SYNC_SHOWN_MS);
+      }
+    });
+  }
+
+  private onCrashDump(file: string, folder: string, version: string, game: string, system: string) {
+    this.zone.run(() => {
+      // Offering it is asking: a missed notification doesn't come back for the same dump
+      if (this.storeService.get(CRASH_ASKED_KEY, '') !== file) {
+        this.storeService.set(CRASH_ASKED_KEY, file);
+        this.crashDumpChange.next({ file, folder, version, game, system });
       }
     });
   }

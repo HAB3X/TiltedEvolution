@@ -202,7 +202,10 @@
       "SETTINGS": "Ustawienia",
       "CONNECTION_IN_PROGRESS": "Podłączanie jest w trakcie",
       "REJOIN_OFFER": "Twoja ostatnia wspólna gra nieoczekiwanie się zakończyła. Dołączyć ponownie do {{address}}?",
-      "REHOST_OFFER": "Gra, którą ostatnio hostowałeś, nieoczekiwanie się zakończyła. Hostować ją ponownie?"
+      "REHOST_OFFER": "Gra, którą ostatnio hostowałeś, nieoczekiwanie się zakończyła. Hostować ją ponownie?",
+      "CRASH_REPORT_OFFER": "Ostatnio Skyrim Together uległ awarii. Zgłosić to na GitHubie? Nic nie jest wysyłane samo: w przeglądarce otworzy się wstępnie wypełniona strona zgłoszenia.",
+      "CRASH_REPORT": "Zgłoś",
+      "CRASH_REPORT_NO": "Nie, dzięki"
     },
     "SERVER_LIST": {
       "SEARCH": "Szukaj...",
@@ -335,6 +338,9 @@
       "REFUSED_TOO_FEW": "Głosowanie nad wyrzuceniem wymaga co najmniej 3 graczy.",
       "REFUSED_HOST": "Hosta nie można wyrzucić w głosowaniu.",
       "REFUSED_TARGET": "Tego gracza tu nie ma."
+    },
+    "CRASH": {
+      "ATTACH": "Dołącz plik {{file}} z folderu {{folder}} do zgłoszenia i napisz, co robiłeś w chwili awarii."
     }
   }
 }

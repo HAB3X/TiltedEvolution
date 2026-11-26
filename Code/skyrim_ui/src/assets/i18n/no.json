@@ -197,7 +197,10 @@
       "SETTINGS": "Innstillinger",
       "CONNECTION_IN_PROGRESS": "Kobler til...",
       "REJOIN_OFFER": "Det siste spillet dere spilte sammen sluttet uventet. Bli med på {{address}} igjen?",
-      "REHOST_OFFER": "Spillet du var vert for sist, sluttet uventet. Vil du være vert igjen?"
+      "REHOST_OFFER": "Spillet du var vert for sist, sluttet uventet. Vil du være vert igjen?",
+      "CRASH_REPORT_OFFER": "Skyrim Together krasjet sist. Vil du rapportere det på GitHub? Ingenting sendes av seg selv: en forhåndsutfylt saksside åpnes i nettleseren.",
+      "CRASH_REPORT": "Rapporter",
+      "CRASH_REPORT_NO": "Nei takk"
     },
     "SERVER_LIST": {
       "SEARCH": "Søk...",
@@ -330,6 +333,9 @@
       "REFUSED_TOO_FEW": "En avstemning om utkasting krever minst 3 spillere.",
       "REFUSED_HOST": "Verten kan ikke stemmes ut.",
       "REFUSED_TARGET": "Den spilleren er ikke her."
+    },
+    "CRASH": {
+      "ATTACH": "Legg ved {{file}} fra {{folder}} i saken, og skriv hva du gjorde da det krasjet."
     }
   }
 }

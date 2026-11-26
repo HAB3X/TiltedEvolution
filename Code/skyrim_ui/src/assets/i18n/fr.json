@@ -202,7 +202,10 @@
       "SETTINGS": "Paramètres",
       "CONNECTION_IN_PROGRESS": "Connexion en cours",
       "REJOIN_OFFER": "Votre dernière partie à plusieurs s'est terminée de façon inattendue. Rejoindre {{address}} ?",
-      "REHOST_OFFER": "La dernière partie que vous avez hébergée s'est terminée de façon inattendue. L'héberger à nouveau ?"
+      "REHOST_OFFER": "La dernière partie que vous avez hébergée s'est terminée de façon inattendue. L'héberger à nouveau ?",
+      "CRASH_REPORT_OFFER": "Skyrim Together a planté la dernière fois. Le signaler sur GitHub ? Rien n'est envoyé tout seul : une page de rapport préremplie s'ouvre dans votre navigateur.",
+      "CRASH_REPORT": "Signaler",
+      "CRASH_REPORT_NO": "Non merci"
     },
     "SERVER_LIST": {
       "SEARCH": "Recherche...",
@@ -330,6 +333,9 @@
       "REFUSED_TOO_FEW": "Un vote d'expulsion nécessite au moins 3 joueurs.",
       "REFUSED_HOST": "L'hôte ne peut pas être expulsé par vote.",
       "REFUSED_TARGET": "Ce joueur n'est pas là."
+    },
+    "CRASH": {
+      "ATTACH": "Joignez {{file}} depuis {{folder}} au rapport et dites ce que vous faisiez au moment du plantage."
     }
   }
 }

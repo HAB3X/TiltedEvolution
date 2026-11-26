@@ -199,7 +199,10 @@
       "SETTINGS": "Instellingen",
       "CONNECTION_IN_PROGRESS": "Verbinden",
       "REJOIN_OFFER": "Je laatste gezamenlijke spel eindigde onverwacht. Opnieuw deelnemen aan {{address}}?",
-      "REHOST_OFFER": "Het spel dat je het laatst host, eindigde onverwacht. Opnieuw hosten?"
+      "REHOST_OFFER": "Het spel dat je het laatst host, eindigde onverwacht. Opnieuw hosten?",
+      "CRASH_REPORT_OFFER": "Skyrim Together is de vorige keer gecrasht. Melden op GitHub? Er wordt niets vanzelf verstuurd: een vooraf ingevulde issuepagina opent in je browser.",
+      "CRASH_REPORT": "Melden",
+      "CRASH_REPORT_NO": "Nee, bedankt"
     },
     "SERVER_LIST": {
       "SEARCH": "Zoeken...",
@@ -305,6 +308,9 @@
       "REFUSED_TOO_FEW": "Een stemming om iemand eruit te zetten heeft minstens 3 spelers nodig.",
       "REFUSED_HOST": "De host kan niet worden weggestemd.",
       "REFUSED_TARGET": "Die speler is er niet."
+    },
+    "CRASH": {
+      "ATTACH": "Voeg {{file}} uit {{folder}} toe aan het issue en vertel wat je deed toen het crashte."
     }
   }
 }

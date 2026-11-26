@@ -55,6 +55,11 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     setTimeout(() => this.emit('vote', id, kind, kind === 0 ? 1 : 0, this.localPlayerId, targetId, 2, 0, kind === 0 ? 2 : 3, 0), 1500);
   }
 
+  // The newest crash dump, as the game sends it on entering a game: call from the console to try the crash report
+  sendCrashDump(): void {
+    this.emit('crashDump', 'crash_UTC_2026-11-26_10-00-00.dmp', 'C:\\Games\\Skyrim Special Edition', 'v1.8.4-plus.4', '1.6.1170.0', 'Windows 10.0.19045 (Wine 9.0)');
+  }
+
   answerVote(voteId: number, yes: boolean): void {
     console.log(`vote ${voteId}: ${yes ? 'yes' : 'no'}`);
   }

@@ -199,7 +199,10 @@
       "SETTINGS": "Parámetros",
       "CONNECTION_IN_PROGRESS": "Conexión en progreso...",
       "REJOIN_OFFER": "Tu última partida en grupo terminó de forma inesperada. ¿Volver a unirte a {{address}}?",
-      "REHOST_OFFER": "La última partida que alojaste terminó de forma inesperada. ¿Alojarla de nuevo?"
+      "REHOST_OFFER": "La última partida que alojaste terminó de forma inesperada. ¿Alojarla de nuevo?",
+      "CRASH_REPORT_OFFER": "Skyrim Together se cerró por un fallo la última vez. ¿Informar en GitHub? No se envía nada por sí solo: se abre en tu navegador una página de incidencia ya rellenada.",
+      "CRASH_REPORT": "Informar",
+      "CRASH_REPORT_NO": "No, gracias"
     },
     "SERVER_LIST": {
       "SEARCH": "Buscar...",
@@ -326,6 +329,9 @@
       "REFUSED_TOO_FEW": "Una votación de expulsión necesita al menos 3 jugadores.",
       "REFUSED_HOST": "No se puede expulsar al anfitrión por votación.",
       "REFUSED_TARGET": "Ese jugador no está aquí."
+    },
+    "CRASH": {
+      "ATTACH": "Adjunta {{file}} de {{folder}} a la incidencia y cuenta qué hacías cuando falló."
     }
   }
 }

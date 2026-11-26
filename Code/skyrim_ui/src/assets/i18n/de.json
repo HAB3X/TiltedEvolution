@@ -201,7 +201,10 @@
       "SETTINGS": "Einstellungen",
       "CONNECTION_IN_PROGRESS": "Verbindungsaufbau läuft...",
       "REJOIN_OFFER": "Euer letztes gemeinsames Spiel endete unerwartet. {{address}} erneut beitreten?",
-      "REHOST_OFFER": "Das zuletzt von dir gehostete Spiel endete unerwartet. Erneut hosten?"
+      "REHOST_OFFER": "Das zuletzt von dir gehostete Spiel endete unerwartet. Erneut hosten?",
+      "CRASH_REPORT_OFFER": "Skyrim Together ist beim letzten Mal abgestürzt. Auf GitHub melden? Nichts wird von selbst gesendet: Eine vorausgefüllte Issue-Seite öffnet sich in deinem Browser.",
+      "CRASH_REPORT": "Melden",
+      "CRASH_REPORT_NO": "Nein, danke"
     },
     "SERVER_LIST": {
       "SEARCH": "Suche...",
@@ -335,6 +338,9 @@
       "REFUSED_TOO_FEW": "Eine Abstimmung zum Rauswerfen braucht mindestens 3 Spieler.",
       "REFUSED_HOST": "Der Host kann nicht rausgewählt werden.",
       "REFUSED_TARGET": "Dieser Spieler ist nicht hier."
+    },
+    "CRASH": {
+      "ATTACH": "Hänge {{file}} aus {{folder}} an das Issue an und schreibe, was du beim Absturz gemacht hast."
     }
   }
 }

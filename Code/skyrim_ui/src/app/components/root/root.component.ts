@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { combineLatest, takeUntil } from 'rxjs';
-import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import { faBug, faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import { environment } from '../../../environments/environment';
 import { fadeInOutActiveAnimation } from '../../animations/fade-in-out-active.animation';
 import { View } from '../../models/view.enum';
@@ -128,6 +128,29 @@ export class RootComponent implements OnInit {
     this.onActivationStateSubscription();
     this.onFontSizeSubscription();
     this.offerRejoin();
+    this.offerCrashReport();
+  }
+
+  /** After a crash: once per crash dump, whether to report it */
+  private offerCrashReport(): void {
+    this.client.crashDumpChange
+      .pipe(
+        filter(dump => dump !== null),
+        // Like the rejoin offer: the notification area appears with the game view
+        delay(2000),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(() =>
+        this.popupNotificationService.addMessage({
+          messageKey: 'COMPONENT.ROOT.CRASH_REPORT_OFFER',
+          icon: faBug,
+          duration: 60000,
+          actions: [
+            { nameKey: 'COMPONENT.ROOT.CRASH_REPORT', callback: () => this.client.answerCrashReport(true) },
+            { nameKey: 'COMPONENT.ROOT.CRASH_REPORT_NO', callback: () => this.client.answerCrashReport(false) },
+          ],
+        }),
+      );
   }
 
   public onInGameStateSubscription() {

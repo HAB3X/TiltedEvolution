@@ -226,6 +226,9 @@ interface SkyrimTogether {
   on(event: 'hostWorldSync', callback: (step: string, quests: number, places: number, people: number) => void): void;
 
   /** A vote's state (the server's NotifyVote): id, kind (0 kick, 1 ready), state (0 open, 1 passed, 2 failed, 3 cancelled, 4-8 refused: busy, cooldown, too few, host, no such player), starter, target, yes, no, eligible voters and seconds left. */
+  /** The newest crash dump next to SkyrimTogether.exe, sent on entering the game when there is one. */
+  on(event: 'crashDump', callback: (file: string, folder: string, version: string, game: string, system: string) => void): void;
+
   on(
     event: 'vote',
     callback: (id: number, kind: number, state: number, starterId: number, targetId: number, yes: number, no: number, eligible: number, secondsLeft: number) => void,
@@ -368,6 +371,7 @@ interface SkyrimTogether {
   off(event: 'hostWorldOffer', callback?: (host: string, quests: number, places: number, people: number) => void): void;
   off(event: 'hostWorldSync', callback?: (step: string, quests: number, places: number, people: number) => void): void;
   off(event: 'vote', callback?: (...args: number[]) => void): void;
+  off(event: 'crashDump', callback?: (file: string, folder: string, version: string, game: string, system: string) => void): void;
 
   off(
     event: 'dummyData',

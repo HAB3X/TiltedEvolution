@@ -197,7 +197,10 @@
       "SETTINGS": "Nastavení",
       "CONNECTION_IN_PROGRESS": "Připojení probíhá...",
       "REJOIN_OFFER": "Vaše poslední společná hra nečekaně skončila. Znovu se připojit k {{address}}?",
-      "REHOST_OFFER": "Hra, kterou jste naposledy hostovali, nečekaně skončila. Hostovat ji znovu?"
+      "REHOST_OFFER": "Hra, kterou jste naposledy hostovali, nečekaně skončila. Hostovat ji znovu?",
+      "CRASH_REPORT_OFFER": "Skyrim Together minule spadl. Nahlásit to na GitHubu? Nic se neodešle samo: v prohlížeči se otevře předvyplněná stránka hlášení.",
+      "CRASH_REPORT": "Nahlásit",
+      "CRASH_REPORT_NO": "Ne, díky"
     },
     "SERVER_LIST": {
       "SEARCH": "Vyhledávání...",
@@ -328,6 +331,9 @@
       "REFUSED_TOO_FEW": "Hlasování o vyhození vyžaduje alespoň 3 hráče.",
       "REFUSED_HOST": "Hostitele nelze vyhodit hlasováním.",
       "REFUSED_TARGET": "Tento hráč tu není."
+    },
+    "CRASH": {
+      "ATTACH": "K hlášení přiložte soubor {{file}} ze složky {{folder}} a napište, co jste dělali, když hra spadla."
     }
   }
 }

@@ -200,7 +200,10 @@
       "SETTINGS": "Ayarlar",
       "CONNECTION_IN_PROGRESS": "Bağlanılıyor...",
       "REJOIN_OFFER": "Son ortak oyununuz beklenmedik şekilde sona erdi. {{address}} sunucusuna yeniden katılınsın mı?",
-      "REHOST_OFFER": "En son sunduğunuz oyun beklenmedik şekilde sona erdi. Yeniden sunulsun mu?"
+      "REHOST_OFFER": "En son sunduğunuz oyun beklenmedik şekilde sona erdi. Yeniden sunulsun mu?",
+      "CRASH_REPORT_OFFER": "Skyrim Together geçen sefer çöktü. GitHub'da bildirilsin mi? Kendiliğinden hiçbir şey gönderilmez: tarayıcınızda önceden doldurulmuş bir hata bildirimi sayfası açılır.",
+      "CRASH_REPORT": "Bildir",
+      "CRASH_REPORT_NO": "Hayır, teşekkürler"
     },
     "SERVER_LIST": {
       "SEARCH": "Ara...",
@@ -334,6 +337,9 @@
       "REFUSED_TOO_FEW": "Atma oylaması için en az 3 oyuncu gerekir.",
       "REFUSED_HOST": "Sunucu sahibi oylamayla atılamaz.",
       "REFUSED_TARGET": "O oyuncu burada değil."
+    },
+    "CRASH": {
+      "ATTACH": "{{folder}} klasöründeki {{file}} dosyasını bildirime ekleyin ve çöktüğünde ne yaptığınızı yazın."
     }
   }
 }

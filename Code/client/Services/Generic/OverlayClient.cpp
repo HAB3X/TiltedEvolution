@@ -250,17 +250,19 @@ void OverlayClient::ProcessOpenPlayGuide()
     ShellExecuteW(nullptr, L"open", LR"(https://wiki.tiltedphoques.com/tilted-online/general-information/playguide)", nullptr, nullptr, SW_SHOWNORMAL);
 }
 
-// Only these pages: Nexus Mods (the refusal box's mod searches) and the Plus release page (a version refusal). The
+// Only these pages: Nexus Mods (the refusal box's mod searches), the Plus release page (a version refusal) and a new
+// Plus issue (reporting a crash, CrashReport). The
 // overlay shows text from servers, so a page in it must not be able to open other addresses or programs through the shell
 void OverlayClient::ProcessOpenUrl(CefRefPtr<CefListValue> aEventArgs)
 {
-    constexpr const char* kAllowedPrefixes[] = {"https://www.nexusmods.com/", "https://github.com/HAB3X/TiltedEvolution/releases"};
+    constexpr const char* kAllowedPrefixes[] = {"https://www.nexusmods.com/", "https://github.com/HAB3X/TiltedEvolution/releases",
+                                                "https://github.com/HAB3X/TiltedEvolution/issues/new?"};
     const std::string cUrl = aEventArgs->GetString(0).ToString();
     const bool cPlain = std::all_of(cUrl.begin(), cUrl.end(), [](unsigned char c) { return c > ' ' && c < 0x7F && c != '"'; });
     const bool cAllowed = std::any_of(std::begin(kAllowedPrefixes), std::end(kAllowedPrefixes), [&](const char* apPrefix) { return cUrl.rfind(apPrefix, 0) == 0; });
     if (!cAllowed || !cPlain)
     {
-        spdlog::warn("Not opening {}: only Nexus Mods and the Plus release page can be opened from the overlay", cUrl);
+        spdlog::warn("Not opening {}: only Nexus Mods and the Plus release and new issue pages can be opened from the overlay", cUrl);
         return;
     }
     ShellExecuteA(nullptr, "open", cUrl.c_str(), nullptr, nullptr, SW_SHOWNORMAL);

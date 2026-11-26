@@ -203,7 +203,10 @@
       "SETTINGS": "Settings",
       "CONNECTION_IN_PROGRESS": "Connection in progress...",
       "REJOIN_OFFER": "Your last game together ended unexpectedly. Rejoin {{address}}?",
-      "REHOST_OFFER": "The game you hosted last ended unexpectedly. Host it again?"
+      "REHOST_OFFER": "The game you hosted last ended unexpectedly. Host it again?",
+      "CRASH_REPORT_OFFER": "Skyrim Together crashed last time. Report it on GitHub? Nothing is sent by itself: a pre-filled issue page opens in your browser.",
+      "CRASH_REPORT": "Report",
+      "CRASH_REPORT_NO": "No thanks"
     },
     "SERVER_LIST": {
       "SEARCH": "Search...",
@@ -341,6 +344,9 @@
       "REFUSED_TOO_FEW": "A vote to kick needs at least 3 players.",
       "REFUSED_HOST": "The host can't be voted out.",
       "REFUSED_TARGET": "That player isn't here."
+    },
+    "CRASH": {
+      "ATTACH": "Attach {{file}} from {{folder}} to the issue, and say what you were doing when it crashed."
     }
   }
 }

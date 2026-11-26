@@ -27,6 +27,7 @@
 #include <Messages/RequestPlayerHealthUpdate.h>
 #include <Messages/NotifyPlayerHealthUpdate.h>
 #include <Messages/NotifyVote.h>
+#include <Services/CrashReport.h>
 
 #include <Structs/GridCellCoords.h>
 
@@ -235,6 +236,8 @@ void OverlayService::SetInGame(bool aInGame) noexcept
     {
         SetVersion(BUILD_COMMIT);
         m_pOverlay->ExecuteAsync("enterGame");
+        // The overlay asks once per crash dump whether to report it
+        CrashReport::Send();
     }
     else
     {

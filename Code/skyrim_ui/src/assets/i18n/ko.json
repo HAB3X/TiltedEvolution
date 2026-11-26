@@ -197,7 +197,10 @@
       "SETTINGS": "설정",
       "CONNECTION_IN_PROGRESS": "연결 진행중...",
       "REJOIN_OFFER": "지난 함께하기 게임이 예기치 않게 끝났습니다. {{address}}에 다시 참가할까요?",
-      "REHOST_OFFER": "마지막으로 호스트한 게임이 예기치 않게 끝났습니다. 다시 호스트할까요?"
+      "REHOST_OFFER": "마지막으로 호스트한 게임이 예기치 않게 끝났습니다. 다시 호스트할까요?",
+      "CRASH_REPORT_OFFER": "지난번에 Skyrim Together가 충돌했습니다. GitHub에 보고할까요? 자동으로 전송되는 것은 없으며, 미리 채워진 이슈 페이지가 브라우저에서 열립니다.",
+      "CRASH_REPORT": "보고",
+      "CRASH_REPORT_NO": "괜찮습니다"
     },
     "SERVER_LIST": {
       "SEARCH": "검색...",
@@ -328,6 +331,9 @@
       "REFUSED_TOO_FEW": "추방 투표에는 최소 3명이 필요합니다.",
       "REFUSED_HOST": "호스트는 투표로 추방할 수 없습니다.",
       "REFUSED_TARGET": "그 플레이어는 여기에 없습니다."
+    },
+    "CRASH": {
+      "ATTACH": "{{folder}}에 있는 {{file}} 파일을 이슈에 첨부하고, 충돌 당시 무엇을 하고 있었는지 적어 주세요."
     }
   }
 }

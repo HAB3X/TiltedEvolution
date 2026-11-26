@@ -197,7 +197,10 @@
       "SETTINGS": "設定",
       "CONNECTION_IN_PROGRESS": "接続しています…",
       "REJOIN_OFFER": "前回のマルチプレイが予期せず終了しました。{{address}} に再参加しますか？",
-      "REHOST_OFFER": "前回ホストしたゲームが予期せず終了しました。もう一度ホストしますか？"
+      "REHOST_OFFER": "前回ホストしたゲームが予期せず終了しました。もう一度ホストしますか？",
+      "CRASH_REPORT_OFFER": "前回 Skyrim Together がクラッシュしました。GitHub に報告しますか？自動では何も送信されません。入力済みの Issue ページがブラウザで開きます。",
+      "CRASH_REPORT": "報告する",
+      "CRASH_REPORT_NO": "いいえ"
     },
     "SERVER_LIST": {
       "SEARCH": "検索",
@@ -330,6 +333,9 @@
       "REFUSED_TOO_FEW": "キック投票には 3 人以上のプレイヤーが必要です。",
       "REFUSED_HOST": "ホストを投票でキックすることはできません。",
       "REFUSED_TARGET": "そのプレイヤーはいません。"
+    },
+    "CRASH": {
+      "ATTACH": "{{folder}} にある {{file}} を Issue に添付し、クラッシュしたときに何をしていたか書いてください。"
     }
   }
 }

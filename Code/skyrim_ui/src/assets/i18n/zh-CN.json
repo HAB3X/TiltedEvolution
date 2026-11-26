@@ -198,7 +198,10 @@
       "SETTINGS": "设置",
       "CONNECTION_IN_PROGRESS": "连接中",
       "REJOIN_OFFER": "上次联机游戏意外结束。要重新加入 {{address}} 吗？",
-      "REHOST_OFFER": "你上次主持的游戏意外结束。要再次主持吗？"
+      "REHOST_OFFER": "你上次主持的游戏意外结束。要再次主持吗？",
+      "CRASH_REPORT_OFFER": "Skyrim Together 上次崩溃了。要在 GitHub 上报告吗？不会自动发送任何内容：浏览器中会打开一个预填好的问题页面。",
+      "CRASH_REPORT": "报告",
+      "CRASH_REPORT_NO": "不用了"
     },
     "SERVER_LIST": {
       "SEARCH": "搜索...",
@@ -323,6 +326,9 @@
       "REFUSED_TOO_FEW": "踢人投票至少需要 3 名玩家。",
       "REFUSED_HOST": "无法投票踢出主机。",
       "REFUSED_TARGET": "该玩家不在这里。"
+    },
+    "CRASH": {
+      "ATTACH": "请将 {{folder}} 中的 {{file}} 附加到问题中，并说明崩溃时你在做什么。"
     }
   }
 }

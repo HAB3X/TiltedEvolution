@@ -203,7 +203,10 @@
       "SETTINGS": "Inställningar",
       "CONNECTION_IN_PROGRESS": "Anslutning pågår...",
       "REJOIN_OFFER": "Ert senaste spel tillsammans avslutades oväntat. Anslut till {{address}} igen?",
-      "REHOST_OFFER": "Spelet du senast var värd för avslutades oväntat. Vara värd igen?"
+      "REHOST_OFFER": "Spelet du senast var värd för avslutades oväntat. Vara värd igen?",
+      "CRASH_REPORT_OFFER": "Skyrim Together kraschade förra gången. Rapportera det på GitHub? Inget skickas av sig självt: en förifylld ärendesida öppnas i webbläsaren.",
+      "CRASH_REPORT": "Rapportera",
+      "CRASH_REPORT_NO": "Nej tack"
     },
     "SERVER_LIST": {
       "SEARCH": "Sök...",
@@ -340,6 +343,9 @@
       "REFUSED_TOO_FEW": "En omröstning om utsparkning kräver minst 3 spelare.",
       "REFUSED_HOST": "Värden kan inte röstas ut.",
       "REFUSED_TARGET": "Den spelaren är inte här."
+    },
+    "CRASH": {
+      "ATTACH": "Bifoga {{file}} från {{folder}} till ärendet och berätta vad du gjorde när det kraschade."
     }
   }
 }
