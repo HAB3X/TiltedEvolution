@@ -15,7 +15,7 @@
  * @brief What a host world server keeps of the shared world between runs (WorldSaveService), as bytes for a file.
  *
  * Layout, numbers as TiltedCore varints and the structures in this build's network encoding:
- *   "STWORLD" and a version byte (1)
+ *   "STWORLD" and a version byte (2: quest items name their quest)
  *   the plugin ids: count, then per plugin its id, lite flag and file name. Every GameId below uses these ids, so
  *     they are registered again, in the same order, before anyone joins
  *   NPCs killed while nobody had them loaded: count, then per NPC its GameId and its Inventory (their loot)

@@ -673,6 +673,20 @@ bool QuestService::IsSharedQuest(TESQuest* apQuest) noexcept
     return apQuest->type != TESQuest::Type::None && SharedQuests::IsShared(World::Get().GetServerSettings().SharedQuestTypes, cType) && !IsNonSyncableQuest(apQuest);
 }
 
+bool QuestService::IsSharedQuestItem(const Inventory::Entry& acItem) noexcept
+{
+    if (acItem.QuestId == GameId{})
+        return true;
+
+    TESQuest* pQuest = Cast<TESQuest>(TESForm::GetById(World::Get().GetModSystem().GetGameId(acItem.QuestId)));
+    if (!pQuest)
+    {
+        spdlog::warn("Quest item {:X} belongs to quest {:X} which isn't in this game, not copying it", acItem.BaseId.LogFormat(), acItem.QuestId.LogFormat());
+        return false;
+    }
+    return IsSharedQuest(pQuest);
+}
+
 void QuestService::CollectSharedQuests(QuestLog& aRunning, QuestLog& aCompleted) noexcept
 {
     const auto& modSystem = World::Get().GetModSystem();

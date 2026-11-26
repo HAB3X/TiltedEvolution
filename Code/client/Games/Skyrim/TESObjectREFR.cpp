@@ -8,6 +8,9 @@
 #include <Services/TravelTogetherService.h>
 #include <World.h>
 #include <Services/PartyService.h>
+#include <Services/QuestService.h>
+#include <ExtraData/ExtraAliasInstanceArray.h>
+#include <Forms/TESQuest.h>
 #include <Services/PapyrusService.h>
 #include <Events/ActivateEvent.h>
 #include <Events/InventoryChangeEvent.h>
@@ -548,6 +551,12 @@ void TESObjectREFR::GetItemFromExtraData(Inventory::Entry& arEntry, ExtraDataLis
     arEntry.ExtraWornLeft = apExtraDataList->Contains(ExtraDataType::WornLeft);
 
     arEntry.IsQuestItem = apExtraDataList->HasQuestObjectAlias();
+    if (arEntry.IsQuestItem)
+    {
+        auto* pAliases = Cast<ExtraAliasInstanceArray>(apExtraDataList->GetByType(ExtraDataType::AliasInstanceArray));
+        if (TESQuest* pQuest = pAliases ? pAliases->GetQuestObjectQuest() : nullptr)
+            modSystem.GetServerModId(pQuest->formID, arEntry.QuestId);
+    }
 }
 
 ExtraDataList* TESObjectREFR::GetExtraDataFromItem(const Inventory::Entry& arEntry) noexcept
@@ -920,7 +929,7 @@ void TESObjectREFR::AddOrRemoveItem(const Inventory::Entry& arEntry, bool aIsSet
     // Quest-item share: when a remote party member gains a quest item, also give the BaseId to the
     // local player so inventory/count checks can progress. Alias-bound ObjectReferences still cannot
     // be transferred cleanly — leader loot (or ESP patches) remains required for those cases.
-    if (arEntry.IsQuestItem && arEntry.Count > 0 && !aIsSettingInventory && World::Get().GetPartyService().IsInParty())
+    if (arEntry.IsQuestItem && arEntry.Count > 0 && !aIsSettingInventory && World::Get().GetPartyService().IsInParty() && QuestService::IsSharedQuestItem(arEntry))
     {
         PlayerCharacter* pPlayer = PlayerCharacter::Get();
 

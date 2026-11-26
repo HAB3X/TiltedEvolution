@@ -11,7 +11,7 @@ using TiltedPhoques::Serialization;
 namespace
 {
 constexpr char kMagic[] = "STWORLD";
-constexpr uint8_t kVersion = 1;
+constexpr uint8_t kVersion = 2;
 constexpr char kEnd[] = "END";
 
 void WriteRaw(Buffer::Writer& aWriter, const char* apText, size_t aSize)

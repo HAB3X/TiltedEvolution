@@ -249,6 +249,41 @@ TEST_CASE("Door state", "[encoding.door_state]")
     }
 }
 
+TEST_CASE("Quest items", "[encoding.quest_items]")
+{
+    GIVEN("A quest item says which quest it belongs to")
+    {
+        Inventory::Entry sent;
+        sent.BaseId = GameId(0, 0x2D5BE);
+        sent.Count = 1;
+        sent.IsQuestItem = true;
+        sent.QuestId = GameId(0, 0x2610C);
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 42);
+
+        Buffer::Reader reader(&buffer);
+        Inventory::Entry received;
+        received.Deserialize(reader);
+        REQUIRE(received == sent);
+        REQUIRE(received.QuestId == sent.QuestId);
+        REQUIRE(Serialization::ReadVarInt(reader) == 42);
+    }
+
+    GIVEN("Items from two quests don't stack")
+    {
+        Inventory::Entry first;
+        first.BaseId = GameId(0, 0x2D5BE);
+        first.IsQuestItem = true;
+        first.QuestId = GameId(0, 0x2610C);
+        Inventory::Entry second = first;
+        second.QuestId = GameId(0, 0x46EF2);
+        REQUIRE_FALSE(first.CanBeMerged(second));
+    }
+}
+
 TEST_CASE("Quest desync", "[encoding.quest_desync]")
 {
     const GameId cA(0, 0x10), cB(0, 0x20), cC(1, 0x05), cD(2, 0x01);
@@ -1495,6 +1530,26 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         received.DeserializeRaw(reader);
         REQUIRE(received.Username == "Lydia");
         REQUIRE_FALSE(received.Returning);
+        REQUIRE(Serialization::ReadVarInt(reader) == 42);
+    }
+
+    GIVEN("Quest items without their quest, laid out as v1.8.4 does")
+    {
+        Inventory::Entry sent;
+        sent.BaseId = GameId(0, 0x2D5BE);
+        sent.IsQuestItem = true;
+        sent.QuestId = GameId(0, 0x2610C);
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 42);
+
+        Buffer::Reader reader(&buffer);
+        Inventory::Entry received;
+        received.Deserialize(reader);
+        REQUIRE(received.IsQuestItem);
+        REQUIRE(received.QuestId == GameId{});
         REQUIRE(Serialization::ReadVarInt(reader) == 42);
     }
 
