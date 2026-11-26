@@ -13,6 +13,7 @@
   @let connecting = connectionInProgress$ | async;
   @let hosting = hosting$ | async;
   @let session = lastSession$ | async;
+  @let reconnectAttempt = reconnecting$ | async;
   @let page = currentPage((view$ | async) ?? null, !!connected);
 
   <div [@controls]="active$ | async" class="app-root-controls">
@@ -20,13 +21,15 @@
     <section class="hub">
       <header class="hub-header">
         <h1 class="hub-title">{{ 'COMPONENT.HUB.TITLE' | transloco }}</h1>
-        <div class="hub-state" [attr.data-state]="connected ? 'online' : connecting ? 'connecting' : 'offline'">
+        <div class="hub-state" [attr.data-state]="connected ? 'online' : connecting || reconnectAttempt ? 'connecting' : 'offline'">
           <span class="hub-state-dot"></span>
           @if (connected) {
             {{ (hosting ? 'COMPONENT.HUB.HOSTING' : 'COMPONENT.HUB.CONNECTED') | transloco }}
             @if (debugData$ | async; as debug) {
               <span class="muted">· {{ debug.RTT }} ms</span>
             }
+          } @else if (reconnectAttempt) {
+            {{ 'COMPONENT.CONNECTION_STATUS.RECONNECTING' | transloco: { attempt: reconnectAttempt } }}
           } @else if (connecting) {
             {{ 'COMPONENT.ROOT.CONNECTION_IN_PROGRESS' | transloco }}
           } @else {
@@ -38,7 +41,7 @@
       <div class="hub-body">
         <nav class="hub-nav">
           @if (!connected) {
-            @if (session && !connecting) {
+            @if (session && !connecting && !reconnectAttempt) {
               <button class="hub-nav-item hub-nav-rejoin" (click)="rejoin()">
                 <span class="hub-nav-label">{{
                   (session.hosting ? 'COMPONENT.ROOT.REHOST' : 'COMPONENT.HUB.REJOIN')
@@ -80,7 +83,11 @@
           </button>
 
           <div class="hub-nav-spacer"></div>
-          @if (connected || connecting) {
+          @if (reconnectAttempt && !connected) {
+            <button class="btn btn-danger hub-leave" (click)="cancelReconnect()">
+              {{ 'COMPONENT.HUB.CANCEL_CONNECT' | transloco }}
+            </button>
+          } @else if (connected || connecting) {
             <button class="btn btn-danger hub-leave" (click)="setView(RootView.DISCONNECT)">
               {{ (connecting && !connected ? 'COMPONENT.HUB.CANCEL_CONNECT' : 'COMPONENT.ROOT.DISCONNECT') | transloco }}
             </button>

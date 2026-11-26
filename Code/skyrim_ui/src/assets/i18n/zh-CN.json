@@ -94,7 +94,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "连接中…",
-      "PING": "{{ms}} 毫秒"
+      "PING": "{{ms}} 毫秒",
+      "RECONNECTING": "正在重新连接…（第 {{attempt}} 次）",
+      "CANCEL": "取消"
     },
     "DISCONNECT": {
       "PROMPT": "您确定要断开连接吗？",
@@ -186,7 +188,9 @@
       "PLAYER_MANAGER": "玩家管理",
       "INVITE": "邀请",
       "SETTINGS": "设置",
-      "CONNECTION_IN_PROGRESS": "连接中"
+      "CONNECTION_IN_PROGRESS": "连接中",
+      "REJOIN_OFFER": "上次联机游戏意外结束。要重新加入 {{address}} 吗？",
+      "REHOST_OFFER": "你上次主持的游戏意外结束。要再次主持吗？"
     },
     "SERVER_LIST": {
       "SEARCH": "搜索...",
@@ -242,7 +246,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "连接已丢失，正在重新连接。剩余{{remainingReconnectionAttempt}}次尝试。",
       "CONNECTED": "成功连接至服务器。",
-      "DISCONNECTED": "与服务器断开连接。"
+      "DISCONNECTED": "与服务器断开连接。",
+      "RECONNECTING": "连接已断开。正在重新连接（第 {{attempt}} 次）…",
+      "RECONNECTED": "已重新连接到服务器。",
+      "RECONNECT_GAVE_UP": "两分钟内未能重新连接到服务器。请在 Skyrim Together 面板（F2）中使用“重新加入”再试一次。"
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "可用的聊天指令：{{cmds}}",

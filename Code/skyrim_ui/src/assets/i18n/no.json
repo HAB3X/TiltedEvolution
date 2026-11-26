@@ -93,7 +93,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Kobler til…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Kobler til igjen… (forsøk {{attempt}})",
+      "CANCEL": "Avbryt"
     },
     "DISCONNECT": {
       "PROMPT": "Er du sikker på at vil koble fra?",
@@ -185,7 +187,9 @@
       "PLAYER_MANAGER": "Spillerliste",
       "INVITE": "Inviter",
       "SETTINGS": "Innstillinger",
-      "CONNECTION_IN_PROGRESS": "Kobler til..."
+      "CONNECTION_IN_PROGRESS": "Kobler til...",
+      "REJOIN_OFFER": "Det siste spillet dere spilte sammen sluttet uventet. Bli med på {{address}} igjen?",
+      "REHOST_OFFER": "Spillet du var vert for sist, sluttet uventet. Vil du være vert igjen?"
     },
     "SERVER_LIST": {
       "SEARCH": "Søk...",
@@ -247,7 +251,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Mistet tilkobling, prøver å koble til på nytt. {{remainingReconnectionAttempt}} forsøk igjen.",
       "CONNECTED": "Koblet til server.",
-      "DISCONNECTED": "Koble fra server."
+      "DISCONNECTED": "Koble fra server.",
+      "RECONNECTING": "Tilkoblingen ble brutt. Kobler til igjen (forsøk {{attempt}})…",
+      "RECONNECTED": "Koblet til serveren igjen.",
+      "RECONNECT_GAVE_UP": "Kom ikke tilbake til serveren på to minutter. Bruk Koble til igjen i Skyrim Together-panelet (F2) for å prøve på nytt."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "tilgjengelige chat kommandoer: {{cmds}}",

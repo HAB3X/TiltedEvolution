@@ -22,8 +22,12 @@ export class ConnectionStatusComponent {
     this.client.connectionStateChange,
     this.client.isConnectionInProgressChange,
     this.client.debugDataChange,
+    this.client.reconnectingChange,
   ]).pipe(
-    map(([connected, connecting, debug]) => {
+    map(([connected, connecting, debug, reconnectAttempt]) => {
+      if (reconnectAttempt !== null) {
+        return { quality: 'connecting' as Quality, ping: null, reconnectAttempt };
+      }
       if (connecting) {
         return { quality: 'connecting' as Quality, ping: null };
       }
@@ -38,4 +42,9 @@ export class ConnectionStatusComponent {
   );
 
   public constructor(private readonly client: ClientService) {}
+
+  /** Stops getting back to a lost server */
+  public cancelReconnect(): void {
+    this.client.disconnect();
+  }
 }

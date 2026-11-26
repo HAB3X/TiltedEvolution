@@ -94,7 +94,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Łączenie…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Ponowne łączenie… (próba {{attempt}})",
+      "CANCEL": "Anuluj"
     },
     "DISCONNECT": {
       "PROMPT": "Czy jesteś pewny, że chcesz się odłączyć?",
@@ -190,7 +192,9 @@
       "PLAYER_MANAGER": "Menedżer Graczy",
       "INVITE": "Zaproś",
       "SETTINGS": "Ustawienia",
-      "CONNECTION_IN_PROGRESS": "Podłączanie jest w trakcie"
+      "CONNECTION_IN_PROGRESS": "Podłączanie jest w trakcie",
+      "REJOIN_OFFER": "Twoja ostatnia wspólna gra nieoczekiwanie się zakończyła. Dołączyć ponownie do {{address}}?",
+      "REHOST_OFFER": "Gra, którą ostatnio hostowałeś, nieoczekiwanie się zakończyła. Hostować ją ponownie?"
     },
     "SERVER_LIST": {
       "SEARCH": "Szukaj...",
@@ -251,7 +255,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Stracono połączenie, próbujemy się podłączyć z powrotem. {{remainingReconnectionAttempt}} pozostałych prób.",
       "CONNECTED": "Pomyślnie nawiązano połączenie z serwerem.",
-      "DISCONNECTED": "Rozłączono z serwerem."
+      "DISCONNECTED": "Rozłączono z serwerem.",
+      "RECONNECTING": "Utracono połączenie. Ponowne łączenie (próba {{attempt}})…",
+      "RECONNECTED": "Ponownie połączono z serwerem.",
+      "RECONNECT_GAVE_UP": "Przez dwie minuty nie udało się wrócić na serwer. Użyj opcji Dołącz ponownie w panelu Skyrim Together (F2), aby spróbować jeszcze raz."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "Dostępne Komendy Czatu: {{cmds}}",

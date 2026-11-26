@@ -18,6 +18,7 @@
 #include <Services/PartyCheckpointService.h>
 #include <Services/VoiceService.h>
 #include <Services/HostWorldService.h>
+#include <Services/ReturnService.h>
 
 #include <es_loader/ESLoader.h>
 
@@ -43,6 +44,7 @@ World::World()
     ctx().emplace<PartyCheckpointService>(*this, m_dispatcher);
     ctx().emplace<VoiceService>(*this, m_dispatcher);
     ctx().emplace<HostWorldService>(*this, m_dispatcher);
+    ctx().emplace<ReturnService>(*this);
 
     ESLoader::ESLoader loader;
     // emplace loaded mods into modscomponent.

@@ -394,8 +394,9 @@ interface SkyrimTogether {
    * @param host IP address or hostname.
    * @param port Port.
    * @param password Server password.
+   * @param returning The player comes back after their game stopped: the server may move them back to where it last saw them.
    */
-  connect(host: string, port: number, password: string): void;
+  connect(host: string, port: number, password: string, returning?: boolean): void;
 
   /**
    * Start the server next to the game and connect to it.

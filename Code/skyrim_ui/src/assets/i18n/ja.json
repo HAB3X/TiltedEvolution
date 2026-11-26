@@ -93,7 +93,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "接続中…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "再接続中…（{{attempt}} 回目）",
+      "CANCEL": "キャンセル"
     },
     "DISCONNECT": {
       "PROMPT": "切断しますか?",
@@ -185,7 +187,9 @@
       "PLAYER_MANAGER": "プレイヤーの管理",
       "INVITE": "招待",
       "SETTINGS": "設定",
-      "CONNECTION_IN_PROGRESS": "接続しています…"
+      "CONNECTION_IN_PROGRESS": "接続しています…",
+      "REJOIN_OFFER": "前回のマルチプレイが予期せず終了しました。{{address}} に再参加しますか？",
+      "REHOST_OFFER": "前回ホストしたゲームが予期せず終了しました。もう一度ホストしますか？"
     },
     "SERVER_LIST": {
       "SEARCH": "検索",
@@ -247,7 +251,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "サーバーから切断されました。再接続しようとしています… 後{{remainingReconnectionAttempt}}回試します。",
       "CONNECTED": "接続しました。",
-      "DISCONNECTED": "サーバーから切断されました。"
+      "DISCONNECTED": "サーバーから切断されました。",
+      "RECONNECTING": "接続が切れました。再接続中（{{attempt}} 回目）…",
+      "RECONNECTED": "サーバーに再接続しました。",
+      "RECONNECT_GAVE_UP": "2 分間サーバーに戻れませんでした。Skyrim Together パネル（F2）の「再参加」でもう一度お試しください。"
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "使用できるコマンド: {{cmds}}",

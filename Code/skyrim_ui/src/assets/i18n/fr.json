@@ -94,7 +94,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Connexion…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Reconnexion… (tentative {{attempt}})",
+      "CANCEL": "Annuler"
     },
     "DISCONNECT": {
       "PROMPT": "Vous êtes sûr de vouloir vous déconnecter ?",
@@ -190,7 +192,9 @@
       "PLAYER_MANAGER": "Gestion des joueurs",
       "INVITE": "Inviter",
       "SETTINGS": "Paramètres",
-      "CONNECTION_IN_PROGRESS": "Connexion en cours"
+      "CONNECTION_IN_PROGRESS": "Connexion en cours",
+      "REJOIN_OFFER": "Votre dernière partie à plusieurs s'est terminée de façon inattendue. Rejoindre {{address}} ?",
+      "REHOST_OFFER": "La dernière partie que vous avez hébergée s'est terminée de façon inattendue. L'héberger à nouveau ?"
     },
     "SERVER_LIST": {
       "SEARCH": "Recherche...",
@@ -246,7 +250,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Connexion perdue, tentative de reconnexion. {{remainingReconnectionAttempt}} tentatives.",
       "CONNECTED": "Connexion réussie au serveur.",
-      "DISCONNECTED": "Déconnectée du serveur."
+      "DISCONNECTED": "Déconnectée du serveur.",
+      "RECONNECTING": "Connexion perdue. Reconnexion (tentative {{attempt}})…",
+      "RECONNECTED": "Reconnecté au serveur.",
+      "RECONNECT_GAVE_UP": "Impossible de revenir sur le serveur pendant deux minutes. Utilisez Rejoindre à nouveau dans le panneau Skyrim Together (F2) pour réessayer."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "Commandes de chat disponibles : {{cmds}}",

@@ -1,7 +1,12 @@
 @if (status$ | async; as status) {
   <div class="status" [attr.data-quality]="status.quality">
     <span class="dot"></span>
-    @if (status.ping === null) {
+    @if (status.reconnectAttempt) {
+      {{ 'COMPONENT.CONNECTION_STATUS.RECONNECTING' | transloco: { attempt: status.reconnectAttempt } }}
+      <button class="cancel" (click)="cancelReconnect()">
+        {{ 'COMPONENT.CONNECTION_STATUS.CANCEL' | transloco }}
+      </button>
+    } @else if (status.ping === null) {
       {{ 'COMPONENT.CONNECTION_STATUS.CONNECTING' | transloco }}
     } @else {
       {{ 'COMPONENT.CONNECTION_STATUS.PING' | transloco: { ms: status.ping } }}

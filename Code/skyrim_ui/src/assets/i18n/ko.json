@@ -93,7 +93,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "연결 중…",
-      "PING": "{{ms}}ms"
+      "PING": "{{ms}}ms",
+      "RECONNECTING": "다시 연결하는 중… ({{attempt}}번째 시도)",
+      "CANCEL": "취소"
     },
     "DISCONNECT": {
       "PROMPT": "정말로 연결을 끊으시겠어요?",
@@ -185,7 +187,9 @@
       "PLAYER_MANAGER": "플레이어 관리자",
       "INVITE": "초대",
       "SETTINGS": "설정",
-      "CONNECTION_IN_PROGRESS": "연결 진행중..."
+      "CONNECTION_IN_PROGRESS": "연결 진행중...",
+      "REJOIN_OFFER": "지난 함께하기 게임이 예기치 않게 끝났습니다. {{address}}에 다시 참가할까요?",
+      "REHOST_OFFER": "마지막으로 호스트한 게임이 예기치 않게 끝났습니다. 다시 호스트할까요?"
     },
     "SERVER_LIST": {
       "SEARCH": "검색...",
@@ -247,7 +251,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "연결이 끊어졌습니다. 다시 연결을 시도 중입니다. {{remainingReconnectionAttempt}}회 시도가 남았습니다.",
       "CONNECTED": "서버에 성공적으로 연결되었습니다.",
-      "DISCONNECTED": "서버와의 연결이 끊어졌습니다."
+      "DISCONNECTED": "서버와의 연결이 끊어졌습니다.",
+      "RECONNECTING": "연결이 끊겼습니다. 다시 연결하는 중({{attempt}}번째 시도)…",
+      "RECONNECTED": "서버에 다시 연결되었습니다.",
+      "RECONNECT_GAVE_UP": "2분 동안 서버에 다시 연결하지 못했습니다. Skyrim Together 패널(F2)의 다시 참가로 다시 시도하세요."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "다음과 같은 대화 명령어가 사용 가능합니다: {{cmds}}",

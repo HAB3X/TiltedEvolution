@@ -28,6 +28,8 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
   private playerName = 'Local Player';
   private showEvents = true;
   private localPlayerId: number;
+  // 't-drop': connects, loses the connection 3 s later, then fails twice before getting back
+  private dropTries = 0;
   public readonly players$ = playerStore.pipe(selectAllEntities());
 
   answerHostWorld(join: boolean): void {
@@ -102,7 +104,18 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     setTimeout(() => this.emit('hostAddress', '203.0.113.7:10578'), 1000);
   }
 
-  connect(host: string, port: number, password: string): void {
+  connect(host: string, port: number, password: string, returning = false): void {
+    console.log(`connect ${host}:${port}${returning ? ', returning' : ''}`);
+    if (host === 't-drop' && this.dropTries++ > 0 && this.dropTries <= 3) {
+      setTimeout(() => this.emit('disconnect', true), 250);
+      return;
+    }
+    if (host === 't-drop' && this.dropTries === 1) {
+      setTimeout(() => {
+        this.connected = false;
+        this.emit('disconnect', true);
+      }, 3000);
+    }
     if (!this.connected) {
       let error: ErrorEvents | boolean;
       switch (host) {

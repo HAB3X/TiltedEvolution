@@ -17,14 +17,21 @@
 #include <BuildInfo.h>
 #include <LanDiscovery.h>
 #include <WireProtocol.h>
+#include <Messages/AssignCharacterRequest.h>
 #include <Messages/AuthenticationRequest.h>
 #include <Messages/AuthenticationResponse.h>
 #include <Messages/ClientMessageFactory.h>
+#include <Messages/EnterInteriorCellRequest.h>
 #include <Messages/HostWorldStateRequest.h>
 #include <Messages/NotifyHostWorldRequested.h>
 #include <Messages/NotifyHostWorldState.h>
 #include <Messages/NotifyChatMessageBroadcast.h>
+#include <Messages/NotifyPartyInfo.h>
+#include <Messages/NotifyPartyInvite.h>
 #include <Messages/NotifyPartyJoined.h>
+#include <Messages/PartyAcceptInviteRequest.h>
+#include <Messages/PartyCreateRequest.h>
+#include <Messages/PartyInviteRequest.h>
 #include <Messages/NotifyPlayerJoined.h>
 #include <Messages/RequestHostWorld.h>
 #include <Messages/RequestModeratePlayer.h>
@@ -82,6 +89,7 @@ struct FakePlayer final : Client
         request.Token = m_password.c_str();
         request.Username = m_name.c_str();
         request.Level = 1;
+        request.Returning = Returning;
         for (const Plugin& cMod : Plugins)
         {
             Mods::Entry entry;
@@ -135,6 +143,8 @@ struct FakePlayer final : Client
                 ++OwnChatsBack;
             break;
         case kNotifyPartyJoined: Party = *static_cast<NotifyPartyJoined*>(pMessage.get()); break;
+        case kNotifyPartyInfo: PartyInfo = *static_cast<NotifyPartyInfo*>(pMessage.get()); break;
+        case kNotifyPartyInvite: Invite = *static_cast<NotifyPartyInvite*>(pMessage.get()); break;
         case kNotifyHostWorldRequested: WorldRequest = *static_cast<NotifyHostWorldRequested*>(pMessage.get()); break;
         case kNotifyHostWorldState: World = *static_cast<NotifyHostWorldState*>(pMessage.get()); break;
         case kTeleportCommandResponse: Teleport = *static_cast<TeleportCommandResponse*>(pMessage.get()); break;
@@ -144,6 +154,8 @@ struct FakePlayer final : Client
 
     std::string m_name, m_password;
     bool LoggedIn = false, Disconnected = false;
+    // Says it comes back after its game stopped (AuthenticationRequest::Returning)
+    bool Returning = false;
     struct Plugin
     {
         std::string Name;
@@ -161,6 +173,8 @@ struct FakePlayer final : Client
     std::optional<NotifyChatMessageBroadcast> Chat;
     uint32_t OwnChatsBack = 0;
     std::optional<NotifyPartyJoined> Party;
+    std::optional<NotifyPartyInfo> PartyInfo;
+    std::optional<NotifyPartyInvite> Invite;
     std::optional<NotifyHostWorldRequested> WorldRequest;
     std::optional<NotifyHostWorldState> World;
     std::optional<TeleportCommandResponse> Teleport;
@@ -443,6 +457,77 @@ int RunSoak(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// A lost connection put back (ReturnService), on a server without auto party join. The leader stands in a cell and
+// leads a party with the member, then its game "crashes" (the process ends without closing the connection). The member
+// sees the party carry on without it; the leader comes back as a restarted game (Returning) and is put back in its
+// party, leading it, and moved to where the server last saw it. Start lostleader, then lostmember, both in the
+// background; once the server has timed the leader out, run lostreturn.
+const GameId kLostCell{0, 0x3C};
+const glm::vec3 kLostPosition{100.f, 200.f, 300.f};
+constexpr char kLostName[] = "FakeLost";
+
+int RunLostLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader(kLostName, acPassword);
+    leader.Connect(acEndpoint);
+    Check("leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+
+    EnterInteriorCellRequest cell;
+    cell.CellId = kLostCell;
+    leader.Send(cell);
+    AssignCharacterRequest character;
+    character.ReferenceId = GameId(0, 0x14);
+    character.CellId = kLostCell;
+    character.Position = kLostPosition;
+    leader.Send(character);
+
+    leader.Send(PartyCreateRequest{});
+    Check("leader leads a party", RunUntil(leader, [&] { return leader.Party && leader.Party->IsLeader; }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    PartyInviteRequest invite;
+    invite.PlayerId = leader.JoinedIds.empty() ? 0 : leader.JoinedIds.back();
+    leader.Send(invite);
+    Check("the member joins the party", RunUntil(leader, [&] { return leader.PartyInfo && leader.PartyInfo->PlayerIds.size() == 2; }, 15s));
+    std::fflush(stdout);
+
+    // The game crashing: no goodbye to the server, which times the connection out
+    TerminateProcess(GetCurrentProcess(), s_failures ? 1 : 0);
+    return 1;
+}
+
+int RunLostMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeStays", acPassword);
+    member.Connect(acEndpoint);
+    Check("member logs in", RunUntil(member, [&] { return member.LoggedIn; }));
+    Check("is invited", RunUntil(member, [&] { return member.Invite.has_value(); }, 30s));
+    PartyAcceptInviteRequest accept;
+    accept.InviterId = member.Invite ? member.Invite->InviterId : 0;
+    member.Send(accept);
+    Check("joins the leader's party", RunUntil(member, [&] { return member.Party && !member.Party->IsLeader; }));
+    const uint32_t cLeaderId = member.Party ? member.Party->LeaderPlayerId : 0;
+
+    Check("the party carries on without the lost leader", RunUntil(member, [&] { return member.PartyInfo && member.PartyInfo->PlayerIds.size() == 1 && member.PartyInfo->IsLeader; }, 40s));
+    Check("the leader comes back into the party and leads it again",
+          RunUntil(member, [&] { return member.PartyInfo && member.PartyInfo->PlayerIds.size() == 2 && !member.PartyInfo->IsLeader && member.PartyInfo->LeaderPlayerId != cLeaderId; }, 60s));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+int RunLostReturn(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader(kLostName, acPassword);
+    leader.Returning = true;
+    leader.Connect(acEndpoint);
+    Check("the lost leader logs in again", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    Check("and is back in its party, leading it", RunUntil(leader, [&] { return leader.Party && leader.Party->IsLeader && leader.Party->PlayerIds.size() == 2; }));
+    Check("and is moved back to where the server last saw it", RunUntil(leader, [&] { return leader.Teleport.has_value(); }, 5s) && leader.Teleport->CellId == kLostCell &&
+              glm::distance(glm::vec3(leader.Teleport->Position), kLostPosition) < 1.f);
+    RunUntil(leader, [] { return false; }, 5s);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -450,6 +535,7 @@ int RunSoak(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe mods [address:port] [password]: against a server requiring SomeMod.esp
 // FakePlayers.exe modversions [address:port] [password]: against a server requiring Sized.esp|12345 and Plain.esp
 // FakePlayers.exe listen184|talk184 [address:port] [password]: the same against an official v1.8.4 server
+// FakePlayers.exe lostleader|lostmember|lostreturn [address:port] [password]: see RunLostLeader
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -479,6 +565,12 @@ int main(int argc, char** argv)
         return RunOfficialListener(cEndpoint, cPassword);
     if (cRole == "talk184")
         return RunOfficialTalker(cEndpoint, cPassword);
+    if (cRole == "lostleader")
+        return RunLostLeader(cEndpoint, cPassword);
+    if (cRole == "lostmember")
+        return RunLostMember(cEndpoint, cPassword);
+    if (cRole == "lostreturn")
+        return RunLostReturn(cEndpoint, cPassword);
 
     std::printf("FakePlayers.exe host|join|mods|modversions|listen184|talk184 [address:port] [password]\n");
     return 2;

@@ -37,6 +37,9 @@ struct PartyService
     bool IsPlayerInParty(Player* const apPlayer) const noexcept;
     bool IsPlayerLeader(const Player* const apPlayer) const noexcept;
     Party* GetPlayerParty(Player* const apPlayer) noexcept;
+    // Puts a player who lost their connection back in their party, leading it again if they led it; false when the
+    // party is gone or they are in another one
+    bool Rejoin(Player* apPlayer, uint32_t aPartyId, bool aAsLeader) noexcept;
 
 protected:
     void OnUpdate(const UpdateEvent& acEvent) noexcept;

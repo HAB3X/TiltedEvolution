@@ -93,7 +93,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Verbinde…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Verbinde erneut… (Versuch {{attempt}})",
+      "CANCEL": "Abbrechen"
     },
     "DISCONNECT": {
       "PROMPT": "Bist du sicher, dass du die Verbindung trennen willst?",
@@ -189,7 +191,9 @@
       "PLAYER_MANAGER": "Spielerverwaltung",
       "INVITE": "Einladen",
       "SETTINGS": "Einstellungen",
-      "CONNECTION_IN_PROGRESS": "Verbindungsaufbau läuft..."
+      "CONNECTION_IN_PROGRESS": "Verbindungsaufbau läuft...",
+      "REJOIN_OFFER": "Euer letztes gemeinsames Spiel endete unerwartet. {{address}} erneut beitreten?",
+      "REHOST_OFFER": "Das zuletzt von dir gehostete Spiel endete unerwartet. Erneut hosten?"
     },
     "SERVER_LIST": {
       "SEARCH": "Suche...",
@@ -251,7 +255,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Verbindung verloren, versuche erneut zu verbinden. {{remainingReconnectionAttempt } Versuche verbleibend.",
       "CONNECTED": "Erfolreich dem Server beigetreten.",
-      "DISCONNECTED": "Verbindung zum Server getrennt."
+      "DISCONNECTED": "Verbindung zum Server getrennt.",
+      "RECONNECTING": "Verbindung verloren. Verbinde erneut (Versuch {{attempt}})…",
+      "RECONNECTED": "Wieder mit dem Server verbunden.",
+      "RECONNECT_GAVE_UP": "Zwei Minuten lang keine Verbindung zum Server. Versuche es mit „Erneut beitreten“ im Skyrim-Together-Fenster (F2) noch einmal."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "Verfügbare Chatbefehle: {{cmds}}",

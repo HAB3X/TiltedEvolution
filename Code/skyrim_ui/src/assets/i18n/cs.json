@@ -93,7 +93,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Připojování…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Znovu se připojuji… (pokus {{attempt}})",
+      "CANCEL": "Zrušit"
     },
     "DISCONNECT": {
       "PROMPT": "Určitě se chcete odpojit?",
@@ -185,7 +187,9 @@
       "PLAYER_MANAGER": "Správa hráčů",
       "INVITE": "Pozvat",
       "SETTINGS": "Nastavení",
-      "CONNECTION_IN_PROGRESS": "Připojení probíhá..."
+      "CONNECTION_IN_PROGRESS": "Připojení probíhá...",
+      "REJOIN_OFFER": "Vaše poslední společná hra nečekaně skončila. Znovu se připojit k {{address}}?",
+      "REHOST_OFFER": "Hra, kterou jste naposledy hostovali, nečekaně skončila. Hostovat ji znovu?"
     },
     "SERVER_LIST": {
       "SEARCH": "Vyhledávání...",
@@ -247,7 +251,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Ztráta spojení, pokus o obnovení spojení. {{remainingReconnectionAttempt}} zbývajících pokusů.",
       "CONNECTED": "Úspěšně připojeno k serveru.",
-      "DISCONNECTED": "Odpojeno od serveru."
+      "DISCONNECTED": "Odpojeno od serveru.",
+      "RECONNECTING": "Spojení ztraceno. Znovu se připojuji (pokus {{attempt}})…",
+      "RECONNECTED": "Znovu připojeno k serveru.",
+      "RECONNECT_GAVE_UP": "Po dvě minuty se nepodařilo znovu připojit k serveru. Zkuste to znovu tlačítkem Znovu se připojit v panelu Skyrim Together (F2)."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "Dostupné příkazy pro chat: {{cmds}}",

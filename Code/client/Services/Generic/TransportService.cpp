@@ -252,6 +252,7 @@ void TransportService::SendAuthenticationRequest()
         modSystem.GetServerModId(pCell->formID, request.CellId);
 
     request.Level = pPlayer->GetLevel();
+    request.Returning = m_returning;
 
     auto* pGameTime = TimeData::Get();
     request.PlayerTime.TimeScale = pGameTime->TimeScale->f;
@@ -263,11 +264,12 @@ void TransportService::SendAuthenticationRequest()
     Send(request);
 }
 
-bool TransportService::Connect(const std::string& acEndpoint) noexcept
+bool TransportService::Connect(const std::string& acEndpoint, const bool aReturning) noexcept
 {
     // A new connection starts in this build's protocol
     Wire::Set(WireProtocol::Current);
     m_reconnectAsOfficial = false;
+    m_returning = aReturning;
     m_endpoint = acEndpoint;
     return Client::Connect(acEndpoint);
 }

@@ -95,7 +95,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Ansluter…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Ansluter igen… (försök {{attempt}})",
+      "CANCEL": "Avbryt"
     },
     "DISCONNECT": {
       "PROMPT": "Är du säker på att du vill logga ut?",
@@ -191,7 +193,9 @@
       "PLAYER_MANAGER": "Hantera Spelare",
       "INVITE": "Bjud in",
       "SETTINGS": "Inställningar",
-      "CONNECTION_IN_PROGRESS": "Anslutning pågår..."
+      "CONNECTION_IN_PROGRESS": "Anslutning pågår...",
+      "REJOIN_OFFER": "Ert senaste spel tillsammans avslutades oväntat. Anslut till {{address}} igen?",
+      "REHOST_OFFER": "Spelet du senast var värd för avslutades oväntat. Vara värd igen?"
     },
     "SERVER_LIST": {
       "SEARCH": "Sök...",
@@ -253,7 +257,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Anslutning tappades, försöker återansluta. {{remainingReconnectionAttempt}} försök kvar.",
       "CONNECTED": "Lyckades ansluta till servern.",
-      "DISCONNECTED": "Loggade ut från servern."
+      "DISCONNECTED": "Loggade ut från servern.",
+      "RECONNECTING": "Anslutningen bröts. Ansluter igen (försök {{attempt}})…",
+      "RECONNECTED": "Ansluten till servern igen.",
+      "RECONNECT_GAVE_UP": "Kunde inte komma tillbaka till servern på två minuter. Använd Anslut igen i Skyrim Together-panelen (F2) för att försöka igen."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "Tillgängliga chattkommandon: {{cmds}}",

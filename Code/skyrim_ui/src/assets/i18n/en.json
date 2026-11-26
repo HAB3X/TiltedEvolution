@@ -95,7 +95,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Connecting…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Reconnecting… (attempt {{attempt}})",
+      "CANCEL": "Cancel"
     },
     "INVITE": {
       "CODE_INFO": "Friends type this join code in Connect:",
@@ -191,7 +193,9 @@
       "PLAYER_MANAGER": "Player Manager",
       "INVITE": "Invite",
       "SETTINGS": "Settings",
-      "CONNECTION_IN_PROGRESS": "Connection in progress..."
+      "CONNECTION_IN_PROGRESS": "Connection in progress...",
+      "REJOIN_OFFER": "Your last game together ended unexpectedly. Rejoin {{address}}?",
+      "REHOST_OFFER": "The game you hosted last ended unexpectedly. Host it again?"
     },
     "SERVER_LIST": {
       "SEARCH": "Search...",
@@ -254,7 +258,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Connection lost, trying to reconnect. {{remainingReconnectionAttempt}} attempts left.",
       "CONNECTED": "Successfully connected to server.",
-      "DISCONNECTED": "Disconnected from server."
+      "DISCONNECTED": "Disconnected from server.",
+      "RECONNECTING": "Connection lost. Reconnecting (attempt {{attempt}})…",
+      "RECONNECTED": "Reconnected to the server.",
+      "RECONNECT_GAVE_UP": "Couldn't get back to the server for two minutes. Use Rejoin in the Skyrim Together panel (F2) to try again."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "Available chat commands: {{cmds}}",

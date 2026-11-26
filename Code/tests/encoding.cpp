@@ -372,6 +372,7 @@ TEST_CASE("Packets", "[encoding.packets]")
         sendMessage.UserMods.ModList.push_back({"Hi", 14});
         sendMessage.UserMods.ModList.push_back({"Test", 8});
         sendMessage.UserMods.ModList.push_back({"Toast", 49});
+        sendMessage.Returning = true;
 
         Buffer::Writer writer(&buff);
         sendMessage.Serialize(writer);
@@ -1017,6 +1018,27 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         received.Deserialize(reader);
         REQUIRE(received.Position == sent.Position);
         REQUIRE_FALSE(received.HasLookAt);
+        REQUIRE(Serialization::ReadVarInt(reader) == 42);
+    }
+
+    GIVEN("An authentication request ends where v1.8.4's does")
+    {
+        AuthenticationRequest sent;
+        sent.Username = "Lydia";
+        sent.Returning = true;
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 42);
+
+        Buffer::Reader reader(&buffer);
+        uint64_t opcode;
+        reader.ReadBits(opcode, 8);
+        AuthenticationRequest received;
+        received.DeserializeRaw(reader);
+        REQUIRE(received.Username == "Lydia");
+        REQUIRE_FALSE(received.Returning);
         REQUIRE(Serialization::ReadVarInt(reader) == 42);
     }
 

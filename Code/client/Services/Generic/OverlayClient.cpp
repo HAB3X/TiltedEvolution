@@ -169,8 +169,10 @@ void OverlayClient::ProcessConnectMessage(CefRefPtr<CefListValue> aEventArgs)
     World::Get().GetTransport().SetServerPassword(aEventArgs->GetString(2));
 
     std::string endpoint = baseIp + ":" + std::to_string(port);
+    // Rejoining after the game stopped (ClientService.rejoin in the overlay)
+    const bool cReturning = aEventArgs->GetSize() > 3 && aEventArgs->GetBool(3);
 
-    World::Get().GetRunner().Queue([endpoint] { World::Get().GetTransport().Connect(endpoint); });
+    World::Get().GetRunner().Queue([endpoint, cReturning] { World::Get().GetTransport().Connect(endpoint, cReturning); });
 }
 
 void OverlayClient::ProcessDisconnectMessage()

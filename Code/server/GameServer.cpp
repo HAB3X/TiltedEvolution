@@ -20,6 +20,7 @@
 #include <Events/PlayerLeaveCellEvent.h>
 #include <Events/PlayerLeaveEvent.h>
 #include <Events/UpdateEvent.h>
+#include <Services/ReturnService.h>
 #include <steam/isteamnetworkingutils.h>
 
 #include <Messages/AuthenticationResponse.h>
@@ -803,6 +804,10 @@ void GameServer::OnDisconnection(const ConnectionId_t aConnectionId, EDisconnect
 
     if (pPlayer)
     {
+        // A lost connection (a timeout, or the player's game crashed) is put back when they come back
+        if (aReason == EDisconnectReason::BadConnection)
+            m_pWorld->ctx().at<ReturnService>().OnLost(*pPlayer);
+
         if (const auto& cell = pPlayer->GetCellComponent())
         {
             const auto oldCell = cell.Cell;
@@ -1228,6 +1233,7 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
         }
 
         m_pWorld->GetDispatcher().trigger(PlayerJoinEvent(pPlayer, acRequest->WorldSpaceId, acRequest->CellId, acRequest->PlayerTime));
+        m_pWorld->ctx().at<ReturnService>().OnJoined(*pPlayer, acRequest->Returning);
     }
     else
     {

@@ -73,6 +73,29 @@ PartyService::Party* PartyService::GetPlayerParty(Player* const apPlayer) noexce
     return nullptr;
 }
 
+bool PartyService::Rejoin(Player* apPlayer, const uint32_t aPartyId, const bool aAsLeader) noexcept
+{
+    auto partyItor = m_parties.find(aPartyId);
+    auto& partyComponent = apPlayer->GetParty();
+    if (partyItor == std::end(m_parties) || (partyComponent.JoinedPartyId && *partyComponent.JoinedPartyId != aPartyId))
+        return false;
+
+    Party& party = partyItor.value();
+    if (aAsLeader)
+        party.LeaderPlayerId = apPlayer->GetId();
+
+    // Auto party join may have put them back already
+    if (!partyComponent.JoinedPartyId)
+    {
+        party.Members.push_back(apPlayer);
+        partyComponent.JoinedPartyId = aPartyId;
+    }
+
+    SendPartyJoinedEvent(party, apPlayer);
+    BroadcastPartyInfo(aPartyId);
+    return true;
+}
+
 void PartyService::OnUpdate(const UpdateEvent& acEvent) noexcept
 {
     const auto cCurrentTick = GameServer::Get()->GetTick();

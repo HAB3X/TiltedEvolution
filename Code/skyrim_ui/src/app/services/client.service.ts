@@ -9,6 +9,7 @@ import { ChatService } from './chat.service';
 import { StoreService } from './store.service';
 import { ErrorEvents, ErrorService } from './error.service';
 import { LoadingService } from './loading.service';
+import { reconnectDelay } from '../utils/reconnect';
 
 /** Client game service. */
 /** What joining a host's world would change. */
@@ -150,6 +151,9 @@ export class ClientService implements OnDestroy {
   /** The session the game crashed or quit in, which Rejoin returns to; null when there's none. */
   public lastSessionChange = new BehaviorSubject<LastSession | null>(null);
 
+  /** While getting back to a server after the connection was lost: the attempt under way or next (1 for the first); else null. */
+  public reconnectingChange = new BehaviorSubject<number | null>(null);
+
   /** Whether this player hosts the game they're connected to (Host a game). */
   public hostingChange = new BehaviorSubject(false);
 
@@ -189,7 +193,10 @@ export class ClientService implements OnDestroy {
 
   private _password: string;
 
-  private _remainingReconnectionAttempt = environment.nbReconnectionAttempts;
+  /** When the connection being reconnected was lost (Date.now()), null when not reconnecting */
+  private _lostAt: number | null = null;
+
+  private _reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   /**
    * Instantiate.
@@ -311,7 +318,10 @@ export class ClientService implements OnDestroy {
     skyrimtogether.searchLanServers();
   }
 
-  /** Returns to the last session: hosts it again, or connects to its server with the saved password. */
+  /**
+   * Returns to the last session: hosts it again, or connects to its server with the saved password. The game stopped
+   * since, so the server may move the player back to where it last saw them.
+   */
   public rejoin(): void {
     const session = this.lastSessionChange.getValue();
     if (!session) {
@@ -327,6 +337,7 @@ export class ClientService implements OnDestroy {
         session.host,
         session.port,
         this.storeService.get('last_connected_password', ''),
+        true,
       );
     }
   }
@@ -365,8 +376,9 @@ export class ClientService implements OnDestroy {
     this._password = password;
   }
 
-  public connect(host: string, port: number, password = ''): void {
-    skyrimtogether.connect(host, port, password);
+  /** @param returning The player comes back after their game stopped (see rejoin) */
+  public connect(host: string, port: number, password = '', returning = false): void {
+    skyrimtogether.connect(host, port, password, returning);
     this.hostingChange.next(false);
     this.isConnectionInProgressChange.next(true);
     this._host = host;
@@ -379,7 +391,7 @@ export class ClientService implements OnDestroy {
    */
   public disconnect(): void {
     skyrimtogether.disconnect();
-    this._remainingReconnectionAttempt = 0;
+    this.stopReconnecting();
     // Left on purpose: nothing to rejoin
     this.storeService.remove(LAST_SESSION_KEY);
     this.lastSessionChange.next(null);
@@ -477,7 +489,7 @@ export class ClientService implements OnDestroy {
    */
   public reconnect(): void {
     skyrimtogether.reconnect();
-    this._remainingReconnectionAttempt = 0;
+    this.stopReconnecting();
   }
 
   public teleportToPlayer(playerId: number): void {
@@ -548,11 +560,14 @@ export class ClientService implements OnDestroy {
    */
   private onConnect(): void {
     this.zone.run(async () => {
-      this._remainingReconnectionAttempt = environment.nbReconnectionAttempts;
+      const reconnected = this.reconnectingChange.getValue() !== null;
+      this.stopReconnecting();
       this.isConnectionInProgressChange.next(false);
       this.connectionStateChange.next(true);
 
-      this.chatService.pushSystemMessage('SERVICE.CLIENT.CONNECTED');
+      this.chatService.pushSystemMessage(
+        reconnected ? 'SERVICE.CLIENT.RECONNECTED' : 'SERVICE.CLIENT.CONNECTED',
+      );
 
       // Kept until the player disconnects, so that after a crash the next start offers to rejoin
       const session: LastSession = {
@@ -570,18 +585,58 @@ export class ClientService implements OnDestroy {
    */
   private onDisconnect(isError: boolean): void {
     void this.zone.run(async () => {
+      // Playing with this server: connected, or trying to get back to it
+      const wasPlaying =
+        this.connectionStateChange.getValue() ||
+        this.reconnectingChange.getValue() !== null;
       this.localPlayerId = undefined;
       this.connectionStateChange.next(false);
       this.isConnectionInProgressChange.next(false);
 
-      if (isError && this._remainingReconnectionAttempt > 0) {
-        this._remainingReconnectionAttempt--;
-        this.chatService.pushSystemMessage('SERVICE.CLIENT.CONNECTION_LOST');
-        this.connect(this._host, this._port, this._password);
+      // Only a lost connection to someone else's server: a kick, a refusal or leaving isn't an error, and the
+      // server this player hosts stops with a problem only when the game does
+      if (isError && wasPlaying && !this.hostingChange.getValue()) {
+        this.reconnectLater();
       } else {
+        this.stopReconnecting();
         this.chatService.pushSystemMessage('SERVICE.CLIENT.DISCONNECTED');
       }
     });
+  }
+
+  /** Tries the lost server again after the next backoff wait, or gives up and offers Rejoin. */
+  private reconnectLater(): void {
+    if (this._lostAt === null) {
+      this._lostAt = Date.now();
+    }
+    const attempt = (this.reconnectingChange.getValue() ?? 0) + 1;
+    const delay = reconnectDelay(attempt, Date.now() - this._lostAt);
+    if (delay === null) {
+      this.stopReconnecting();
+      this.chatService.pushSystemMessage('SERVICE.CLIENT.RECONNECT_GAVE_UP');
+      // Still saved: the player didn't leave, so Rejoin stays on offer
+      this.lastSessionChange.next(
+        JSON.parse(this.storeService.get(LAST_SESSION_KEY, 'null')),
+      );
+      return;
+    }
+    this.reconnectingChange.next(attempt);
+    this.chatService.pushSystemMessage('SERVICE.CLIENT.RECONNECTING', {
+      attempt,
+    });
+    this._reconnectTimer = setTimeout(() => {
+      this._reconnectTimer = null;
+      this.zone.run(() => this.connect(this._host, this._port, this._password));
+    }, delay);
+  }
+
+  private stopReconnecting(): void {
+    if (this._reconnectTimer !== null) {
+      clearTimeout(this._reconnectTimer);
+      this._reconnectTimer = null;
+    }
+    this._lostAt = null;
+    this.reconnectingChange.next(null);
   }
 
   /**

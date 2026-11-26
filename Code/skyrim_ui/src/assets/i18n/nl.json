@@ -94,7 +94,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Verbinden…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Opnieuw verbinden… (poging {{attempt}})",
+      "CANCEL": "Annuleren"
     },
     "DISCONNECT": {
       "PROMPT": "Weet je het zeker dat je de verbinding wil verbreken?",
@@ -187,7 +189,9 @@
       "PLAYER_MANAGER": "Speler beheerder",
       "INVITE": "Uitnodigen",
       "SETTINGS": "Instellingen",
-      "CONNECTION_IN_PROGRESS": "Verbinden"
+      "CONNECTION_IN_PROGRESS": "Verbinden",
+      "REJOIN_OFFER": "Je laatste gezamenlijke spel eindigde onverwacht. Opnieuw deelnemen aan {{address}}?",
+      "REHOST_OFFER": "Het spel dat je het laatst host, eindigde onverwacht. Opnieuw hosten?"
     },
     "SERVER_LIST": {
       "SEARCH": "Zoeken...",
@@ -229,7 +233,10 @@
   },
   "SERVICE": {
     "CLIENT": {
-      "CONNECTION_LOST": "Verbinding verbroken, proberen opnieuw te verbinden. {{remainingReconnectionAttempt } pogingen over."
+      "CONNECTION_LOST": "Verbinding verbroken, proberen opnieuw te verbinden. {{remainingReconnectionAttempt } pogingen over.",
+      "RECONNECTING": "Verbinding verbroken. Opnieuw verbinden (poging {{attempt}})…",
+      "RECONNECTED": "Opnieuw verbonden met de server.",
+      "RECONNECT_GAVE_UP": "Twee minuten lang kon er geen verbinding met de server worden gemaakt. Gebruik Opnieuw verbinden in het Skyrim Together-paneel (F2) om het opnieuw te proberen."
     },
     "GROUP": {
       "LEVEL_UP": "{{name}} heeft level {{level}} bereikt.",

@@ -95,7 +95,9 @@
     },
     "CONNECTION_STATUS": {
       "CONNECTING": "Bağlanıyor…",
-      "PING": "{{ms}} ms"
+      "PING": "{{ms}} ms",
+      "RECONNECTING": "Yeniden bağlanılıyor… ({{attempt}}. deneme)",
+      "CANCEL": "İptal"
     },
     "DISCONNECT": {
       "PROMPT": "Bağlantıyı kesmek istediğinize emin misiniz??",
@@ -188,7 +190,9 @@
       "PLAYER_MANAGER": "Oyuncu Yöneticisi",
       "INVITE": "Davet et",
       "SETTINGS": "Ayarlar",
-      "CONNECTION_IN_PROGRESS": "Bağlanılıyor..."
+      "CONNECTION_IN_PROGRESS": "Bağlanılıyor...",
+      "REJOIN_OFFER": "Son ortak oyununuz beklenmedik şekilde sona erdi. {{address}} sunucusuna yeniden katılınsın mı?",
+      "REHOST_OFFER": "En son sunduğunuz oyun beklenmedik şekilde sona erdi. Yeniden sunulsun mu?"
     },
     "SERVER_LIST": {
       "SEARCH": "Ara...",
@@ -250,7 +254,10 @@
     "CLIENT": {
       "CONNECTION_LOST": "Bağlantı kaybedildi, geri bağlanmaya çalışılıyor. {{remainingReconnectionAttempt}} deneme kaldı.",
       "CONNECTED": "Sunucuya bağlanıldı.",
-      "DISCONNECTED": "Sunucudan kopuldu.."
+      "DISCONNECTED": "Sunucudan kopuldu..",
+      "RECONNECTING": "Bağlantı koptu. Yeniden bağlanılıyor ({{attempt}}. deneme)…",
+      "RECONNECTED": "Sunucuya yeniden bağlanıldı.",
+      "RECONNECT_GAVE_UP": "İki dakika boyunca sunucuya geri dönülemedi. Yeniden denemek için Skyrim Together panelindeki (F2) Yeniden katıl'ı kullanın."
     },
     "COMMANDS": {
       "AVAILABLE_COMMANDS": "Mevcut chat komutları: {{cmds}}",
