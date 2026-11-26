@@ -16,6 +16,12 @@ void ProcessHandler::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<C
     m_pCoreObject->SetValue("connect", CefV8Value::CreateFunction("connect", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
     m_pCoreObject->SetValue("answerHostWorld", CefV8Value::CreateFunction("answerHostWorld", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
     m_pCoreObject->SetValue("answerPartyTravel", CefV8Value::CreateFunction("answerPartyTravel", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
+    m_pCoreObject->SetValue("answerPartyDoor", CefV8Value::CreateFunction("answerPartyDoor", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
+    m_pCoreObject->SetValue("summonPlayer", CefV8Value::CreateFunction("summonPlayer", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
+    m_pCoreObject->SetValue("answerPartySummon", CefV8Value::CreateFunction("answerPartySummon", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
+    m_pCoreObject->SetValue("setPartyBar", CefV8Value::CreateFunction("setPartyBar", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
+    m_pCoreObject->SetValue("setPerfOverlay", CefV8Value::CreateFunction("setPerfOverlay", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
+    m_pCoreObject->SetValue("setPingMarkers", CefV8Value::CreateFunction("setPingMarkers", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
     m_pCoreObject->SetValue("setNameTags", CefV8Value::CreateFunction("setNameTags", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
     m_pCoreObject->SetValue("moderatePlayer", CefV8Value::CreateFunction("moderatePlayer", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);
     m_pCoreObject->SetValue("searchLanServers", CefV8Value::CreateFunction("searchLanServers", m_pOverlayHandler), V8_PROPERTY_ATTRIBUTE_NONE);

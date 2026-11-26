@@ -2,6 +2,46 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Affichage des performances",
+      "FPS": "ips",
+      "FRAME_MS": "ms/image",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms de ping",
+      "ACTORS": "synchronisés",
+      "PROFILER_OFF": "Profileur d'images désactivé ([Debug] bFrameProfiler)",
+      "WAITING": "Mesure en cours…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "Rejoindre",
+      "SUMMON": "Appeler"
+    },
+    "IMMERSION": {
+      "HEADER": "Éléments à l'écran",
+      "IMMERSIVE_MODE": "Mode immersif",
+      "IMMERSIVE_HINT": "Le mode immersif masque tout ce qui suit ; vos choix reviennent quand vous le désactivez.",
+      "PARTY_ALERTS": "Alertes de combat et de chute du groupe",
+      "PING_MARKERS": "Points de repère des signalements des autres joueurs",
+      "PING_MESSAGES": "Messages de signalement dans le chat",
+      "NAME_TAGS": "Noms des joueurs"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "À terre",
+      "IN_COMBAT": "En combat",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "N",
+        "NE": "NE",
+        "E": "E",
+        "SE": "SE",
+        "S": "S",
+        "SW": "SO",
+        "W": "O",
+        "NW": "NO"
+      },
+      "ALERT_COMBAT": "{{name}} est en combat.",
+      "ALERT_DOWNED": "{{name}} est à terre !"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Hôte",
@@ -256,6 +296,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} vous demande de le rejoindre. Y aller ?",
+      "NOT_IN_PARTY": "{{name}} n'est pas dans votre groupe.",
+      "IN_COMBAT": "Pas pendant un combat.",
+      "COOLDOWN": "Attendez {{seconds}} s avant de vous déplacer à nouveau.",
+      "DECLINED": "{{name}} a refusé.",
+      "UNAVAILABLE": "{{name}} est injoignable pour le moment.",
+      "UNKNOWN": "Le déplacement n'a pas eu lieu."
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "Suivre {{member}} vers {{place}} ?",
+      "QUESTION_NO_PLACE": "{{member}} a franchi une porte. Le suivre ?"
+    },
+    "PARTY_PING": {
+      "SELF": "Vous avez signalé {{target}} au groupe.",
+      "NEAR": "{{name}} a signalé {{target}} : {{distance}}.",
+      "FAR": "{{name}} a signalé {{target}} à {{place}}.",
+      "THEIR_SPOT": "sa position",
+      "YOUR_SPOT": "votre position"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Connexion perdue, tentative de reconnexion. {{remainingReconnectionAttempt}} tentatives.",
       "CONNECTED": "Connexion réussie au serveur.",

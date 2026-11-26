@@ -48,6 +48,54 @@
         height: 1vw;
       }
 
+      .group-member-state {
+        margin-left: 0.4em;
+        font-size: 0.7em;
+        text-shadow: 1px 1px 2px #000000;
+
+        &.combat {
+          color: rgb(230, 150, 90);
+        }
+
+        &.downed {
+          color: rgb(235, 90, 80);
+          text-transform: uppercase;
+        }
+      }
+
+      .group-member-vitals {
+        display: flex;
+        gap: 0.4vw;
+        width: 12vw;
+        margin: 0 1vw 2%;
+
+        .vital {
+          flex: 1;
+          height: 0.3vw;
+          background: rgba(0, 0, 0, 0.5);
+
+          div {
+            height: 100%;
+            transition: width 0.8s ease-in-out;
+          }
+
+          &.magicka div {
+            background: rgb(80, 130, 220);
+          }
+
+          &.stamina div {
+            background: rgb(90, 180, 100);
+          }
+        }
+      }
+
+      .group-member-where {
+        font-size: 0.65em;
+        color: rgb(170, 170, 170);
+        text-shadow: 1px 1px 2px #000000;
+        margin-bottom: 4%;
+      }
+
       .group-member-health {
         width: 14vw;
         background: url(../../../assets/images/group/healthbar.svg) center /

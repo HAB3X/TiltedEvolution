@@ -70,6 +70,10 @@ declare namespace SkyrimTogetherTypes {
   ) => void;
 
   type SetHealthCallback = (playerId: number, health: number) => void;
+  /** A party member's bar beside their health: magicka and stamina in whole percents. */
+  type SetVitalsCallback = (playerId: number, magicka: number, stamina: number, inCombat: boolean, downed: boolean) => void;
+  /** How far a loaded party member is, in metres, and the compass point toward them (0 north, clockwise to 7). */
+  type SetPlayerDistanceCallback = (playerId: number, meters: number, direction: number) => void;
 
   type SetLevelCallback = (playerId: number, level: number) => void;
 
@@ -179,6 +183,10 @@ interface SkyrimTogether {
 
   on(event: 'setHealth', callback: SkyrimTogetherTypes.SetHealthCallback): void;
 
+  on(event: 'setVitals', callback: SkyrimTogetherTypes.SetVitalsCallback): void;
+
+  on(event: 'setPlayerDistance', callback: SkyrimTogetherTypes.SetPlayerDistanceCallback): void;
+
   /** Add listener to when one player change level in server. */
   on(event: 'setLevel', callback: SkyrimTogetherTypes.SetLevelCallback): void;
 
@@ -245,6 +253,21 @@ interface SkyrimTogether {
 
   /** The party leader fast travelled; place is empty when the game had no name for it. */
   on(event: 'partyTravel', callback: (leader: string, place: string) => void): void;
+
+  /** A party member went through a load door; place is empty when the game had no name for it. */
+  on(event: 'partyDoor', callback: (member: string, place: string) => void): void;
+
+  /** A party member asks this player to come to them. */
+  /** The performance overlay's numbers, each second while setPerfOverlay is on; -1 for the first three while the profiler is off. */
+  on(event: 'perfData', callback: (fps: number, frameMs: number, modMs: number, ping: number, actors: number) => void): void;
+
+  on(event: 'partySummon', callback: (summonerId: number, summoner: string) => void): void;
+
+  /** A go-to or summons was refused: reason (PartyTeleport::Refusal), the other player, seconds left of a cooldown. */
+  on(event: 'partyTeleportRefused', callback: (reason: number, player: string, secondsLeft: number) => void): void;
+
+  /** A party ping: who (empty for this player), what (empty for their spot), metres away (-1 elsewhere), direction, place. */
+  on(event: 'partyPing', callback: (player: string, target: string, meters: number, direction: number, place: string) => void): void;
 
   /** Shared quests differ from another party member's: the first few named, and how many more. */
   on(event: 'questDesync', callback: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
@@ -327,6 +350,10 @@ interface SkyrimTogether {
     callback?: SkyrimTogetherTypes.SetHealthCallback,
   ): void;
 
+  off(event: 'setVitals', callback?: SkyrimTogetherTypes.SetVitalsCallback): void;
+
+  off(event: 'setPlayerDistance', callback?: SkyrimTogetherTypes.SetPlayerDistanceCallback): void;
+
   off(event: 'setLevel', callback?: SkyrimTogetherTypes.SetLevelCallback): void;
 
   off(event: 'setCell', callback?: SkyrimTogetherTypes.SetCellCallback): void;
@@ -395,6 +422,16 @@ interface SkyrimTogether {
   ): void;
 
   off(event: 'partyTravel', callback?: (leader: string, place: string) => void): void;
+
+  off(event: 'partyDoor', callback?: (member: string, place: string) => void): void;
+
+  off(event: 'perfData', callback?: (fps: number, frameMs: number, modMs: number, ping: number, actors: number) => void): void;
+
+  off(event: 'partySummon', callback?: (summonerId: number, summoner: string) => void): void;
+
+  off(event: 'partyTeleportRefused', callback?: (reason: number, player: string, secondsLeft: number) => void): void;
+
+  off(event: 'partyPing', callback?: (player: string, target: string, meters: number, direction: number, place: string) => void): void;
 
   off(event: 'questDesync', callback?: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
 
@@ -468,6 +505,26 @@ interface SkyrimTogether {
    * A party member's answer to the leader's fast travel (the partyTravel event): yes moves them next to the leader.
    */
   answerPartyTravel(travel: boolean): void;
+
+  /**
+   * A party member's answer to another's load door (the partyDoor event): yes moves them to where the door leads.
+   */
+  answerPartyDoor(follow: boolean): void;
+
+  /** Ask a party member to come to this player; they are asked first. */
+  summonPlayer(playerId: number): void;
+
+  /** This player's answer to a party member's summons (the partySummon event). */
+  answerPartySummon(summonerId: number, accept: boolean): void;
+
+  /** Whether other players' pings set a waypoint in this game. */
+  setPingMarkers(enabled: boolean): void;
+
+  /** Whether the party bar is shown: the game works out members' distances only while it is. */
+  setPartyBar(enabled: boolean): void;
+
+  /** Whether the performance overlay is shown: the game sends perfData only then. */
+  setPerfOverlay(enabled: boolean): void;
 
   /**
    * Disconnect from server or cancel connection.

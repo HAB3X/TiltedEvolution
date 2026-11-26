@@ -1,5 +1,45 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Оверлей продуктивності",
+      "FPS": "к/с",
+      "FRAME_MS": "мс/кадр",
+      "MOD_MS": "мс Skyrim Together",
+      "PING": "мс пінг",
+      "ACTORS": "синхронізовано",
+      "PROFILER_OFF": "Профайлер кадрів вимкнено ([Debug] bFrameProfiler)",
+      "WAITING": "Вимірювання…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "До гравця",
+      "SUMMON": "Покликати"
+    },
+    "IMMERSION": {
+      "HEADER": "Елементи на екрані",
+      "IMMERSIVE_MODE": "Режим занурення",
+      "IMMERSIVE_HINT": "Режим занурення приховує все нижче; ваші налаштування повернуться, коли ви його вимкнете.",
+      "PARTY_ALERTS": "Сповіщення про бій і падіння в загоні",
+      "PING_MARKERS": "Шляхові точки для позначок інших гравців",
+      "PING_MESSAGES": "Повідомлення про позначки в чаті",
+      "NAME_TAGS": "Імена гравців"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "Повалений",
+      "IN_COMBAT": "У бою",
+      "DISTANCE": "{{meters}} м {{direction}}",
+      "DIRECTION": {
+        "N": "Пн",
+        "NE": "ПнСх",
+        "E": "Сх",
+        "SE": "ПдСх",
+        "S": "Пд",
+        "SW": "ПдЗх",
+        "W": "Зх",
+        "NW": "ПнЗх"
+      },
+      "ALERT_COMBAT": "{{name}} у бою.",
+      "ALERT_DOWNED": "{{name}} повалений!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Ви хост",
@@ -263,6 +303,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} кличе вас до себе. Іти?",
+      "NOT_IN_PARTY": "{{name}} не у вашому загоні.",
+      "IN_COMBAT": "Не під час бою.",
+      "COOLDOWN": "Зачекайте {{seconds}} с до наступного переміщення.",
+      "DECLINED": "{{name}} відмовляється.",
+      "UNAVAILABLE": "Зараз неможливо переміститися до {{name}}.",
+      "UNKNOWN": "Переміщення не відбулося."
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "Піти за {{member}} у {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} пройшов крізь двері. Піти слідом?"
+    },
+    "PARTY_PING": {
+      "SELF": "Ви позначили {{target}} для загону.",
+      "NEAR": "{{name}} позначає {{target}}: {{distance}}.",
+      "FAR": "{{name}} позначає {{target}} у місці {{place}}.",
+      "THEIR_SPOT": "своє місцезнаходження",
+      "YOUR_SPOT": "ваше місцезнаходження"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "З'єднання втрачено, спроба переподключення. Залишилось спроб - {{remainingReconnectionAttempt}}.",
       "CONNECTED": "Успішно підключено до сервера.",

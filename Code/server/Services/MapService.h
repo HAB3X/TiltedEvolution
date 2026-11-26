@@ -5,6 +5,7 @@
 struct World;
 struct RequestSetWaypoint;
 struct RequestRemoveWaypoint;
+struct RequestPartyPing;
 
 /**
  * @brief Handles player specific actions that might change the information needed by other clients about that player.
@@ -19,11 +20,13 @@ struct MapService
   protected:
     void OnSetWaypointRequest(const PacketEvent<RequestSetWaypoint>& acMessage) const noexcept;
     void OnRemoveWaypointRequest(const PacketEvent<RequestRemoveWaypoint>& acMessage) const noexcept;
+    void OnPartyPing(const PacketEvent<RequestPartyPing>& acMessage) const noexcept;
 
   private:
     World& m_world;
 
     entt::scoped_connection m_playerSetWaypointConnection;
     entt::scoped_connection m_playerRemoveWaypointConnection;
+    entt::scoped_connection m_partyPingConnection;
     entt::scoped_connection m_updateConnection;
 };

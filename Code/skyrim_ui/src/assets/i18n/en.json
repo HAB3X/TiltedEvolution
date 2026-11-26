@@ -1,5 +1,45 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Performance overlay",
+      "FPS": "fps",
+      "FRAME_MS": "ms/frame",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "synced",
+      "PROFILER_OFF": "Frame profiler off ([Debug] bFrameProfiler)",
+      "WAITING": "Measuring…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "Go to",
+      "SUMMON": "Summon"
+    },
+    "IMMERSION": {
+      "HEADER": "On-screen elements",
+      "IMMERSIVE_MODE": "Immersive mode",
+      "IMMERSIVE_HINT": "Immersive mode hides everything below; your choices come back when you turn it off.",
+      "PARTY_ALERTS": "Party combat and downed alerts",
+      "PING_MARKERS": "Waypoints on other players' pings",
+      "PING_MESSAGES": "Ping messages in chat",
+      "NAME_TAGS": "Player name tags"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "Downed",
+      "IN_COMBAT": "In combat",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "N",
+        "NE": "NE",
+        "E": "E",
+        "SE": "SE",
+        "S": "S",
+        "SW": "SW",
+        "W": "W",
+        "NW": "NW"
+      },
+      "ALERT_COMBAT": "{{name}} is in combat.",
+      "ALERT_DOWNED": "{{name}} is down!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Hosting",
@@ -264,6 +304,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} asks you to come to them. Go?",
+      "NOT_IN_PARTY": "{{name}} isn't in your party.",
+      "IN_COMBAT": "Not while in combat.",
+      "COOLDOWN": "Wait {{seconds}} s before moving again.",
+      "DECLINED": "{{name}} declined.",
+      "UNAVAILABLE": "{{name}} can't be reached right now.",
+      "UNKNOWN": "That move didn't happen."
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "Follow {{member}} into {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} went through a door. Follow them?"
+    },
+    "PARTY_PING": {
+      "SELF": "You pinged {{target}} for the party.",
+      "NEAR": "{{name}} pinged {{target}}: {{distance}}.",
+      "FAR": "{{name}} pinged {{target}} in {{place}}.",
+      "THEIR_SPOT": "their position",
+      "YOUR_SPOT": "your position"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Connection lost, trying to reconnect. {{remainingReconnectionAttempt}} attempts left.",
       "CONNECTED": "Successfully connected to server.",

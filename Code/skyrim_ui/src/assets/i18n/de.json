@@ -1,5 +1,45 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Leistungsanzeige",
+      "FPS": "fps",
+      "FRAME_MS": "ms/Bild",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms Ping",
+      "ACTORS": "synchronisiert",
+      "PROFILER_OFF": "Frame-Profiler aus ([Debug] bFrameProfiler)",
+      "WAITING": "Wird gemessen…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "Hingehen",
+      "SUMMON": "Herbeirufen"
+    },
+    "IMMERSION": {
+      "HEADER": "Bildschirmelemente",
+      "IMMERSIVE_MODE": "Immersiver Modus",
+      "IMMERSIVE_HINT": "Der immersive Modus blendet alles darunter aus; beim Ausschalten kehren deine Einstellungen zurück.",
+      "PARTY_ALERTS": "Hinweise auf Kampf und Niederschlag in der Gruppe",
+      "PING_MARKERS": "Wegpunkte für Markierungen anderer Spieler",
+      "PING_MESSAGES": "Markierungsnachrichten im Chat",
+      "NAME_TAGS": "Namensschilder der Spieler"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "Am Boden",
+      "IN_COMBAT": "Im Kampf",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "N",
+        "NE": "NO",
+        "E": "O",
+        "SE": "SO",
+        "S": "S",
+        "SW": "SW",
+        "W": "W",
+        "NW": "NW"
+      },
+      "ALERT_COMBAT": "{{name}} ist im Kampf.",
+      "ALERT_DOWNED": "{{name}} liegt am Boden!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Hostest",
@@ -261,6 +301,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} bittet dich zu sich. Hingehen?",
+      "NOT_IN_PARTY": "{{name}} ist nicht in deiner Gruppe.",
+      "IN_COMBAT": "Nicht während eines Kampfes.",
+      "COOLDOWN": "Warte {{seconds}} s bis zum nächsten Wechsel.",
+      "DECLINED": "{{name}} hat abgelehnt.",
+      "UNAVAILABLE": "{{name}} ist gerade nicht erreichbar.",
+      "UNKNOWN": "Der Wechsel hat nicht geklappt."
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "{{member}} nach {{place}} folgen?",
+      "QUESTION_NO_PLACE": "{{member}} ist durch eine Tür gegangen. Folgen?"
+    },
+    "PARTY_PING": {
+      "SELF": "Du hast {{target}} für die Gruppe markiert.",
+      "NEAR": "{{name}} hat {{target}} markiert: {{distance}}.",
+      "FAR": "{{name}} hat {{target}} in {{place}} markiert.",
+      "THEIR_SPOT": "die eigene Position",
+      "YOUR_SPOT": "deine Position"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Verbindung verloren, versuche erneut zu verbinden. {{remainingReconnectionAttempt } Versuche verbleibend.",
       "CONNECTED": "Erfolreich dem Server beigetreten.",

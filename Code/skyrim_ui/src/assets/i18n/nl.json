@@ -2,6 +2,46 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Prestatie-overlay",
+      "FPS": "fps",
+      "FRAME_MS": "ms/frame",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "gesynchroniseerd",
+      "PROFILER_OFF": "Frameprofiler uit ([Debug] bFrameProfiler)",
+      "WAITING": "Meten…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "Ga naar",
+      "SUMMON": "Oproepen"
+    },
+    "IMMERSION": {
+      "HEADER": "Elementen op het scherm",
+      "IMMERSIVE_MODE": "Immersieve modus",
+      "IMMERSIVE_HINT": "De immersieve modus verbergt alles hieronder; je keuzes komen terug als je hem uitzet.",
+      "PARTY_ALERTS": "Meldingen van gevecht en neergaan in de groep",
+      "PING_MARKERS": "Routepunten bij markeringen van andere spelers",
+      "PING_MESSAGES": "Markeringsberichten in de chat",
+      "NAME_TAGS": "Naamlabels van spelers"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "Neergeslagen",
+      "IN_COMBAT": "In gevecht",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "N",
+        "NE": "NO",
+        "E": "O",
+        "SE": "ZO",
+        "S": "Z",
+        "SW": "ZW",
+        "W": "W",
+        "NW": "NW"
+      },
+      "ALERT_COMBAT": "{{name}} is in gevecht.",
+      "ALERT_DOWNED": "{{name}} is neergeslagen!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Host",
@@ -241,6 +281,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} vraagt je naar hem toe te komen. Gaan?",
+      "NOT_IN_PARTY": "{{name}} zit niet in je groep.",
+      "IN_COMBAT": "Niet tijdens een gevecht.",
+      "COOLDOWN": "Wacht {{seconds}} s voor je weer verplaatst.",
+      "DECLINED": "{{name}} heeft geweigerd.",
+      "UNAVAILABLE": "{{name}} is nu niet bereikbaar.",
+      "UNKNOWN": "De verplaatsing is niet gelukt."
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "{{member}} volgen naar {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} is door een deur gegaan. Volgen?"
+    },
+    "PARTY_PING": {
+      "SELF": "Je hebt {{target}} gemarkeerd voor de groep.",
+      "NEAR": "{{name}} heeft {{target}} gemarkeerd: {{distance}}.",
+      "FAR": "{{name}} heeft {{target}} gemarkeerd in {{place}}.",
+      "THEIR_SPOT": "de eigen positie",
+      "YOUR_SPOT": "je positie"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Verbinding verbroken, proberen opnieuw te verbinden. {{remainingReconnectionAttempt } pogingen over."
     },

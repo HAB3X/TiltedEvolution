@@ -1,5 +1,45 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "성능 오버레이",
+      "FPS": "fps",
+      "FRAME_MS": "ms/프레임",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms 핑",
+      "ACTORS": "동기화됨",
+      "PROFILER_OFF": "프레임 프로파일러 꺼짐 ([Debug] bFrameProfiler)",
+      "WAITING": "측정 중…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "찾아가기",
+      "SUMMON": "부르기"
+    },
+    "IMMERSION": {
+      "HEADER": "화면 요소",
+      "IMMERSIVE_MODE": "몰입 모드",
+      "IMMERSIVE_HINT": "몰입 모드는 아래 항목을 모두 숨깁니다. 끄면 원래 설정으로 돌아갑니다.",
+      "PARTY_ALERTS": "파티 전투 및 쓰러짐 알림",
+      "PING_MARKERS": "다른 플레이어 핑의 웨이포인트",
+      "PING_MESSAGES": "채팅의 핑 메시지",
+      "NAME_TAGS": "플레이어 이름표"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "쓰러짐",
+      "IN_COMBAT": "전투 중",
+      "DISTANCE": "{{meters}}m {{direction}}",
+      "DIRECTION": {
+        "N": "북",
+        "NE": "북동",
+        "E": "동",
+        "SE": "남동",
+        "S": "남",
+        "SW": "남서",
+        "W": "서",
+        "NW": "북서"
+      },
+      "ALERT_COMBAT": "{{name}} 님이 전투 중입니다.",
+      "ALERT_DOWNED": "{{name}} 님이 쓰러졌습니다!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "호스트 중",
@@ -257,6 +297,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} 님이 당신을 부릅니다. 가시겠습니까?",
+      "NOT_IN_PARTY": "{{name}} 님은 파티에 없습니다.",
+      "IN_COMBAT": "전투 중에는 할 수 없습니다.",
+      "COOLDOWN": "다시 이동하려면 {{seconds}}초 기다리세요.",
+      "DECLINED": "{{name}} 님이 거절했습니다.",
+      "UNAVAILABLE": "지금은 {{name}} 님에게 갈 수 없습니다.",
+      "UNKNOWN": "이동하지 못했습니다."
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "{{member}} 님을 따라 {{place}}(으)로 가시겠습니까?",
+      "QUESTION_NO_PLACE": "{{member}} 님이 문을 지나갔습니다. 따라가시겠습니까?"
+    },
+    "PARTY_PING": {
+      "SELF": "파티에 {{target}}을(를) 표시했습니다.",
+      "NEAR": "{{name}} 님이 {{target}}을(를) 표시했습니다: {{distance}}.",
+      "FAR": "{{name}} 님이 {{place}}에서 {{target}}을(를) 표시했습니다.",
+      "THEIR_SPOT": "자신의 위치",
+      "YOUR_SPOT": "당신의 위치"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "연결이 끊어졌습니다. 다시 연결을 시도 중입니다. {{remainingReconnectionAttempt}}회 시도가 남았습니다.",
       "CONNECTED": "서버에 성공적으로 연결되었습니다.",

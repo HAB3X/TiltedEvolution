@@ -22,6 +22,9 @@ struct Player
     [[nodiscard]] const uint64_t GetDiscordId() const noexcept { return m_discordId; }
     [[nodiscard]] const uint32_t GetStringCacheId() const noexcept { return m_stringCacheId; }
     [[nodiscard]] const uint16_t GetLevel() const noexcept { return m_level; }
+    // As the player's party bar last reported it (RequestPlayerHealthUpdate)
+    [[nodiscard]] bool IsInCombat() const noexcept { return m_inCombat; }
+    void SetInCombat(bool aInCombat) noexcept { m_inCombat = aInCombat; }
 
     [[nodiscard]] CellIdComponent& GetCellComponent() noexcept;
     [[nodiscard]] const CellIdComponent& GetCellComponent() const noexcept;
@@ -58,4 +61,5 @@ private:
     CellIdComponent m_cell;
     uint32_t m_stringCacheId{0};
     uint16_t m_level{0};
+    bool m_inCombat{false};
 };

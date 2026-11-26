@@ -34,6 +34,23 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     console.log(`host world: ${join ? 'join' : 'keep'}`);
   }
 
+  setPingMarkers(enabled: boolean): void {
+    console.log(`ping markers: ${enabled ? 'on' : 'off'}`);
+  }
+
+  setPerfOverlay(enabled: boolean): void {
+    clearInterval(this.perfTimer);
+    if (enabled) {
+      this.perfTimer = setInterval(() => this.emit('perfData', 58 + Math.random() * 4, 16.7, 0.4 + Math.random() * 0.3, 42, 37), 1000);
+    }
+  }
+
+  private perfTimer: ReturnType<typeof setInterval> | undefined;
+
+  setPartyBar(enabled: boolean): void {
+    console.log(`party bar: ${enabled ? 'on' : 'off'}`);
+  }
+
   setNameTags(enabled: boolean): void {
     console.log(`name tags ${enabled}`);
   }
@@ -403,12 +420,57 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     this.emit('questUpdated');
   }
 
+  /** Every player's party bar: random magicka and stamina, distance and direction, and combat or downed in turn. */
+  mockPartyVitals() {
+    this.partyVitalsStep++;
+    for (const player of playerStore.query(getAllEntities())) {
+      const inCombat = this.partyVitalsStep % 3 !== 0;
+      const downed = this.partyVitalsStep % 3 === 2;
+      this.emit('setVitals', player.id, Math.floor(Math.random() * 101), Math.floor(Math.random() * 101), inCombat, downed);
+      this.emit('setPlayerDistance', player.id, Math.floor(Math.random() * 300), Math.floor(Math.random() * 8));
+    }
+  }
+
+  private partyVitalsStep = 0;
+
+  /** A member's ping nearby, one in another place, and this player's own of their spot. */
+  mockPartyPings() {
+    this.emit('partyPing', 'Lydia', 'Bandit Chief', 42, 1, 'Whiterun');
+    this.emit('partyPing', 'Lydia', '', -1, 0, 'Bleak Falls Barrow');
+    this.emit('partyPing', '', '', 0, 0, 'Riverwood');
+  }
+
   mockPartyTravel() {
     this.emit('partyTravel', 'Lydia', 'Riverwood');
   }
 
   mockQuestDesync() {
     this.emit('questDesync', 'Lydia', true, 'Bleak Falls Barrow, The Golden Claw, Dragon Rising, The Way of the Voice, Diplomatic Immunity', 3);
+  }
+
+  summonPlayer(playerId: number): void {
+    const player = playerStore.query(getEntity(playerId));
+    // The mock player declines every other time
+    this.summonsDeclined = !this.summonsDeclined;
+    setTimeout(() => this.emit('partyTeleportRefused', this.summonsDeclined ? 4 : 3, player?.name ?? '', 17), 500);
+  }
+
+  private summonsDeclined = false;
+
+  answerPartySummon(summonerId: number, accept: boolean): void {
+    console.log(`summons from ${summonerId}: ${accept ? 'go' : 'stay'}`);
+  }
+
+  mockPartySummon() {
+    this.emit('partySummon', 2, 'Lydia');
+  }
+
+  mockPartyDoor() {
+    this.emit('partyDoor', 'Lydia', 'Bleak Falls Barrow');
+  }
+
+  answerPartyDoor(follow: boolean): void {
+    console.log(`party door: ${follow ? 'follow' : 'stay'}`);
   }
 
   answerPartyTravel(travel: boolean): void {

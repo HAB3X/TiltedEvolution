@@ -8,7 +8,6 @@
 struct World;
 
 struct PlayerDialogueRequest;
-struct TeleportRequest;
 struct RequestPlayerHealthUpdate;
 
 /**
@@ -26,7 +25,6 @@ protected:
     void HandleChatMessage(const PacketEvent<SendChatMessageRequest>& acMessage) const noexcept;
     void HandlePlayerJoin(const PlayerEnterWorldEvent& acEvent) const noexcept;
     void OnPlayerDialogue(const PacketEvent<PlayerDialogueRequest>& acMessage) const noexcept;
-    void OnTeleport(const PacketEvent<TeleportRequest>& acMessage) const noexcept;
     void OnPlayerHealthUpdate(const PacketEvent<RequestPlayerHealthUpdate>& acMessage) const noexcept;
 
 private:
@@ -34,6 +32,5 @@ private:
 
     entt::scoped_connection m_chatMessageConnection;
     entt::scoped_connection m_playerDialogueConnection;
-    entt::scoped_connection m_teleportConnection;
     entt::scoped_connection m_playerHealthConnection;
 };

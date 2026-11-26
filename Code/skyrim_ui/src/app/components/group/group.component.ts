@@ -21,6 +21,8 @@ import { Player } from '../../models/player';
 import { ClientService } from '../../services/client.service';
 import { DestroyService } from '../../services/destroy.service';
 import { GroupService } from '../../services/group.service';
+import { compassKey } from '../../utils/party-bar';
+import { faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 
 interface GroupPosition {
   top?: string;
@@ -52,6 +54,10 @@ export class GroupComponent implements OnInit, OnDestroy {
     left: '0%',
   });
   public settings = this.settingService.settings;
+  public readonly faShieldHalved = faShieldHalved;
+  public readonly compassKey = compassKey;
+  /** Off in the settings or in immersive mode: nothing of the bar shows, whatever the auto-hide flashes. */
+  public readonly barShown$ = this.settingService.shown('isPartyShown');
 
   constructor(
     private readonly destroy$: DestroyService,
@@ -59,7 +65,7 @@ export class GroupComponent implements OnInit, OnDestroy {
     private readonly clientService: ClientService,
     private readonly settingService: SettingService,
   ) {
-    this.isShown.next(this.settings.isPartyShown.getValue());
+    this.isShown.next(this.settingService.isShown('isPartyShown'));
     this.isAutoHide.next(this.settings.autoHideParty.getValue());
 
     this.group$ = this.groupService.group.asObservable();
@@ -134,7 +140,8 @@ export class GroupComponent implements OnInit, OnDestroy {
   }
 
   private onPartyShownState() {
-    this.settings.isPartyShown
+    this.settingService
+      .shown('isPartyShown')
       .pipe(takeUntil(this.destroy$))
       .subscribe((state: boolean) => {
         this.isShown.next(state);
@@ -148,7 +155,7 @@ export class GroupComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((state: boolean) => {
         this.isAutoHide.next(state);
-        if (this.settings.isPartyShown.getValue()) {
+        if (this.settingService.isShown('isPartyShown')) {
           this.isShown.next(true);
         }
         this.flashGroup();

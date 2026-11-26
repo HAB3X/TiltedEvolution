@@ -54,6 +54,15 @@ export class SettingsComponent {
     },
   ];
   readonly availableAutoHideTimes = autoHideTimerLengths;
+  /** The on-screen elements immersive mode hides, each with the player's own switch. */
+  readonly immersionElements: { setting: SettingService['immersionSettings'][number]; label: string }[] = [
+    { setting: 'isPartyShown', label: 'COMPONENT.SETTINGS.SHOW_PARTY' },
+    { setting: 'partyAlerts', label: 'COMPONENT.IMMERSION.PARTY_ALERTS' },
+    { setting: 'pingMarkers', label: 'COMPONENT.IMMERSION.PING_MARKERS' },
+    { setting: 'pingMessages', label: 'COMPONENT.IMMERSION.PING_MESSAGES' },
+    { setting: 'nameTags', label: 'COMPONENT.IMMERSION.NAME_TAGS' },
+    { setting: 'perfOverlay', label: 'COMPONENT.PERF.SETTING' },
+  ];
 
   public settings = this.settingService.settings;
   public autoHideTime: number;

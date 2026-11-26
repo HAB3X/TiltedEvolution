@@ -1,4 +1,7 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { SettingService } from './setting.service';
+import { PerfData } from '../models/perf-data';
+import { Ping } from '../utils/party-bar';
 import { TranslocoService } from '@jsverse/transloco';
 import { AsyncSubject, BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -97,6 +100,9 @@ export class ClientService implements OnDestroy {
   /** Debug data change. */
   public debugDataChange = new BehaviorSubject(new Debug());
 
+  /** The performance overlay's numbers, each second while it's shown; null before the first. */
+  public perfDataChange = new BehaviorSubject<PerfData | null>(null);
+
   /** Connect player to server change. */
   public playerConnectedChange = new Subject<Player>();
 
@@ -115,6 +121,18 @@ export class ClientService implements OnDestroy {
   /** The party leader fast travelled, see answerPartyTravel. */
   public partyTravelChange = new Subject<{ leader: string; place: string }>();
 
+  /** A party member went through a load door, see answerPartyDoor. */
+  public partyDoorChange = new Subject<{ member: string; place: string }>();
+
+  /** A party member asks this player to come to them, see answerPartySummon. */
+  public partySummonChange = new Subject<{ summonerId: number; summoner: string }>();
+
+  /** A go-to or summons was refused. */
+  public partyTeleportRefusedChange = new Subject<{ reason: number; player: string; secondsLeft: number }>();
+
+  /** A party member, or this player, pinged a spot or a target. */
+  public partyPingChange = new Subject<Ping>();
+
   /** Shared quests differ from another party member's (the leader's, or a member's for the leader). */
   public questDesyncChange = new Subject<{ otherPlayer: string; otherIsLeader: boolean; quests: string; more: number }>();
 
@@ -123,6 +141,12 @@ export class ClientService implements OnDestroy {
 
   /** Player health change. */
   public healthChange = new Subject<Player>();
+
+  /** A party member's magicka, stamina, combat and downed state. */
+  public vitalsChange = new Subject<{ playerId: number; magicka: number; stamina: number; inCombat: boolean; downed: boolean }>();
+
+  /** How far a loaded party member is, and which way. */
+  public distanceChange = new Subject<{ playerId: number; meters: number; direction: number }>();
 
   /** Player level change. */
   public levelChange = new Subject<Player>();
@@ -144,6 +168,21 @@ export class ClientService implements OnDestroy {
   /** Whether to travel with the party leader, after partyTravelChange. */
   public answerPartyTravel(travel: boolean): void {
     skyrimtogether.answerPartyTravel(travel);
+  }
+
+  /** Whether to follow a party member through their load door, after partyDoorChange. */
+  public answerPartyDoor(follow: boolean): void {
+    skyrimtogether.answerPartyDoor(follow);
+  }
+
+  /** Ask a party member to come to this player. */
+  public summonPlayer(playerId: number): void {
+    skyrimtogether.summonPlayer(playerId);
+  }
+
+  /** Whether to go to the party member who summoned this player, after partySummonChange. */
+  public answerPartySummon(summonerId: number, accept: boolean): void {
+    skyrimtogether.answerPartySummon(summonerId, accept);
   }
 
   /** The joiner's answer to the host world offer. */
@@ -214,8 +253,17 @@ export class ClientService implements OnDestroy {
     private readonly loadingService: LoadingService,
     private readonly translocoService: TranslocoService,
     private readonly chatService: ChatService,
+    private readonly settingService: SettingService,
     private readonly storeService: StoreService,
   ) {
+    // The game starts with every element shown; once it's ready, it gets the player's choices and their changes, so
+    // a hidden element also stops its work there
+    this.initDone.subscribe(() => {
+      this.settingService.shown('nameTags').subscribe(shown => skyrimtogether.setNameTags(shown));
+      this.settingService.shown('pingMarkers').subscribe(shown => skyrimtogether.setPingMarkers(shown));
+      this.settingService.shown('isPartyShown').subscribe(shown => skyrimtogether.setPartyBar(shown));
+      this.settingService.shown('perfOverlay').subscribe(shown => skyrimtogether.setPerfOverlay(shown));
+    });
     skyrimtogether.on('init', this.onInit.bind(this));
     skyrimtogether.on('activate', this.onActivate.bind(this));
     skyrimtogether.on('deactivate', this.onDeactivate.bind(this));
@@ -228,12 +276,15 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('setVersion', this.onSetVersion.bind(this));
     skyrimtogether.on('debug', this.onDebug.bind(this)); //not needed anymore
     skyrimtogether.on('debugData', this.onUpdateDebug.bind(this));
+    skyrimtogether.on('perfData', this.onPerfData.bind(this));
     skyrimtogether.on('playerConnected', this.onPlayerConnected.bind(this));
     skyrimtogether.on(
       'playerDisconnected',
       this.onPlayerDisconnected.bind(this),
     );
     skyrimtogether.on('setHealth', this.onSetHealth.bind(this));
+    skyrimtogether.on('setVitals', this.onSetVitals.bind(this));
+    skyrimtogether.on('setPlayerDistance', this.onSetPlayerDistance.bind(this));
     skyrimtogether.on('setLevel', this.onSetLevel.bind(this));
     skyrimtogether.on('setCell', this.onSetCell.bind(this));
     skyrimtogether.on('setPlayer3dLoaded', this.onSetPlayer3dLoaded.bind(this));
@@ -267,6 +318,10 @@ export class ClientService implements OnDestroy {
     );
     skyrimtogether.on('questUpdated', this.onQuestUpdated.bind(this));
     skyrimtogether.on('partyTravel', this.onPartyTravel.bind(this));
+    skyrimtogether.on('partyDoor', this.onPartyDoor.bind(this));
+    skyrimtogether.on('partySummon', this.onPartySummon.bind(this));
+    skyrimtogether.on('partyTeleportRefused', this.onPartyTeleportRefused.bind(this));
+    skyrimtogether.on('partyPing', this.onPartyPing.bind(this));
     skyrimtogether.on('questDesync', this.onQuestDesync.bind(this));
   }
 
@@ -286,9 +341,12 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('setVersion');
     skyrimtogether.off('debug');
     skyrimtogether.off('debugData');
+    skyrimtogether.off('perfData');
     skyrimtogether.off('playerConnected');
     skyrimtogether.off('playerDisconnected');
     skyrimtogether.off('setHealth');
+    skyrimtogether.off('setVitals');
+    skyrimtogether.off('setPlayerDistance');
     skyrimtogether.off('setLevel');
     skyrimtogether.off('setCell');
     skyrimtogether.off('setPlayer3dLoaded');
@@ -308,6 +366,10 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('partyInviteReceived');
     skyrimtogether.off('questUpdated');
     skyrimtogether.off('partyTravel');
+    skyrimtogether.off('partyDoor');
+    skyrimtogether.off('partySummon');
+    skyrimtogether.off('partyTeleportRefused');
+    skyrimtogether.off('partyPing');
     skyrimtogether.off('questDesync');
   }
 
@@ -510,8 +572,6 @@ export class ClientService implements OnDestroy {
    */
   // TODO: is this still used?
   private onInit(): void {
-    // The game starts with name tags on; tell it the saved choice
-    skyrimtogether.setNameTags(this.chatService.nameTagsEnabled);
     this.zone.run(() => {
       this.initDone.next(undefined);
       this.initDone.complete();
@@ -715,6 +775,18 @@ export class ClientService implements OnDestroy {
     });
   }
 
+  private onSetVitals(playerId: number, magicka: number, stamina: number, inCombat: boolean, downed: boolean) {
+    this.zone.run(() => {
+      this.vitalsChange.next({ playerId, magicka, stamina, inCombat, downed });
+    });
+  }
+
+  private onSetPlayerDistance(playerId: number, meters: number, direction: number) {
+    this.zone.run(() => {
+      this.distanceChange.next({ playerId, meters, direction });
+    });
+  }
+
   private onSetLevel(playerId: number, level: number) {
     if (environment.game) {
       console.log(
@@ -904,6 +976,36 @@ export class ClientService implements OnDestroy {
   private onQuestUpdated() {
     this.zone.run(() => {
       this.questUpdatedChange.next();
+    });
+  }
+
+  private onPartyPing(player: string, target: string, meters: number, direction: number, place: string) {
+    this.zone.run(() => {
+      this.partyPingChange.next({ player, target, meters, direction, place });
+    });
+  }
+
+  private onPerfData(fps: number, frameMs: number, modMs: number, ping: number, actors: number) {
+    this.zone.run(() => {
+      this.perfDataChange.next({ fps, frameMs, modMs, ping, actors });
+    });
+  }
+
+  private onPartySummon(summonerId: number, summoner: string) {
+    this.zone.run(() => {
+      this.partySummonChange.next({ summonerId, summoner });
+    });
+  }
+
+  private onPartyTeleportRefused(reason: number, player: string, secondsLeft: number) {
+    this.zone.run(() => {
+      this.partyTeleportRefusedChange.next({ reason, player, secondsLeft });
+    });
+  }
+
+  private onPartyDoor(member: string, place: string) {
+    this.zone.run(() => {
+      this.partyDoorChange.next({ member, place });
     });
   }
 

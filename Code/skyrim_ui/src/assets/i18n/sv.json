@@ -1,5 +1,45 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Prestandaöverlägg",
+      "FPS": "fps",
+      "FRAME_MS": "ms/bildruta",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "synkade",
+      "PROFILER_OFF": "Bildprofileraren är av ([Debug] bFrameProfiler)",
+      "WAITING": "Mäter…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "Gå till",
+      "SUMMON": "Kalla hit"
+    },
+    "IMMERSION": {
+      "HEADER": "Element på skärmen",
+      "IMMERSIVE_MODE": "Uppslukande läge",
+      "IMMERSIVE_HINT": "Uppslukande läge döljer allt nedan; dina val kommer tillbaka när du stänger av det.",
+      "PARTY_ALERTS": "Varningar om strid och nedslagna i gruppen",
+      "PING_MARKERS": "Vägpunkter för andra spelares markeringar",
+      "PING_MESSAGES": "Markeringsmeddelanden i chatten",
+      "NAME_TAGS": "Namnskyltar för spelare"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "Nedslagen",
+      "IN_COMBAT": "I strid",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "N",
+        "NE": "NO",
+        "E": "O",
+        "SE": "SO",
+        "S": "S",
+        "SW": "SV",
+        "W": "V",
+        "NW": "NV"
+      },
+      "ALERT_COMBAT": "{{name}} är i strid.",
+      "ALERT_DOWNED": "{{name}} är nedslagen!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Värd",
@@ -263,6 +303,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} ber dig komma till hen. Gå?",
+      "NOT_IN_PARTY": "{{name}} är inte i din grupp.",
+      "IN_COMBAT": "Inte under strid.",
+      "COOLDOWN": "Vänta {{seconds}} s innan du flyttar igen.",
+      "DECLINED": "{{name}} tackade nej.",
+      "UNAVAILABLE": "{{name}} går inte att nå just nu.",
+      "UNKNOWN": "Förflyttningen blev inte av."
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "Följa {{member}} in i {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} gick genom en dörr. Följa efter?"
+    },
+    "PARTY_PING": {
+      "SELF": "Du markerade {{target}} för gruppen.",
+      "NEAR": "{{name}} markerade {{target}}: {{distance}}.",
+      "FAR": "{{name}} markerade {{target}} i {{place}}.",
+      "THEIR_SPOT": "sin position",
+      "YOUR_SPOT": "din position"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Anslutning tappades, försöker återansluta. {{remainingReconnectionAttempt}} försök kvar.",
       "CONNECTED": "Lyckades ansluta till servern.",

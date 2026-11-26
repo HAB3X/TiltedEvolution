@@ -1,5 +1,45 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "パフォーマンス表示",
+      "FPS": "fps",
+      "FRAME_MS": "ms/フレーム",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "同期中",
+      "PROFILER_OFF": "フレームプロファイラーはオフです ([Debug] bFrameProfiler)",
+      "WAITING": "計測中…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "会いに行く",
+      "SUMMON": "呼び寄せる"
+    },
+    "IMMERSION": {
+      "HEADER": "画面上の表示",
+      "IMMERSIVE_MODE": "没入モード",
+      "IMMERSIVE_HINT": "没入モードでは以下をすべて非表示にします。オフにすると元の設定に戻ります。",
+      "PARTY_ALERTS": "パーティーの戦闘・ダウン通知",
+      "PING_MARKERS": "他のプレイヤーのピンのウェイポイント",
+      "PING_MESSAGES": "チャットのピンメッセージ",
+      "NAME_TAGS": "プレイヤーの名前表示"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "ダウン",
+      "IN_COMBAT": "戦闘中",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "北",
+        "NE": "北東",
+        "E": "東",
+        "SE": "南東",
+        "S": "南",
+        "SW": "南西",
+        "W": "西",
+        "NW": "北西"
+      },
+      "ALERT_COMBAT": "{{name}}が戦闘中です。",
+      "ALERT_DOWNED": "{{name}}が倒れました！"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "ホスト中",
@@ -257,6 +297,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}}があなたを呼んでいます。行きますか？",
+      "NOT_IN_PARTY": "{{name}}はパーティーにいません。",
+      "IN_COMBAT": "戦闘中はできません。",
+      "COOLDOWN": "次の移動まで{{seconds}}秒お待ちください。",
+      "DECLINED": "{{name}}が断りました。",
+      "UNAVAILABLE": "{{name}}に今は移動できません。",
+      "UNKNOWN": "移動できませんでした。"
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "{{member}}について{{place}}へ行きますか？",
+      "QUESTION_NO_PLACE": "{{member}}が扉を通りました。ついて行きますか？"
+    },
+    "PARTY_PING": {
+      "SELF": "パーティーに{{target}}を知らせました。",
+      "NEAR": "{{name}}が{{target}}を知らせました: {{distance}}。",
+      "FAR": "{{name}}が{{place}}で{{target}}を知らせました。",
+      "THEIR_SPOT": "自分の位置",
+      "YOUR_SPOT": "あなたの位置"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "サーバーから切断されました。再接続しようとしています… 後{{remainingReconnectionAttempt}}回試します。",
       "CONNECTED": "接続しました。",

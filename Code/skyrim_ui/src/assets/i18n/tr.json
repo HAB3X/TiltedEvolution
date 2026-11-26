@@ -1,5 +1,45 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Performans katmanı",
+      "FPS": "fps",
+      "FRAME_MS": "ms/kare",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "eşitlenen",
+      "PROFILER_OFF": "Kare profil oluşturucu kapalı ([Debug] bFrameProfiler)",
+      "WAITING": "Ölçülüyor…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "Yanına git",
+      "SUMMON": "Çağır"
+    },
+    "IMMERSION": {
+      "HEADER": "Ekran öğeleri",
+      "IMMERSIVE_MODE": "Sürükleyici mod",
+      "IMMERSIVE_HINT": "Sürükleyici mod aşağıdakilerin hepsini gizler; kapattığında seçimlerin geri gelir.",
+      "PARTY_ALERTS": "Grup savaş ve yere düşme uyarıları",
+      "PING_MARKERS": "Diğer oyuncuların işaretleri için yol noktaları",
+      "PING_MESSAGES": "Sohbette işaret mesajları",
+      "NAME_TAGS": "Oyuncu isim etiketleri"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "Yere düştü",
+      "IN_COMBAT": "Savaşta",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "K",
+        "NE": "KD",
+        "E": "D",
+        "SE": "GD",
+        "S": "G",
+        "SW": "GB",
+        "W": "B",
+        "NW": "KB"
+      },
+      "ALERT_COMBAT": "{{name}} savaşta.",
+      "ALERT_DOWNED": "{{name}} yere düştü!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Kurucusun",
@@ -260,6 +300,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} yanına gelmeni istiyor. Gidilsin mi?",
+      "NOT_IN_PARTY": "{{name}} grubunda değil.",
+      "IN_COMBAT": "Savaş sırasında olmaz.",
+      "COOLDOWN": "Tekrar ışınlanmadan önce {{seconds}} sn bekle.",
+      "DECLINED": "{{name}} reddetti.",
+      "UNAVAILABLE": "{{name}} şu anda ulaşılamıyor.",
+      "UNKNOWN": "Işınlanma gerçekleşmedi."
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "{{member}} ile {{place}} içine gidilsin mi?",
+      "QUESTION_NO_PLACE": "{{member}} bir kapıdan geçti. Takip edilsin mi?"
+    },
+    "PARTY_PING": {
+      "SELF": "Grup için {{target}} işaretledin.",
+      "NEAR": "{{name}} {{target}} işaretledi: {{distance}}.",
+      "FAR": "{{name}} {{place}} içinde {{target}} işaretledi.",
+      "THEIR_SPOT": "kendi konumunu",
+      "YOUR_SPOT": "konumunu"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Bağlantı kaybedildi, geri bağlanmaya çalışılıyor. {{remainingReconnectionAttempt}} deneme kaldı.",
       "CONNECTED": "Sunucuya bağlanıldı.",

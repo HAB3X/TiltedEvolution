@@ -29,6 +29,20 @@
 #include <Messages/NotifyQuestUpdate.h>
 #include <Messages/NotifyPartyTravel.h>
 #include <Messages/NotifyQuestDesync.h>
+#include <Messages/NotifyPlayerHealthUpdate.h>
+#include <Messages/RequestPlayerHealthUpdate.h>
+#include <Messages/RequestPartyPing.h>
+#include <Messages/NotifyPartyPing.h>
+#include <Messages/RequestPartyDoor.h>
+#include <Messages/NotifyPartyDoor.h>
+#include <Messages/NotifyPartySummon.h>
+#include <Messages/NotifyPartyTeleportRefused.h>
+#include <Messages/NotifyTeleport.h>
+#include <Messages/RequestPartySummon.h>
+#include <Messages/RequestPartySummonAnswer.h>
+#include <Messages/TeleportRequest.h>
+#include <Messages/RequestRespawnAtPartner.h>
+#include <PartyTeleport.h>
 #include <Messages/RequestQuestStages.h>
 #include <Messages/PartyCreateRequest.h>
 #include <Messages/RequestPartyTravel.h>
@@ -149,6 +163,12 @@ struct FakePlayer final : Client
         case kNotifyQuestUpdate: QuestUpdates.push_back(*static_cast<NotifyQuestUpdate*>(pMessage.get())); break;
         case kNotifyPartyTravel: Travel = *static_cast<NotifyPartyTravel*>(pMessage.get()); break;
         case kNotifyQuestDesync: Desyncs.push_back(*static_cast<NotifyQuestDesync*>(pMessage.get())); break;
+        case kNotifyPlayerHealthUpdate: Health = *static_cast<NotifyPlayerHealthUpdate*>(pMessage.get()); break;
+        case kNotifyPartyPing: Pings.push_back(*static_cast<NotifyPartyPing*>(pMessage.get())); break;
+        case kNotifyPartyDoor: Doors.push_back(*static_cast<NotifyPartyDoor*>(pMessage.get())); break;
+        case kNotifyPartySummon: Summons.push_back(*static_cast<NotifyPartySummon*>(pMessage.get())); break;
+        case kNotifyPartyTeleportRefused: Refusals.push_back(*static_cast<NotifyPartyTeleportRefused*>(pMessage.get())); break;
+        case kNotifyTeleport: ++Teleports; break;
         default: break;
         }
     }
@@ -178,6 +198,12 @@ struct FakePlayer final : Client
     std::vector<NotifyQuestUpdate> QuestUpdates;
     std::optional<NotifyPartyTravel> Travel;
     std::vector<NotifyQuestDesync> Desyncs;
+    std::optional<NotifyPlayerHealthUpdate> Health;
+    std::vector<NotifyPartyPing> Pings;
+    std::vector<NotifyPartyDoor> Doors;
+    std::vector<NotifyPartySummon> Summons;
+    std::vector<NotifyPartyTeleportRefused> Refusals;
+    uint32_t Teleports = 0;
 };
 
 // Runs the player until the condition holds or the time is up
@@ -621,6 +647,279 @@ int RunDesyncMember(const std::string& acEndpoint, const std::string& acPassword
     return s_failures ? 1 : 0;
 }
 
+// Party bar: each member's health update carries their magicka, stamina, combat and downed state to the other
+RequestPlayerHealthUpdate BarUpdate(float aHealth, PartyVitals aVitals)
+{
+    RequestPlayerHealthUpdate update;
+    update.Percentage = aHealth;
+    update.Vitals = aVitals;
+    return update;
+}
+
+bool IsBarUpdate(const std::optional<NotifyPlayerHealthUpdate>& acHealth, uint32_t aPlayerId, const RequestPlayerHealthUpdate& acSent)
+{
+    return acHealth && acHealth->PlayerId == aPlayerId && acHealth->Percentage == acSent.Percentage && acHealth->Vitals == acSent.Vitals;
+}
+
+std::string DescribeBar(const std::optional<NotifyPlayerHealthUpdate>& acHealth)
+{
+    if (!acHealth)
+        return "nothing";
+    return "player " + std::to_string(acHealth->PlayerId) + ": " + std::to_string(acHealth->Percentage) + "% health, " + std::to_string(acHealth->Vitals.Magicka) +
+           "% magicka, " + std::to_string(acHealth->Vitals.Stamina) + "% stamina, combat " + std::to_string(acHealth->Vitals.InCombat) + ", downed " +
+           std::to_string(acHealth->Vitals.Downed);
+}
+
+int RunBarLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeBarLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("bar leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("bar leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    RunUntil(leader, [] { return false; }, 2s);
+
+    leader.Send(BarUpdate(90.f, PartyVitals{.Magicka = 40, .Stamina = 75, .InCombat = true, .Downed = false}));
+    const RequestPlayerHealthUpdate cExpected = BarUpdate(12.5f, PartyVitals{.Magicka = 3, .Stamina = 100, .InCombat = true, .Downed = true});
+    const bool cGotBar = RunUntil(leader, [&] { return IsBarUpdate(leader.Health, leader.JoinedIds.front(), cExpected); }, 20s);
+    Check("gets the member's bar: health, magicka, stamina, in combat and downed", cGotBar, DescribeBar(leader.Health));
+    RunUntil(leader, [] { return false; }, 3s);
+    return s_failures ? 1 : 0;
+}
+
+int RunBarMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeBarMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("bar member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    const RequestPlayerHealthUpdate cExpected = BarUpdate(90.f, PartyVitals{.Magicka = 40, .Stamina = 75, .InCombat = true, .Downed = false});
+    const bool cGotBar = RunUntil(member, [&] { return member.Party && IsBarUpdate(member.Health, member.Party->LeaderPlayerId, cExpected); }, 20s);
+    Check("gets the leader's bar", cGotBar, DescribeBar(member.Health));
+
+    member.Send(BarUpdate(12.5f, PartyVitals{.Magicka = 3, .Stamina = 100, .InCombat = true, .Downed = true}));
+    RunUntil(member, [] { return false; }, 3s);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+// Pings: the member pings a target, the leader gets it with the member's name; a player without a party can't ping
+RequestPartyPing FakePing()
+{
+    RequestPartyPing ping;
+    ping.WorldSpaceId = GameId(0, 0x3C);
+    ping.CellId = GameId(0, 0x9732);
+    ping.Position = glm::vec3{1200.f, -340.f, 56.f};
+    ping.Target = "Bandit Chief";
+    return ping;
+}
+
+int RunPingLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakePingLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("ping leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("ping leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+
+    const bool cPinged = RunUntil(leader, [&] { return !leader.Pings.empty(); }, 20s);
+    const RequestPartyPing cSent = FakePing();
+    std::string detail = std::to_string(leader.Pings.size()) + " pings";
+    if (!leader.Pings.empty())
+        detail += ", the first from " + std::string(leader.Pings[0].PlayerName.c_str()) + " at " + leader.Pings[0].Target.c_str();
+    Check("gets the member's ping: who, where and what", cPinged && leader.Pings[0].PlayerId == leader.JoinedIds.front() && leader.Pings[0].PlayerName == "FakePingMember" &&
+                                                              leader.Pings[0].WorldSpaceId == cSent.WorldSpaceId && leader.Pings[0].CellId == cSent.CellId &&
+                                                              leader.Pings[0].Position == cSent.Position && leader.Pings[0].Target == cSent.Target,
+          detail);
+    RunUntil(leader, [] { return false; }, 3s);
+    return s_failures ? 1 : 0;
+}
+
+int RunPingMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakePingMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("ping member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    member.Send(FakePing());
+    RunUntil(member, [] { return false; }, 3s);
+    Check("the pinger doesn't get its own ping back", member.Pings.empty(), std::to_string(member.Pings.size()) + " pings");
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+// Party doors: the leader goes through a door and the member is offered to follow; the member's own door is offered
+// to the leader only when the server lets any member lead (doormember) and not by default (doorleader / doorfollower)
+RequestPartyDoor FakeDoor(const char* apPlace)
+{
+    RequestPartyDoor door;
+    door.CellId = GameId(0, 0x165A7);
+    door.Position = glm::vec3{12.f, 340.f, -56.f};
+    door.Place = apPlace;
+    return door;
+}
+
+int RunDoorLeader(const std::string& acEndpoint, const std::string& acPassword, bool aAnyMember)
+{
+    FakePlayer leader("FakeDoorLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("door leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("door leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    RunUntil(leader, [] { return false; }, 2s);
+
+    leader.Send(FakeDoor("Bleak Falls Barrow"));
+    RunUntil(leader, [] { return false; }, 8s);
+    std::string detail = std::to_string(leader.Doors.size()) + " doors";
+    if (!leader.Doors.empty())
+        detail += ", the first from " + std::string(leader.Doors[0].PlayerName.c_str()) + " to " + leader.Doors[0].Place.c_str();
+    if (aAnyMember)
+        Check("any member may lead: the member's door is offered to the leader",
+              leader.Doors.size() == 1 && leader.Doors[0].PlayerName == "FakeDoorFollower" && leader.Doors[0].Place == "Riverwood", detail);
+    else
+        Check("only the leader leads: the member's door isn't offered", leader.Doors.empty(), detail);
+    return s_failures ? 1 : 0;
+}
+
+int RunDoorFollower(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeDoorFollower", acPassword);
+    member.Connect(acEndpoint);
+    Check("door member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    member.Send(FakeDoor("Riverwood"));
+    const bool cOffered = RunUntil(member, [&] { return !member.Doors.empty(); }, 20s);
+    const RequestPartyDoor cExpected = FakeDoor("Bleak Falls Barrow");
+    std::string detail = std::to_string(member.Doors.size()) + " doors";
+    if (!member.Doors.empty())
+        detail += ", the first from " + std::string(member.Doors[0].PlayerName.c_str()) + " to " + member.Doors[0].Place.c_str();
+    Check("is offered to follow the leader through the door, to where it leads",
+          cOffered && member.Party && member.Doors[0].PlayerId == member.Party->LeaderPlayerId && member.Doors[0].PlayerName == "FakeDoorLeader" &&
+              member.Doors[0].CellId == cExpected.CellId && member.Doors[0].WorldSpaceId == cExpected.WorldSpaceId &&
+              member.Doors[0].Position == cExpected.Position && member.Doors[0].Place == cExpected.Place,
+          detail);
+    RunUntil(member, [] { return false; }, 2s);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+// Go to and summon (server with Gameplay:uPartyTeleportCooldown=5): the member can't go to the leader in combat, can
+// out of it, then not again within the cooldown; the leader's summons is declined, then accepted
+std::string DescribeRefusals(const FakePlayer& acPlayer)
+{
+    std::string text = std::to_string(acPlayer.Refusals.size()) + " refusals";
+    for (const auto& cRefusal : acPlayer.Refusals)
+        text += " [" + std::to_string(cRefusal.Reason) + " " + cRefusal.PlayerName.c_str() + " " + std::to_string(cRefusal.SecondsLeft) + "s]";
+    return text;
+}
+
+RequestPlayerHealthUpdate CombatUpdate(bool aInCombat)
+{
+    return BarUpdate(100.f, PartyVitals{.Magicka = 100, .Stamina = 100, .InCombat = aInCombat, .Downed = false});
+}
+
+int RunMoveLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeMoveLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("move leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("move leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    // The member's go-to checks first
+    RunUntil(leader, [] { return false; }, 10s);
+
+    RequestPartySummon summon;
+    summon.PlayerId = leader.JoinedIds.front();
+    leader.Send(summon);
+    const bool cDeclined = RunUntil(leader, [&] { return !leader.Refusals.empty(); }, 15s);
+    Check("the member declines the first summons", cDeclined && leader.Refusals[0].Reason == PartyTeleport::kDeclined && leader.Refusals[0].PlayerName == "FakeMoveMember",
+          DescribeRefusals(leader));
+
+    leader.Send(summon);
+    RunUntil(leader, [] { return false; }, 8s);
+    Check("the accepted summons isn't refused", leader.Refusals.size() == 1, DescribeRefusals(leader));
+    return s_failures ? 1 : 0;
+}
+
+int RunMoveMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeMoveMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("move member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    TeleportRequest goTo;
+    goTo.PlayerId = member.Party ? member.Party->LeaderPlayerId : 0;
+
+    member.Send(CombatUpdate(true));
+    RunUntil(member, [] { return false; }, 1s);
+    member.Send(goTo);
+    RunUntil(member, [&] { return !member.Refusals.empty() || member.Teleports; }, 5s);
+    Check("can't go to the leader in combat", member.Teleports == 0 && member.Refusals.size() == 1 && member.Refusals[0].Reason == PartyTeleport::kInCombat,
+          DescribeRefusals(member));
+
+    member.Send(CombatUpdate(false));
+    RunUntil(member, [] { return false; }, 1s);
+    member.Send(goTo);
+    RunUntil(member, [&] { return member.Refusals.size() > 1 || member.Teleports; }, 5s);
+    Check("goes to the leader out of combat", member.Teleports == 1 && member.Refusals.size() == 1, DescribeRefusals(member));
+
+    member.Send(goTo);
+    RunUntil(member, [&] { return member.Refusals.size() > 1 || member.Teleports > 1; }, 5s);
+    Check("not again within the cooldown, told how long", member.Teleports == 1 && member.Refusals.size() == 2 &&
+                                                              member.Refusals[1].Reason == PartyTeleport::kCooldown && member.Refusals[1].SecondsLeft > 0 &&
+                                                              member.Refusals[1].SecondsLeft <= 5,
+          DescribeRefusals(member));
+
+    TeleportRequest nobody;
+    nobody.PlayerId = 999999;
+    member.Send(nobody);
+    RunUntil(member, [&] { return member.Refusals.size() > 2; }, 5s);
+    Check("going to no one is refused", member.Refusals.size() == 3 && member.Refusals[2].Reason == PartyTeleport::kUnavailable, DescribeRefusals(member));
+
+    const bool cSummoned = RunUntil(member, [&] { return !member.Summons.empty(); }, 20s);
+    Check("is summoned by the leader", cSummoned && member.Summons[0].PlayerName == "FakeMoveLeader" && member.Party && member.Summons[0].PlayerId == member.Party->LeaderPlayerId);
+    RequestPartySummonAnswer answer;
+    answer.PlayerId = cSummoned ? member.Summons[0].PlayerId : 0;
+    answer.Accept = false;
+    member.Send(answer);
+
+    const bool cSummonedAgain = RunUntil(member, [&] { return member.Summons.size() > 1; }, 20s);
+    Check("is summoned again", cSummonedAgain);
+    answer.Accept = true;
+    member.Send(answer);
+    RunUntil(member, [&] { return member.Teleports > 1; }, 5s);
+    Check("saying yes moves the member to the leader", member.Teleports == 2, std::to_string(member.Teleports) + " teleports");
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+// Respawning at a partner: fake players have no character to stand next to, so the server leaves the member at the
+// game's respawn point (the choice itself is PartyTeleport::RespawnPartner, tested in TPTests)
+int RunRespawnLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeRespawnLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("respawn leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("respawn leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    RunUntil(leader, [] { return false; }, 10s);
+    return s_failures ? 1 : 0;
+}
+
+int RunRespawnMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeRespawnMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("respawn member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    member.Send(RequestRespawnAtPartner{});
+    RunUntil(member, [&] { return member.Teleport.has_value(); }, 5s);
+    Check("no partner with a character: stays at the respawn point", !member.Teleport.has_value());
+    Check("still connected", !member.Disconnected);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -631,6 +930,12 @@ int RunDesyncMember(const std::string& acEndpoint, const std::string& acPassword
 // FakePlayers.exe questleader|questmember [address:port] [password]: start the leader first (sSharedQuestTypes=Main,Misc)
 // FakePlayers.exe travelleader|travelmember [address:port] [password]: start the leader first
 // FakePlayers.exe desyncleader|desyncmember [address:port] [password]: start the leader first
+// FakePlayers.exe barleader|barmember [address:port] [password]: start the leader first
+// FakePlayers.exe pingleader|pingmember [address:port] [password]: start the leader first
+// FakePlayers.exe doorleader|doorfollower [address:port] [password]: start the leader first; doorleaderany with
+//   Gameplay:bPartyDoorsAnyMember=true
+// FakePlayers.exe respawnleader|respawnmember [address:port] [password]: start the leader first
+// FakePlayers.exe moveleader|movemember [address:port] [password]: start the leader first (uPartyTeleportCooldown=5)
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -672,7 +977,29 @@ int main(int argc, char** argv)
         return RunDesyncLeader(cEndpoint, cPassword);
     if (cRole == "desyncmember")
         return RunDesyncMember(cEndpoint, cPassword);
+    if (cRole == "barleader")
+        return RunBarLeader(cEndpoint, cPassword);
+    if (cRole == "barmember")
+        return RunBarMember(cEndpoint, cPassword);
+    if (cRole == "pingleader")
+        return RunPingLeader(cEndpoint, cPassword);
+    if (cRole == "pingmember")
+        return RunPingMember(cEndpoint, cPassword);
+    if (cRole == "doorleader")
+        return RunDoorLeader(cEndpoint, cPassword, false);
+    if (cRole == "doorleaderany")
+        return RunDoorLeader(cEndpoint, cPassword, true);
+    if (cRole == "doorfollower")
+        return RunDoorFollower(cEndpoint, cPassword);
+    if (cRole == "respawnleader")
+        return RunRespawnLeader(cEndpoint, cPassword);
+    if (cRole == "respawnmember")
+        return RunRespawnMember(cEndpoint, cPassword);
+    if (cRole == "moveleader")
+        return RunMoveLeader(cEndpoint, cPassword);
+    if (cRole == "movemember")
+        return RunMoveMember(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|moveleader|movemember|respawnleader|respawnmember [address:port] [password]\n");
     return 2;
 }

@@ -12,6 +12,7 @@
 #include <Services/NameTagService.h>
 #include <Services/HostWorldService.h>
 #include <Services/TravelTogetherService.h>
+#include <Services/MapService.h>
 
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/TeleportRequest.h>
@@ -61,6 +62,37 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
         {
             const bool travel = eventArgs->GetBool(0);
             World::Get().GetRunner().Queue([travel]() { World::Get().ctx().at<TravelTogetherService>().Answer(travel); });
+        }
+        else if (eventName == "setPartyBar")
+        {
+            const bool enabled = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([enabled]() { World::Get().GetOverlayService().SetPartyBarEnabled(enabled); });
+        }
+        else if (eventName == "setPerfOverlay")
+        {
+            const bool enabled = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([enabled]() { World::Get().GetOverlayService().SetPerfOverlayEnabled(enabled); });
+        }
+        else if (eventName == "setPingMarkers")
+        {
+            const bool enabled = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([enabled]() { World::Get().ctx().at<MapService>().SetPingMarkersEnabled(enabled); });
+        }
+        else if (eventName == "summonPlayer")
+        {
+            const uint32_t playerId = eventArgs->GetInt(0);
+            World::Get().GetRunner().Queue([playerId]() { World::Get().ctx().at<TravelTogetherService>().Summon(playerId); });
+        }
+        else if (eventName == "answerPartySummon")
+        {
+            const uint32_t summonerId = eventArgs->GetInt(0);
+            const bool accept = eventArgs->GetBool(1);
+            World::Get().GetRunner().Queue([summonerId, accept]() { World::Get().ctx().at<TravelTogetherService>().AnswerSummon(summonerId, accept); });
+        }
+        else if (eventName == "answerPartyDoor")
+        {
+            const bool follow = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([follow]() { World::Get().ctx().at<TravelTogetherService>().AnswerDoor(follow); });
         }
         else if (eventName == "setNameTags")
         {

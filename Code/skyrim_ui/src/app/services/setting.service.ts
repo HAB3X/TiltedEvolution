@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable } from 'rxjs';
 import { StoreService } from './store.service';
 
 export enum FontSize {
@@ -146,6 +146,18 @@ export class SettingService {
       3,
     ),
     isDebugShown: new ToggleSetting(this.storeService, 'debug_isShown', false),
+    /** Hides every on-screen multiplayer element below at once, keeping the player's own choices for when it's off. */
+    immersiveMode: new ToggleSetting(this.storeService, 'immersive_mode', false),
+    /** The party bar's chat lines and notifications when a member enters combat or goes down. */
+    partyAlerts: new ToggleSetting(this.storeService, 'party_alerts', true),
+    /** The game's waypoint on other players' pings; this player can still ping. */
+    pingMarkers: new ToggleSetting(this.storeService, 'ping_markers', true),
+    /** The chat line saying who pinged what. */
+    pingMessages: new ToggleSetting(this.storeService, 'ping_messages', true),
+    /** Names above other players; the same key the /nametags chat command always used. */
+    nameTags: new ToggleSetting(this.storeService, 'name_tags', true),
+    /** Frame rate, frame time, ping, synced actors and Skyrim Together's own cost per frame. */
+    perfOverlay: new ToggleSetting(this.storeService, 'perf_overlay', false),
     debugAnchor: new SelectSetting(
       this.storeService,
       'debug_anchor',
@@ -153,6 +165,29 @@ export class SettingService {
       ScreenCorner.TOP_LEFT,
     ),
   };
+
+  /** The on-screen elements immersive mode hides. */
+  public readonly immersionSettings = [
+    'isPartyShown',
+    'partyAlerts',
+    'pingMarkers',
+    'pingMessages',
+    'nameTags',
+    'perfOverlay',
+  ] as const;
+
+  /** Whether an on-screen element shows: the player's choice, unless immersive mode hides it. */
+  public shown(name: (typeof this.immersionSettings)[number]): Observable<boolean> {
+    return combineLatest([this.settings.immersiveMode, this.settings[name]]).pipe(
+      map(([immersive, value]) => !immersive && value),
+      distinctUntilChanged(),
+    );
+  }
+
+  /** shown, now. */
+  public isShown(name: (typeof this.immersionSettings)[number]): boolean {
+    return !this.settings.immersiveMode.getValue() && this.settings[name].getValue();
+  }
 
   constructor(
     private readonly storeService: StoreService,

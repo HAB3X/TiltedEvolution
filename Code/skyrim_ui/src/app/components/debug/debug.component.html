@@ -1,6 +1,23 @@
 @if (isShown$ | async) {
   <div class="app-debug" [ngClass]="cornerClass$ | async">
-    @if (debugData$ | async; as debugData) {
+    @if (perfShown$ | async) {
+      <div class="perf">
+        @if (perfData$ | async; as perf) {
+          @if (perf.fps >= 0) {
+            <span><b>{{ perf.fps | number: '1.0-0' }}</b> {{ 'COMPONENT.PERF.FPS' | transloco }}&nbsp;</span>
+            <span><b>{{ perf.frameMs | number: '1.1-1' }}</b> {{ 'COMPONENT.PERF.FRAME_MS' | transloco }}&nbsp;</span>
+            <span><b>{{ perf.modMs | number: '1.2-2' }}</b> {{ 'COMPONENT.PERF.MOD_MS' | transloco }}&nbsp;</span>
+          } @else {
+            <span>{{ 'COMPONENT.PERF.PROFILER_OFF' | transloco }}&nbsp;</span>
+          }
+          <span><b>{{ perf.ping }}</b> {{ 'COMPONENT.PERF.PING' | transloco }}&nbsp;</span>
+          <span><b>{{ perf.actors }}</b> {{ 'COMPONENT.PERF.ACTORS' | transloco }}</span>
+        } @else {
+          <span>{{ 'COMPONENT.PERF.WAITING' | transloco }}</span>
+        }
+      </div>
+    }
+    @if ((debugShown$ | async) && (debugData$ | async); as debugData) {
       <div>
         <span>
           <fa-icon [icon]="faWifi"></fa-icon>

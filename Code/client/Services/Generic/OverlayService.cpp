@@ -28,6 +28,8 @@
 #include <Messages/NotifyPlayerHealthUpdate.h>
 
 #include <Structs/GridCellCoords.h>
+#include <PartyCompass.h>
+#include <WireProtocol.h>
 
 #include <Events/ConnectedEvent.h>
 #include <Events/DisconnectedEvent.h>
@@ -90,7 +92,7 @@ struct CpuRenderedOverlayApp final : OverlayApp
     }
 };
 
-String GetCellName(const GameId& aWorldSpaceId, const GameId& aCellId) noexcept
+String OverlayService::GetCellName(const GameId& aWorldSpaceId, const GameId& aCellId) noexcept
 {
     auto& modSystem = World::Get().GetModSystem();
 
@@ -114,20 +116,41 @@ String GetCellName(const GameId& aWorldSpaceId, const GameId& aCellId) noexcept
     return cellName;
 }
 
-float CalculateHealthPercentage(Actor* apActor) noexcept
+// An actor value's share of its maximum (the permanent value plus temporary modifiers, as the game's bars show it)
+float CalculateValuePercentage(Actor* apActor, uint32_t aValueId, float aTemporaryModifier) noexcept
 {
-    const float maxHealth = apActor->GetActorPermanentValue(ActorValueInfo::kHealth);
-    const float tempModHealth = apActor->healthModifiers.temporaryModifier;
+    const float maxValue = apActor->GetActorPermanentValue(aValueId);
 
-    if (maxHealth == 0.f)
+    if (maxValue == 0.f)
         return 0.f;
-    const float health = apActor->GetActorValue(ActorValueInfo::kHealth);
+    const float value = apActor->GetActorValue(aValueId);
 
-    float percentage = health / (maxHealth + tempModHealth) * 100.f;
+    float percentage = value / (maxValue + aTemporaryModifier) * 100.f;
     if (percentage < 0.f)
         percentage = 0.f;
 
     return percentage;
+}
+
+float CalculateHealthPercentage(Actor* apActor) noexcept
+{
+    return CalculateValuePercentage(apActor, ActorValueInfo::kHealth, apActor->healthModifiers.temporaryModifier);
+}
+
+uint8_t WholePercent(float aPercentage) noexcept
+{
+    return static_cast<uint8_t>(std::clamp(std::lround(aPercentage), 0l, 100l));
+}
+
+// The local player's party bar beside their health
+PartyVitals CalculatePartyVitals(PlayerCharacter* apPlayer) noexcept
+{
+    PartyVitals vitals{};
+    vitals.Magicka = WholePercent(CalculateValuePercentage(apPlayer, ActorValueInfo::kMagicka, apPlayer->magickaModifiers.temporaryModifier));
+    vitals.Stamina = WholePercent(CalculateValuePercentage(apPlayer, ActorValueInfo::kStamina, apPlayer->staminaModifiers.temporaryModifier));
+    vitals.InCombat = apPlayer->IsInCombat();
+    vitals.Downed = apPlayer->actorState.IsBleedingOut();
+    return vitals;
 }
 
 OverlayService::OverlayService(World& aWorld, TransportService& transport, entt::dispatcher& aDispatcher)
@@ -329,6 +352,7 @@ void OverlayService::OnUpdate(const UpdateEvent&) noexcept
     TP_PROFILE_SCOPE("OverlayService::OnUpdate");
     RunDebugDataUpdates();
     RunPlayerHealthUpdates();
+    RunPartyDistanceUpdates();
 }
 
 void OverlayService::OnConnectedEvent(const ConnectedEvent& acEvent) noexcept
@@ -488,6 +512,18 @@ void OverlayService::OnNotifyPlayerHealthUpdate(const NotifyPlayerHealthUpdate& 
     pArguments->SetInt(0, acMessage.PlayerId);
     pArguments->SetDouble(1, static_cast<double>(percentage));
     m_pOverlay->ExecuteAsync("setHealth", pArguments);
+
+    // Official v1.8.4 servers don't relay the rest of the bar
+    if (Wire::IsOfficial184())
+        return;
+
+    auto pVitals = CefListValue::Create();
+    pVitals->SetInt(0, acMessage.PlayerId);
+    pVitals->SetInt(1, acMessage.Vitals.Magicka);
+    pVitals->SetInt(2, acMessage.Vitals.Stamina);
+    pVitals->SetBool(3, acMessage.Vitals.InCombat);
+    pVitals->SetBool(4, acMessage.Vitals.Downed);
+    m_pOverlay->ExecuteAsync("setVitals", pVitals);
 }
 
 void OverlayService::OnPartyJoinedEvent(const PartyJoinedEvent& acEvent) noexcept
@@ -524,6 +560,23 @@ void OverlayService::RunDebugDataUpdates() noexcept
     pArguments->SetInt(5, internalStats.RecvBytes);
 
     m_pOverlay->ExecuteAsync("debugData", pArguments);
+
+    if (m_perfOverlayEnabled)
+        SendPerfData();
+}
+
+// The performance overlay: the frame profiler's last second (fps, frame time, Skyrim Together's own share), the ping
+// and how many actors are synced; -1 for the profiler's numbers while it's off ([Debug] bFrameProfiler=false)
+void OverlayService::SendPerfData() noexcept
+{
+    const auto cSummary = FrameProfiler::LastSecond();
+    auto pArguments = CefListValue::Create();
+    pArguments->SetDouble(0, cSummary ? cSummary->Fps : -1.0);
+    pArguments->SetDouble(1, cSummary ? cSummary->FrameMs : -1.0);
+    pArguments->SetDouble(2, cSummary ? cSummary->ModMs : -1.0);
+    pArguments->SetInt(3, m_transport.GetConnectionStatus().m_nPing);
+    pArguments->SetInt(4, static_cast<int>(m_world.view<FormIdComponent>().size()));
+    m_pOverlay->ExecuteAsync("perfData", pArguments);
 }
 
 // TODO(cosideci): this whole thing is a really hacky solution to
@@ -543,15 +596,61 @@ void OverlayService::RunPlayerHealthUpdates() noexcept
     lastSendTimePoint = now;
 
     static float s_previousPercentage = -1.f;
+    static PartyVitals s_previousVitals{.Magicka = 0xFF};
 
-    const float newPercentage = CalculateHealthPercentage(PlayerCharacter::Get());
-    if (newPercentage == s_previousPercentage)
+    PlayerCharacter* pPlayer = PlayerCharacter::Get();
+    const float newPercentage = CalculateHealthPercentage(pPlayer);
+    const PartyVitals cVitals = CalculatePartyVitals(pPlayer);
+    if (newPercentage == s_previousPercentage && cVitals == s_previousVitals)
         return;
 
     s_previousPercentage = newPercentage;
+    s_previousVitals = cVitals;
 
     RequestPlayerHealthUpdate request{};
     request.Percentage = newPercentage;
+    request.Vitals = cVitals;
 
     m_transport.Send(request);
+}
+
+// How far and which way each loaded party member is, for the party bar; a member whose actor isn't loaded here is
+// shown by their cell's name instead (setPlayer3dUnloaded)
+void OverlayService::RunPartyDistanceUpdates() noexcept
+{
+    const auto& cParty = m_world.GetPartyService();
+    if (!m_partyBarEnabled || !m_transport.IsConnected() || !cParty.IsInParty())
+        return;
+
+    static std::chrono::steady_clock::time_point lastSendTimePoint;
+    constexpr auto cDelayBetweenUpdates = 500ms;
+
+    const auto now = std::chrono::steady_clock::now();
+    if (now - lastSendTimePoint < cDelayBetweenUpdates)
+        return;
+
+    lastSendTimePoint = now;
+
+    PlayerCharacter* pPlayer = PlayerCharacter::Get();
+    const auto& cMembers = cParty.GetPartyMembers();
+    auto view = m_world.view<PlayerComponent, FormIdComponent>();
+    for (const entt::entity cEntity : view)
+    {
+        const uint32_t cPlayerId = view.get<PlayerComponent>(cEntity).Id;
+        if (std::find(cMembers.begin(), cMembers.end(), cPlayerId) == cMembers.end())
+            continue;
+
+        const Actor* pActor = Cast<Actor>(TESForm::GetById(view.get<FormIdComponent>(cEntity).Id));
+        // Positions only compare within one worldspace, or one interior cell
+        if (!pActor || pActor->GetWorldSpace() != pPlayer->GetWorldSpace() || (!pPlayer->GetWorldSpace() && pActor->parentCell != pPlayer->parentCell))
+            continue;
+
+        const NiPoint3& cFrom = pPlayer->position;
+        const NiPoint3& cTo = pActor->position;
+        auto pArguments = CefListValue::Create();
+        pArguments->SetInt(0, cPlayerId);
+        pArguments->SetInt(1, static_cast<int>(std::lround(PartyCompass::ToMeters(PartyCompass::Distance(cFrom.x, cFrom.y, cFrom.z, cTo.x, cTo.y, cTo.z)))));
+        pArguments->SetInt(2, PartyCompass::Toward(cFrom.x, cFrom.y, cTo.x, cTo.y));
+        m_pOverlay->ExecuteAsync("setPlayerDistance", pArguments);
+    }
 }

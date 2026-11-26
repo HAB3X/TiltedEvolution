@@ -2,6 +2,46 @@
   "INFO": "Polska lokalizacja do Skyrim Together: Reborn! Wersja: 1.4.0. Autor:<strong>Nutyo</strong>",
 
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Nakładka wydajności",
+      "FPS": "fps",
+      "FRAME_MS": "ms/klatkę",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms pingu",
+      "ACTORS": "zsynchronizowane",
+      "PROFILER_OFF": "Profiler klatek wyłączony ([Debug] bFrameProfiler)",
+      "WAITING": "Pomiar…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "Idź do",
+      "SUMMON": "Przywołaj"
+    },
+    "IMMERSION": {
+      "HEADER": "Elementy na ekranie",
+      "IMMERSIVE_MODE": "Tryb immersji",
+      "IMMERSIVE_HINT": "Tryb immersji ukrywa wszystko poniżej; po wyłączeniu wracają twoje ustawienia.",
+      "PARTY_ALERTS": "Powiadomienia o walce i powaleniu w drużynie",
+      "PING_MARKERS": "Punkty trasy przy oznaczeniach innych graczy",
+      "PING_MESSAGES": "Wiadomości o oznaczeniach na czacie",
+      "NAME_TAGS": "Nazwy graczy"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "Powalony",
+      "IN_COMBAT": "W walce",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "Pn",
+        "NE": "Pn-Wsch",
+        "E": "Wsch",
+        "SE": "Pd-Wsch",
+        "S": "Pd",
+        "SW": "Pd-Zach",
+        "W": "Zach",
+        "NW": "Pn-Zach"
+      },
+      "ALERT_COMBAT": "{{name}} walczy.",
+      "ALERT_DOWNED": "{{name}} padł!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Hostujesz",
@@ -261,6 +301,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} prosi, byś do niego dołączył. Iść?",
+      "NOT_IN_PARTY": "{{name}} nie jest w twojej drużynie.",
+      "IN_COMBAT": "Nie podczas walki.",
+      "COOLDOWN": "Odczekaj {{seconds}} s przed kolejnym przeniesieniem.",
+      "DECLINED": "{{name}} odmawia.",
+      "UNAVAILABLE": "Nie można teraz dotrzeć do {{name}}.",
+      "UNKNOWN": "Przeniesienie się nie udało."
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "Podążyć za {{member}} do miejsca {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} przeszedł przez drzwi. Podążyć?"
+    },
+    "PARTY_PING": {
+      "SELF": "Oznaczono {{target}} dla drużyny.",
+      "NEAR": "{{name}} oznacza {{target}}: {{distance}}.",
+      "FAR": "{{name}} oznacza {{target}} w miejscu {{place}}.",
+      "THEIR_SPOT": "swoją pozycję",
+      "YOUR_SPOT": "twoją pozycję"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Stracono połączenie, próbujemy się podłączyć z powrotem. {{remainingReconnectionAttempt}} pozostałych prób.",
       "CONNECTED": "Pomyślnie nawiązano połączenie z serwerem.",

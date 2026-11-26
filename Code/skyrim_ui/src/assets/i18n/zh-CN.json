@@ -2,6 +2,46 @@
   "INFO": "DO NOT MODIFY THIS FILE! USE THE overwrite.json FILE TO TRANSLATE THE UI!",
 
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "性能浮层",
+      "FPS": "帧/秒",
+      "FRAME_MS": "毫秒/帧",
+      "MOD_MS": "毫秒 Skyrim Together",
+      "PING": "毫秒延迟",
+      "ACTORS": "已同步",
+      "PROFILER_OFF": "帧分析器已关闭（[Debug] bFrameProfiler）",
+      "WAITING": "测量中…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "前往",
+      "SUMMON": "召唤"
+    },
+    "IMMERSION": {
+      "HEADER": "屏幕元素",
+      "IMMERSIVE_MODE": "沉浸模式",
+      "IMMERSIVE_HINT": "沉浸模式会隐藏下面的所有内容；关闭后会恢复你的设置。",
+      "PARTY_ALERTS": "队伍战斗和倒地提醒",
+      "PING_MARKERS": "其他玩家标记的路径点",
+      "PING_MESSAGES": "聊天中的标记消息",
+      "NAME_TAGS": "玩家名牌"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "倒地",
+      "IN_COMBAT": "战斗中",
+      "DISTANCE": "{{meters}} 米 {{direction}}",
+      "DIRECTION": {
+        "N": "北",
+        "NE": "东北",
+        "E": "东",
+        "SE": "东南",
+        "S": "南",
+        "SW": "西南",
+        "W": "西",
+        "NW": "西北"
+      },
+      "ALERT_COMBAT": "{{name}} 正在战斗。",
+      "ALERT_DOWNED": "{{name}} 倒下了！"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "主持中",
@@ -252,6 +292,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} 请你过去。要去吗？",
+      "NOT_IN_PARTY": "{{name}} 不在你的队伍中。",
+      "IN_COMBAT": "战斗中无法这样做。",
+      "COOLDOWN": "请等待 {{seconds}} 秒后再移动。",
+      "DECLINED": "{{name}} 拒绝了。",
+      "UNAVAILABLE": "现在无法前往 {{name}} 处。",
+      "UNKNOWN": "移动没有成功。"
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "跟随{{member}}进入{{place}}？",
+      "QUESTION_NO_PLACE": "{{member}}穿过了一扇门。要跟随吗？"
+    },
+    "PARTY_PING": {
+      "SELF": "你为队伍标记了{{target}}。",
+      "NEAR": "{{name}} 标记了{{target}}：{{distance}}。",
+      "FAR": "{{name}} 在{{place}}标记了{{target}}。",
+      "THEIR_SPOT": "自己的位置",
+      "YOUR_SPOT": "你的位置"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "连接已丢失，正在重新连接。剩余{{remainingReconnectionAttempt}}次尝试。",
       "CONNECTED": "成功连接至服务器。",

@@ -1,5 +1,45 @@
 {
   "COMPONENT": {
+    "PERF": {
+      "SETTING": "Ytelsesvisning",
+      "FPS": "fps",
+      "FRAME_MS": "ms/bilde",
+      "MOD_MS": "ms Skyrim Together",
+      "PING": "ms ping",
+      "ACTORS": "synkronisert",
+      "PROFILER_OFF": "Bildeprofilering av ([Debug] bFrameProfiler)",
+      "WAITING": "Måler…"
+    },
+    "PARTY_MOVES": {
+      "GO_TO": "Gå til",
+      "SUMMON": "Tilkall"
+    },
+    "IMMERSION": {
+      "HEADER": "Elementer på skjermen",
+      "IMMERSIVE_MODE": "Oppslukende modus",
+      "IMMERSIVE_HINT": "Oppslukende modus skjuler alt nedenfor; valgene dine kommer tilbake når du slår den av.",
+      "PARTY_ALERTS": "Varsler om kamp og nedslåtte i gruppen",
+      "PING_MARKERS": "Veipunkter for andre spilleres markeringer",
+      "PING_MESSAGES": "Markeringsmeldinger i chatten",
+      "NAME_TAGS": "Navneskilt for spillere"
+    },
+    "PARTY_BAR": {
+      "DOWNED": "Slått ned",
+      "IN_COMBAT": "I kamp",
+      "DISTANCE": "{{meters}} m {{direction}}",
+      "DIRECTION": {
+        "N": "N",
+        "NE": "NØ",
+        "E": "Ø",
+        "SE": "SØ",
+        "S": "S",
+        "SW": "SV",
+        "W": "V",
+        "NW": "NV"
+      },
+      "ALERT_COMBAT": "{{name}} er i kamp.",
+      "ALERT_DOWNED": "{{name}} er slått ned!"
+    },
     "HUB": {
       "TITLE": "Skyrim Together",
       "HOSTING": "Vert",
@@ -257,6 +297,26 @@
     }
   },
   "SERVICE": {
+    "PARTY_TELEPORT": {
+      "SUMMONED": "{{name}} ber deg komme til seg. Gå?",
+      "NOT_IN_PARTY": "{{name}} er ikke i gruppen din.",
+      "IN_COMBAT": "Ikke under kamp.",
+      "COOLDOWN": "Vent {{seconds}} s før du flytter igjen.",
+      "DECLINED": "{{name}} takket nei.",
+      "UNAVAILABLE": "{{name}} kan ikke nås akkurat nå.",
+      "UNKNOWN": "Flyttingen skjedde ikke."
+    },
+    "PARTY_DOOR": {
+      "QUESTION": "Følge {{member}} inn i {{place}}?",
+      "QUESTION_NO_PLACE": "{{member}} gikk gjennom en dør. Følge etter?"
+    },
+    "PARTY_PING": {
+      "SELF": "Du markerte {{target}} for gruppen.",
+      "NEAR": "{{name}} markerte {{target}}: {{distance}}.",
+      "FAR": "{{name}} markerte {{target}} i {{place}}.",
+      "THEIR_SPOT": "sin posisjon",
+      "YOUR_SPOT": "din posisjon"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Mistet tilkobling, prøver å koble til på nytt. {{remainingReconnectionAttempt}} forsøk igjen.",
       "CONNECTED": "Koblet til server.",

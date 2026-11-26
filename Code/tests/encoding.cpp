@@ -19,6 +19,8 @@
 #include <Structs/Movement.h>
 #include <Structs/ServerSettings.h>
 #include <QuestDesync.h>
+#include <PartyCompass.h>
+#include <PartyTeleport.h>
 #include <WireProtocol.h>
 #include <RequiredMods.h>
 #include <Messages/ServerMessageFactory.h>
@@ -782,6 +784,216 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    GIVEN("RequestPlayerHealthUpdate with the party bar's vitals")
+    {
+        RequestPlayerHealthUpdate sendMessage, recvMessage;
+        sendMessage.Percentage = 42.5f;
+        sendMessage.Vitals = PartyVitals{.Magicka = 80, .Stamina = 5, .InCombat = true, .Downed = true};
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyPlayerHealthUpdate with the party bar's vitals")
+    {
+        NotifyPlayerHealthUpdate sendMessage, recvMessage;
+        sendMessage.PlayerId = 77;
+        sendMessage.Percentage = 100.f;
+        sendMessage.Vitals = PartyVitals{.Magicka = 100, .Stamina = 63, .InCombat = true, .Downed = false};
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("RequestPartyPing")
+    {
+        RequestPartyPing sendMessage, recvMessage;
+        sendMessage.WorldSpaceId = GameId(0, 0x3C);
+        sendMessage.CellId = GameId(0, 0x9732);
+        sendMessage.Position = glm::vec3{1200.f, -340.f, 56.f};
+        sendMessage.Target = "Bandit Chief";
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyPartyPing")
+    {
+        NotifyPartyPing sendMessage, recvMessage;
+        sendMessage.PlayerId = 9;
+        sendMessage.PlayerName = "Lydia";
+        sendMessage.CellId = GameId(0, 0x165A7);
+        sendMessage.Position = glm::vec3{-80.f, 20.f, 0.f};
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("RequestPartyDoor")
+    {
+        RequestPartyDoor sendMessage, recvMessage;
+        sendMessage.CellId = GameId(0, 0x165A7);
+        sendMessage.Position = glm::vec3{12.f, 340.f, -56.f};
+        sendMessage.Place = "Bleak Falls Barrow";
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyPartyDoor")
+    {
+        NotifyPartyDoor sendMessage, recvMessage;
+        sendMessage.PlayerId = 4;
+        sendMessage.PlayerName = "Lydia";
+        sendMessage.WorldSpaceId = GameId(0, 0x3C);
+        sendMessage.CellId = GameId(0, 0x9732);
+        sendMessage.Position = glm::vec3{-1200.f, 40.f, 6.f};
+        sendMessage.Place = "Skyrim";
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("RequestPartySummon")
+    {
+        RequestPartySummon sendMessage, recvMessage;
+        sendMessage.PlayerId = 12;
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyPartySummon")
+    {
+        NotifyPartySummon sendMessage, recvMessage;
+        sendMessage.PlayerId = 3;
+        sendMessage.PlayerName = "Lydia";
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("RequestPartySummonAnswer")
+    {
+        RequestPartySummonAnswer sendMessage, recvMessage;
+        sendMessage.PlayerId = 3;
+        sendMessage.Accept = true;
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyPartyTeleportRefused")
+    {
+        NotifyPartyTeleportRefused sendMessage, recvMessage;
+        sendMessage.Reason = 3;
+        sendMessage.PlayerName = "Lydia";
+        sendMessage.SecondsLeft = 17;
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
     GIVEN("RequestPartyTravel")
     {
         RequestPartyTravel sendMessage, recvMessage;
@@ -1092,6 +1304,11 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestHostWorld).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestPartyTravel).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestQuestStages).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestPartyPing).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestPartyDoor).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestPartySummon).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestPartySummonAnswer).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestRespawnAtPartner).has_value());
         REQUIRE_FALSE(Wire::FromWire(55).has_value());
     }
 
@@ -1173,6 +1390,29 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE(Serialization::ReadVarInt(reader) == 42);
     }
 
+    GIVEN("A health update without the party bar's vitals, laid out as v1.8.4 does")
+    {
+        NotifyPlayerHealthUpdate sent;
+        sent.PlayerId = 3;
+        sent.Percentage = 25.f;
+        sent.Vitals = PartyVitals{.Magicka = 50, .Stamina = 50, .InCombat = true, .Downed = true};
+
+        Buffer buffer(1000);
+        Buffer::Writer writer(&buffer);
+        sent.Serialize(writer);
+        Serialization::WriteVarInt(writer, 42);
+
+        Buffer::Reader reader(&buffer);
+        uint64_t opcode;
+        reader.ReadBits(opcode, 8);
+        NotifyPlayerHealthUpdate received;
+        received.DeserializeRaw(reader);
+        REQUIRE(received.PlayerId == 3);
+        REQUIRE(received.Percentage == 25.f);
+        REQUIRE(received.Vitals == PartyVitals{});
+        REQUIRE(Serialization::ReadVarInt(reader) == 42);
+    }
+
     GIVEN("A deleted actor is handed on")
     {
         RequestOwnershipTransfer sent;
@@ -1190,6 +1430,63 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         received.DeserializeRaw(reader);
         REQUIRE(received.ServerId == 7);
         REQUIRE(received.Reason == OwnershipReleaseReason::Relinquish);
+    }
+}
+
+TEST_CASE("Party compass", "[encoding.party_compass]")
+{
+    using namespace PartyCompass;
+
+    GIVEN("A spot in each direction, +Y north and +X east")
+    {
+        REQUIRE(Toward(0.f, 0.f, 0.f, 100.f) == kNorth);
+        REQUIRE(Toward(0.f, 0.f, 100.f, 100.f) == kNorthEast);
+        REQUIRE(Toward(0.f, 0.f, 100.f, 0.f) == kEast);
+        REQUIRE(Toward(0.f, 0.f, 100.f, -100.f) == kSouthEast);
+        REQUIRE(Toward(0.f, 0.f, 0.f, -100.f) == kSouth);
+        REQUIRE(Toward(0.f, 0.f, -100.f, -100.f) == kSouthWest);
+        REQUIRE(Toward(0.f, 0.f, -100.f, 0.f) == kWest);
+        REQUIRE(Toward(0.f, 0.f, -100.f, 100.f) == kNorthWest);
+        // Measured from the first spot, not the origin
+        REQUIRE(Toward(500.f, 500.f, 500.f, 400.f) == kSouth);
+    }
+
+    GIVEN("Bearings near a boundary go to the nearest point")
+    {
+        // 20 degrees east of north is still north, 25 is north-east
+        REQUIRE(Toward(0.f, 0.f, std::tan(0.349f) * 100.f, 100.f) == kNorth);
+        REQUIRE(Toward(0.f, 0.f, std::tan(0.436f) * 100.f, 100.f) == kNorthEast);
+        // Just west of south wraps to south, not to north-west
+        REQUIRE(Toward(0.f, 0.f, -1.f, -100.f) == kSouth);
+    }
+
+    GIVEN("Distances in metres")
+    {
+        REQUIRE(Distance(0.f, 0.f, 0.f, 3.f, 4.f, 12.f) == 13.f);
+        REQUIRE(ToMeters(7000.f) == Approx(99.96f));
+    }
+}
+
+TEST_CASE("Party teleports", "[encoding.party_teleport]")
+{
+    using namespace PartyTeleport;
+    using namespace std::chrono_literals;
+
+    REQUIRE(Check(true, false, 31s, 30s) == kAllowed);
+    REQUIRE(Check(true, false, 30s, 30s) == kAllowed);
+    REQUIRE(Check(false, false, 31s, 30s) == kNotInParty);
+    REQUIRE(Check(true, true, 31s, 30s) == kInCombat);
+    REQUIRE(Check(true, false, 29s, 30s) == kCooldown);
+    // Not in the party comes first: it says the most
+    REQUIRE(Check(false, true, 1s, 30s) == kNotInParty);
+
+    GIVEN("Whom a respawning player joins")
+    {
+        REQUIRE(RespawnPartner({}) == std::nullopt);
+        REQUIRE(RespawnPartner({{1, false, false}}) == std::nullopt);
+        REQUIRE(RespawnPartner({{1, true, true}, {2, true, false}}) == 2u);
+        REQUIRE(RespawnPartner({{1, true, true}, {2, false, false}, {3, true, true}}) == 1u);
+        REQUIRE(RespawnPartner({{1, false, false}, {2, true, false}, {3, true, false}}) == 2u);
     }
 }
 

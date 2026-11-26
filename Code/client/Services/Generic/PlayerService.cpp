@@ -15,6 +15,7 @@
 #include <Events/BeastFormChangeEvent.h>
 
 #include <Messages/PlayerRespawnRequest.h>
+#include <Messages/RequestRespawnAtPartner.h>
 #include <Messages/NotifyPlayerRespawn.h>
 #include <Messages/ShiftGridCellRequest.h>
 #include <Messages/EnterExteriorCellRequest.h>
@@ -238,6 +239,9 @@ void PlayerService::RunRespawnUpdates() noexcept
         pPlayer->RespawnPlayer();
 
         m_transport.Send(PlayerRespawnRequest());
+        // In a party, the server then moves the player next to a member (a TeleportCommandResponse, as for travel together)
+        if (m_world.GetPartyService().GetPartyMembers().size() >= 2)
+            m_transport.Send(RequestRespawnAtPartner());
 
         s_startTimer = false;
 
