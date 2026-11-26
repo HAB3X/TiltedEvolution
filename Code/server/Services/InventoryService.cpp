@@ -121,10 +121,9 @@ void InventoryService::OnInventoryChanges(const PacketEvent<RequestInventoryChan
         applied.Count = inventoryComponent.Content.AddOrRemoveEntryClamped(message.Item);
 
     // Two players took the same items out of a container at once: the later one gives back what the other got
-    auto* pObjectComponent = m_world.try_get<ObjectComponent>(*it);
-    if (pObjectComponent && message.Item.Count < 0)
+    if (m_world.all_of<ObjectComponent>(*it) && message.Item.Count < 0)
     {
-        const int32_t cRefused = pObjectComponent->RefusedTake(acMessage.pPlayer->GetId(), message.Item, -message.Item.Count, -applied.Count, GameServer::Get()->GetTick());
+        const int32_t cRefused = inventoryComponent.RefusedTake(acMessage.pPlayer->GetId(), message.Item, -message.Item.Count, -applied.Count, GameServer::Get()->GetTick());
         if (cRefused > 0)
         {
             NotifyLootRefused refused;

@@ -79,7 +79,7 @@ TEST_CASE("NPC movement is relayed less often the further away the player is", "
 
 TEST_CASE("Of two players taking the same items from a container at once, the later gives back the other's", "[server.sync]")
 {
-    ObjectComponent chest;
+    InventoryComponent chest;
     Inventory::Entry sword{};
     sword.BaseId = GameId(0, 0x12EB7);
 
@@ -92,7 +92,7 @@ TEST_CASE("Of two players taking the same items from a container at once, the la
     REQUIRE(chest.RefusedTake(cFirst, sword, 1, 0, 1200) == 0);
 
     // Long after the other's take it is no race either
-    REQUIRE(chest.RefusedTake(cSecond, sword, 1, 0, 1000 + ObjectComponent::kTakeRaceWindow + 500) == 0);
+    REQUIRE(chest.RefusedTake(cSecond, sword, 1, 0, 1000 + InventoryComponent::kTakeRaceWindow + 500) == 0);
 
     // Other items don't count
     Inventory::Entry shield{};
