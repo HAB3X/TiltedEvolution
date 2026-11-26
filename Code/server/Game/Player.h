@@ -32,6 +32,8 @@ struct Player
     void SetEndpoint(String aEndpoint) noexcept;
     // The address the player connects from, without the port
     [[nodiscard]] const String& GetEndpoint() const noexcept { return m_endpoint; }
+    // Plays on the server's own computer: whoever does hosts it (Host a game)
+    [[nodiscard]] bool IsOnServerComputer() const noexcept { return m_endpoint == "127.0.0.1" || m_endpoint == "::1"; }
     void SetUsername(String aUsername) noexcept;
     void SetMods(Vector<String> aMods) noexcept;
     void SetModIds(Vector<uint16_t> aModIds) noexcept;

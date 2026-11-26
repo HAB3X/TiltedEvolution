@@ -344,7 +344,7 @@ void GameServer::Ban(const Player& acPlayer)
 {
     const String cAddress = acPlayer.GetEndpoint();
     // A player on this computer: banning its address would ban the host
-    if (cAddress.empty() || cAddress == "127.0.0.1" || cAddress == "::1")
+    if (cAddress.empty() || acPlayer.IsOnServerComputer())
     {
         spdlog::warn("Not banning {}, who plays on the server's own computer; kicking them instead", acPlayer.GetUsername().c_str());
         Kick(acPlayer.GetConnectionId());

@@ -100,10 +100,8 @@ void CommandService::OnModeratePlayer(const PacketEvent<RequestModeratePlayer>& 
     const Player* pSender = acMessage.pPlayer;
 
     // Whoever plays on the server's own computer hosts it (Host a game); admins moderate anywhere
-    const String& cAddress = pSender->GetEndpoint();
-    const bool cIsHost = cAddress == "127.0.0.1" || cAddress == "::1";
     const auto& cAdmins = GameServer::Get()->GetAdminSessions();
-    if (!cIsHost && !cAdmins.contains(pSender->GetConnectionId()))
+    if (!pSender->IsOnServerComputer() && !cAdmins.contains(pSender->GetConnectionId()))
     {
         spdlog::warn("{} tried to {} player {} without being the host or an admin", pSender->GetUsername().c_str(), acMessage.Packet.Ban ? "ban" : "kick",
                      acMessage.Packet.PlayerId);
