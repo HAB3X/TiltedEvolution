@@ -1,0 +1,23 @@
+@if (offer$ | async; as offer) {
+  <p>
+    {{
+      'COMPONENT.HOST_WORLD_OFFER.QUESTION'
+        | transloco
+          : {
+              host: offer.host,
+              quests: offer.quests,
+              places: offer.places,
+              people: offer.people,
+            }
+    }}
+  </p>
+  <p>{{ 'COMPONENT.HOST_WORLD_OFFER.SAVE_NOTE' | transloco }}</p>
+  <app-action-buttons>
+    <button (click)="answer(true)" data-style-ornament="simple">
+      {{ 'COMPONENT.HOST_WORLD_OFFER.JOIN' | transloco }}
+    </button>
+    <button (click)="answer(false)" data-style-ornament="simple">
+      {{ 'COMPONENT.HOST_WORLD_OFFER.KEEP' | transloco }}
+    </button>
+  </app-action-buttons>
+}

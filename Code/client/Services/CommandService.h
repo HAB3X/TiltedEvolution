@@ -14,6 +14,9 @@ struct TeleportCommandResponse;
 struct CommandService
 {
 public:
+    // Moves the player to the place in a teleport answer from the server
+    void MoveTo(const TeleportCommandResponse& acMessage) noexcept;
+
     CommandService(World& aWorld, TransportService& aTransport, entt::dispatcher& aDispatcher);
     ~CommandService() noexcept = default;
 

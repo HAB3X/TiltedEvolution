@@ -55,6 +55,12 @@
         "INVALID_ADDRESS": "Le format de l'adresse est invalide. [Adresse:Port]"
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "Rejoindre le monde de {{host}} ? Dans votre partie, {{quests}} quêtes, {{places}} lieux et {{people}} personnes changent pour correspondre, et vous rejoignez {{host}}.",
+      "SAVE_NOTE": "Votre monde est sauvegardé avant, vous pourrez toujours y revenir.",
+      "JOIN": "Rejoindre son monde",
+      "KEEP": "Garder mon monde (partir)"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "Connexion…",
       "PING": "{{ms}} ms"

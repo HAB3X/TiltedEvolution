@@ -30,6 +30,10 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
   private localPlayerId: number;
   public readonly players$ = playerStore.pipe(selectAllEntities());
 
+  answerHostWorld(join: boolean): void {
+    console.log(`host world: ${join ? 'join' : 'keep'}`);
+  }
+
   setNameTags(enabled: boolean): void {
     console.log(`name tags ${enabled}`);
   }

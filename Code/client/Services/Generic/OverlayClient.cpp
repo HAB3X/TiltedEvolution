@@ -9,6 +9,7 @@
 #include <Services/LocalServerService.h>
 #include <Services/LanSearch.h>
 #include <Services/NameTagService.h>
+#include <Services/HostWorldService.h>
 
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/TeleportRequest.h>
@@ -49,6 +50,11 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
 
         if (eventName == "connect")
             ProcessConnectMessage(eventArgs);
+        else if (eventName == "answerHostWorld")
+        {
+            const bool join = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([join]() { World::Get().ctx().at<HostWorldService>().Answer(join); });
+        }
         else if (eventName == "setNameTags")
         {
             const bool enabled = eventArgs->GetBool(0);

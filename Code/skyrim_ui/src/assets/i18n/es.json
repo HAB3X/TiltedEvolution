@@ -55,6 +55,12 @@
         "INVALID_ADDRESS": "La dirección tiene un formato no válido."
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "¿Entrar en el mundo de {{host}}? En tu partida cambian {{quests}} misiones, {{places}} lugares y {{people}} personas, y vas junto a {{host}}.",
+      "SAVE_NOTE": "Tu mundo se guarda antes, siempre puedes volver.",
+      "JOIN": "Entrar en su mundo",
+      "KEEP": "Mantener mi mundo (salir)"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "Conectando…",
       "PING": "{{ms}} ms"

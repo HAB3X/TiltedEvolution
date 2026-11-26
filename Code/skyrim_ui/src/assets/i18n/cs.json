@@ -54,6 +54,12 @@
         "INVALID_ADDRESS": "Adresa má špatný formát."
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "Vstoupit do světa hráče {{host}}? Ve tvé hře se změní {{quests}} úkolů, {{places}} míst a {{people}} postav a přesuneš se k {{host}}.",
+      "SAVE_NOTE": "Tvůj svět se nejdřív uloží, vždy se můžeš vrátit.",
+      "JOIN": "Vstoupit do jejich světa",
+      "KEEP": "Ponechat svůj svět (odejít)"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "Připojování…",
       "PING": "{{ms}} ms"

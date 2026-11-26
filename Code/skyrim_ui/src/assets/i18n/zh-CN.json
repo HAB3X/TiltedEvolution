@@ -55,6 +55,12 @@
         "INVALID_ADDRESS": "地址格式无效。"
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "加入 {{host}} 的世界？你的游戏中 {{quests}} 个任务、{{places}} 个地点和 {{people}} 个人物会改变，并且你会被移动到 {{host}} 身边。",
+      "SAVE_NOTE": "会先保存你自己的世界，你随时可以回去。",
+      "JOIN": "加入他们的世界",
+      "KEEP": "保留我的世界（离开）"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "连接中…",
       "PING": "{{ms}} 毫秒"

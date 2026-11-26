@@ -55,6 +55,12 @@
         "INVALID_ADDRESS": "Adres jest w niepoprawnym formacie."
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "Wejść do świata gracza {{host}}? W twojej grze zmieni się {{quests}} zadań, {{places}} miejsc i {{people}} postaci, a ty trafisz do {{host}}.",
+      "SAVE_NOTE": "Twój świat zostanie najpierw zapisany, zawsze możesz wrócić.",
+      "JOIN": "Wejdź do ich świata",
+      "KEEP": "Zostań w moim świecie (wyjdź)"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "Łączenie…",
       "PING": "{{ms}} ms"

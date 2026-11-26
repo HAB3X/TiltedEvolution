@@ -56,6 +56,12 @@
         "INVALID_ADDRESS": "The address is of invalid format."
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "Join {{host}}'s world? In your game, {{quests}} quests, {{places}} cleared or uncleared places and {{people}} people change to match theirs, and you move to {{host}}.",
+      "SAVE_NOTE": "Your own world is saved first, so you can always go back to it.",
+      "JOIN": "Join their world",
+      "KEEP": "Keep my world (leave)"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "Connecting…",
       "PING": "{{ms}} ms"

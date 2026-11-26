@@ -56,6 +56,12 @@
         "INVALID_ADDRESS": "Adressen har felaktigt format."
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "Gå in i {{host}}s värld? I ditt spel ändras {{quests}} uppdrag, {{places}} platser och {{people}} personer, och du flyttas till {{host}}.",
+      "SAVE_NOTE": "Din egen värld sparas först, du kan alltid gå tillbaka.",
+      "JOIN": "Gå in i deras värld",
+      "KEEP": "Behåll min värld (lämna)"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "Ansluter…",
       "PING": "{{ms}} ms"

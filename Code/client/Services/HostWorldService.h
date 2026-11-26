@@ -2,7 +2,11 @@
 
 #include <Structs/HostWorldState.h>
 
+#include <Messages/NotifyHostWorldState.h>
+#include <Messages/TeleportCommandResponse.h>
+
 #include <chrono>
+#include <optional>
 
 struct World;
 struct TransportService;
@@ -10,6 +14,7 @@ struct PartyJoinedEvent;
 struct UpdateEvent;
 struct NotifyHostWorldRequested;
 struct NotifyHostWorldState;
+struct TeleportCommandResponse;
 
 /**
  * @brief Host world mode (the server's Gameplay:bHostWorld): a player who joins takes over the host's world.
@@ -34,17 +39,36 @@ protected:
     void OnHostWorldRequested(const NotifyHostWorldRequested& acMessage) noexcept;
     void OnHostWorldState(const NotifyHostWorldState& acMessage) noexcept;
 
+public:
+    // The joiner's answer to the offer: join the host's world (saving their own first), or keep theirs and leave
+    void Answer(bool aJoin) noexcept;
+    // While the offer is open, the server's move to the host waits for the answer: true when held
+    bool HoldTeleport(const TeleportCommandResponse& acTeleport) noexcept;
+
+protected:
+
 private:
+    enum class Mode
+    {
+        // Only count what would change, for the offer
+        Count,
+        Apply
+    };
+
     HostWorldState CollectWorld() const noexcept;
     void RequestWorld() noexcept;
-    // Each returns how many things it changed here
-    uint32_t ApplyQuests(const HostWorldState& acState) noexcept;
-    uint32_t ApplyLocations(const HostWorldState& acState) const noexcept;
-    uint32_t ApplyUniqueActorDeaths(const HostWorldState& acState) const noexcept;
+    void ApplyPending() noexcept;
+    // Each returns how many things it changes (or would) here
+    uint32_t ApplyQuests(const HostWorldState& acState, Mode aMode) noexcept;
+    uint32_t ApplyLocations(const HostWorldState& acState, Mode aMode) const noexcept;
+    uint32_t ApplyUniqueActorDeaths(const HostWorldState& acState, Mode aMode) const noexcept;
 
     World& m_world;
     TransportService& m_transport;
 
+    // The host's world, offered and not answered or applied yet
+    std::optional<NotifyHostWorldState> m_pending;
+    std::optional<TeleportCommandResponse> m_heldTeleport;
     // Waiting for the save of the member's own world, up to this time
     bool m_savingOwnWorld{false};
     std::chrono::steady_clock::time_point m_ownWorldSaveDeadline{};

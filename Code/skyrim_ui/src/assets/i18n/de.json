@@ -54,6 +54,12 @@
         "INVALID_ADDRESS": "Die Adresse hat ein ungültiges Format."
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "{{host}}s Welt betreten? In deinem Spiel ändern sich {{quests}} Quests, {{places}} Orte und {{people}} Personen, und du wirst zu {{host}} gebracht.",
+      "SAVE_NOTE": "Deine eigene Welt wird vorher gespeichert, du kannst immer zurück.",
+      "JOIN": "Ihre Welt betreten",
+      "KEEP": "Meine Welt behalten (verlassen)"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "Verbinde…",
       "PING": "{{ms}} ms"

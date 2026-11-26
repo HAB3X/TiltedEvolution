@@ -54,6 +54,12 @@
         "INVALID_ADDRESS": "アドレスの形式が無効です。"
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "{{host}} の世界に参加しますか？あなたのゲームでクエスト{{quests}}件、場所{{places}}か所、人物{{people}}人が変わり、{{host}} のもとへ移動します。",
+      "SAVE_NOTE": "先にあなたの世界が保存されるので、いつでも戻れます。",
+      "JOIN": "相手の世界に参加",
+      "KEEP": "自分の世界を残す（退出）"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "接続中…",
       "PING": "{{ms}} ms"

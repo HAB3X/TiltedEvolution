@@ -56,6 +56,12 @@
         "INVALID_ADDRESS": "Adres geçersiz formatta."
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "{{host}} adlı oyuncunun dünyasına katıl? Oyununda {{quests}} görev, {{places}} yer ve {{people}} kişi değişir ve {{host}} yanına gidersin.",
+      "SAVE_NOTE": "Kendi dünyan önce kaydedilir, her zaman geri dönebilirsin.",
+      "JOIN": "Onların dünyasına katıl",
+      "KEEP": "Kendi dünyamı koru (ayrıl)"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "Bağlanıyor…",
       "PING": "{{ms}} ms"

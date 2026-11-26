@@ -55,6 +55,12 @@
         "INVALID_ADDRESS": "Het adres is in een ongeldig formaat."
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "{{host}}'s wereld betreden? In jouw spel veranderen {{quests}} quests, {{places}} plaatsen en {{people}} personen, en je gaat naar {{host}}.",
+      "SAVE_NOTE": "Je eigen wereld wordt eerst opgeslagen, je kunt altijd terug.",
+      "JOIN": "Hun wereld betreden",
+      "KEEP": "Mijn wereld houden (vertrekken)"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "Verbinden…",
       "PING": "{{ms}} ms"

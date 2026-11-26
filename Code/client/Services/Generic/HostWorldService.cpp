@@ -1,6 +1,8 @@
 #include <Services/HostWorldService.h>
 
 #include <Services/QuestService.h>
+#include <Services/CommandService.h>
+#include <OverlayApp.hpp>
 #include <Services/TransportService.h>
 
 #include <World.h>
@@ -73,18 +75,8 @@ void HostWorldService::OnPartyJoined(const PartyJoinedEvent& acEvent) noexcept
     if (acEvent.IsLeader || !m_world.GetServerSettings().HostWorld)
         return;
 
-    // Rejoining in the same session: the game is the host's world already
-    if (m_appliedThisSession)
-    {
-        RequestWorld();
-        return;
-    }
-
-    spdlog::info("[HostWorld]: joined the host's party, saving our own world before taking over the host's");
-    m_world.GetOverlayService().SendSystemMessage("Saving your own world before joining the host's...");
-    BGSSaveLoadManager::QueueSaveAs(kOwnWorldSave);
-    m_savingOwnWorld = true;
-    m_ownWorldSaveDeadline = std::chrono::steady_clock::now() + kOwnWorldSaveTimeout;
+    // The joiner sees what would change and answers before anything happens (Accept)
+    RequestWorld();
 }
 
 void HostWorldService::OnUpdate(const UpdateEvent&) noexcept
@@ -110,7 +102,7 @@ void HostWorldService::OnUpdate(const UpdateEvent&) noexcept
     }
 
     m_savingOwnWorld = false;
-    RequestWorld();
+    ApplyPending();
 }
 
 void HostWorldService::RequestWorld() noexcept
@@ -168,20 +160,89 @@ HostWorldState HostWorldService::CollectWorld() const noexcept
 
 void HostWorldService::OnHostWorldState(const NotifyHostWorldState& acMessage) noexcept
 {
-    spdlog::info("[HostWorld]: taking over the host's world: {} running and {} completed quests, {} cleared locations, {} dead unique NPCs",
+    spdlog::info("[HostWorld]: {}'s world: {} running and {} completed quests, {} cleared locations, {} dead unique NPCs", acMessage.HostName.c_str(),
                  acMessage.State.RunningQuests.Entries.size(), acMessage.State.CompletedQuests.Entries.size(), acMessage.State.ClearedLocations.size(),
                  acMessage.State.DeadUniqueActors.size());
+    m_pending = acMessage;
 
-    const uint32_t cQuests = ApplyQuests(acMessage.State);
-    const uint32_t cLocations = ApplyLocations(acMessage.State);
-    const uint32_t cActors = ApplyUniqueActorDeaths(acMessage.State);
+    // Rejoining in the same session: the game is the host's world already, the joiner said yes to it
+    if (m_appliedThisSession)
+    {
+        ApplyPending();
+        return;
+    }
+
+    const uint32_t cQuests = ApplyQuests(acMessage.State, Mode::Count);
+    const uint32_t cLocations = ApplyLocations(acMessage.State, Mode::Count);
+    const uint32_t cActors = ApplyUniqueActorDeaths(acMessage.State, Mode::Count);
+
+    auto* pOverlay = m_world.GetOverlayService().GetOverlayApp();
+    auto pArguments = CefListValue::Create();
+    pArguments->SetString(0, acMessage.HostName.c_str());
+    pArguments->SetInt(1, static_cast<int>(cQuests));
+    pArguments->SetInt(2, static_cast<int>(cLocations));
+    pArguments->SetInt(3, static_cast<int>(cActors));
+    pOverlay->ExecuteAsync("hostWorldOffer", pArguments);
+    // The question needs the mouse
+    m_world.GetOverlayService().SetActive(true);
+}
+
+void HostWorldService::Answer(bool aJoin) noexcept
+{
+    if (!m_pending)
+        return;
+
+    if (!aJoin)
+    {
+        spdlog::info("[HostWorld]: keeping our own world, leaving {}'s server", m_pending->HostName.c_str());
+        m_world.GetOverlayService().SendSystemMessage(fmt::format("You kept your own world and left {}'s server.", m_pending->HostName.c_str()));
+        m_pending.reset();
+        m_heldTeleport.reset();
+        m_transport.Close();
+        return;
+    }
+
+    // Save the joiner's own world first, then apply the host's (OnUpdate)
+    m_world.GetOverlayService().SendSystemMessage("Saving your own world before joining the host's...");
+    BGSSaveLoadManager::QueueSaveAs(kOwnWorldSave);
+    m_savingOwnWorld = true;
+    m_ownWorldSaveDeadline = std::chrono::steady_clock::now() + kOwnWorldSaveTimeout;
+}
+
+bool HostWorldService::HoldTeleport(const TeleportCommandResponse& acTeleport) noexcept
+{
+    if (!m_pending)
+        return false;
+    m_heldTeleport = acTeleport;
+    return true;
+}
+
+void HostWorldService::ApplyPending() noexcept
+{
+    if (!m_pending)
+        return;
+
+    const NotifyHostWorldState cWorld = std::move(*m_pending);
+    m_pending.reset();
+
+    const uint32_t cQuests = ApplyQuests(cWorld.State, Mode::Apply);
+    const uint32_t cLocations = ApplyLocations(cWorld.State, Mode::Apply);
+    const uint32_t cActors = ApplyUniqueActorDeaths(cWorld.State, Mode::Apply);
     m_appliedThisSession = true;
 
     m_world.GetOverlayService().SendSystemMessage(fmt::format("You're in {}'s world: {} quests, {} cleared or uncleared places and {} people changed to match it.",
-                                                              acMessage.HostName.c_str(), cQuests, cLocations, cActors));
+                                                              cWorld.HostName.c_str(), cQuests, cLocations, cActors));
+
+    // The server sent the host's place with the world; go there now
+    if (m_heldTeleport)
+    {
+        const TeleportCommandResponse cTeleport = std::move(*m_heldTeleport);
+        m_heldTeleport.reset();
+        m_world.ctx().at<CommandService>().MoveTo(cTeleport);
+    }
 }
 
-uint32_t HostWorldService::ApplyQuests(const HostWorldState& acState) noexcept
+uint32_t HostWorldService::ApplyQuests(const HostWorldState& acState, Mode aMode) noexcept
 {
     uint32_t changed = 0;
     const auto& modSystem = m_world.GetModSystem();
@@ -208,7 +269,8 @@ uint32_t HostWorldService::ApplyQuests(const HostWorldState& acState) noexcept
             // Counted when the quest isn't there yet: the update itself skips stages that were already reached
             if (aCompleted || pQuest->IsStopped() || !pQuest->IsStageReached(entry.Stage))
                 ++changed;
-            questService.ApplyRemoteUpdate(update);
+            if (aMode == Mode::Apply)
+                questService.ApplyRemoteUpdate(update);
         }
     };
     apply(acState.CompletedQuests, true);
@@ -220,15 +282,17 @@ uint32_t HostWorldService::ApplyQuests(const HostWorldState& acState) noexcept
     {
         if (IsHostWorldQuest(pQuest) && !pQuest->IsStopped() && !IsCompleted(pQuest) && !hostQuests.contains(pQuest->formID))
         {
+            ++changed;
+            if (aMode == Mode::Count)
+                continue;
             spdlog::info("[HostWorld]: stopping our quest {:X} ({}), the host doesn't have it", pQuest->formID, pQuest->idName.AsAscii());
             QuestService::StopQuest(pQuest->formID);
-            ++changed;
         }
     }
     return changed;
 }
 
-uint32_t HostWorldService::ApplyLocations(const HostWorldState& acState) const noexcept
+uint32_t HostWorldService::ApplyLocations(const HostWorldState& acState, Mode aMode) const noexcept
 {
     const auto& modSystem = m_world.GetModSystem();
 
@@ -243,17 +307,20 @@ uint32_t HostWorldService::ApplyLocations(const HostWorldState& acState) const n
         if (pLocation->cleared == cHostCleared)
             continue;
 
+        ++changed;
+        if (aMode == Mode::Count)
+            continue;
         pLocation->cleared = cHostCleared;
         pLocation->everCleared |= cHostCleared;
         // Saved with the location, like the game's own clearing
         pLocation->MarkChanged(BGSLocation::CHANGE_CLEARED);
-        ++changed;
     }
-    spdlog::info("[HostWorld]: {} locations changed to the host's cleared state", changed);
+    if (aMode == Mode::Apply)
+        spdlog::info("[HostWorld]: {} locations changed to the host's cleared state", changed);
     return changed;
 }
 
-uint32_t HostWorldService::ApplyUniqueActorDeaths(const HostWorldState& acState) const noexcept
+uint32_t HostWorldService::ApplyUniqueActorDeaths(const HostWorldState& acState, Mode aMode) const noexcept
 {
     uint32_t changed = 0;
     const auto& modSystem = m_world.GetModSystem();
@@ -269,13 +336,15 @@ uint32_t HostWorldService::ApplyUniqueActorDeaths(const HostWorldState& acState)
             if (apActor->IsDead() == cHostDead)
                 return;
 
+            ++changed;
+            if (aMode == Mode::Count)
+                return;
             spdlog::info("[HostWorld]: {} unique NPC {:X}, as in the host's world", cHostDead ? "killing" : "bringing back", apActor->formID);
             if (cHostDead)
                 // No attacker: nobody here killed them, so no crime, bounty or kill credit
                 apActor->KillImpl(nullptr, 100.f, true, true);
             else
                 apActor->Respawn();
-            ++changed;
         });
     return changed;
 }

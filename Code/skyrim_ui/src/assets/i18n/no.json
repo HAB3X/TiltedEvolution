@@ -54,6 +54,12 @@
         "INVALID_ADDRESS": "Addressen er ikke riktig formatert."
       }
     },
+    "HOST_WORLD_OFFER": {
+      "QUESTION": "Gå inn i {{host}}s verden? I spillet ditt endres {{quests}} oppdrag, {{places}} steder og {{people}} personer, og du flyttes til {{host}}.",
+      "SAVE_NOTE": "Din egen verden lagres først, du kan alltid gå tilbake.",
+      "JOIN": "Gå inn i deres verden",
+      "KEEP": "Behold min verden (forlat)"
+    },
     "CONNECTION_STATUS": {
       "CONNECTING": "Kobler til…",
       "PING": "{{ms}} ms"

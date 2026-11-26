@@ -213,6 +213,9 @@ interface SkyrimTogether {
   /** The public address:port of the game this player hosts. */
   on(event: 'hostAddress', callback: (address: string) => void): void;
 
+  /** A host world server's offer: the host's name and how many quests, places and people would change. */
+  on(event: 'hostWorldOffer', callback: (host: string, quests: number, places: number, people: number) => void): void;
+
   on(event: 'dummyData', callback: SkyrimTogetherTypes.DummyDataCallback): void;
 
   on(event: 'partyInfo', callback: SkyrimTogetherTypes.PartyInfoCallback): void;
@@ -343,6 +346,8 @@ interface SkyrimTogether {
 
   off(event: 'hostAddress', callback?: (address: string) => void): void;
 
+  off(event: 'hostWorldOffer', callback?: (host: string, quests: number, places: number, people: number) => void): void;
+
   off(
     event: 'dummyData',
     callback?: SkyrimTogetherTypes.DummyDataCallback,
@@ -406,6 +411,11 @@ interface SkyrimTogether {
    * Show or hide other players' name tags.
    */
   setNameTags(enabled: boolean): void;
+
+  /**
+   * Answer a host world server's offer: join the host's world, or keep this one and leave.
+   */
+  answerHostWorld(join: boolean): void;
 
   /**
    * Disconnect from server or cancel connection.

@@ -11,6 +11,14 @@ import { ErrorEvents, ErrorService } from './error.service';
 import { LoadingService } from './loading.service';
 
 /** Client game service. */
+/** What joining a host's world would change. */
+export interface HostWorldOffer {
+  host: string;
+  quests: number;
+  places: number;
+  people: number;
+}
+
 /** Where the player last played, kept while connected (see ClientService.rejoin). */
 export interface LastSession {
   host: string;
@@ -98,6 +106,15 @@ export class ClientService implements OnDestroy {
 
   /** Receive error from core */
   public triggerError = new ReplaySubject<ErrorEvents>(1);
+
+  /** A host world server's offer, waiting for the joiner's answer; null when there's none. */
+  public hostWorldOfferChange = new BehaviorSubject<HostWorldOffer | null>(null);
+
+  /** The joiner's answer to the host world offer. */
+  public answerHostWorld(join: boolean): void {
+    this.hostWorldOfferChange.next(null);
+    skyrimtogether.answerHostWorld(join);
+  }
 
   /** The public address:port of the game this player hosts, once the router has said it. */
   public hostAddressChange = new BehaviorSubject<string | null>(null);
@@ -187,6 +204,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('triggerError', this.onTriggerError.bind(this));
     skyrimtogether.on('lanServers', this.onLanServers.bind(this));
     skyrimtogether.on('hostAddress', this.onHostAddress.bind(this));
+    skyrimtogether.on('hostWorldOffer', this.onHostWorldOffer.bind(this));
 
     try {
       this.lastSessionChange.next(
@@ -234,6 +252,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('triggerError');
     skyrimtogether.off('lanServers');
     skyrimtogether.off('hostAddress');
+    skyrimtogether.off('hostWorldOffer');
     skyrimtogether.off('dummyData');
     skyrimtogether.off('partyInfo');
     skyrimtogether.off('partyCreated');
@@ -672,6 +691,12 @@ export class ClientService implements OnDestroy {
   private onProtocolMismatch() {
     this.zone.run(() => {
       this.protocolMismatchChange.next(true);
+    });
+  }
+
+  private onHostWorldOffer(host: string, quests: number, places: number, people: number) {
+    this.zone.run(() => {
+      this.hostWorldOfferChange.next({ host, quests, places, people });
     });
   }
 

@@ -111,6 +111,11 @@
   </div>
   <div [@fadeInOutActive]="active$ | async" class="app-root-popups">
     <app-loading></app-loading>
+    @if (hostWorldOffer$ | async) {
+      <app-popup>
+        <app-host-world-offer></app-host-world-offer>
+      </app-popup>
+    }
     @switch (view$ | async) {
       @case (RootView.CONNECT) {
         <app-popup>

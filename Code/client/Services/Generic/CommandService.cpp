@@ -13,6 +13,7 @@
 
 #include <Messages/TeleportCommandRequest.h>
 #include <Messages/TeleportCommandResponse.h>
+#include <Services/HostWorldService.h>
 #include "Messages/SetTimeCommandRequest.h"
 
 #include <Structs/GridCellCoords.h>
@@ -35,6 +36,15 @@ void CommandService::OnSetTimeCommand(const SetTimeCommandEvent& acEvent) const 
 }
 
 void CommandService::OnTeleportCommandResponse(const TeleportCommandResponse& acMessage) noexcept
+{
+    // Joining a host's world: the move waits until the joiner has said yes
+    if (m_world.ctx().at<HostWorldService>().HoldTeleport(acMessage))
+        return;
+
+    MoveTo(acMessage);
+}
+
+void CommandService::MoveTo(const TeleportCommandResponse& acMessage) noexcept
 {
     spdlog::info("TeleportCommandResponse: {:X}:{:X} at position {}, {}, {}", acMessage.CellId.ModId, acMessage.CellId.BaseId, acMessage.Position.x, acMessage.Position.y, acMessage.Position.z);
     auto& modSystem = m_world.GetModSystem();
