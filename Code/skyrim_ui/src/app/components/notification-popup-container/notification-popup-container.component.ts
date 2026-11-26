@@ -11,6 +11,7 @@ import { DestroyService } from '../../services/destroy.service';
 import { GroupService } from '../../services/group.service';
 import { PartyHintService } from '../../services/party-hint.service';
 import { TravelTogetherService } from '../../services/travel-together.service';
+import { PartyPingService } from '../../services/party-ping.service';
 import { QuestDesyncService } from '../../services/quest-desync.service';
 import { PopupNotificationService } from '../../services/popup-notification.service';
 
@@ -31,6 +32,7 @@ export class NotificationPopupContainerComponent implements OnInit {
     private readonly groupService: GroupService,
     private readonly partyHintService: PartyHintService,
     private readonly travelTogetherService: TravelTogetherService,
+    private readonly partyPingService: PartyPingService,
     private readonly questDesyncService: QuestDesyncService,
     private readonly popupNotificationService: PopupNotificationService,
     private readonly cdr: ChangeDetectorRef,

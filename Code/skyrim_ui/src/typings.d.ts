@@ -254,6 +254,9 @@ interface SkyrimTogether {
   /** The party leader fast travelled; place is empty when the game had no name for it. */
   on(event: 'partyTravel', callback: (leader: string, place: string) => void): void;
 
+  /** A party ping: who (empty for this player), what (empty for their spot), metres away (-1 elsewhere), direction, place. */
+  on(event: 'partyPing', callback: (player: string, target: string, meters: number, direction: number, place: string) => void): void;
+
   /** Shared quests differ from another party member's: the first few named, and how many more. */
   on(event: 'questDesync', callback: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
 
@@ -407,6 +410,8 @@ interface SkyrimTogether {
   ): void;
 
   off(event: 'partyTravel', callback?: (leader: string, place: string) => void): void;
+
+  off(event: 'partyPing', callback?: (player: string, target: string, meters: number, direction: number, place: string) => void): void;
 
   off(event: 'questDesync', callback?: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
 

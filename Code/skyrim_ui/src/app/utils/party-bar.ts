@@ -32,3 +32,24 @@ const compassKeys = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 export function compassKey(point: number): string | undefined {
   return compassKeys[point];
 }
+
+/** A party ping as the client reports it (partyPing). */
+export interface Ping {
+  /** Who pinged; empty for the local player. */
+  player: string;
+  /** What was pinged; empty for the spot the pinger stood on. */
+  target: string;
+  /** Metres from the local player, -1 when the ping is in another worldspace or cell. */
+  meters: number;
+  direction: number;
+  place: string;
+}
+
+/** The ping's chat line (SERVICE.PARTY_PING.<line>), and the key naming the pinged spot when nothing was targeted. */
+export function pingKeys(ping: Ping): { line: string; spot?: string } {
+  const line = !ping.player ? 'SELF' : ping.meters >= 0 ? 'NEAR' : 'FAR';
+  if (ping.target) {
+    return { line };
+  }
+  return { line, spot: ping.player ? 'THEIR_SPOT' : 'YOUR_SPOT' };
+}

@@ -269,6 +269,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "你为队伍标记了{{target}}。",
+      "NEAR": "{{name}} 标记了{{target}}：{{distance}}。",
+      "FAR": "{{name}} 在{{place}}标记了{{target}}。",
+      "THEIR_SPOT": "自己的位置",
+      "YOUR_SPOT": "你的位置"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "连接已丢失，正在重新连接。剩余{{remainingReconnectionAttempt}}次尝试。",
       "CONNECTED": "成功连接至服务器。",

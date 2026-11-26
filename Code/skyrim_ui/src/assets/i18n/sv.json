@@ -280,6 +280,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "Du markerade {{target}} för gruppen.",
+      "NEAR": "{{name}} markerade {{target}}: {{distance}}.",
+      "FAR": "{{name}} markerade {{target}} i {{place}}.",
+      "THEIR_SPOT": "sin position",
+      "YOUR_SPOT": "din position"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Anslutning tappades, försöker återansluta. {{remainingReconnectionAttempt}} försök kvar.",
       "CONNECTED": "Lyckades ansluta till servern.",

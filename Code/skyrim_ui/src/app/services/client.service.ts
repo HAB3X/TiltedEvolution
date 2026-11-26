@@ -1,4 +1,5 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { Ping } from '../utils/party-bar';
 import { TranslocoService } from '@jsverse/transloco';
 import { AsyncSubject, BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -114,6 +115,9 @@ export class ClientService implements OnDestroy {
 
   /** The party leader fast travelled, see answerPartyTravel. */
   public partyTravelChange = new Subject<{ leader: string; place: string }>();
+
+  /** A party member, or this player, pinged a spot or a target. */
+  public partyPingChange = new Subject<Ping>();
 
   /** Shared quests differ from another party member's (the leader's, or a member's for the leader). */
   public questDesyncChange = new Subject<{ otherPlayer: string; otherIsLeader: boolean; quests: string; more: number }>();
@@ -275,6 +279,7 @@ export class ClientService implements OnDestroy {
     );
     skyrimtogether.on('questUpdated', this.onQuestUpdated.bind(this));
     skyrimtogether.on('partyTravel', this.onPartyTravel.bind(this));
+    skyrimtogether.on('partyPing', this.onPartyPing.bind(this));
     skyrimtogether.on('questDesync', this.onQuestDesync.bind(this));
   }
 
@@ -318,6 +323,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('partyInviteReceived');
     skyrimtogether.off('questUpdated');
     skyrimtogether.off('partyTravel');
+    skyrimtogether.off('partyPing');
     skyrimtogether.off('questDesync');
   }
 
@@ -926,6 +932,12 @@ export class ClientService implements OnDestroy {
   private onQuestUpdated() {
     this.zone.run(() => {
       this.questUpdatedChange.next();
+    });
+  }
+
+  private onPartyPing(player: string, target: string, meters: number, direction: number, place: string) {
+    this.zone.run(() => {
+      this.partyPingChange.next({ player, target, meters, direction, place });
     });
   }
 

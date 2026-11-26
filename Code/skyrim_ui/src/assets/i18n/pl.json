@@ -278,6 +278,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "Oznaczono {{target}} dla drużyny.",
+      "NEAR": "{{name}} oznacza {{target}}: {{distance}}.",
+      "FAR": "{{name}} oznacza {{target}} w miejscu {{place}}.",
+      "THEIR_SPOT": "swoją pozycję",
+      "YOUR_SPOT": "twoją pozycję"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Stracono połączenie, próbujemy się podłączyć z powrotem. {{remainingReconnectionAttempt}} pozostałych prób.",
       "CONNECTED": "Pomyślnie nawiązano połączenie z serwerem.",

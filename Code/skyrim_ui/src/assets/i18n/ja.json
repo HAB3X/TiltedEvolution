@@ -274,6 +274,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "パーティーに{{target}}を知らせました。",
+      "NEAR": "{{name}}が{{target}}を知らせました: {{distance}}。",
+      "FAR": "{{name}}が{{place}}で{{target}}を知らせました。",
+      "THEIR_SPOT": "自分の位置",
+      "YOUR_SPOT": "あなたの位置"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "サーバーから切断されました。再接続しようとしています… 後{{remainingReconnectionAttempt}}回試します。",
       "CONNECTED": "接続しました。",

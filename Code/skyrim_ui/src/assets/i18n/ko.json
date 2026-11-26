@@ -274,6 +274,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "파티에 {{target}}을(를) 표시했습니다.",
+      "NEAR": "{{name}} 님이 {{target}}을(를) 표시했습니다: {{distance}}.",
+      "FAR": "{{name}} 님이 {{place}}에서 {{target}}을(를) 표시했습니다.",
+      "THEIR_SPOT": "자신의 위치",
+      "YOUR_SPOT": "당신의 위치"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "연결이 끊어졌습니다. 다시 연결을 시도 중입니다. {{remainingReconnectionAttempt}}회 시도가 남았습니다.",
       "CONNECTED": "서버에 성공적으로 연결되었습니다.",

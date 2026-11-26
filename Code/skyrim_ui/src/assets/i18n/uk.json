@@ -280,6 +280,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "Ви позначили {{target}} для загону.",
+      "NEAR": "{{name}} позначає {{target}}: {{distance}}.",
+      "FAR": "{{name}} позначає {{target}} у місці {{place}}.",
+      "THEIR_SPOT": "своє місцезнаходження",
+      "YOUR_SPOT": "ваше місцезнаходження"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "З'єднання втрачено, спроба переподключення. Залишилось спроб - {{remainingReconnectionAttempt}}.",
       "CONNECTED": "Успішно підключено до сервера.",

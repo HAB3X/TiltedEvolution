@@ -281,6 +281,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "You pinged {{target}} for the party.",
+      "NEAR": "{{name}} pinged {{target}}: {{distance}}.",
+      "FAR": "{{name}} pinged {{target}} in {{place}}.",
+      "THEIR_SPOT": "their position",
+      "YOUR_SPOT": "your position"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Connection lost, trying to reconnect. {{remainingReconnectionAttempt}} attempts left.",
       "CONNECTED": "Successfully connected to server.",

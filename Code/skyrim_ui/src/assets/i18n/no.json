@@ -274,6 +274,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "Du markerte {{target}} for gruppen.",
+      "NEAR": "{{name}} markerte {{target}}: {{distance}}.",
+      "FAR": "{{name}} markerte {{target}} i {{place}}.",
+      "THEIR_SPOT": "sin posisjon",
+      "YOUR_SPOT": "din posisjon"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Mistet tilkobling, prøver å koble til på nytt. {{remainingReconnectionAttempt}} forsøk igjen.",
       "CONNECTED": "Koblet til server.",

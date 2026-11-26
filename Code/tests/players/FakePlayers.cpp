@@ -31,6 +31,8 @@
 #include <Messages/NotifyQuestDesync.h>
 #include <Messages/NotifyPlayerHealthUpdate.h>
 #include <Messages/RequestPlayerHealthUpdate.h>
+#include <Messages/RequestPartyPing.h>
+#include <Messages/NotifyPartyPing.h>
 #include <Messages/RequestQuestStages.h>
 #include <Messages/PartyCreateRequest.h>
 #include <Messages/RequestPartyTravel.h>
@@ -152,6 +154,7 @@ struct FakePlayer final : Client
         case kNotifyPartyTravel: Travel = *static_cast<NotifyPartyTravel*>(pMessage.get()); break;
         case kNotifyQuestDesync: Desyncs.push_back(*static_cast<NotifyQuestDesync*>(pMessage.get())); break;
         case kNotifyPlayerHealthUpdate: Health = *static_cast<NotifyPlayerHealthUpdate*>(pMessage.get()); break;
+        case kNotifyPartyPing: Pings.push_back(*static_cast<NotifyPartyPing*>(pMessage.get())); break;
         default: break;
         }
     }
@@ -182,6 +185,7 @@ struct FakePlayer final : Client
     std::optional<NotifyPartyTravel> Travel;
     std::vector<NotifyQuestDesync> Desyncs;
     std::optional<NotifyPlayerHealthUpdate> Health;
+    std::vector<NotifyPartyPing> Pings;
 };
 
 // Runs the player until the condition holds or the time is up
@@ -681,6 +685,51 @@ int RunBarMember(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Pings: the member pings a target, the leader gets it with the member's name; a player without a party can't ping
+RequestPartyPing FakePing()
+{
+    RequestPartyPing ping;
+    ping.WorldSpaceId = GameId(0, 0x3C);
+    ping.CellId = GameId(0, 0x9732);
+    ping.Position = glm::vec3{1200.f, -340.f, 56.f};
+    ping.Target = "Bandit Chief";
+    return ping;
+}
+
+int RunPingLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakePingLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("ping leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("ping leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+
+    const bool cPinged = RunUntil(leader, [&] { return !leader.Pings.empty(); }, 20s);
+    const RequestPartyPing cSent = FakePing();
+    std::string detail = std::to_string(leader.Pings.size()) + " pings";
+    if (!leader.Pings.empty())
+        detail += ", the first from " + std::string(leader.Pings[0].PlayerName.c_str()) + " at " + leader.Pings[0].Target.c_str();
+    Check("gets the member's ping: who, where and what", cPinged && leader.Pings[0].PlayerId == leader.JoinedIds.front() && leader.Pings[0].PlayerName == "FakePingMember" &&
+                                                              leader.Pings[0].WorldSpaceId == cSent.WorldSpaceId && leader.Pings[0].CellId == cSent.CellId &&
+                                                              leader.Pings[0].Position == cSent.Position && leader.Pings[0].Target == cSent.Target,
+          detail);
+    RunUntil(leader, [] { return false; }, 3s);
+    return s_failures ? 1 : 0;
+}
+
+int RunPingMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakePingMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("ping member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    member.Send(FakePing());
+    RunUntil(member, [] { return false; }, 3s);
+    Check("the pinger doesn't get its own ping back", member.Pings.empty(), std::to_string(member.Pings.size()) + " pings");
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -692,6 +741,7 @@ int RunBarMember(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe travelleader|travelmember [address:port] [password]: start the leader first
 // FakePlayers.exe desyncleader|desyncmember [address:port] [password]: start the leader first
 // FakePlayers.exe barleader|barmember [address:port] [password]: start the leader first
+// FakePlayers.exe pingleader|pingmember [address:port] [password]: start the leader first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -737,7 +787,11 @@ int main(int argc, char** argv)
         return RunBarLeader(cEndpoint, cPassword);
     if (cRole == "barmember")
         return RunBarMember(cEndpoint, cPassword);
+    if (cRole == "pingleader")
+        return RunPingLeader(cEndpoint, cPassword);
+    if (cRole == "pingmember")
+        return RunPingMember(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|kicker|kicked|soak|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember [address:port] [password]\n");
     return 2;
 }

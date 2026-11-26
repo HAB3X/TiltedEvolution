@@ -824,6 +824,50 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    GIVEN("RequestPartyPing")
+    {
+        RequestPartyPing sendMessage, recvMessage;
+        sendMessage.WorldSpaceId = GameId(0, 0x3C);
+        sendMessage.CellId = GameId(0, 0x9732);
+        sendMessage.Position = glm::vec3{1200.f, -340.f, 56.f};
+        sendMessage.Target = "Bandit Chief";
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyPartyPing")
+    {
+        NotifyPartyPing sendMessage, recvMessage;
+        sendMessage.PlayerId = 9;
+        sendMessage.PlayerName = "Lydia";
+        sendMessage.CellId = GameId(0, 0x165A7);
+        sendMessage.Position = glm::vec3{-80.f, 20.f, 0.f};
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
     GIVEN("RequestPartyTravel")
     {
         RequestPartyTravel sendMessage, recvMessage;
@@ -1134,6 +1178,7 @@ TEST_CASE("Official v1.8.4 wire protocol", "[encoding.official184]")
         REQUIRE_FALSE(Wire::ToWire(kRequestHostWorld).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestPartyTravel).has_value());
         REQUIRE_FALSE(Wire::ToWire(kRequestQuestStages).has_value());
+        REQUIRE_FALSE(Wire::ToWire(kRequestPartyPing).has_value());
         REQUIRE_FALSE(Wire::FromWire(55).has_value());
     }
 

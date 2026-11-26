@@ -277,6 +277,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "Grup için {{target}} işaretledin.",
+      "NEAR": "{{name}} {{target}} işaretledi: {{distance}}.",
+      "FAR": "{{name}} {{place}} içinde {{target}} işaretledi.",
+      "THEIR_SPOT": "kendi konumunu",
+      "YOUR_SPOT": "konumunu"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Bağlantı kaybedildi, geri bağlanmaya çalışılıyor. {{remainingReconnectionAttempt}} deneme kaldı.",
       "CONNECTED": "Sunucuya bağlanıldı.",

@@ -258,6 +258,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "Je hebt {{target}} gemarkeerd voor de groep.",
+      "NEAR": "{{name}} heeft {{target}} gemarkeerd: {{distance}}.",
+      "FAR": "{{name}} heeft {{target}} gemarkeerd in {{place}}.",
+      "THEIR_SPOT": "de eigen positie",
+      "YOUR_SPOT": "je positie"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Verbinding verbroken, proberen opnieuw te verbinden. {{remainingReconnectionAttempt } pogingen over."
     },

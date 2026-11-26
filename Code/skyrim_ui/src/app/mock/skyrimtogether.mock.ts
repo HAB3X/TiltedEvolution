@@ -416,6 +416,13 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
 
   private partyVitalsStep = 0;
 
+  /** A member's ping nearby, one in another place, and this player's own of their spot. */
+  mockPartyPings() {
+    this.emit('partyPing', 'Lydia', 'Bandit Chief', 42, 1, 'Whiterun');
+    this.emit('partyPing', 'Lydia', '', -1, 0, 'Bleak Falls Barrow');
+    this.emit('partyPing', '', '', 0, 0, 'Riverwood');
+  }
+
   mockPartyTravel() {
     this.emit('partyTravel', 'Lydia', 'Riverwood');
   }

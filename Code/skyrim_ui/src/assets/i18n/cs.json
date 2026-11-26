@@ -274,6 +274,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "Označil(a) jsi {{target}} pro družinu.",
+      "NEAR": "{{name}} označil(a) {{target}}: {{distance}}.",
+      "FAR": "{{name}} označil(a) {{target}} v místě {{place}}.",
+      "THEIR_SPOT": "svou pozici",
+      "YOUR_SPOT": "svou pozici"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Ztráta spojení, pokus o obnovení spojení. {{remainingReconnectionAttempt}} zbývajících pokusů.",
       "CONNECTED": "Úspěšně připojeno k serveru.",

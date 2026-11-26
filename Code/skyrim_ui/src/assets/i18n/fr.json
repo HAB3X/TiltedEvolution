@@ -273,6 +273,13 @@
     }
   },
   "SERVICE": {
+    "PARTY_PING": {
+      "SELF": "Vous avez signalé {{target}} au groupe.",
+      "NEAR": "{{name}} a signalé {{target}} : {{distance}}.",
+      "FAR": "{{name}} a signalé {{target}} à {{place}}.",
+      "THEIR_SPOT": "sa position",
+      "YOUR_SPOT": "votre position"
+    },
     "CLIENT": {
       "CONNECTION_LOST": "Connexion perdue, tentative de reconnexion. {{remainingReconnectionAttempt}} tentatives.",
       "CONNECTED": "Connexion réussie au serveur.",
