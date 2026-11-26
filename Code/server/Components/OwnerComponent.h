@@ -27,8 +27,26 @@ struct OwnerComponent
     Player* pOwner;
     uint32_t OwnershipEpoch;
     Vector<const Player*> InvalidOwners{};
-    // A guard whose owner holds it for their own crime (RequestCrimeAuthority): only that owner's game knows the bounty,
-    // so nobody else may claim the guard until that player's bounty with CrimeFaction is gone. Always the owner or null.
-    const Player* pCrimeHolder{};
+    // Why the owner holds the actor for themselves, so nobody else may claim it
+    enum class Hold : uint8_t
+    {
+        kNone,
+        // A guard dealing with the owner's crime (RequestCrimeAuthority): only their game knows the bounty with
+        // CrimeFaction, until it is gone
+        kCrime,
+        // The owner's follower or horse (RequestCompanions), while they name it
+        kCompanion
+    };
+
+    // The player the actor is held for: always the owner, or null with kNone
+    const Player* pHolder{};
+    Hold HeldFor{Hold::kNone};
     GameId CrimeFaction{};
+
+    void HoldFor(const Player* apPlayer, const Hold aHold) noexcept
+    {
+        pHolder = apPlayer;
+        HeldFor = aHold;
+    }
+    void Release() noexcept { HoldFor(nullptr, Hold::kNone); }
 };

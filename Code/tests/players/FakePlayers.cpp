@@ -44,6 +44,7 @@
 #include <Messages/RequestDeathStateChange.h>
 #include <Messages/RequestTrade.h>
 #include <Messages/NotifyTrade.h>
+#include <Messages/RequestCompanions.h>
 #include <Messages/RequestOwnershipClaim.h>
 #include <Messages/CharacterSpawnRequest.h>
 #include <Messages/NotifyInventoryChanges.h>
@@ -2243,6 +2244,90 @@ int RunTradeMember(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// Companions: the leader runs an NPC that is the member's follower; the member names it, gets it, keeps it from the
+// leader's claims, and once it is dismissed the leader can claim it again
+constexpr uint32_t kFollowerCookie = 0x6000;
+
+int RunCompanionLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeCompanionLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("companion leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("companion leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    Check("companion leader gets its character", AssignAt(leader, 1, GameId(0, 0x14), kGuardX).has_value());
+    EnterRelayCell(leader, kGuardX);
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    RunUntil(leader, [] { return false; }, 3s);
+    const auto cFollower = AssignAt(leader, kFollowerCookie, GameId(0, kFollowerCookie), kGuardX + 100.f);
+    Check("runs the member's follower", cFollower.has_value());
+    if (!cFollower || leader.JoinedIds.empty())
+        return 1;
+    const uint32_t cMember = leader.JoinedIds.front();
+
+    Check("the follower goes to its player's game", RunUntil(leader, [&] { return leader.FindTransfer(*cFollower, cMember) != nullptr; }, 30s));
+    const auto claim = [&]
+    {
+        RequestOwnershipClaim request;
+        request.ServerId = *cFollower;
+        request.ExpectedOwnershipEpoch = leader.OwnershipTransfers.empty() ? 0 : leader.OwnershipTransfers.back().OwnershipEpoch;
+        leader.Send(request);
+    };
+    const size_t cBefore = leader.OwnershipTransfers.size();
+    claim();
+    RunUntil(leader, [] { return false; }, 2s);
+    Check("the leader can't claim a player's follower", leader.FindTransfer(*cFollower, leader.PlayerId, cBefore) == nullptr);
+
+    // Claimed again every second until the member dismisses it
+    bool back = false;
+    for (int i = 0; i < 15 && !back; ++i)
+    {
+        claim();
+        back = RunUntil(leader, [&] { return leader.FindTransfer(*cFollower, leader.PlayerId, cBefore) != nullptr; }, 1s);
+    }
+    Check("once dismissed, the leader can claim it again", back);
+    RunUntil(leader, [] { return false; }, 2s);
+    return s_failures ? 1 : 0;
+}
+
+int RunCompanionMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeCompanionMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("companion member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    Check("companion member gets its character", AssignAt(member, 1, GameId(0, 0x14), kGuardX + 50.f).has_value());
+    EnterRelayCell(member, kGuardX + 50.f);
+
+    std::optional<CharacterSpawnRequest> follower;
+    Check("is sent its follower", RunUntil(
+                                      member,
+                                      [&]
+                                      {
+                                          for (const auto& [cId, cSpawn] : member.Spawns)
+                                          {
+                                              if (!cSpawn.IsPlayer)
+                                                  follower = cSpawn;
+                                          }
+                                          return follower.has_value();
+                                      },
+                                      30s));
+    if (!follower)
+        return 1;
+
+    RequestCompanions mine;
+    mine.Companions.push_back({follower->ServerId, follower->OwnershipEpoch});
+    member.Send(mine);
+    Check("its game runs its follower", RunUntil(member, [&] { return member.FindTransfer(follower->ServerId, member.PlayerId) != nullptr; }));
+    const size_t cAfter = member.OwnershipTransfers.size();
+    RunUntil(member, [] { return false; }, 5s);
+    Check("keeps it while it follows them", member.OwnershipTransfers.size() == cAfter, std::to_string(member.OwnershipTransfers.size() - cAfter) + " transfers since");
+
+    member.Send(RequestCompanions{});
+    Check("a dismissed follower goes back to the leader", RunUntil(member, [&] { return member.Party && member.FindTransfer(follower->ServerId, member.Party->LeaderPlayerId, cAfter) != nullptr; }, 20s));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
 // FakePlayers.exe soak [address:port] [password]: two at once, for SOAK_SECONDS
 // FakePlayers.exe kicker|kicked [address:port] [password]: start the kicker first
@@ -2275,6 +2360,7 @@ int RunTradeMember(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe reviveleader|revivemember [address:port] [password]: start the leader first
 // FakePlayers.exe ownbodyowner|ownbodylooter [address:port] [password]: start the owner first (bPerPlayerLoot=true)
 // FakePlayers.exe tradeleader|trademember [address:port] [password]: start the leader first
+// FakePlayers.exe companionleader|companionmember [address:port] [password]: start the leader first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -2384,6 +2470,10 @@ int main(int argc, char** argv)
         return RunShareMember(cEndpoint, cPassword);
     if (cRole == "catchupleader")
         return RunCatchUpLeader(cEndpoint, cPassword);
+    if (cRole == "companionleader")
+        return RunCompanionLeader(cEndpoint, cPassword);
+    if (cRole == "companionmember")
+        return RunCompanionMember(cEndpoint, cPassword);
     if (cRole == "tradeleader")
         return RunTradeLeader(cEndpoint, cPassword);
     if (cRole == "trademember")
@@ -2402,6 +2492,6 @@ int main(int argc, char** argv)
         return RunCrimeMember(cEndpoint, cPassword);
     if (cRole == "catchupmember")
         return RunCatchUpMember(cEndpoint, cPassword);
-    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|crimeleader|crimemember|reviveleader|revivemember|ownbodyowner|ownbodylooter|tradeleader|trademember|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember|crimeleader|crimemember|reviveleader|revivemember|ownbodyowner|ownbodylooter|tradeleader|trademember|companionleader|companionmember|corpseowner|corpselooter|ownlootfirst|ownlootsecond [address:port] [password]\n");
     return 2;
 }

@@ -157,7 +157,9 @@ struct Actor : TESObjectREFR
     virtual void sub_111();
     virtual void sub_112();
     virtual void sub_113();
-    virtual void sub_114();
+    // Copies out the handle of the horse this actor last rode (CommonLibSSE QLastRiddenMount // 114). PlayerCharacter's
+    // (vtable ID 208040) is 0x14075ec90 in 1.6.1179: it copies the handle it keeps.
+    virtual uint32_t* QLastRiddenMount(uint32_t* apHandle) const;
     virtual bool sub_115();
     virtual bool sub_116();
     virtual void sub_117();
@@ -219,6 +221,11 @@ struct Actor : TESObjectREFR
     // Guards arrest and attack those with a bounty with their crime faction. The Papyrus native IsGuard
     // (registered next to the "IsGuard" string, body 0x1409f6f50 in 1.6.1179) reads bit 30 of the flags at 0xE8.
     [[nodiscard]] bool IsGuard() const noexcept { return (flags1 >> 30) & 1; }
+    // A follower of this game's player. The Papyrus native IsPlayerTeammate (registered next to the
+    // "IsPlayerTeammate" string, body 0x1409f6fd0 in 1.6.1179) reads bit 26 of the flags at 0xE8.
+    [[nodiscard]] bool IsPlayerTeammate() const noexcept { return (flags1 >> 26) & 1; }
+    // The horse this actor last rode, or null (QLastRiddenMount)
+    [[nodiscard]] Actor* GetLastRiddenMount() const noexcept;
 
     // Setters
     void SetSpeed(float aSpeed) noexcept;

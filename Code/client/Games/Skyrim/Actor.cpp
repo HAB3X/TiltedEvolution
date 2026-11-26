@@ -334,6 +334,13 @@ bool Actor::IsInCombat() const noexcept
     return s_pIsInCombat(this);
 }
 
+Actor* Actor::GetLastRiddenMount() const noexcept
+{
+    uint32_t handle = 0;
+    QLastRiddenMount(&handle);
+    return handle ? Cast<Actor>(TESObjectREFR::GetByHandle(handle)) : nullptr;
+}
+
 TESFaction* Actor::GetCrimeFaction() const noexcept
 {
     // Actor::GetCrimeFaction, ID 37380 (0x14066e1b0 in 1.6.1179, the target of the Papyrus native GetCrimeFaction):

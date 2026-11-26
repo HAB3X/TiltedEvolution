@@ -78,6 +78,7 @@ enum ClientOpcode : unsigned char
     kRequestCrimeAuthority,
     kRequestRevive,
     kRequestTrade,
+    kRequestCompanions,
     kClientOpcodeMax
 };
 

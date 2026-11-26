@@ -20,6 +20,7 @@ struct CharacterRemoveEvent;
 struct CharacterExteriorCellChangeEvent;
 struct RequestOwnershipClaim;
 struct RequestCrimeAuthority;
+struct RequestCompanions;
 struct OwnershipTransferEvent;
 struct MountRequest;
 struct NewPackageRequest;
@@ -63,7 +64,9 @@ protected:
         OwnerUnavailable,
         // A player's game takes a guard to deal with that player's crime, and hands it back once the bounty is gone
         CrimeAuthority,
-        CrimeAuthorityEnded
+        CrimeAuthorityEnded,
+        // A player's game takes their follower or horse
+        Companion
     };
 
     void OnUpdate(const UpdateEvent& acEvent) const noexcept;
@@ -74,6 +77,7 @@ protected:
     void OnOwnershipTransferEvent(const OwnershipTransferEvent& acEvent) const noexcept;
     void OnOwnershipClaimRequest(const PacketEvent<RequestOwnershipClaim>& acMessage) const noexcept;
     void OnCrimeAuthorityRequest(const PacketEvent<RequestCrimeAuthority>& acMessage) const noexcept;
+    void OnCompanionsRequest(const PacketEvent<RequestCompanions>& acMessage) const noexcept;
     void OnCharacterRemoveEvent(const CharacterRemoveEvent& acEvent) const noexcept;
     void OnCharacterSpawned(const CharacterSpawnedEvent& acEvent) const noexcept;
     void OnReferencesMoveRequest(const PacketEvent<ClientReferencesMoveRequest>& acMessage) const noexcept;
@@ -116,6 +120,7 @@ private:
     entt::scoped_connection m_ownershipTransferEventConnection;
     entt::scoped_connection m_claimOwnershipConnection;
     entt::scoped_connection m_crimeAuthorityConnection;
+    entt::scoped_connection m_companionsConnection;
     entt::scoped_connection m_removeCharacterConnection;
     entt::scoped_connection m_characterSpawnedConnection;
     entt::scoped_connection m_referenceMovementSnapshotConnection;
