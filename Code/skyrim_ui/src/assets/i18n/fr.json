@@ -248,6 +248,17 @@
         "XL": "Très grande"
       },
       "BACK": "Retour"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Synchronisation avec l'hôte…",
+      "DONE": "Vous êtes dans le monde de l'hôte",
+      "CANCELLED": "Vous avez gardé votre propre monde",
+      "STEP_REQUESTING": "Demande du monde de l'hôte",
+      "STEP_RECEIVED": "Monde de l'hôte reçu : votre réponse",
+      "STEP_SAVING": "Sauvegarde de votre propre monde",
+      "STEP_APPLYING": "Alignement des quêtes, lieux et personnages",
+      "STEP_TRAVELLING": "Déplacement vers l'hôte",
+      "CHANGED": "{{quests}} quêtes, {{places}} lieux et {{people}} personnages alignés."
     }
   },
   "SERVICE": {

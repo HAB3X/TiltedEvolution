@@ -108,7 +108,18 @@ void HostWorldService::OnUpdate(const UpdateEvent&) noexcept
 void HostWorldService::RequestWorld() noexcept
 {
     spdlog::info("[HostWorld]: asking for the host's world");
-    m_transport.Send(RequestHostWorld{});
+    if (m_transport.Send(RequestHostWorld{}))
+        ReportSync("requesting");
+}
+
+void HostWorldService::ReportSync(const char* apStep, uint32_t aQuests, uint32_t aPlaces, uint32_t aPeople) const noexcept
+{
+    auto pArguments = CefListValue::Create();
+    pArguments->SetString(0, apStep);
+    pArguments->SetInt(1, static_cast<int>(aQuests));
+    pArguments->SetInt(2, static_cast<int>(aPlaces));
+    pArguments->SetInt(3, static_cast<int>(aPeople));
+    m_world.GetOverlayService().GetOverlayApp()->ExecuteAsync("hostWorldSync", pArguments);
 }
 
 void HostWorldService::OnHostWorldRequested(const NotifyHostWorldRequested& acMessage) noexcept
@@ -164,6 +175,7 @@ void HostWorldService::OnHostWorldState(const NotifyHostWorldState& acMessage) n
                  acMessage.State.RunningQuests.Entries.size(), acMessage.State.CompletedQuests.Entries.size(), acMessage.State.ClearedLocations.size(),
                  acMessage.State.DeadUniqueActors.size());
     m_pending = acMessage;
+    ReportSync("received");
 
     // Rejoining in the same session: the game is the host's world already, the joiner said yes to it
     if (m_appliedThisSession)
@@ -198,11 +210,13 @@ void HostWorldService::Answer(bool aJoin) noexcept
         m_world.GetOverlayService().SendSystemMessage(fmt::format("You kept your own world and left {}'s server.", m_pending->HostName.c_str()));
         m_pending.reset();
         m_heldTeleport.reset();
+        ReportSync("cancelled");
         m_transport.Close();
         return;
     }
 
     // Save the joiner's own world first, then apply the host's (OnUpdate)
+    ReportSync("saving");
     m_world.GetOverlayService().SendSystemMessage("Saving your own world before joining the host's...");
     BGSSaveLoadManager::QueueSaveAs(kOwnWorldSave);
     m_savingOwnWorld = true;
@@ -224,6 +238,7 @@ void HostWorldService::ApplyPending() noexcept
 
     const NotifyHostWorldState cWorld = std::move(*m_pending);
     m_pending.reset();
+    ReportSync("applying");
 
     const uint32_t cQuests = ApplyQuests(cWorld.State, Mode::Apply);
     const uint32_t cLocations = ApplyLocations(cWorld.State, Mode::Apply);
@@ -236,10 +251,12 @@ void HostWorldService::ApplyPending() noexcept
     // The server sent the host's place with the world; go there now
     if (m_heldTeleport)
     {
+        ReportSync("travelling", cQuests, cLocations, cActors);
         const TeleportCommandResponse cTeleport = std::move(*m_heldTeleport);
         m_heldTeleport.reset();
         m_world.ctx().at<CommandService>().MoveTo(cTeleport);
     }
+    ReportSync("done", cQuests, cLocations, cActors);
 }
 
 uint32_t HostWorldService::ApplyQuests(const HostWorldState& acState, Mode aMode) noexcept

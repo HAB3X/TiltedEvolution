@@ -244,6 +244,17 @@
         "XL": "特大"
       },
       "BACK": "返回"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "正在与主机同步…",
+      "DONE": "你已进入主机的世界",
+      "CANCELLED": "你保留了自己的世界",
+      "STEP_REQUESTING": "向主机请求其世界",
+      "STEP_RECEIVED": "已收到主机的世界：等待你的回答",
+      "STEP_SAVING": "保存你自己的世界",
+      "STEP_APPLYING": "同步任务、地点和人物",
+      "STEP_TRAVELLING": "将你移动到主机身边",
+      "CHANGED": "已同步 {{quests}} 个任务、{{places}} 个地点和 {{people}} 个人物。"
     }
   },
   "SERVICE": {

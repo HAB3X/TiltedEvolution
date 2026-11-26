@@ -1,6 +1,7 @@
 @if (inGame$ | async) {
   @if (!(menuOpen$ | async)) {
     <app-connection-status></app-connection-status>
+    <app-host-world-sync></app-host-world-sync>
     <app-debug></app-debug>
     <app-group></app-group>
   }

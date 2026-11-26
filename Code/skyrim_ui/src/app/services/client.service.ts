@@ -20,6 +20,20 @@ export interface HostWorldOffer {
   people: number;
 }
 
+/** How far joining a host world got, from the game's hostWorldSync event (HostWorldService::ReportSync). */
+export type HostWorldSyncStep = 'requesting' | 'received' | 'saving' | 'applying' | 'travelling' | 'done' | 'cancelled';
+
+export interface HostWorldSync {
+  step: HostWorldSyncStep;
+  /** What changed to match the host, once applied */
+  quests: number;
+  places: number;
+  people: number;
+}
+
+/** How long the finished sync stays on screen */
+const HOST_WORLD_SYNC_SHOWN_MS = 8000;
+
 /** Where the player last played, kept while connected (see ClientService.rejoin). */
 export interface LastSession {
   host: string;
@@ -136,6 +150,11 @@ export class ClientService implements OnDestroy {
   /** A host world server's offer, waiting for the joiner's answer; null when there's none. */
   public hostWorldOfferChange = new BehaviorSubject<HostWorldOffer | null>(null);
 
+  /** While joining a host world, and shortly after: how far it got; else null. */
+  public hostWorldSyncChange = new BehaviorSubject<HostWorldSync | null>(null);
+
+  private _hostWorldSyncTimer: ReturnType<typeof setTimeout> | null = null;
+
   /** The joiner's answer to the host world offer. */
   public answerHostWorld(join: boolean): void {
     this.hostWorldOfferChange.next(null);
@@ -245,6 +264,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.on('hostMods', this.onHostMods.bind(this));
     skyrimtogether.on('partySaves', this.onPartySaves.bind(this));
     skyrimtogether.on('hostWorldOffer', this.onHostWorldOffer.bind(this));
+    skyrimtogether.on('hostWorldSync', this.onHostWorldSync.bind(this));
 
     try {
       this.lastSessionChange.next(
@@ -295,6 +315,7 @@ export class ClientService implements OnDestroy {
     skyrimtogether.off('hostMods');
     skyrimtogether.off('partySaves');
     skyrimtogether.off('hostWorldOffer');
+    skyrimtogether.off('hostWorldSync');
     skyrimtogether.off('dummyData');
     skyrimtogether.off('partyInfo');
     skyrimtogether.off('partyCreated');
@@ -327,7 +348,8 @@ export class ClientService implements OnDestroy {
    */
   public rejoin(): void {
     const session = this.lastSessionChange.getValue();
-    if (!session) {
+    // The offer can outlive a connection made another way
+    if (!session || this.connectionStateChange.getValue() || this.isConnectionInProgressChange.getValue()) {
       return;
     }
     if (session.hosting) {
@@ -599,6 +621,10 @@ export class ClientService implements OnDestroy {
         this.connectionStateChange.getValue() ||
         this.reconnectingChange.getValue() !== null;
       this.localPlayerId = undefined;
+      // A sync in progress ends with the connection
+      if (this.hostWorldSyncChange.getValue()?.step !== 'done') {
+        this.hostWorldSyncChange.next(null);
+      }
       this.connectionStateChange.next(false);
       this.isConnectionInProgressChange.next(false);
 
@@ -834,6 +860,22 @@ export class ClientService implements OnDestroy {
   private onHostWorldOffer(host: string, quests: number, places: number, people: number) {
     this.zone.run(() => {
       this.hostWorldOfferChange.next({ host, quests, places, people });
+    });
+  }
+
+  private onHostWorldSync(step: string, quests: number, places: number, people: number) {
+    this.zone.run(() => {
+      if (this._hostWorldSyncTimer !== null) {
+        clearTimeout(this._hostWorldSyncTimer);
+        this._hostWorldSyncTimer = null;
+      }
+      this.hostWorldSyncChange.next({ step: step as HostWorldSyncStep, quests, places, people });
+      if (step === 'done' || step === 'cancelled') {
+        this._hostWorldSyncTimer = setTimeout(() => {
+          this._hostWorldSyncTimer = null;
+          this.hostWorldSyncChange.next(null);
+        }, HOST_WORLD_SYNC_SHOWN_MS);
+      }
     });
   }
 

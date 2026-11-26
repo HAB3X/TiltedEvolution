@@ -249,6 +249,17 @@
         "XL": "Velmi Velké"
       },
       "BACK": "Zpět"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Synchronizace s hostitelem…",
+      "DONE": "Jste ve světě hostitele",
+      "CANCELLED": "Ponechali jste si vlastní svět",
+      "STEP_REQUESTING": "Žádost o svět hostitele",
+      "STEP_RECEIVED": "Svět hostitele přijat: vaše odpověď",
+      "STEP_SAVING": "Ukládání vlastního světa",
+      "STEP_APPLYING": "Sjednocení úkolů, míst a postav",
+      "STEP_TRAVELLING": "Přesun k hostiteli",
+      "CHANGED": "Změněno pro shodu: {{quests}} úkolů, {{places}} míst a {{people}} postav."
     }
   },
   "SERVICE": {

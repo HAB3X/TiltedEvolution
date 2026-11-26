@@ -249,6 +249,17 @@
         "XL": "매우 크게"
       },
       "BACK": "뒤로"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "호스트와 동기화하는 중…",
+      "DONE": "호스트의 세계에 들어왔습니다",
+      "CANCELLED": "자신의 세계를 유지했습니다",
+      "STEP_REQUESTING": "호스트에게 세계 정보를 요청",
+      "STEP_RECEIVED": "호스트의 세계 수신: 응답 대기",
+      "STEP_SAVING": "자신의 세계 저장",
+      "STEP_APPLYING": "퀘스트, 장소, 인물 맞추기",
+      "STEP_TRAVELLING": "호스트에게 이동",
+      "CHANGED": "퀘스트 {{quests}}개, 장소 {{places}}곳, 인물 {{people}}명을 맞췄습니다."
     }
   },
   "SERVICE": {

@@ -34,6 +34,14 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
 
   answerHostWorld(join: boolean): void {
     console.log(`host world: ${join ? 'join' : 'keep'}`);
+    if (!join) {
+      this.emit('hostWorldSync', 'cancelled', 0, 0, 0);
+      return;
+    }
+    this.emit('hostWorldSync', 'saving', 0, 0, 0);
+    setTimeout(() => this.emit('hostWorldSync', 'applying', 0, 0, 0), 1500);
+    setTimeout(() => this.emit('hostWorldSync', 'travelling', 12, 3, 2), 2000);
+    setTimeout(() => this.emit('hostWorldSync', 'done', 12, 3, 2), 3000);
   }
 
   setNameTags(enabled: boolean): void {
@@ -112,6 +120,14 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     if (host === 't-drop' && this.dropTries++ > 0 && this.dropTries <= 3) {
       setTimeout(() => this.emit('disconnect', true), 250);
       return;
+    }
+    // 't-world-sync': a host world server, which asks before the joiner's world changes
+    if (host === 't-world-sync') {
+      setTimeout(() => this.emit('hostWorldSync', 'requesting', 0, 0, 0), 500);
+      setTimeout(() => {
+        this.emit('hostWorldSync', 'received', 0, 0, 0);
+        this.emit('hostWorldOffer', 'MockHost', 12, 3, 2);
+      }, 2000);
     }
     if (host === 't-drop' && this.dropTries === 1) {
       setTimeout(() => {

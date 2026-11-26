@@ -252,6 +252,17 @@
         "XL": "Ekstra Büyük"
       },
       "BACK": "Geri"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Sunucu sahibiyle eşitleniyor…",
+      "DONE": "Sunucu sahibinin dünyasındasınız",
+      "CANCELLED": "Kendi dünyanızı korudunuz",
+      "STEP_REQUESTING": "Sunucu sahibinden dünyası isteniyor",
+      "STEP_RECEIVED": "Sunucu sahibinin dünyası alındı: yanıtınız",
+      "STEP_SAVING": "Kendi dünyanız kaydediliyor",
+      "STEP_APPLYING": "Görevler, yerler ve kişiler eşleştiriliyor",
+      "STEP_TRAVELLING": "Sunucu sahibinin yanına taşınıyorsunuz",
+      "CHANGED": "Eşleşmesi için {{quests}} görev, {{places}} yer ve {{people}} kişi değiştirildi."
     }
   },
   "SERVICE": {

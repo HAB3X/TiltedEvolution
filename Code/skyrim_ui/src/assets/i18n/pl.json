@@ -253,6 +253,17 @@
         "XL": "Bardzo Duża"
       },
       "BACK": "Wróć"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Synchronizacja z hostem…",
+      "DONE": "Jesteś w świecie hosta",
+      "CANCELLED": "Zachowałeś własny świat",
+      "STEP_REQUESTING": "Prośba o świat hosta",
+      "STEP_RECEIVED": "Otrzymano świat hosta: twoja odpowiedź",
+      "STEP_SAVING": "Zapisywanie własnego świata",
+      "STEP_APPLYING": "Dopasowywanie zadań, miejsc i postaci",
+      "STEP_TRAVELLING": "Przenoszenie do hosta",
+      "CHANGED": "Dopasowano {{quests}} zadań, {{places}} miejsc i {{people}} postaci."
     }
   },
   "SERVICE": {

@@ -253,6 +253,17 @@
         "XL": "Extra groß"
       },
       "BACK": "Zurück"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Abgleich mit dem Host…",
+      "DONE": "Du bist in der Welt des Hosts",
+      "CANCELLED": "Du hast deine eigene Welt behalten",
+      "STEP_REQUESTING": "Den Host nach seiner Welt fragen",
+      "STEP_RECEIVED": "Welt des Hosts erhalten: deine Antwort",
+      "STEP_SAVING": "Deine eigene Welt speichern",
+      "STEP_APPLYING": "Quests, Orte und Personen angleichen",
+      "STEP_TRAVELLING": "Dich zum Host bringen",
+      "CHANGED": "{{quests}} Quests, {{places}} Orte und {{people}} Personen angeglichen."
     }
   },
   "SERVICE": {

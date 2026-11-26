@@ -255,6 +255,17 @@
         "XL": "Störst"
       },
       "BACK": "Tillbaka"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Synkar med värden…",
+      "DONE": "Du är i värdens värld",
+      "CANCELLED": "Du behöll din egen värld",
+      "STEP_REQUESTING": "Ber värden om dess värld",
+      "STEP_RECEIVED": "Fick värdens värld: ditt svar",
+      "STEP_SAVING": "Sparar din egen värld",
+      "STEP_APPLYING": "Matchar uppdrag, platser och personer",
+      "STEP_TRAVELLING": "Flyttar dig till värden",
+      "CHANGED": "{{quests}} uppdrag, {{places}} platser och {{people}} personer ändrade för att stämma."
     }
   },
   "SERVICE": {

@@ -256,6 +256,17 @@
         "XL": "Extra Large"
       },
       "BACK": "Back"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Syncing with the host…",
+      "DONE": "You're in the host's world",
+      "CANCELLED": "You kept your own world",
+      "STEP_REQUESTING": "Asking the host for their world",
+      "STEP_RECEIVED": "Got the host's world: your answer",
+      "STEP_SAVING": "Saving your own world",
+      "STEP_APPLYING": "Matching quests, places and people",
+      "STEP_TRAVELLING": "Moving you to the host",
+      "CHANGED": "{{quests}} quests, {{places}} places and {{people}} people changed to match."
     }
   },
   "SERVICE": {

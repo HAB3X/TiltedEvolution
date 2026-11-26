@@ -249,6 +249,17 @@
         "XL": "最大"
       },
       "BACK": "戻る"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "ホストと同期中…",
+      "DONE": "ホストのワールドに入りました",
+      "CANCELLED": "自分のワールドのままにしました",
+      "STEP_REQUESTING": "ホストにワールドを要求中",
+      "STEP_RECEIVED": "ホストのワールドを受信：あなたの回答",
+      "STEP_SAVING": "自分のワールドを保存中",
+      "STEP_APPLYING": "クエスト、場所、人物を一致させています",
+      "STEP_TRAVELLING": "ホストのところへ移動中",
+      "CHANGED": "クエスト {{quests}} 件、場所 {{places}} 件、人物 {{people}} 人を一致させました。"
     }
   },
   "SERVICE": {

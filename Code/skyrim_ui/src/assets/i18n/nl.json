@@ -233,6 +233,17 @@
       "DEBUG": "Debug",
       "SHOW_DEBUG_INFO": "Debug informatie weergeven",
       "BACK": "Terug"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Synchroniseren met de host…",
+      "DONE": "Je bent in de wereld van de host",
+      "CANCELLED": "Je hebt je eigen wereld gehouden",
+      "STEP_REQUESTING": "De host om zijn wereld vragen",
+      "STEP_RECEIVED": "Wereld van de host ontvangen: jouw antwoord",
+      "STEP_SAVING": "Je eigen wereld opslaan",
+      "STEP_APPLYING": "Quests, plaatsen en personen gelijkzetten",
+      "STEP_TRAVELLING": "Je naar de host brengen",
+      "CHANGED": "{{quests}} quests, {{places}} plaatsen en {{people}} personen gelijkgezet."
     }
   },
   "SERVICE": {

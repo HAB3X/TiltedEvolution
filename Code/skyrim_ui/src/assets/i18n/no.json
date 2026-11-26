@@ -249,6 +249,17 @@
         "XL": "Extra stor"
       },
       "BACK": "Tilbake"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Synkroniserer med verten…",
+      "DONE": "Du er i vertens verden",
+      "CANCELLED": "Du beholdt din egen verden",
+      "STEP_REQUESTING": "Ber verten om verdenen",
+      "STEP_RECEIVED": "Fikk vertens verden: ditt svar",
+      "STEP_SAVING": "Lagrer din egen verden",
+      "STEP_APPLYING": "Samkjører oppdrag, steder og personer",
+      "STEP_TRAVELLING": "Flytter deg til verten",
+      "CHANGED": "{{quests}} oppdrag, {{places}} steder og {{people}} personer endret for å stemme."
     }
   },
   "SERVICE": {

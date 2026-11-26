@@ -222,6 +222,9 @@ interface SkyrimTogether {
   /** A host world server's offer: the host's name and how many quests, places and people would change. */
   on(event: 'hostWorldOffer', callback: (host: string, quests: number, places: number, people: number) => void): void;
 
+  /** How far joining a host world got (requesting, received, saving, applying, travelling, done, cancelled) and, once applied, what changed. */
+  on(event: 'hostWorldSync', callback: (step: string, quests: number, places: number, people: number) => void): void;
+
   on(event: 'dummyData', callback: SkyrimTogetherTypes.DummyDataCallback): void;
 
   on(event: 'partyInfo', callback: SkyrimTogetherTypes.PartyInfoCallback): void;
@@ -357,6 +360,7 @@ interface SkyrimTogether {
   off(event: 'partySaves', callback?: (json: string) => void): void;
 
   off(event: 'hostWorldOffer', callback?: (host: string, quests: number, places: number, people: number) => void): void;
+  off(event: 'hostWorldSync', callback?: (step: string, quests: number, places: number, people: number) => void): void;
 
   off(
     event: 'dummyData',

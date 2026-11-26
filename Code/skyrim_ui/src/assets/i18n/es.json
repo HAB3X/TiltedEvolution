@@ -245,6 +245,17 @@
         "XL": "Extra grande"
       },
       "BACK": "Atrás"
+    },
+    "HOST_WORLD_SYNC": {
+      "TITLE": "Sincronizando con el anfitrión…",
+      "DONE": "Estás en el mundo del anfitrión",
+      "CANCELLED": "Te quedaste con tu propio mundo",
+      "STEP_REQUESTING": "Pidiendo su mundo al anfitrión",
+      "STEP_RECEIVED": "Mundo del anfitrión recibido: tu respuesta",
+      "STEP_SAVING": "Guardando tu propio mundo",
+      "STEP_APPLYING": "Igualando misiones, lugares y personas",
+      "STEP_TRAVELLING": "Llevándote junto al anfitrión",
+      "CHANGED": "Se cambiaron {{quests}} misiones, {{places}} lugares y {{people}} personas para coincidir."
     }
   },
   "SERVICE": {
