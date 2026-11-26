@@ -42,6 +42,10 @@
         "INVALID_ADDRESS": "주소 형식이 잘못되었습니다."
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "연결 중…",
+      "PING": "{{ms}}ms"
+    },
     "DISCONNECT": {
       "PROMPT": "정말로 연결을 끊으시겠어요?",
       "PROCEED": "진행",

@@ -42,6 +42,10 @@
         "INVALID_ADDRESS": "アドレスの形式が無効です。"
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "接続中…",
+      "PING": "{{ms}} ms"
+    },
     "DISCONNECT": {
       "PROMPT": "切断しますか?",
       "PROCEED": "はい",

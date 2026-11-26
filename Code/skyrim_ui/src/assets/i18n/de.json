@@ -42,6 +42,10 @@
         "INVALID_ADDRESS": "Die Adresse hat ein ungültiges Format."
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "Verbinde…",
+      "PING": "{{ms}} ms"
+    },
     "DISCONNECT": {
       "PROMPT": "Bist du sicher, dass du die Verbindung trennen willst?",
       "PROCEED": "Fortsetzen",

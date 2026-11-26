@@ -44,6 +44,10 @@
         "INVALID_ADDRESS": "Adressen har felaktigt format."
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "Ansluter…",
+      "PING": "{{ms}} ms"
+    },
     "DISCONNECT": {
       "PROMPT": "Är du säker på att du vill logga ut?",
       "PROCEED": "Fortsätt",

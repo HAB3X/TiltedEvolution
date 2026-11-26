@@ -42,6 +42,10 @@
         "INVALID_ADDRESS": "Addressen er ikke riktig formatert."
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "Kobler til…",
+      "PING": "{{ms}} ms"
+    },
     "DISCONNECT": {
       "PROMPT": "Er du sikker på at vil koble fra?",
       "PROCEED": "Fortsett",

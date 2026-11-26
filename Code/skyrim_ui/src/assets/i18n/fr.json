@@ -43,6 +43,10 @@
         "INVALID_ADDRESS": "Le format de l'adresse est invalide. [Adresse:Port]"
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "Connexion…",
+      "PING": "{{ms}} ms"
+    },
     "DISCONNECT": {
       "PROMPT": "Vous êtes sûr de vouloir vous déconnecter ?",
       "PROCEED": "Déconnexion",

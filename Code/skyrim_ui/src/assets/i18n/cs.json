@@ -42,6 +42,10 @@
         "INVALID_ADDRESS": "Adresa má špatný formát."
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "Připojování…",
+      "PING": "{{ms}} ms"
+    },
     "DISCONNECT": {
       "PROMPT": "Určitě se chcete odpojit?",
       "PROCEED": "Pokračovat",

@@ -43,6 +43,10 @@
         "INVALID_ADDRESS": "La dirección tiene un formato no válido."
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "Conectando…",
+      "PING": "{{ms}} ms"
+    },
     "DISCONNECT": {
       "PROMPT": "¿Seguro que quieres desconectarte?",
       "PROCEED": "Proceder",

@@ -44,6 +44,10 @@
         "INVALID_ADDRESS": "Adres geçersiz formatta."
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "Bağlanıyor…",
+      "PING": "{{ms}} ms"
+    },
     "DISCONNECT": {
       "PROMPT": "Bağlantıyı kesmek istediğinize emin misiniz??",
       "PROCEED": "Devam et",

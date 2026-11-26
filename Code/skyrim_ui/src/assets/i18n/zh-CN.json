@@ -43,6 +43,10 @@
         "INVALID_ADDRESS": "地址格式无效。"
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "连接中…",
+      "PING": "{{ms}} 毫秒"
+    },
     "DISCONNECT": {
       "PROMPT": "您确定要断开连接吗？",
       "PROCEED": "确定",

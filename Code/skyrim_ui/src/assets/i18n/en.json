@@ -44,6 +44,10 @@
         "INVALID_ADDRESS": "The address is of invalid format."
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "Connecting…",
+      "PING": "{{ms}} ms"
+    },
     "INVITE": {
       "CODE_INFO": "Friends type this join code in Connect:",
       "PASSWORD": "Password:",

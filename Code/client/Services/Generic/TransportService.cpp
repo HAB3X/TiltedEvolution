@@ -1,6 +1,7 @@
 
 #include <Services/TransportService.h>
 #include <WireProtocol.h>
+#include <Games/Skyrim/SaveLoad.h>
 #include <Services/OverlayService.h>
 #include <Services/SendBuffer.h>
 
@@ -310,6 +311,14 @@ void TransportService::HandleAuthenticationResponse(const AuthenticationResponse
     if (acMessage.Type == AR::kAccepted)
     {
         m_connected = true;
+
+        // Once per game session, before co-op changes anything: host world servers make their own save first
+        if (!m_backedUpThisSession && !acMessage.Settings.HostWorld)
+        {
+            m_backedUpThisSession = true;
+            BGSSaveLoadManager::QueueSaveAs("BeforeCoop");
+            m_world.GetOverlayService().SendSystemMessage("Saving your game as BeforeCoop_<your character> before playing together: load it to go back to how it was.");
+        }
 
         if (Wire::IsOfficial184())
             m_world.GetOverlayService().SendSystemMessage(fmt::format(

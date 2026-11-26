@@ -43,6 +43,10 @@
         "INVALID_ADDRESS": "Het adres is in een ongeldig formaat."
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "Verbinden…",
+      "PING": "{{ms}} ms"
+    },
     "DISCONNECT": {
       "PROMPT": "Weet je het zeker dat je de verbinding wil verbreken?",
       "PROCEED": "Doorgaan",

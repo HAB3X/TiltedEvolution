@@ -43,6 +43,10 @@
         "INVALID_ADDRESS": "Adres jest w niepoprawnym formacie."
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "Łączenie…",
+      "PING": "{{ms}} ms"
+    },
     "DISCONNECT": {
       "PROMPT": "Czy jesteś pewny, że chcesz się odłączyć?",
       "PROCEED": "Przystępuj",

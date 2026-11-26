@@ -44,6 +44,10 @@
         "INVALID_ADDRESS": "Айпи-адрес имеет неверный формат."
       }
     },
+    "CONNECTION_STATUS": {
+      "CONNECTING": "Подключение…",
+      "PING": "{{ms}} мс"
+    },
     "DISCONNECT": {
       "PROMPT": "Вы уверены, что хотите отключиться?",
       "PROCEED": "Подтвердить",

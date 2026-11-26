@@ -1,0 +1,10 @@
+@if (status$ | async; as status) {
+  <div class="status" [attr.data-quality]="status.quality">
+    <span class="dot"></span>
+    @if (status.ping === null) {
+      {{ 'COMPONENT.CONNECTION_STATUS.CONNECTING' | transloco }}
+    } @else {
+      {{ 'COMPONENT.CONNECTION_STATUS.PING' | transloco: { ms: status.ping } }}
+    }
+  </div>
+}

@@ -72,6 +72,8 @@ private:
     String m_lastPassword{};
     // The server refused this build's version and is an official v1.8.4 one: its disconnect is ours to reconnect
     bool m_reconnectAsOfficial{};
+    // The BeforeCoop save of this game session is made: later connections would save co-op changes over it
+    bool m_backedUpThisSession{};
     bool m_authenticationPending{};
     uint32_t m_localPlayerId;
     double m_lastPollTime{};

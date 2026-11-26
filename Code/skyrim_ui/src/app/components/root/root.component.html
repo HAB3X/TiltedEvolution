@@ -1,5 +1,6 @@
 @if (inGame$ | async) {
   @if (!(menuOpen$ | async)) {
+    <app-connection-status></app-connection-status>
     <app-debug></app-debug>
     <app-group></app-group>
   }
