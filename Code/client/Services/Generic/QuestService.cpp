@@ -675,7 +675,24 @@ static constexpr std::array kNonSyncableQuestIds = std::to_array<uint32_t>({
     0xAA0B3,   // Riften Scripted Scene North Gate: per-player gate guard toll scene, restarts while anyone
                // stands in its trigger and looped stage 200 updates through the party (freeze on player join)
     // 0xFE014801,  // Unknown dynamic ID, kept as note, maybe lookup correct ID this game?
-    0xF2593 // Skill experience quest
+    0xF2593, // Skill experience quest
+    // Crime belongs to the player who committed it (bounties are each game's own crime gold, never synced): the arrest,
+    // jail and bounty quests are per player. Skyrim.esm editor IDs, with their quest type (Misc ones were shared
+    // whenever the party shared Misc, None ones too through the server's None-as-Misc rule).
+    0x267EB,  // DialogueCrimeGuards (None): guards confronting the player about their bounty
+    0x2A73A,  // DialogueCrimeOrcs (None): the same for orc strongholds
+    0x6B94B,  // DGArrestQuest (None): being arrested
+    0x10D9F4, // JailQuest (Misc): serving the sentence
+    0x10DCD8, // EscapeJailQuest (None)
+    0xFCC2F,  // EscapeJailAchievementQuest (None)
+    0xF8A80,  // WEBountyCollectorQST (Misc): a courier collecting the player's bounty
+    0x37F13,  // WIAssaultRemember (None): an NPC the player assaulted remembering it
+    0x37FBD,  // WIAssaultRememberDialogue (None)
+    // Marriage is per player too
+    0x74793, // RelationshipMarriage (Misc)
+    0x7404E, // RelationshipMarriageWedding (Misc)
+    0x21382, // RelationshipMarriageFIN (Misc)
+    0x7431B, // RelationshipMarriageBreakUp (Misc)
 });
 
 bool QuestService::IsNonSyncableQuest(TESQuest* apQuest)
