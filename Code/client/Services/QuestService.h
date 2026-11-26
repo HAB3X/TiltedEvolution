@@ -47,6 +47,9 @@ public:
     static void DebugDumpQuests();
     static bool StopQuest(uint32_t aformId);
 
+    // Applies a quest change from another player, as the party sync does
+    void ApplyRemoteUpdate(const NotifyQuestUpdate& acUpdate) noexcept { OnQuestUpdate(acUpdate); }
+
     struct HeldStages
     {
         // Member stages not applied yet, sorted

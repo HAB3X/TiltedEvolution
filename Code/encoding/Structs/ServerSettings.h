@@ -20,4 +20,6 @@ struct ServerSettings
     bool ConsoleCommandsAllowed{true};
     // Built-in proximity voice chat, players also need Connect to voip on
     bool VoipEnabled{};
+    // Joiners take over the party leader's quests, cleared locations and unique NPC deaths, and start next to them
+    bool HostWorld{};
 };

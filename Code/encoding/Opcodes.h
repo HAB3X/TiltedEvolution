@@ -58,6 +58,8 @@ enum ClientOpcode : unsigned char
     kPartyCheckpointRequest,
     kVoiceDataRequest,
     kVoiceStateRequest,
+    kRequestHostWorld,
+    kHostWorldStateRequest,
     kClientOpcodeMax
 };
 
@@ -121,5 +123,7 @@ enum ServerOpcode : unsigned char
     kNotifyActionEvents,
     kNotifyPartyCheckpoint,
     kNotifyVoiceData,
+    kNotifyHostWorldRequested,
+    kNotifyHostWorldState,
     kServerOpcodeMax
 };

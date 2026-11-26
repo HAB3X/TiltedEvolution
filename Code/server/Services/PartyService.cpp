@@ -227,6 +227,14 @@ void PartyService::OnPlayerJoin(const PlayerJoinEvent& acEvent) noexcept
 
     GameServer::Get()->SendToPlayers(notify, acEvent.pPlayer);
 
+    // The first player of a host world is its host, which is the leader of the party everyone else joins
+    if (m_parties.empty() && GameServer::Get()->IsHostWorld())
+    {
+        spdlog::info("[PartyService]: {} hosts the world", acEvent.pPlayer->GetUsername().c_str());
+        CreateParty(acEvent.pPlayer);
+        return;
+    }
+
     if (m_parties.size() == 1 && GameServer::Get()->AllowsAutoPartyJoin())
     {
         for (Player* player : m_world.GetPlayerManager())

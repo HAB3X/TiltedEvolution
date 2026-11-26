@@ -66,6 +66,8 @@ struct GameServer final : Server
     bool IsPasswordProtected() const noexcept { return m_isPasswordProtected; }
     [[nodiscard]] bool IsPublicServer() const noexcept;
     [[nodiscard]] bool AllowsAutoPartyJoin() const noexcept;
+    // Gameplay:bHostWorld on a private server: the party leader's world is everyone's
+    [[nodiscard]] bool IsHostWorld() const noexcept;
 
     struct Uptime
     {

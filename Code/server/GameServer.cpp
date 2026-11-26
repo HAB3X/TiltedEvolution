@@ -41,6 +41,7 @@ Console::Setting bEnableDeathSystem{"Gameplay:bEnableDeathSystem", "Enables the 
 Console::Setting uTimeScale{"Gameplay:uTimeScale", "How many seconds pass ingame for every real second (0 to 1000). Changing this can make the game unstable", 20u};
 Console::Setting bSyncPlayerCalendar{"Gameplay:bSyncPlayerCalendar", "Syncs up all player calendars to be the same day, month, and year. This uses the date of the player with the furthest ahead date at connection.", false};
 Console::Setting bAutoPartyJoin{"Gameplay:bAutoPartyJoin", "Join parties automatically, as long as there is only one party in the server", true};
+Console::Setting bHostWorld{"Gameplay:bHostWorld", "Host world: the first player to join hosts, and everyone who joins takes over the host's quests, cleared locations and dead unique NPCs and starts next to the host. Private servers only, and it puts everyone in the host's party", false};
 Console::Setting bAllowConsoleCommands{"Gameplay:bAllowConsoleCommands", "Lets players run console commands they type while connected. Turn it off to stop console trolling such as spawning enemies or killing NPCs. The console still opens for reading ids, and mods can still run commands", true};
 // ModPolicy Stuff
 Console::Setting bEnableModCheck{"ModPolicy:bEnableModCheck", "Refuse clients whose mods do not match Data/loadorder.txt", false, Console::SettingsFlags::kLocked};
@@ -155,6 +156,7 @@ ServerSettings GetSettings()
     settings.AutoPartyJoin = bAutoPartyJoin;
     settings.ConsoleCommandsAllowed = bAllowConsoleCommands;
     settings.VoipEnabled = bVoip;
+    settings.HostWorld = bHostWorld && !bAnnounceServer;
     return settings;
 }
 
@@ -222,7 +224,13 @@ bool GameServer::IsPublicServer() const noexcept
 
 bool GameServer::AllowsAutoPartyJoin() const noexcept
 {
-    return bAutoPartyJoin && !IsPublicServer();
+    // A host world has to put every joiner in the host's party
+    return (bAutoPartyJoin || IsHostWorld()) && !IsPublicServer();
+}
+
+bool GameServer::IsHostWorld() const noexcept
+{
+    return bHostWorld && !IsPublicServer();
 }
 
 void GameServer::Initialize()

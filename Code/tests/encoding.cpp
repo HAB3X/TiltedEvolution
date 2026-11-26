@@ -535,6 +535,70 @@ TEST_CASE("Packets", "[encoding.packets]")
         REQUIRE(sendMessage == recvMessage);
     }
 
+    GIVEN("HostWorldStateRequest")
+    {
+        HostWorldStateRequest sendMessage, recvMessage;
+        sendMessage.PlayerId = 70000;
+        sendMessage.State.RunningQuests.Entries.push_back({GameId(0, 0x3372B), 10});
+        sendMessage.State.RunningQuests.Entries.push_back({GameId(0x01000000, 0x2BA4), 65535});
+        sendMessage.State.CompletedQuests.Entries.push_back({GameId(0, 0x46EF2), 200});
+        for (uint32_t i = 0; i < 300; ++i)
+            sendMessage.State.ClearedLocations.push_back(GameId(0, 0x10000 + i));
+        sendMessage.State.DeadUniqueActors.push_back(GameId(0x02000000, 0x1A69C));
+
+        Buffer buff(10000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyHostWorldState")
+    {
+        NotifyHostWorldState sendMessage, recvMessage;
+        sendMessage.State.CompletedQuests.Entries.push_back({GameId(0, 0x46EF2), 200});
+        sendMessage.State.DeadUniqueActors.push_back(GameId(0, 0x1A69C));
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
+    GIVEN("NotifyHostWorldRequested")
+    {
+        NotifyHostWorldRequested sendMessage, recvMessage;
+        sendMessage.PlayerId = 1234567;
+
+        Buffer buff(1000);
+        Buffer::Writer writer(&buff);
+        sendMessage.Serialize(writer);
+
+        Buffer::Reader reader(&buff);
+
+        uint64_t trash;
+        reader.ReadBits(trash, 8); // pop opcode
+
+        recvMessage.DeserializeRaw(reader);
+
+        REQUIRE(sendMessage == recvMessage);
+    }
+
     GIVEN("NotifyPartyCheckpoint")
     {
         NotifyPartyCheckpoint sendMessage, recvMessage;

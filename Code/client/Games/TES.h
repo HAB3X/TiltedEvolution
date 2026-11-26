@@ -6,6 +6,8 @@ struct TESWorldSpace;
 struct NiPoint3;
 struct TESForm;
 struct TESFaction;
+struct TESQuest;
+struct BGSLocation;
 struct Actor;
 struct ImageSpaceModifierInstance;
 
@@ -115,12 +117,15 @@ struct ModManager
     GameArray<TESFaction*> factions;
     uint8_t pad130[0x748 - 0x130];
     GameArray<TESQuest*> quests;
-    uint8_t pad760[0xD60 - 0x760];
+    uint8_t pad760[0x9D0 - 0x760];
+    GameArray<BGSLocation*> locations;
+    uint8_t pad9E8[0xD60 - 0x9E8];
     GameList<Mod> mods;
 };
 
 static_assert(offsetof(ModManager, factions) == 0x118);
 static_assert(offsetof(ModManager, quests) == 0x748);
+static_assert(offsetof(ModManager, locations) == 0x9D0);
 static_assert(offsetof(ModManager, mods) == 0xD60);
 
 struct Setting

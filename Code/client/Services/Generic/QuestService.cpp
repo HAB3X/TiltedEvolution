@@ -524,11 +524,14 @@ void QuestService::OnQuestUpdate(const NotifyQuestUpdate& aUpdate) noexcept
         return;
     }
 
-    // Like the game, never restart a run once quest that's already done here, which would hand out its rewards again
+    // Like the game, never restart a run once quest that's already done here, which would hand out its rewards again.
+    // In a host world the host's completed quests stay completed: a joiner taking over the host's world runs the
+    // scripts of its completed quests' last stages, and the quests those scripts start would come back here.
     const bool cIsStartOrStage = aUpdate.Status == NotifyQuestUpdate::Started || aUpdate.Status == NotifyQuestUpdate::StageUpdate;
-    if (cIsStartOrStage && (pQuest->flags & TESQuest::Flags::RunOnce) && (pQuest->flags & TESQuest::Flags::Completed))
+    const bool cIsHost = m_world.GetServerSettings().HostWorld && m_world.GetPartyService().IsLeader();
+    if (cIsStartOrStage && ((pQuest->flags & TESQuest::Flags::RunOnce) || cIsHost) && (pQuest->flags & TESQuest::Flags::Completed))
     {
-        spdlog::info("Remote quest {:X} is a completed run once quest here, ignoring stage {}", formId, aUpdate.Stage);
+        spdlog::info("Remote quest {:X} is completed here and {}, ignoring stage {}", formId, cIsHost ? "this is the host's world" : "runs once", aUpdate.Stage);
         return;
     }
 
