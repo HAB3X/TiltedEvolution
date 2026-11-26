@@ -1,4 +1,5 @@
 @use 'env';
+@use 'mixins/quest-type-chips';
 
 :host {
   display: block;
@@ -190,34 +191,7 @@
   font-size: 0.85rem;
 }
 
-.quest-type-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-// A compact on/off chip per category, styled like the presets' chosen state
-.quest-type {
-  padding: 0.3rem 0.6rem;
-  opacity: 1;
-  text-transform: none;
-  border-radius: env.$radius;
-  border: 1px solid env.$color-line;
-  background: transparent;
-  color: env.$color-muted;
-  font-size: 0.85rem;
-  cursor: pointer;
-
-  &:hover {
-    border-color: env.$color-accent;
-  }
-
-  &.chosen {
-    border-color: env.$color-accent;
-    background: rgba(212, 187, 132, 0.12);
-    color: env.$color-accent-strong;
-  }
-}
+@include quest-type-chips.quest-type-chips;
 
 // The page's main button stays in view at the bottom of the panel, however far the page scrolls
 .actions {

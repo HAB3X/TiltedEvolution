@@ -38,17 +38,34 @@ struct TESFaction : TESForm
         uint32_t pad44;
     };
 
+    // A merchant faction's trade (VENV, VENC). Layout from CommonLibSSE's FACTION_VENDOR_DATA (RE/T/TESFaction.h).
+    struct VendorData
+    {
+        uint8_t vendorValues[0xC]; // VENV: hours, radius, what they buy
+        uint32_t pad0C;
+        void* vendorLocation;           // PLVD
+        void* vendorConditions;
+        BGSListForm* vendorSellBuyList; // VEND
+        TESObjectREFR* merchantContainer; // VENC: the merchant's stock and gold
+        uint32_t lastDayReset;
+        uint32_t pad34;
+    };
+
     TESFullName fullname;
     TESReactionForm reactionForm;
     creation::BSTHashMap<const TESNPC*, uint32_t>* crimeGoldMap;
     uint32_t factionFlags;      // DATA
     uint32_t pad5C;
     CrimeData crimeData;
-    // Remaining vendor data, ranks, crime counts, and timestamps are not accessed here.
-    uint8_t padA8[0x100 - 0xA8];
+    VendorData vendorData;
+    // Ranks, crime counts, and timestamps are not accessed here.
+    uint8_t padE0[0x100 - 0xE0];
 };
 
 static_assert(sizeof(TESFaction::CrimeData) == 0x48);
+static_assert(sizeof(TESFaction::VendorData) == 0x38);
+static_assert(offsetof(TESFaction, vendorData) == 0xA8);
+static_assert(offsetof(TESFaction, vendorData.merchantContainer) == 0xD0);
 static_assert(sizeof(TESFaction) == 0x100);
 static_assert(offsetof(TESFaction, fullname) == 0x20);
 static_assert(offsetof(TESFaction, reactionForm) == 0x30);

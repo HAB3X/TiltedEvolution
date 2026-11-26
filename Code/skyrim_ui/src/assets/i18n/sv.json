@@ -224,7 +224,16 @@
         "TELEPORT": "Teleportera",
         "MAKE_LEADER": "Gör till ledare"
       },
-      "LEAVE_PARTY": "Lämna party"
+      "LEAVE_PARTY": "Lämna party",
+      "QUESTS": {
+        "TITLE": "Uppdrag",
+        "SHARE_BY_KIND": "Dela dessa typer av uppdrag med gruppen",
+        "LEADER_CHOOSES": "Gruppledaren väljer vilka typer av uppdrag gruppen delar.",
+        "SHARE_A_QUEST": "Dela ett av mina uppdrag",
+        "NOTHING_TO_SHARE": "Du har inga andra uppdrag att dela.",
+        "SHARE": "Dela",
+        "OFFERED": "Erbjudet"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "Inte en kotte här, bara hönorna",
@@ -433,6 +442,14 @@
     },
     "CRASH": {
       "ATTACH": "Bifoga {{file}} från {{folder}} till ärendet och berätta vad du gjorde när det kraschade."
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} vill dela uppdraget {{quest}} med dig.",
+      "ACCEPT": "Acceptera",
+      "DECLINE": "Avböj",
+      "CATCH_UP": "Din gruppledare {{name}} är på andra steg i {{count}} delade uppdrag. Ta över deras framsteg eller behålla dina egna?",
+      "TAKE_PROGRESS": "Ta över framstegen",
+      "KEEP_MINE": "Behåll mina"
     }
   }
 }

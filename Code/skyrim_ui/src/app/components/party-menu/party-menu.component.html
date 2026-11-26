@@ -113,6 +113,72 @@
       </table>
     </div>
   }
+  <!-- The party's quest sharing: the leader chooses, the others see it; anyone can offer one of their quests -->
+  @if (questSharing$ | async; as sharing) {
+    <div class="separator">
+      {{ 'COMPONENT.PARTY_MENU.QUESTS.TITLE' | transloco }}
+    </div>
+    <div class="quest-sharing">
+      <label class="quest-sharing-toggle">
+        <input
+          type="checkbox"
+          [checked]="sharing.enabled"
+          [disabled]="!(isPartyLeader$ | async)"
+          (change)="setSharingEnabled(sharing, $any($event.target).checked)"
+        />
+        {{ 'COMPONENT.PARTY_MENU.QUESTS.SHARE_BY_KIND' | transloco }}
+      </label>
+      @if (sharing.enabled) {
+        <div class="quest-type-list">
+          @for (type of questTypes; track type) {
+            <button
+              class="quest-type"
+              [class.chosen]="isShared(sharing, type)"
+              [attr.aria-pressed]="isShared(sharing, type)"
+              [disabled]="!(isPartyLeader$ | async)"
+              (click)="toggleType(sharing, type)"
+            >
+              {{ 'COMPONENT.CONNECT.HOST.QUEST_TYPE_' + type | transloco }}
+            </button>
+          }
+        </div>
+      }
+      @if (!(isPartyLeader$ | async)) {
+        <p class="optional-info">
+          {{ 'COMPONENT.PARTY_MENU.QUESTS.LEADER_CHOOSES' | transloco }}
+        </p>
+      }
+      <button class="party-menu-button" (click)="listShareableQuests()">
+        {{ 'COMPONENT.PARTY_MENU.QUESTS.SHARE_A_QUEST' | transloco }}
+      </button>
+      @if (showShareable) {
+        @if (shareableQuests$ | async; as quests) {
+          @if (quests.length === 0) {
+            <div class="no-invites">
+              {{ 'COMPONENT.PARTY_MENU.QUESTS.NOTHING_TO_SHARE' | transloco }}
+            </div>
+          }
+          @for (quest of quests; track quest.id) {
+            <div class="shareable-quest">
+              <span>{{ quest.name }}</span>
+              <button
+                class="user-action-button"
+                [disabled]="offered.has(quest.id)"
+                (click)="shareQuest(quest.id)"
+              >
+                {{
+                  (offered.has(quest.id)
+                    ? 'COMPONENT.PARTY_MENU.QUESTS.OFFERED'
+                    : 'COMPONENT.PARTY_MENU.QUESTS.SHARE'
+                  ) | transloco
+                }}
+              </button>
+            </div>
+          }
+        }
+      }
+    </div>
+  }
   <button class="party-menu-button btn" (click)="leave()">
     {{ 'COMPONENT.PARTY_MENU.LEAVE_PARTY' | transloco }}
   </button>

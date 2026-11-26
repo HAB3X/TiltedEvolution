@@ -60,6 +60,12 @@
 #include <Messages/RequestRespawnAtPartner.h>
 #include <PartyTeleport.h>
 #include <Messages/RequestQuestStages.h>
+#include <Messages/RequestPartyQuestSharing.h>
+#include <Messages/NotifyPartyQuestSharing.h>
+#include <Messages/RequestQuestShare.h>
+#include <Messages/NotifyQuestShareOffer.h>
+#include <Messages/RequestQuestShareAnswer.h>
+#include <Messages/NotifyQuestCatchUp.h>
 #include <Messages/PartyCreateRequest.h>
 #include <Messages/RequestPartyTravel.h>
 #include <Messages/TeleportCommandRequest.h>
@@ -210,6 +216,9 @@ struct FakePlayer final : Client
             for (const auto& [cId, cMovement] : static_cast<ServerReferencesMoveRequest*>(pMessage.get())->Updates)
                 RelayedMovements.push_back(cMovement);
             break;
+        case kNotifyPartyQuestSharing: QuestSharing.push_back(*static_cast<NotifyPartyQuestSharing*>(pMessage.get())); break;
+        case kNotifyQuestShareOffer: ShareOffers.push_back(*static_cast<NotifyQuestShareOffer*>(pMessage.get())); break;
+        case kNotifyQuestCatchUp: CatchUps.push_back(*static_cast<NotifyQuestCatchUp*>(pMessage.get())); break;
         default: break;
         }
     }
@@ -273,6 +282,14 @@ struct FakePlayer final : Client
     std::vector<Movement> RelayedMovements;
     size_t MovementBytes = 0;
     std::vector<NotifyLootRefused> LootRefusals;
+    std::vector<NotifyPartyQuestSharing> QuestSharing;
+    std::vector<NotifyQuestShareOffer> ShareOffers;
+    std::vector<NotifyQuestCatchUp> CatchUps;
+
+    bool HasQuestUpdate(const GameId& acId, uint16_t aStage) const
+    {
+        return std::any_of(QuestUpdates.begin(), QuestUpdates.end(), [&](const NotifyQuestUpdate& acUpdate) { return acUpdate.Id == acId && acUpdate.Stage == aStage; });
+    }
 };
 
 // Runs the player until the condition holds or the time is up
@@ -953,6 +970,144 @@ int RunDesyncMember(const std::string& acEndpoint, const std::string& acPassword
     return s_failures ? 1 : 0;
 }
 
+// Party quest sharing on a server with Gameplay:sSharedQuestTypes=Main: the party starts with the host's kinds; its
+// leader switches it to Daedric only, so the member gets the Daedric stage and not the main one. The leader offers a
+// side quest, the member accepts and gets its stage; from then on the two relay that quest to each other, while an
+// untyped quest nobody offered isn't relayed. The member, not leading, can't change the party's sharing.
+const GameId kSharedSideQuest(0, 0x3B5A6);
+
+RequestQuestUpdate QuestStage(const GameId& acId, uint16_t aStage, uint8_t aType)
+{
+    RequestQuestUpdate update;
+    update.Id = acId;
+    update.Stage = aStage;
+    update.Status = RequestQuestUpdate::StageUpdate;
+    update.ClientQuestType = aType;
+    return update;
+}
+
+std::string DescribeSharing(const std::vector<NotifyPartyQuestSharing>& acNotices)
+{
+    std::string text;
+    for (const auto& cNotice : acNotices)
+        text += (text.empty() ? "" : ", ") + std::string(cNotice.Enabled ? "on " : "off ") + std::to_string(cNotice.Types);
+    return text.empty() ? "none" : text;
+}
+
+int RunShareLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeShareLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("share leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    const bool cToldSharing = RunUntil(leader, [&] { return leader.QuestSharing.size() == 1; });
+    Check("the new party shares the host's kinds", cToldSharing && leader.QuestSharing[0].Enabled && leader.QuestSharing[0].Types == SharedQuests::Bit(SharedQuests::kMain),
+          DescribeSharing(leader.QuestSharing));
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    RunUntil(leader, [] { return false; }, 2s);
+
+    RequestPartyQuestSharing sharing;
+    sharing.Enabled = true;
+    sharing.Types = SharedQuests::Bit(SharedQuests::kDaedric);
+    leader.Send(sharing);
+    const bool cToldChange = RunUntil(leader, [&] { return leader.QuestSharing.size() == 2; });
+    Check("the leader switches the party to Daedric quests", cToldChange && leader.QuestSharing[1].Types == SharedQuests::Bit(SharedQuests::kDaedric),
+          DescribeSharing(leader.QuestSharing));
+
+    leader.Send(QuestStage(kMainQuest, 10, SharedQuests::kMain));
+    leader.Send(QuestStage(kDaedricQuest, 10, SharedQuests::kDaedric));
+
+    RequestQuestShare share;
+    share.Id = kSharedSideQuest;
+    share.Stage = 20;
+    share.ClientQuestType = SharedQuests::kSide;
+    leader.Send(share);
+
+    Check("gets the member's stage of the quest they took", RunUntil(leader, [&] { return leader.HasQuestUpdate(kSharedSideQuest, 30); }, 30s));
+    leader.Send(QuestStage(kUntypedQuest, 10, SharedQuests::kNone));
+    leader.Send(QuestStage(kSharedSideQuest, 50, SharedQuests::kSide));
+    RunUntil(leader, [] { return false; }, 5s);
+    Check("the member can't change the party's sharing", leader.QuestSharing.size() == 2, DescribeSharing(leader.QuestSharing));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+int RunShareMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeShareMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("share member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    const bool cToldSharing = RunUntil(member, [&] { return !member.QuestSharing.empty(); });
+    Check("is told the party's sharing on joining", cToldSharing && member.QuestSharing[0].Types == SharedQuests::Bit(SharedQuests::kMain),
+          DescribeSharing(member.QuestSharing));
+    const bool cToldChange =
+        RunUntil(member, [&] { return member.QuestSharing.size() == 2 && member.QuestSharing[1].Types == SharedQuests::Bit(SharedQuests::kDaedric); }, 20s);
+    Check("is told when the leader switches it to Daedric", cToldChange, DescribeSharing(member.QuestSharing));
+    Check("gets the Daedric stage", RunUntil(member, [&] { return member.HasQuestUpdate(kDaedricQuest, 10); }));
+    Check("the main quest isn't shared anymore", !member.HasQuestUpdate(kMainQuest, 10));
+
+    const bool cOffered = RunUntil(member, [&] { return !member.ShareOffers.empty(); });
+    Check("is offered the leader's side quest", cOffered && member.ShareOffers[0].Id == kSharedSideQuest && member.ShareOffers[0].PlayerName == "FakeShareLeader",
+          cOffered ? member.ShareOffers[0].PlayerName.c_str() : "");
+    RequestQuestShareAnswer answer;
+    answer.Id = kSharedSideQuest;
+    answer.Accept = true;
+    member.Send(answer);
+    Check("accepting puts it on the quest's current stage", RunUntil(member, [&] { return member.HasQuestUpdate(kSharedSideQuest, 20); }));
+
+    RequestPartyQuestSharing sharing;
+    sharing.Enabled = false;
+    member.Send(sharing);
+    member.Send(QuestStage(kSharedSideQuest, 30, SharedQuests::kSide));
+    Check("gets the leader's later stage of it", RunUntil(member, [&] { return member.HasQuestUpdate(kSharedSideQuest, 50); }, 20s));
+    Check("an untyped quest nobody offered isn't relayed", !member.HasQuestUpdate(kUntypedQuest, 10));
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+// Catching up: the leader reports its quests; a member joining with one of them at another stage and one the leader
+// doesn't have is offered the leader's stage of the first, once.
+int RunCatchUpLeader(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer leader("FakeCatchUpLeader", acPassword);
+    leader.Connect(acEndpoint);
+    Check("catch-up leader logs in", RunUntil(leader, [&] { return leader.LoggedIn; }));
+    leader.Send(PartyCreateRequest{});
+    Check("catch-up leader creates the party", RunUntil(leader, [&] { return leader.Party.has_value(); }));
+    RequestQuestStages report;
+    report.Stages = LeaderStages();
+    leader.Send(report);
+    Check("sees the member join", RunUntil(leader, [&] { return !leader.JoinedIds.empty(); }, 30s));
+    RunUntil(leader, [] { return false; }, 10s);
+    Check("the leader isn't offered anything", leader.CatchUps.empty());
+    return s_failures ? 1 : 0;
+}
+
+int RunCatchUpMember(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer member("FakeCatchUpMember", acPassword);
+    member.Connect(acEndpoint);
+    Check("catch-up member logs in to the party", RunUntil(member, [&] { return member.LoggedIn && member.Party.has_value(); }));
+    QuestLog own;
+    own.Entries = {{kDesyncExtra, 5}, {kDesyncSame, 10}, {kDesyncStage, 30}};
+    for (int i = 0; i < 3; ++i)
+    {
+        RequestQuestStages report;
+        report.Stages = own;
+        member.Send(report);
+        RunUntil(member, [] { return false; }, 1s);
+    }
+    std::string detail = std::to_string(member.CatchUps.size()) + " offers";
+    if (!member.CatchUps.empty())
+        detail += ", from " + std::string(member.CatchUps[0].LeaderName.c_str()) + " with " + std::to_string(member.CatchUps[0].Quests.Entries.size()) + " quests";
+    Check("is offered the leader's stage of the quest that differs, once",
+          member.CatchUps.size() == 1 && member.CatchUps[0].LeaderName == "FakeCatchUpLeader" &&
+              member.CatchUps[0].Quests.Entries == Vector<QuestLog::Entry>{{kDesyncStage, 20}},
+          detail);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // Party bar: each member's health update carries their magicka, stamina, combat and downed state to the other
 RequestPlayerHealthUpdate BarUpdate(float aHealth, PartyVitals aVitals)
 {
@@ -1492,6 +1647,8 @@ int RunLootSecond(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe crowdowner|crowdwatcher [address:port] [password]: start the owner first
 // FakePlayers.exe doorfirst|doorlater [address:port] [password]: start the first one first
 // FakePlayers.exe lootfirst|lootsecond [address:port] [password]: start the first one first
+// FakePlayers.exe shareleader|sharemember [address:port] [password]: start the leader first (sSharedQuestTypes=Main)
+// FakePlayers.exe catchupleader|catchupmember [address:port] [password]: start the leader first
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -1587,6 +1744,14 @@ int main(int argc, char** argv)
         return RunLootFirst(cEndpoint, cPassword);
     if (cRole == "lootsecond")
         return RunLootSecond(cEndpoint, cPassword);
-    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond [address:port] [password]\n");
+    if (cRole == "shareleader")
+        return RunShareLeader(cEndpoint, cPassword);
+    if (cRole == "sharemember")
+        return RunShareMember(cEndpoint, cPassword);
+    if (cRole == "catchupleader")
+        return RunCatchUpLeader(cEndpoint, cPassword);
+    if (cRole == "catchupmember")
+        return RunCatchUpMember(cEndpoint, cPassword);
+    std::printf("FakePlayers.exe host|join|soak|kicker|kicked|parent|mods|modversions|listen184|talk184|questleader|questmember|travelleader|travelmember|desyncleader|desyncmember|barleader|barmember|pingleader|pingmember|doorleader|doorleaderany|doorfollower|respawnleader|respawnmember|moveleader|movemember|worldstore|worldload|votehost|votetarget|votevoter|modchecksums|oldversion|lostleader|lostmember|lostreturn|crowdowner|crowdwatcher|doorfirst|doorlater|lootfirst|lootsecond|shareleader|sharemember|catchupleader|catchupmember [address:port] [password]\n");
     return 2;
 }

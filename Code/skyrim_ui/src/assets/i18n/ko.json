@@ -219,7 +219,16 @@
         "TELEPORT": "순간 이동",
         "MAKE_LEADER": "리더 임명"
       },
-      "LEAVE_PARTY": "파티에서 탈퇴"
+      "LEAVE_PARTY": "파티에서 탈퇴",
+      "QUESTS": {
+        "TITLE": "퀘스트",
+        "SHARE_BY_KIND": "이 종류의 퀘스트를 파티와 공유",
+        "LEADER_CHOOSES": "파티가 공유할 퀘스트 종류는 파티장이 정합니다.",
+        "SHARE_A_QUEST": "내 퀘스트 하나 공유하기",
+        "NOTHING_TO_SHARE": "공유할 다른 퀘스트가 없습니다.",
+        "SHARE": "공유",
+        "OFFERED": "제안함"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "여기엔 우리 닭들 외에는 아무도 없어",
@@ -421,6 +430,14 @@
     },
     "CRASH": {
       "ATTACH": "{{folder}}에 있는 {{file}} 파일을 이슈에 첨부하고, 충돌 당시 무엇을 하고 있었는지 적어 주세요."
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} 님이 퀘스트 {{quest}}을(를) 공유하려고 합니다.",
+      "ACCEPT": "수락",
+      "DECLINE": "거절",
+      "CATCH_UP": "파티장 {{name}} 님은 공유 퀘스트 {{count}}개에서 다른 단계에 있습니다. 파티장의 진행을 받을까요, 아니면 내 진행을 유지할까요?",
+      "TAKE_PROGRESS": "파티장의 진행 받기",
+      "KEEP_MINE": "내 진행 유지"
     }
   }
 }

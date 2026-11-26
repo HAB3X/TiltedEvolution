@@ -14,7 +14,6 @@
 #include <Messages/HostWorldStateRequest.h>
 #include <Messages/NotifyHostWorldRequested.h>
 #include <Messages/NotifyHostWorldState.h>
-#include <Messages/NotifyQuestUpdate.h>
 #include <Messages/RequestHostWorld.h>
 
 #include <Actor.h>
@@ -244,37 +243,17 @@ void HostWorldService::ApplyPending() noexcept
 
 uint32_t HostWorldService::ApplyQuests(const HostWorldState& acState, Mode aMode) noexcept
 {
-    uint32_t changed = 0;
-    const auto& modSystem = m_world.GetModSystem();
     auto& questService = m_world.ctx().at<QuestService>();
+    uint32_t changed = questService.TakeStages(acState.CompletedQuests, true, aMode == Mode::Apply);
+    changed += questService.TakeStages(acState.RunningQuests, false, aMode == Mode::Apply);
 
-    // Through the party's quest sync, which already knows how to start, advance and skip quests safely
+    const auto& modSystem = m_world.GetModSystem();
     TiltedPhoques::Set<uint32_t> hostQuests;
-    const auto apply = [&](const QuestLog& acLog, bool aCompleted)
+    for (const QuestLog* pLog : {&acState.CompletedQuests, &acState.RunningQuests})
     {
-        for (const QuestLog::Entry& entry : acLog.Entries)
-        {
-            const uint32_t cFormId = modSystem.GetGameId(entry.Id);
-            hostQuests.insert(cFormId);
-
-            TESQuest* pQuest = Cast<TESQuest>(TESForm::GetById(cFormId));
-            if (!pQuest || (aCompleted && IsCompleted(pQuest)))
-                continue;
-
-            NotifyQuestUpdate update;
-            update.Id = entry.Id;
-            update.Stage = entry.Stage;
-            update.Status = NotifyQuestUpdate::StageUpdate;
-            update.ClientQuestType = static_cast<uint8_t>(pQuest->type);
-            // Counted when the quest isn't there yet: the update itself skips stages that were already reached
-            if (aCompleted || pQuest->IsStopped() || !pQuest->IsStageReached(entry.Stage))
-                ++changed;
-            if (aMode == Mode::Apply)
-                questService.ApplyRemoteUpdate(update);
-        }
-    };
-    apply(acState.CompletedQuests, true);
-    apply(acState.RunningQuests, false);
+        for (const QuestLog::Entry& entry : pLog->Entries)
+            hostQuests.insert(modSystem.GetGameId(entry.Id));
+    }
 
     // Our own quests that aren't in the host's world
     ScopedQuestOverride _;

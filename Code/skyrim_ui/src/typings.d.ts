@@ -281,6 +281,18 @@ interface SkyrimTogether {
   /** A party ping: who (empty for this player), what (empty for their spot), metres away (-1 elsewhere), direction, place. */
   on(event: 'partyPing', callback: (player: string, target: string, meters: number, direction: number, place: string) => void): void;
 
+  /** The party's quest sharing, on joining a party and when its leader changes it: types is a SharedQuests mask. */
+  on(event: 'partyQuestSharing', callback: (enabled: boolean, types: number) => void): void;
+
+  /** The answer to listShareableQuests: a JSON array of { id, name }. */
+  on(event: 'shareableQuests', callback: (json: string) => void): void;
+
+  /** A party member offers this player one of their quests; answer with answerQuestShare. */
+  on(event: 'questShareOffer', callback: (player: string, quest: string, questId: number) => void): void;
+
+  /** On joining a party: the leader is further in this many shared quests; answer with answerQuestCatchUp. */
+  on(event: 'questCatchUp', callback: (leader: string, quests: number) => void): void;
+
   /** Shared quests differ from another party member's: the first few named, and how many more. */
   on(event: 'questDesync', callback: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
 
@@ -451,6 +463,14 @@ interface SkyrimTogether {
 
   off(event: 'partyPing', callback?: (player: string, target: string, meters: number, direction: number, place: string) => void): void;
 
+  off(event: 'partyQuestSharing', callback?: (enabled: boolean, types: number) => void): void;
+
+  off(event: 'shareableQuests', callback?: (json: string) => void): void;
+
+  off(event: 'questShareOffer', callback?: (player: string, quest: string, questId: number) => void): void;
+
+  off(event: 'questCatchUp', callback?: (leader: string, quests: number) => void): void;
+
   off(event: 'questDesync', callback?: (otherPlayer: string, otherIsLeader: boolean, quests: string, more: number) => void): void;
 
   off(event: 'lootRefused', callback?: (item: string, count: number) => void): void;
@@ -547,6 +567,21 @@ interface SkyrimTogether {
 
   /** This player's answer to a party member's summons (the partySummon event). */
   answerPartySummon(summonerId: number, accept: boolean): void;
+
+  /** The party leader's quest sharing for their party: off, or the kinds shared (a SharedQuests mask). */
+  setPartyQuestSharing(enabled: boolean, types: number): void;
+
+  /** Lists the running quests this player can offer the party; the answer comes as a shareableQuests event. */
+  listShareableQuests(): void;
+
+  /** Offers one of this player's quests (an id from shareableQuests) to the party. */
+  shareQuest(questId: number): void;
+
+  /** This player's answer to a party member's quest offer (the questShareOffer event). */
+  answerQuestShare(questId: number, accept: boolean): void;
+
+  /** Whether to take the party leader's progress in the shared quests (the questCatchUp event). */
+  answerQuestCatchUp(take: boolean): void;
 
   /** Whether other players' pings set a waypoint in this game. */
   setPingMarkers(enabled: boolean): void;

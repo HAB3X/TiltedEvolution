@@ -220,7 +220,16 @@
         "TELEPORT": "Teletransportar",
         "MAKE_LEADER": "Hacer lider"
       },
-      "LEAVE_PARTY": "Abandonar grupo"
+      "LEAVE_PARTY": "Abandonar grupo",
+      "QUESTS": {
+        "TITLE": "Misiones",
+        "SHARE_BY_KIND": "Compartir estos tipos de misiones con el grupo",
+        "LEADER_CHOOSES": "El líder del grupo elige qué tipos de misiones comparte el grupo.",
+        "SHARE_A_QUEST": "Compartir una de mis misiones",
+        "NOTHING_TO_SHARE": "No tienes más misiones que compartir.",
+        "SHARE": "Compartir",
+        "OFFERED": "Ofrecida"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "¡Aquí no hay nadie más que nosotros, polluelo!",
@@ -419,6 +428,14 @@
     },
     "CRASH": {
       "ATTACH": "Adjunta {{file}} de {{folder}} a la incidencia y cuenta qué hacías cuando falló."
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} quiere compartir contigo la misión {{quest}}.",
+      "ACCEPT": "Aceptar",
+      "DECLINE": "Rechazar",
+      "CATCH_UP": "Tu líder de grupo {{name}} está en otras etapas de {{count}} misiones compartidas. ¿Tomar su progreso o conservar el tuyo?",
+      "TAKE_PROGRESS": "Tomar su progreso",
+      "KEEP_MINE": "Conservar el mío"
     }
   }
 }

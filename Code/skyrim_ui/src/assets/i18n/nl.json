@@ -221,7 +221,16 @@
         "TELEPORT": "Teleporteren",
         "MAKE_LEADER": "Maak leider"
       },
-      "LEAVE_PARTY": "Verlaat groep"
+      "LEAVE_PARTY": "Verlaat groep",
+      "QUESTS": {
+        "TITLE": "Quests",
+        "SHARE_BY_KIND": "Deze soorten quests met de groep delen",
+        "LEADER_CHOOSES": "De groepsleider kiest welke soorten quests de groep deelt.",
+        "SHARE_A_QUEST": "Een van mijn quests delen",
+        "NOTHING_TO_SHARE": "Je hebt geen andere quests om te delen.",
+        "SHARE": "Delen",
+        "OFFERED": "Aangeboden"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "Niemand aanwezig in de groep.",
@@ -398,6 +407,14 @@
     },
     "CRASH": {
       "ATTACH": "Voeg {{file}} uit {{folder}} toe aan het issue en vertel wat je deed toen het crashte."
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} wil de quest {{quest}} met je delen.",
+      "ACCEPT": "Accepteren",
+      "DECLINE": "Weigeren",
+      "CATCH_UP": "Je groepsleider {{name}} is in {{count}} gedeelde quests bij een andere fase. Zijn voortgang overnemen of de jouwe houden?",
+      "TAKE_PROGRESS": "Voortgang overnemen",
+      "KEEP_MINE": "De mijne houden"
     }
   }
 }

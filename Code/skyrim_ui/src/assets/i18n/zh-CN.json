@@ -220,7 +220,16 @@
         "TELEPORT": "传送",
         "MAKE_LEADER": "转移队长"
       },
-      "LEAVE_PARTY": "离开团队"
+      "LEAVE_PARTY": "离开团队",
+      "QUESTS": {
+        "TITLE": "任务",
+        "SHARE_BY_KIND": "与队伍共享这些类型的任务",
+        "LEADER_CHOOSES": "队伍共享哪些类型的任务由队长决定。",
+        "SHARE_A_QUEST": "共享我的一个任务",
+        "NOTHING_TO_SHARE": "你没有其他可共享的任务。",
+        "SHARE": "共享",
+        "OFFERED": "已提议"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "没有其他的玩家。",
@@ -416,6 +425,14 @@
     },
     "CRASH": {
       "ATTACH": "请将 {{folder}} 中的 {{file}} 附加到问题中，并说明崩溃时你在做什么。"
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} 想与你共享任务“{{quest}}”。",
+      "ACCEPT": "接受",
+      "DECLINE": "拒绝",
+      "CATCH_UP": "你的队长 {{name}} 在 {{count}} 个共享任务中处于不同阶段。要采用队长的进度，还是保留你自己的？",
+      "TAKE_PROGRESS": "采用队长的进度",
+      "KEEP_MINE": "保留我的"
     }
   }
 }

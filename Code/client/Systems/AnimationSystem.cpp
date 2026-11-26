@@ -13,6 +13,8 @@
 #include <Misc/MiddleProcess.h>
 
 #include <Messages/RequestActionEvents.h>
+#include <Utils.h>
+#include <WireProtocol.h>
 #include <Structs/Movement.h>
 
 #include <Components.h>
@@ -55,7 +57,9 @@ void AnimationSystem::Update(World& aWorld, Actor* apActor, RemoteAnimationCompo
         const auto targetId = first.TargetId;
 
         const auto pAction = Cast<BGSAction>(TESForm::GetById(actionId));
-        const auto pTarget = Cast<TESObjectREFR>(TESForm::GetById(targetId));
+        // An actor the owner targets is found by its server id: its form ID here is another actor (or this player)
+        const auto pTarget = (first.Type & ActionEvent::kTargetIsServerId) ? Utils::GetByServerId<TESObjectREFR>(targetId)
+                                                                          : Cast<TESObjectREFR>(TESForm::GetById(targetId));
 
         apActor->actorState.flags1 = first.State1;
         apActor->actorState.flags2 = first.State2;
@@ -162,10 +166,30 @@ void AnimationSystem::SerializeMovement(World& aWorld, Actor* apActor, Movement&
     }
 }
 
-void AnimationSystem::SerializeActions(RequestActionEvents& aMessage, LocalComponent& localComponent, LocalAnimationComponent& animationComponent) noexcept
+void AnimationSystem::SerializeActions(World& aWorld, RequestActionEvents& aMessage, LocalComponent& localComponent, LocalAnimationComponent& animationComponent) noexcept
 {
     if (animationComponent.Actions.empty())
         return;
+
+    // Official v1.8.4 clients replay targets as form IDs
+    if (!Wire::IsOfficial184())
+    {
+        const auto actors = aWorld.view<FormIdComponent>();
+        for (ActionEvent& action : animationComponent.Actions)
+        {
+            if (!action.TargetId || (action.Type & ActionEvent::kTargetIsServerId))
+                continue;
+            const auto it = std::find_if(actors.begin(), actors.end(), [&](entt::entity aEntity)
+                                         { return actors.get<FormIdComponent>(aEntity).Id == action.TargetId && aWorld.any_of<LocalComponent, RemoteComponent>(aEntity); });
+            if (it == actors.end())
+                continue;
+            if (const std::optional<uint32_t> cServerId = Utils::GetServerId(*it))
+            {
+                action.TargetId = *cServerId;
+                action.Type |= ActionEvent::kTargetIsServerId;
+            }
+        }
+    }
 
     localComponent.CurrentAction = animationComponent.Actions.back();
 

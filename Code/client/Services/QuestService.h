@@ -45,15 +45,21 @@ public:
     ~QuestService() = default;
 
     static bool IsNonSyncableQuest(TESQuest* apQuest);
-    // A quest of a category the party shares (ServerSettings::SharedQuestTypes) that can be synced
+    // A quest of a category the party shares (QuestSharingService::GetSharedQuestTypes) that can be synced
     static bool IsSharedQuest(TESQuest* apQuest) noexcept;
     // The shared quests this game has started and not stopped, and those it completed, at their current stage
     static void CollectSharedQuests(QuestLog& aRunning, QuestLog& aCompleted) noexcept;
+    // The quest's name in this game's language, else its editor id
+    static std::string GetName(TESQuest* apQuest) noexcept;
     static void DebugDumpQuests();
     static bool StopQuest(uint32_t aformId);
 
     // Applies a quest change from another player, as the party sync does
     void ApplyRemoteUpdate(const NotifyQuestUpdate& acUpdate) noexcept { OnQuestUpdate(acUpdate); }
+    // Brings this game's quests to another player's stages through ApplyRemoteUpdate, which starts, advances and skips
+    // them safely. aCompleted: the other player completed these, so quests completed here are left alone. Returns how
+    // many quests change; with aApply false it only counts them.
+    uint32_t TakeStages(const QuestLog& acStages, bool aCompleted, bool aApply) noexcept;
 
     struct HeldStages
     {

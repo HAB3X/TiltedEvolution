@@ -4,6 +4,7 @@ import {
   faHandshakeSimple,
   faPersonWalkingArrowRight,
   faRoute,
+  faScroll,
   faUserGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
@@ -79,6 +80,34 @@ export class PopupNotificationService {
       actions: [
         { nameKey: 'SERVICE.TRAVEL_TOGETHER.YES', callback: () => answer(true) },
         { nameKey: 'SERVICE.TRAVEL_TOGETHER.NO', callback: () => answer(false) },
+      ],
+    });
+  }
+
+  /** A party member offers one of their quests. Goes away after 30 seconds, like a party invite. */
+  public addQuestShareOffer(player: string, quest: string, answer: (accept: boolean) => void) {
+    this.addMessage({
+      messageKey: 'SERVICE.QUEST_SHARING.OFFER',
+      messageParams: { name: player, quest },
+      icon: faScroll,
+      duration: 30000,
+      actions: [
+        { nameKey: 'SERVICE.QUEST_SHARING.ACCEPT', callback: () => answer(true) },
+        { nameKey: 'SERVICE.QUEST_SHARING.DECLINE', callback: () => answer(false) },
+      ],
+    });
+  }
+
+  /** On joining a party: take the leader's progress in the shared quests, or keep this player's own? */
+  public addQuestCatchUp(leader: string, quests: number, answer: (take: boolean) => void) {
+    this.addMessage({
+      messageKey: 'SERVICE.QUEST_SHARING.CATCH_UP',
+      messageParams: { name: leader, count: quests },
+      icon: faScroll,
+      duration: 60000,
+      actions: [
+        { nameKey: 'SERVICE.QUEST_SHARING.TAKE_PROGRESS', callback: () => answer(true) },
+        { nameKey: 'SERVICE.QUEST_SHARING.KEEP_MINE', callback: () => answer(false) },
       ],
     });
   }

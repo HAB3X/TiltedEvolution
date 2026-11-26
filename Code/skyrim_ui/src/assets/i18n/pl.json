@@ -223,7 +223,16 @@
         "TELEPORT": "Teleportuj",
         "MAKE_LEADER": "Spraw Liderem"
       },
-      "LEAVE_PARTY": "Odejdź z grupy"
+      "LEAVE_PARTY": "Odejdź z grupy",
+      "QUESTS": {
+        "TITLE": "Zadania",
+        "SHARE_BY_KIND": "Udostępniaj drużynie te rodzaje zadań",
+        "LEADER_CHOOSES": "Lider drużyny wybiera, jakie rodzaje zadań drużyna dzieli.",
+        "SHARE_A_QUEST": "Udostępnij jedno z moich zadań",
+        "NOTHING_TO_SHARE": "Nie masz innych zadań do udostępnienia.",
+        "SHARE": "Udostępnij",
+        "OFFERED": "Zaproponowano"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "Nikogo tutaj nie ma poza nami Kurczakami!",
@@ -428,6 +437,14 @@
     },
     "CRASH": {
       "ATTACH": "Dołącz plik {{file}} z folderu {{folder}} do zgłoszenia i napisz, co robiłeś w chwili awarii."
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}} chce udostępnić ci zadanie {{quest}}.",
+      "ACCEPT": "Przyjmij",
+      "DECLINE": "Odrzuć",
+      "CATCH_UP": "Lider twojej drużyny {{name}} jest na innym etapie w {{count}} wspólnych zadaniach. Przejąć jego postęp czy zachować swój?",
+      "TAKE_PROGRESS": "Przejmij jego postęp",
+      "KEEP_MINE": "Zachowaj mój"
     }
   }
 }

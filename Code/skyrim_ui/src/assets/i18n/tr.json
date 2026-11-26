@@ -221,7 +221,16 @@
         "TELEPORT": "Işınla",
         "MAKE_LEADER": "Lider yap"
       },
-      "LEAVE_PARTY": "Partiden çık"
+      "LEAVE_PARTY": "Partiden çık",
+      "QUESTS": {
+        "TITLE": "Görevler",
+        "SHARE_BY_KIND": "Bu tür görevleri grupla paylaş",
+        "LEADER_CHOOSES": "Grubun hangi tür görevleri paylaşacağını grup lideri seçer.",
+        "SHARE_A_QUEST": "Görevlerimden birini paylaş",
+        "NOTHING_TO_SHARE": "Paylaşacak başka görevin yok.",
+        "SHARE": "Paylaş",
+        "OFFERED": "Teklif edildi"
+      }
     },
     "PARTY_LIST": {
       "NO_OTHER_PLAYERS": "Kimsecikler yok.",
@@ -427,6 +436,14 @@
     },
     "CRASH": {
       "ATTACH": "{{folder}} klasöründeki {{file}} dosyasını bildirime ekleyin ve çöktüğünde ne yaptığınızı yazın."
+    },
+    "QUEST_SHARING": {
+      "OFFER": "{{name}}, {{quest}} görevini seninle paylaşmak istiyor.",
+      "ACCEPT": "Kabul et",
+      "DECLINE": "Reddet",
+      "CATCH_UP": "Grup liderin {{name}}, {{count}} paylaşılan görevde farklı aşamada. Onun ilerlemesini mi alacaksın, kendininkini mi koruyacaksın?",
+      "TAKE_PROGRESS": "Onun ilerlemesini al",
+      "KEEP_MINE": "Benimkini koru"
     }
   }
 }

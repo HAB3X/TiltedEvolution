@@ -7,6 +7,7 @@
 #include <Events/UpdateEvent.h>
 
 #include <Services/QuestService.h>
+#include <Services/QuestSharingService.h>
 #include <Services/ImguiService.h>
 #include <Services/OverlayService.h>
 #include <Services/TransportService.h>
@@ -609,6 +610,30 @@ void QuestService::OnQuestUpdate(const NotifyQuestUpdate& aUpdate) noexcept
         spdlog::error("Failed to update the client quest state, quest: {:X}, stage: {}, status: {}", formId, aUpdate.Stage, aUpdate.Status);
 }
 
+uint32_t QuestService::TakeStages(const QuestLog& acStages, bool aCompleted, bool aApply) noexcept
+{
+    const auto& modSystem = m_world.GetModSystem();
+    uint32_t changed = 0;
+    for (const QuestLog::Entry& entry : acStages.Entries)
+    {
+        TESQuest* pQuest = Cast<TESQuest>(TESForm::GetById(modSystem.GetGameId(entry.Id)));
+        if (!pQuest || (aCompleted && pQuest->IsCompleted()))
+            continue;
+
+        NotifyQuestUpdate update;
+        update.Id = entry.Id;
+        update.Stage = entry.Stage;
+        update.Status = NotifyQuestUpdate::StageUpdate;
+        update.ClientQuestType = static_cast<uint8_t>(pQuest->type);
+        // Counted when the quest isn't there yet: the update itself skips stages that were already reached
+        if (aCompleted || pQuest->IsStopped() || !pQuest->IsStageReached(entry.Stage))
+            ++changed;
+        if (aApply)
+            OnQuestUpdate(update);
+    }
+    return changed;
+}
+
 void QuestService::NotifyOverlayOfQuestUpdate(uint32_t aFormId) noexcept
 {
     if (!m_world.GetTransport().IsOnline())
@@ -650,7 +675,24 @@ static constexpr std::array kNonSyncableQuestIds = std::to_array<uint32_t>({
     0xAA0B3,   // Riften Scripted Scene North Gate: per-player gate guard toll scene, restarts while anyone
                // stands in its trigger and looped stage 200 updates through the party (freeze on player join)
     // 0xFE014801,  // Unknown dynamic ID, kept as note, maybe lookup correct ID this game?
-    0xF2593 // Skill experience quest
+    0xF2593, // Skill experience quest
+    // Crime belongs to the player who committed it (bounties are each game's own crime gold, never synced): the arrest,
+    // jail and bounty quests are per player. Skyrim.esm editor IDs, with their quest type (Misc ones were shared
+    // whenever the party shared Misc, None ones too through the server's None-as-Misc rule).
+    0x267EB,  // DialogueCrimeGuards (None): guards confronting the player about their bounty
+    0x2A73A,  // DialogueCrimeOrcs (None): the same for orc strongholds
+    0x6B94B,  // DGArrestQuest (None): being arrested
+    0x10D9F4, // JailQuest (Misc): serving the sentence
+    0x10DCD8, // EscapeJailQuest (None)
+    0xFCC2F,  // EscapeJailAchievementQuest (None)
+    0xF8A80,  // WEBountyCollectorQST (Misc): a courier collecting the player's bounty
+    0x37F13,  // WIAssaultRemember (None): an NPC the player assaulted remembering it
+    0x37FBD,  // WIAssaultRememberDialogue (None)
+    // Marriage is per player too
+    0x74793, // RelationshipMarriage (Misc)
+    0x7404E, // RelationshipMarriageWedding (Misc)
+    0x21382, // RelationshipMarriageFIN (Misc)
+    0x7431B, // RelationshipMarriageBreakUp (Misc)
 });
 
 bool QuestService::IsNonSyncableQuest(TESQuest* apQuest)
@@ -670,7 +712,8 @@ static_assert(SharedQuests::kMisc == static_cast<uint8_t>(TESQuest::Type::Miscel
 bool QuestService::IsSharedQuest(TESQuest* apQuest) noexcept
 {
     const uint8_t cType = static_cast<uint8_t>(apQuest->type);
-    return apQuest->type != TESQuest::Type::None && SharedQuests::IsShared(World::Get().GetServerSettings().SharedQuestTypes, cType) && !IsNonSyncableQuest(apQuest);
+    return apQuest->type != TESQuest::Type::None && SharedQuests::IsShared(World::Get().ctx().at<QuestSharingService>().GetSharedQuestTypes(), cType) &&
+           !IsNonSyncableQuest(apQuest);
 }
 
 void QuestService::CollectSharedQuests(QuestLog& aRunning, QuestLog& aCompleted) noexcept
@@ -687,6 +730,13 @@ void QuestService::CollectSharedQuests(QuestLog& aRunning, QuestLog& aCompleted)
         else if (!pQuest->IsStopped())
             aRunning.Entries.push_back({id, pQuest->currentStage});
     }
+}
+
+std::string QuestService::GetName(TESQuest* apQuest) noexcept
+{
+    if (apQuest->fullName.value.data && *apQuest->fullName.value.AsAscii())
+        return apQuest->fullName.value.AsAscii();
+    return apQuest->idName.AsAscii();
 }
 
 void QuestService::DebugDumpQuests()
