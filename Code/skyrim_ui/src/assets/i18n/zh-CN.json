@@ -5,7 +5,15 @@
     "CHAT": {
       "SEND": "发送",
       "MESSAGE": "消息",
-      "MESSAGE_TOO_LONG": "您发送的消息长度不得超过{{chatMessageLengthLimit}}字符。"
+      "MESSAGE_TOO_LONG": "您发送的消息长度不得超过{{chatMessageLengthLimit}}字符。",
+      "TAB_ALL": "全部",
+      "TAB_PARTY": "队伍",
+      "TAB_LOCAL": "附近",
+      "MUTED": "已屏蔽 {{name}}：在 /unmute 之前隐藏其消息。",
+      "UNMUTED": "已取消屏蔽 {{name}}。",
+      "MUTE_USAGE": "请使用 /mute <名字> 或 /unmute <名字>。",
+      "NAME_TAGS_ON": "已显示名字标签（/nametags 隐藏）。",
+      "NAME_TAGS_OFF": "已隐藏名字标签（/nametags 显示）。"
     },
     "CONNECT": {
       "INFO": {

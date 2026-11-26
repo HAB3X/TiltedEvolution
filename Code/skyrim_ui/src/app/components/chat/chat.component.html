@@ -1,3 +1,10 @@
+<div class="app-chat-tabs">
+  @for (tab of ['all', 'party', 'local']; track tab) {
+    <button [class.active]="this.tab === tab" (click)="this.tab = $any(tab)">
+      {{ 'COMPONENT.CHAT.TAB_' + tab.toUpperCase() | transloco }}
+    </button>
+  }
+</div>
 <div
   #log
   (scroll)="onLogScroll()"
@@ -5,7 +12,7 @@
   [style.padding-top.px]="padding"
 >
   @for (message of messages; track message) {
-    <p #entry [ngClass]="message.typeClass">
+    <p #entry [ngClass]="message.typeClass" [hidden]="!isShown(message)">
       <span class="app-chat-date"
         >[{{ message.date | date: 'HH:mm:ss' }}]
       </span>

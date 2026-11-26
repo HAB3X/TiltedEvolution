@@ -5,7 +5,15 @@
       "MESSAGE": "Meddelande",
       "MESSAGE_TOO_LONG": "Du kan inte skicka meddelanden längre än {{chatMessageLengthLimit}} tecken.",
       "SET_TIME_ARGUMENT_COUNT": "Fel argument, använd: /settime HH MM, exempel: /settime 15 32.",
-      "SET_TIME_INVALID_ARGUMENTS": "Timmarna måste vara mellan 0 och 23, och minuterna mellan 0 och 59."
+      "SET_TIME_INVALID_ARGUMENTS": "Timmarna måste vara mellan 0 och 23, och minuterna mellan 0 och 59.",
+      "TAB_ALL": "Alla",
+      "TAB_PARTY": "Grupp",
+      "TAB_LOCAL": "Lokal",
+      "MUTED": "{{name}} tystad: meddelanden dolda tills /unmute.",
+      "UNMUTED": "{{name}} är inte längre tystad.",
+      "MUTE_USAGE": "Använd /mute <namn> eller /unmute <namn>.",
+      "NAME_TAGS_ON": "Namnskyltar på (/nametags för att dölja).",
+      "NAME_TAGS_OFF": "Namnskyltar dolda (/nametags för att visa)."
     },
     "CONNECT": {
       "INFO": {

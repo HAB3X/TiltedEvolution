@@ -35,7 +35,11 @@ struct NameTagService
     static constexpr float kScale = 1.f;
     static constexpr float kVisibilityEpsilon = 1e-3f;
 
+    // The player's choice (/nametags in chat)
+    void SetEnabled(bool aEnabled) noexcept { m_enabled = aEnabled; }
+
 private:
+    bool m_enabled{true};
     struct VisibilityInfo
     {
         bool Visible = true;

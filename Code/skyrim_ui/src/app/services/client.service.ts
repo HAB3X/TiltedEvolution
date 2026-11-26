@@ -395,6 +395,8 @@ export class ClientService implements OnDestroy {
    */
   // TODO: is this still used?
   private onInit(): void {
+    // The game starts with name tags on; tell it the saved choice
+    skyrimtogether.setNameTags(this.chatService.nameTagsEnabled);
     this.zone.run(() => {
       this.initDone.next(undefined);
       this.initDone.complete();

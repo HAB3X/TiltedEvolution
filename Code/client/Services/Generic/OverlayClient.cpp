@@ -8,6 +8,7 @@
 #include <Services/VoiceService.h>
 #include <Services/LocalServerService.h>
 #include <Services/LanSearch.h>
+#include <Services/NameTagService.h>
 
 #include <Messages/SendChatMessageRequest.h>
 #include <Messages/TeleportRequest.h>
@@ -48,6 +49,11 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
 
         if (eventName == "connect")
             ProcessConnectMessage(eventArgs);
+        else if (eventName == "setNameTags")
+        {
+            const bool enabled = eventArgs->GetBool(0);
+            World::Get().GetRunner().Queue([enabled]() { World::Get().ctx().at<NameTagService>().SetEnabled(enabled); });
+        }
         else if (eventName == "moderatePlayer")
         {
             RequestModeratePlayer request;

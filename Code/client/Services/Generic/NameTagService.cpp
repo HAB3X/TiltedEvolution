@@ -91,7 +91,7 @@ void NameTagService::OnUpdate(const UpdateEvent&) noexcept
 void NameTagService::OnDraw() noexcept
 {
     auto* pLocalPlayer = PlayerCharacter::Get();
-    if (!pLocalPlayer)
+    if (!pLocalPlayer || !m_enabled)
         return;
 
     // Don't draw nametags while menus that cover the screen are open.
@@ -139,7 +139,7 @@ void NameTagService::OnDraw() noexcept
         if (!pExtension || pExtension->IsLocalPlayer())
             continue;
 
-        // Only show tags for party members.
+        // Everyone gets a tag; party members' stand out
         bool isPartyMember = false;
         for (size_t i = 0; i < partyMembers.size(); ++i)
         {
@@ -149,8 +149,6 @@ void NameTagService::OnDraw() noexcept
                 break;
             }
         }
-        if (!isPartyMember)
-            continue;
 
         if (!ShouldRenderTag(playerComponent.Id))
             continue;
@@ -206,7 +204,7 @@ void NameTagService::OnDraw() noexcept
         const ImU32 bgColor = ColorWithAlpha(ImVec4(0.f, 0.f, 0.f, 0.65f), alpha);
         drawList->AddRectFilled(topLeft, bottomRight, bgColor, 6.f);
 
-        const ImU32 borderColor = ColorWithAlpha(ImVec4(1.f, 1.f, 1.f, 0.35f), alpha);
+        const ImU32 borderColor = isPartyMember ? ColorWithAlpha(ImVec4(1.f, 0.82f, 0.35f, 0.9f), alpha) : ColorWithAlpha(ImVec4(1.f, 1.f, 1.f, 0.35f), alpha);
         drawList->AddRect(topLeft, bottomRight, borderColor, 6.f);
 
         ImVec2 namePos(topLeft.x + paddingX, topLeft.y + paddingY + (textColumnHeight - nameTextSize.y - 4.f * kScale - levelTextSize.y) * 0.5f);

@@ -402,6 +402,11 @@ interface SkyrimTogether {
   moderatePlayer(playerId: number, ban: boolean): void;
 
   /**
+   * Show or hide other players' name tags.
+   */
+  setNameTags(enabled: boolean): void;
+
+  /**
    * Disconnect from server or cancel connection.
    */
   disconnect(): void;

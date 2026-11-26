@@ -3,7 +3,15 @@
     "CHAT": {
       "SEND": "Senden",
       "MESSAGE": "Nachricht",
-      "MESSAGE_TOO_LONG": "Du kannst keine Nachricht senden, die mehr als {{chatMessageLengthLimit}} Zeichen hat."
+      "MESSAGE_TOO_LONG": "Du kannst keine Nachricht senden, die mehr als {{chatMessageLengthLimit}} Zeichen hat.",
+      "TAB_ALL": "Alle",
+      "TAB_PARTY": "Gruppe",
+      "TAB_LOCAL": "Lokal",
+      "MUTED": "{{name}} stummgeschaltet: Nachrichten ausgeblendet bis /unmute.",
+      "UNMUTED": "{{name}} nicht mehr stumm.",
+      "MUTE_USAGE": "Benutze /mute <Name> oder /unmute <Name>.",
+      "NAME_TAGS_ON": "Namensschilder an (/nametags zum Ausblenden).",
+      "NAME_TAGS_OFF": "Namensschilder aus (/nametags zum Einblenden)."
     },
     "CONNECT": {
       "INFO": {

@@ -3,7 +3,15 @@
     "CHAT": {
       "SEND": "Send",
       "MESSAGE": "Melding",
-      "MESSAGE_TOO_LONG": "Meldingen din er for lang. Den må være under {{chatMessageLengthLimit}} karakterer."
+      "MESSAGE_TOO_LONG": "Meldingen din er for lang. Den må være under {{chatMessageLengthLimit}} karakterer.",
+      "TAB_ALL": "Alle",
+      "TAB_PARTY": "Gruppe",
+      "TAB_LOCAL": "Lokal",
+      "MUTED": "{{name}} dempet: meldinger skjult til /unmute.",
+      "UNMUTED": "{{name}} er ikke lenger dempet.",
+      "MUTE_USAGE": "Bruk /mute <navn> eller /unmute <navn>.",
+      "NAME_TAGS_ON": "Navneskilt på (/nametags for å skjule).",
+      "NAME_TAGS_OFF": "Navneskilt skjult (/nametags for å vise)."
     },
     "CONNECT": {
       "INFO": {

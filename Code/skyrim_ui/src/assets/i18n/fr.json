@@ -5,7 +5,15 @@
     "CHAT": {
       "SEND": "Envoyer",
       "MESSAGE": "Message",
-      "MESSAGE_TOO_LONG": "Vous ne pouvez pas envoyer un message d'une longueur supérieure à  {{chatMessageLengthLimit}} caractères."
+      "MESSAGE_TOO_LONG": "Vous ne pouvez pas envoyer un message d'une longueur supérieure à  {{chatMessageLengthLimit}} caractères.",
+      "TAB_ALL": "Tout",
+      "TAB_PARTY": "Groupe",
+      "TAB_LOCAL": "Local",
+      "MUTED": "{{name}} masqué : ses messages sont cachés jusqu'à /unmute.",
+      "UNMUTED": "{{name}} n'est plus masqué.",
+      "MUTE_USAGE": "Utilisez /mute <nom> ou /unmute <nom>.",
+      "NAME_TAGS_ON": "Étiquettes de nom affichées (/nametags pour les masquer).",
+      "NAME_TAGS_OFF": "Étiquettes de nom masquées (/nametags pour les afficher)."
     },
     "CONNECT": {
       "INFO": {

@@ -5,7 +5,15 @@
       "MESSAGE": "Message",
       "MESSAGE_TOO_LONG": "You cannot send a message longer than {{chatMessageLengthLimit}} characters.",
       "SET_TIME_ARGUMENT_COUNT": "Wrong arguments, usage: /settime HH MM, example: /settime 15 32.",
-      "SET_TIME_INVALID_ARGUMENTS": "The hours must be between 0 and 23, and the minutes between 0 and 59."
+      "SET_TIME_INVALID_ARGUMENTS": "The hours must be between 0 and 23, and the minutes between 0 and 59.",
+      "TAB_ALL": "All",
+      "TAB_PARTY": "Party",
+      "TAB_LOCAL": "Local",
+      "MUTED": "Muted {{name}}: their chat is hidden until /unmute.",
+      "UNMUTED": "Unmuted {{name}}.",
+      "MUTE_USAGE": "Use /mute <name> or /unmute <name>.",
+      "NAME_TAGS_ON": "Name tags on (/nametags to hide them).",
+      "NAME_TAGS_OFF": "Name tags hidden (/nametags to show them)."
     },
     "CONNECT": {
       "INFO": {

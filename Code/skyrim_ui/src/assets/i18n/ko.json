@@ -3,7 +3,15 @@
     "CHAT": {
       "SEND": "보내기",
       "MESSAGE": "메시지",
-      "MESSAGE_TOO_LONG": "{{chatMessageLengthLimit}}자를 초과하는 메시지는 보낼 수 없습니다."
+      "MESSAGE_TOO_LONG": "{{chatMessageLengthLimit}}자를 초과하는 메시지는 보낼 수 없습니다.",
+      "TAB_ALL": "전체",
+      "TAB_PARTY": "파티",
+      "TAB_LOCAL": "주변",
+      "MUTED": "{{name}} 음소거: /unmute 전까지 메시지를 숨깁니다.",
+      "UNMUTED": "{{name}} 음소거 해제.",
+      "MUTE_USAGE": "/mute <이름> 또는 /unmute <이름>을 사용하세요.",
+      "NAME_TAGS_ON": "이름표 표시 (/nametags로 숨기기).",
+      "NAME_TAGS_OFF": "이름표 숨김 (/nametags로 표시)."
     },
     "CONNECT": {
       "INFO": {

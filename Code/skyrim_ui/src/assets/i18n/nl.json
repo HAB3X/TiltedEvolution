@@ -5,7 +5,15 @@
     "CHAT": {
       "SEND": "Verzenden",
       "MESSAGE": "Bericht",
-      "MESSAGE_TOO_LONG": "Je kan geen bericht langer dan {{chatMessageLengthLimit}} verzenden."
+      "MESSAGE_TOO_LONG": "Je kan geen bericht langer dan {{chatMessageLengthLimit}} verzenden.",
+      "TAB_ALL": "Alles",
+      "TAB_PARTY": "Groep",
+      "TAB_LOCAL": "Lokaal",
+      "MUTED": "{{name}} gedempt: berichten verborgen tot /unmute.",
+      "UNMUTED": "{{name}} niet meer gedempt.",
+      "MUTE_USAGE": "Gebruik /mute <naam> of /unmute <naam>.",
+      "NAME_TAGS_ON": "Naamlabels aan (/nametags om ze te verbergen).",
+      "NAME_TAGS_OFF": "Naamlabels uit (/nametags om ze te tonen)."
     },
     "CONNECT": {
       "INFO": {

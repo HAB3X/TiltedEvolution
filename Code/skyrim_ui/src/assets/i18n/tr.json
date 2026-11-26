@@ -5,7 +5,15 @@
       "MESSAGE": "Mesaj",
       "MESSAGE_TOO_LONG": "{{chatMessageLengthLimit}} harften daha uzun bir mesaj gönderemezsin.",
       "SET_TIME_ARGUMENT_COUNT": "Yanlış argümanlar, kullanımı: /settime SS DD, örnek: /settime 15 32.",
-      "SET_TIME_INVALID_ARGUMENTS": "Saat 0 ile 23 ve dakika 0 ile 59 arasında olmalıdır."
+      "SET_TIME_INVALID_ARGUMENTS": "Saat 0 ile 23 ve dakika 0 ile 59 arasında olmalıdır.",
+      "TAB_ALL": "Tümü",
+      "TAB_PARTY": "Grup",
+      "TAB_LOCAL": "Yakın",
+      "MUTED": "{{name}} susturuldu: mesajları /unmute'a kadar gizli.",
+      "UNMUTED": "{{name}} artık susturulmuş değil.",
+      "MUTE_USAGE": "/mute <isim> veya /unmute <isim> kullan.",
+      "NAME_TAGS_ON": "İsim etiketleri açık (gizlemek için /nametags).",
+      "NAME_TAGS_OFF": "İsim etiketleri gizli (göstermek için /nametags)."
     },
     "CONNECT": {
       "INFO": {

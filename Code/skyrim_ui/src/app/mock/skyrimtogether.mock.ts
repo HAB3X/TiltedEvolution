@@ -30,6 +30,10 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
   private localPlayerId: number;
   public readonly players$ = playerStore.pipe(selectAllEntities());
 
+  setNameTags(enabled: boolean): void {
+    console.log(`name tags ${enabled}`);
+  }
+
   moderatePlayer(playerId: number, ban: boolean): void {
     console.log(`${ban ? 'ban' : 'kick'} ${playerId}`);
   }

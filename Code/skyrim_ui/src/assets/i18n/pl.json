@@ -5,7 +5,15 @@
     "CHAT": {
       "SEND": "Wyślij",
       "MESSAGE": "Wiadomość",
-      "MESSAGE_TOO_LONG": "Nie możesz wysłać wiadomości dłuższej niż {{chatMessageLengthLimit}} znaków."
+      "MESSAGE_TOO_LONG": "Nie możesz wysłać wiadomości dłuższej niż {{chatMessageLengthLimit}} znaków.",
+      "TAB_ALL": "Wszystko",
+      "TAB_PARTY": "Drużyna",
+      "TAB_LOCAL": "Lokalny",
+      "MUTED": "Wyciszono {{name}}: wiadomości ukryte do /unmute.",
+      "UNMUTED": "Odciszono {{name}}.",
+      "MUTE_USAGE": "Użyj /mute <nazwa> lub /unmute <nazwa>.",
+      "NAME_TAGS_ON": "Plakietki z nazwami włączone (/nametags, aby ukryć).",
+      "NAME_TAGS_OFF": "Plakietki z nazwami ukryte (/nametags, aby pokazać)."
     },
     "CONNECT": {
       "INFO": {

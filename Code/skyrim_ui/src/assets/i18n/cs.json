@@ -3,7 +3,15 @@
     "CHAT": {
       "SEND": "Odeslat",
       "MESSAGE": "Zpráva",
-      "MESSAGE_TOO_LONG": "Nelze odeslat zprávu delší než {{chatMessageLengthLimit}} znaků."
+      "MESSAGE_TOO_LONG": "Nelze odeslat zprávu delší než {{chatMessageLengthLimit}} znaků.",
+      "TAB_ALL": "Vše",
+      "TAB_PARTY": "Družina",
+      "TAB_LOCAL": "Místní",
+      "MUTED": "{{name}} ztlumen: zprávy skryty do /unmute.",
+      "UNMUTED": "{{name}} už není ztlumen.",
+      "MUTE_USAGE": "Použij /mute <jméno> nebo /unmute <jméno>.",
+      "NAME_TAGS_ON": "Jmenovky zapnuté (/nametags je skryje).",
+      "NAME_TAGS_OFF": "Jmenovky skryté (/nametags je zobrazí)."
     },
     "CONNECT": {
       "INFO": {

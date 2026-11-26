@@ -5,7 +5,15 @@
       "MESSAGE": "Сообщение",
       "MESSAGE_TOO_LONG": "Нельзя отправить сообщение длиной более {{chatMessageLengthLimit}} символов.",
       "SET_TIME_ARGUMENT_COUNT": "Неверные аргументы, использование: /settime ЧЧ ММ, пример: /settime 15 32",
-      "SET_TIME_INVALID_ARGUMENTS": "Часы должны быть в диапазоне от 0 до 23, а минуты - от 0 до 59."
+      "SET_TIME_INVALID_ARGUMENTS": "Часы должны быть в диапазоне от 0 до 23, а минуты - от 0 до 59.",
+      "TAB_ALL": "Все",
+      "TAB_PARTY": "Группа",
+      "TAB_LOCAL": "Рядом",
+      "MUTED": "{{name}} заглушён: сообщения скрыты до /unmute.",
+      "UNMUTED": "{{name}} больше не заглушён.",
+      "MUTE_USAGE": "Используйте /mute <имя> или /unmute <имя>.",
+      "NAME_TAGS_ON": "Имена над игроками включены (/nametags — скрыть).",
+      "NAME_TAGS_OFF": "Имена над игроками скрыты (/nametags — показать)."
     },
     "CONNECT": {
       "INFO": {

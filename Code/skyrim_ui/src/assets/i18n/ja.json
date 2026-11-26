@@ -3,7 +3,15 @@
     "CHAT": {
       "SEND": "送信",
       "MESSAGE": "メッセージ",
-      "MESSAGE_TOO_LONG": "{{chatMessageLengthLimit}}字以上のメッセージは送信不可能。"
+      "MESSAGE_TOO_LONG": "{{chatMessageLengthLimit}}字以上のメッセージは送信不可能。",
+      "TAB_ALL": "すべて",
+      "TAB_PARTY": "パーティー",
+      "TAB_LOCAL": "周辺",
+      "MUTED": "{{name}} をミュートしました（/unmute で解除）。",
+      "UNMUTED": "{{name}} のミュートを解除しました。",
+      "MUTE_USAGE": "/mute <名前> または /unmute <名前> を使ってください。",
+      "NAME_TAGS_ON": "ネームタグを表示（/nametags で非表示）。",
+      "NAME_TAGS_OFF": "ネームタグを非表示（/nametags で表示）。"
     },
     "CONNECT": {
       "INFO": {

@@ -58,6 +58,13 @@ export class ChatComponent implements AfterViewChecked {
   public message = '';
   public messages = [] as ChatComponentMessage[];
 
+  /** The tab shown: every message, or party or local chat only (system messages show in all) */
+  public tab: 'all' | 'party' | 'local' = 'all';
+
+  public isShown(message: ChatComponentMessage): boolean {
+    return this.tab === 'all' || message.typeClass === 'system' || message.typeClass === this.tab;
+  }
+
   private odd = false;
   private autoScroll = true;
   private newMessage = false;
