@@ -609,6 +609,30 @@ void QuestService::OnQuestUpdate(const NotifyQuestUpdate& aUpdate) noexcept
         spdlog::error("Failed to update the client quest state, quest: {:X}, stage: {}, status: {}", formId, aUpdate.Stage, aUpdate.Status);
 }
 
+uint32_t QuestService::TakeStages(const QuestLog& acStages, bool aCompleted, bool aApply) noexcept
+{
+    const auto& modSystem = m_world.GetModSystem();
+    uint32_t changed = 0;
+    for (const QuestLog::Entry& entry : acStages.Entries)
+    {
+        TESQuest* pQuest = Cast<TESQuest>(TESForm::GetById(modSystem.GetGameId(entry.Id)));
+        if (!pQuest || (aCompleted && pQuest->IsCompleted()))
+            continue;
+
+        NotifyQuestUpdate update;
+        update.Id = entry.Id;
+        update.Stage = entry.Stage;
+        update.Status = NotifyQuestUpdate::StageUpdate;
+        update.ClientQuestType = static_cast<uint8_t>(pQuest->type);
+        // Counted when the quest isn't there yet: the update itself skips stages that were already reached
+        if (aCompleted || pQuest->IsStopped() || !pQuest->IsStageReached(entry.Stage))
+            ++changed;
+        if (aApply)
+            OnQuestUpdate(update);
+    }
+    return changed;
+}
+
 void QuestService::NotifyOverlayOfQuestUpdate(uint32_t aFormId) noexcept
 {
     if (!m_world.GetTransport().IsOnline())

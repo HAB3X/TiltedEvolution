@@ -54,6 +54,10 @@ public:
 
     // Applies a quest change from another player, as the party sync does
     void ApplyRemoteUpdate(const NotifyQuestUpdate& acUpdate) noexcept { OnQuestUpdate(acUpdate); }
+    // Brings this game's quests to another player's stages through ApplyRemoteUpdate, which starts, advances and skips
+    // them safely. aCompleted: the other player completed these, so quests completed here are left alone. Returns how
+    // many quests change; with aApply false it only counts them.
+    uint32_t TakeStages(const QuestLog& acStages, bool aCompleted, bool aApply) noexcept;
 
     struct HeldStages
     {
