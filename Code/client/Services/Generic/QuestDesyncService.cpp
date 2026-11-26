@@ -29,6 +29,20 @@ std::string QuestName(const GameId& acId) noexcept
         return fmt::format("{:X}:{:X}", acId.ModId, acId.BaseId);
     return QuestService::GetName(pQuest);
 }
+
+// The leader's stages this game can take: the quests completed here stay completed, taking an earlier stage would
+// restart them
+QuestLog StagesToTake(const QuestLog& acLeaderStages) noexcept
+{
+    QuestLog stages;
+    for (const QuestLog::Entry& cEntry : acLeaderStages.Entries)
+    {
+        TESQuest* pQuest = Cast<TESQuest>(TESForm::GetById(World::Get().GetModSystem().GetGameId(cEntry.Id)));
+        if (pQuest && !pQuest->IsCompleted())
+            stages.Entries.push_back(cEntry);
+    }
+    return stages;
+}
 } // namespace
 
 QuestDesyncService::QuestDesyncService(World& aWorld, entt::dispatcher& aDispatcher, TransportService& aTransport) noexcept
@@ -82,14 +96,7 @@ void QuestDesyncService::OnQuestDesync(const NotifyQuestDesync& acMessage) const
 
 void QuestDesyncService::OnQuestCatchUp(const NotifyQuestCatchUp& acMessage) noexcept
 {
-    // The quests completed here stay completed: taking an earlier stage would restart them
-    m_catchUp.Entries.clear();
-    for (const QuestLog::Entry& cEntry : acMessage.Quests.Entries)
-    {
-        TESQuest* pQuest = Cast<TESQuest>(TESForm::GetById(m_world.GetModSystem().GetGameId(cEntry.Id)));
-        if (pQuest && !pQuest->IsCompleted())
-            m_catchUp.Entries.push_back(cEntry);
-    }
+    m_catchUp = StagesToTake(acMessage.Quests);
 
     const uint32_t cChanged = m_world.ctx().at<QuestService>().TakeStages(m_catchUp, false, false);
     spdlog::info("[QuestDesync]: {} offers their stages of {} quests, {} would change here", acMessage.LeaderName.c_str(), acMessage.Quests.Entries.size(), cChanged);
