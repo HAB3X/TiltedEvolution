@@ -22,6 +22,7 @@
 #include <Events/PlayerLeaveEvent.h>
 #include <Events/UpdateEvent.h>
 #include <Services/ReturnService.h>
+#include <Services/WorldSaveService.h>
 #include <steam/isteamnetworkingutils.h>
 
 #include <Messages/AuthenticationResponse.h>
@@ -780,7 +781,10 @@ void GameServer::OnUpdate()
     }
 
     if (m_requestStop)
+    {
+        m_pWorld->ctx().at<WorldSaveService>().Save();
         Close();
+    }
 }
 
 void GameServer::OnConsume(const void* apData, const uint32_t aSize, const ConnectionId_t aConnectionId)

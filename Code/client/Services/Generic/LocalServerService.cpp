@@ -10,6 +10,7 @@
 #include <Games/TES.h>
 #include <RequiredMods.h>
 #include <Services/PluginChecksums.h>
+#include <Games/Skyrim/SaveLoad.h>
 
 #include <fstream>
 
@@ -49,6 +50,12 @@ std::wstring Widen(const std::string& acText)
     std::wstring out(cLength, L'\0');
     MultiByteToWideChar(CP_UTF8, 0, acText.data(), static_cast<int>(acText.size()), out.data(), cLength);
     return out;
+}
+// The host's character, as co-op saves name it; "world" without one
+std::string KeptWorldName()
+{
+    const String cCharacter = BGSSaveLoadManager::CoopSaveCharacter();
+    return cCharacter.empty() ? std::string("world") : std::string(cCharacter.c_str());
 }
 } // namespace
 
@@ -153,6 +160,8 @@ bool LocalServerService::Start(const HostSettings& acSettings) noexcept
                   WritePrivateProfileStringW(L"ModPolicy", L"bRequireMods", Bool(acSettings.RequireMods), cIni.c_str()) &&
                   WritePrivateProfileStringW(L"Gameplay", L"bPauseWhenAllInMenus", Bool(acSettings.PauseInMenus), cIni.c_str()) &&
                   WritePrivateProfileStringW(L"GameServer", L"sRelay", Widen(acSettings.Relay).c_str(), cIni.c_str()) &&
+                  // Each character's playthrough keeps its own world (WorldSaveService)
+                  WritePrivateProfileStringW(L"Gameplay", L"sKeepWorldName", Widen(KeptWorldName()).c_str(), cIni.c_str()) &&
                   WritePrivateProfileStringW(L"GameServer", L"sRelayPassword", Widen(acSettings.RelayPassword).c_str(), cIni.c_str());
     }
     if (!written)

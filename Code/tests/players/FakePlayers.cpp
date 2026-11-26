@@ -19,6 +19,8 @@
 #include <WireProtocol.h>
 #include <Messages/AssignCharacterRequest.h>
 #include <Messages/AuthenticationRequest.h>
+#include <Messages/AssignObjectsRequest.h>
+#include <Messages/AssignObjectsResponse.h>
 #include <Messages/AuthenticationResponse.h>
 #include <Messages/ClientMessageFactory.h>
 #include <Messages/EnterInteriorCellRequest.h>
@@ -154,6 +156,7 @@ struct FakePlayer final : Client
         case kNotifyHostWorldState: World = *static_cast<NotifyHostWorldState*>(pMessage.get()); break;
         case kTeleportCommandResponse: Teleport = *static_cast<TeleportCommandResponse*>(pMessage.get()); break;
         case kNotifyVote: Votes.push_back(*static_cast<NotifyVote*>(pMessage.get())); break;
+        case kAssignObjectsResponse: Objects = *static_cast<AssignObjectsResponse*>(pMessage.get()); break;
         default: break;
         }
     }
@@ -190,6 +193,7 @@ struct FakePlayer final : Client
     uint32_t PlayerId = 0;
     // Every vote state the server sent, in order
     std::vector<NotifyVote> Votes;
+    std::optional<AssignObjectsResponse> Objects;
 
     // The last vote state of this kind and state, if any came since aFrom
     const NotifyVote* FindVote(VoteKind aKind, VoteState aState, size_t aFrom = 0) const
@@ -517,6 +521,56 @@ int RunVoteVoter(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
+// A host world server keeping its world between runs (WorldSaveService): worldstore puts 7 gold in a chest and waits for
+// the server's periodic save (run the server with Gameplay:uKeepWorldSeconds=2); after the server restarts in the same
+// folder, worldload finds the chest as the server kept it, not as its own empty copy.
+ObjectData FakeChest(int32_t aGold)
+{
+    ObjectData chest;
+    chest.Id = GameId(0, 0x812);
+    chest.CellId = GameId(0, 0x3C);
+    chest.IsContainer = true;
+    if (aGold)
+    {
+        Inventory::Entry gold;
+        gold.BaseId = GameId(0, 0xF);
+        gold.Count = aGold;
+        chest.CurrentInventory.Entries.push_back(gold);
+    }
+    return chest;
+}
+
+int RunWorldStore(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer player("FakeStorer", acPassword);
+    player.Connect(acEndpoint);
+    Check("logs in to the host world", RunUntil(player, [&] { return player.LoggedIn; }));
+    AssignObjectsRequest objects;
+    objects.Objects.push_back(FakeChest(7));
+    player.Send(objects);
+    Check("the server takes the chest as it is", RunUntil(player, [&] { return player.Objects.has_value(); }) && player.Objects->Objects.size() == 1 &&
+                                                       player.Objects->Objects[0].IsSenderFirst);
+    // The periodic save
+    RunUntil(player, [] { return false; }, 6s);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+int RunWorldLoad(const std::string& acEndpoint, const std::string& acPassword)
+{
+    FakePlayer player("FakeLoader", acPassword);
+    player.Connect(acEndpoint);
+    Check("logs in to the restarted host world", RunUntil(player, [&] { return player.LoggedIn; }));
+    AssignObjectsRequest objects;
+    objects.Objects.push_back(FakeChest(0));
+    player.Send(objects);
+    Check("the chest comes back as the server kept it, with the 7 gold", RunUntil(player, [&] { return player.Objects.has_value(); }) &&
+                                                                          player.Objects->Objects.size() == 1 && !player.Objects->Objects[0].IsSenderFirst &&
+                                                                          player.Objects->Objects[0].CurrentInventory == FakeChest(7).CurrentInventory);
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // Like the game hosting: starts the server in a folder as a child that should stop with this process
 // (GameServer:uStopWithProcess), lets it run for a while, then exits. The caller checks the server stopped by itself.
 int RunParent(const std::string& acServerFolder)
@@ -692,6 +746,7 @@ int RunOldVersion(const std::string& acEndpoint, const std::string& acPassword)
 // FakePlayers.exe oldversion [address:port] [password]: see RunOldVersion
 // FakePlayers.exe modchecksums [address:port] [password]: against a server requiring Exact.esp|100|0000abcd
 // FakePlayers.exe votehost|votetarget|votevoter [address:port] [password]: see RunVoteHost
+// FakePlayers.exe worldstore|worldload [address:port] [password]: see RunWorldStore
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -721,6 +776,10 @@ int main(int argc, char** argv)
         return RunOfficialListener(cEndpoint, cPassword);
     if (cRole == "talk184")
         return RunOfficialTalker(cEndpoint, cPassword);
+    if (cRole == "worldstore")
+        return RunWorldStore(cEndpoint, cPassword);
+    if (cRole == "worldload")
+        return RunWorldLoad(cEndpoint, cPassword);
     if (cRole == "votehost")
         return RunVoteHost(cEndpoint, cPassword);
     if (cRole == "votetarget")
