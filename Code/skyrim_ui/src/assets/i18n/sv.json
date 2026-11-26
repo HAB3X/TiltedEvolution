@@ -25,6 +25,7 @@
         "PASSWORD_PLACEHOLDER": "Lämna tomt för inget lösenord",
         "INFO": "Startar en server på den här datorn och ansluter till den. Vänner ansluter med din IP-adress, port 10578 och det här lösenordet. Över internet öppnar routern oftast porten själv, annars vidarebefordra UDP-port 10578.",
         "HOST_WORLD": "Vänner går in i min värld (mina uppdrag, rensade grottor och döda NPC:er)",
+        "REQUIRE_MODS": "Vänner behöver mina moddar för att ansluta (spelet säger vilka som saknas)",
         "START": "Starta",
         "BACK": "Tillbaka"
       },

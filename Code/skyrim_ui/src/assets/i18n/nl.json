@@ -24,6 +24,7 @@
         "PASSWORD_PLACEHOLDER": "Leeg laten voor geen wachtwoord",
         "INFO": "Start een server op deze computer en doet mee. Vrienden verbinden met je IP-adres, poort 10578 en dit wachtwoord. Via internet opent de router de poort meestal zelf; zo niet, stuur UDP-poort 10578 door.",
         "HOST_WORLD": "Vrienden komen in mijn wereld (mijn quests, leeggemaakte kerkers en dode NPC's)",
+        "REQUIRE_MODS": "Vrienden hebben mijn mods nodig om mee te doen (het spel zegt welke ontbreken)",
         "START": "Hosten",
         "BACK": "Terug"
       },

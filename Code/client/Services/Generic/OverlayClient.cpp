@@ -51,9 +51,11 @@ bool OverlayClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
             LanSearch::Start();
         else if (eventName == "hostServer")
         {
-            const std::string password = eventArgs->GetString(0).ToString();
-            const bool hostWorld = eventArgs->GetBool(1);
-            World::Get().GetRunner().Queue([password, hostWorld]() { World::Get().ctx().at<LocalServerService>().Host(password, hostWorld); });
+            HostSettings settings;
+            settings.Password = eventArgs->GetString(0).ToString();
+            settings.HostWorld = eventArgs->GetBool(1);
+            settings.RequireMods = eventArgs->GetBool(2);
+            World::Get().GetRunner().Queue([settings]() { World::Get().ctx().at<LocalServerService>().Host(settings); });
         }
         else if (eventName == "disconnect")
             ProcessDisconnectMessage();

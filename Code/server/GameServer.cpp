@@ -1,6 +1,9 @@
 ﻿#include <Components.h>
 #include <GameServer.h>
 #include <LanDiscoveryResponder.h>
+#include <RequiredMods.h>
+
+#include <fstream>
 #include <PortMapper.h>
 #include <Packet.hpp>
 
@@ -49,6 +52,7 @@ Console::Setting bHostWorld{"Gameplay:bHostWorld", "Host world: the first player
 Console::Setting bAllowConsoleCommands{"Gameplay:bAllowConsoleCommands", "Lets players run console commands they type while connected. Turn it off to stop console trolling such as spawning enemies or killing NPCs. The console still opens for reading ids, and mods can still run commands", true};
 // ModPolicy Stuff
 Console::Setting bEnableModCheck{"ModPolicy:bEnableModCheck", "Refuse clients whose mods do not match Data/loadorder.txt", false, Console::SettingsFlags::kLocked};
+Console::Setting bRequireMods{"ModPolicy:bRequireMods", "Refuse players who are missing any mod listed in config/required-mods.txt (Host a game writes the host's mods there). Bethesda's own plugins and Creation Club content never count", false};
 Console::Setting bAllowSKSE{"ModPolicy:bAllowSKSE", "Allow players using SKSE to join. Applies even when bEnableModCheck is off", true, Console::SettingsFlags::kLocked};
 Console::Setting bAllowMO2{"ModPolicy:bAllowMO2", "Allow players using Mod Organizer 2 to join. Applies even when bEnableModCheck is off", true, Console::SettingsFlags::kLocked};
 // Voice, the game client reads and writes this section too when the server runs from the game folder
@@ -200,6 +204,7 @@ GameServer::GameServer(Console::ConsoleRegistry& aConsole) noexcept
     m_isPasswordProtected = strcmp(sPassword.value(), "") != 0;
 
     UpdateInfo();
+    LoadRequiredMods();
     if (bLanDiscovery)
         m_pLanDiscovery = MakeUnique<LanDiscoveryResponder>();
     if (bUPnP)
@@ -257,6 +262,32 @@ void GameServer::Kill()
 {
     spdlog::info("Server shutdown requested");
     m_requestStop = true;
+}
+
+void GameServer::LoadRequiredMods()
+{
+    m_requiredMods.clear();
+    if (!bRequireMods)
+        return;
+
+    std::ifstream file(RequiredMods::kFileName);
+    if (!file)
+    {
+        spdlog::error("ModPolicy:bRequireMods is on, but {} can't be read: nobody's mods are checked", RequiredMods::kFileName);
+        return;
+    }
+
+    for (std::string line; std::getline(file, line);)
+    {
+        if (!line.empty() && line.back() == '\r')
+            line.pop_back();
+        if (!line.empty() && !RequiredMods::IsGamePlugin(line))
+            m_requiredMods.push_back(line.c_str());
+    }
+    String list;
+    for (const String& cMod : m_requiredMods)
+        list += (list.empty() ? "" : ", ") + cMod;
+    spdlog::info("Players need these {} mods to join: {}", m_requiredMods.size(), list.c_str());
 }
 
 bool GameServer::CheckMoPo()
@@ -899,6 +930,33 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
 
         Mods& responseList = serverResponse.UserMods;
         auto& modsComponent = m_pWorld->ctx().at<ModsComponent>();
+
+        if (!IsMoPoActive() && !m_requiredMods.empty())
+        {
+            Mods missing;
+            for (const String& cRequired : m_requiredMods)
+            {
+                const auto cHas = std::any_of(acRequest->UserMods.ModList.begin(), acRequest->UserMods.ModList.end(),
+                                              [&](const Mods::Entry& acMod) { return RequiredMods::Lower(acMod.Filename.c_str()) == RequiredMods::Lower(cRequired.c_str()); });
+                if (!cHas)
+                {
+                    // Id 0: a mod to install, in the client's list of mods that don't match
+                    Mods::Entry entry;
+                    entry.Filename = cRequired;
+                    entry.Id = 0;
+                    missing.ModList.push_back(entry);
+                }
+            }
+
+            if (!missing.ModList.empty())
+            {
+                spdlog::info("Refusing {} ({:x}), who is missing {} of the host's mods: {}", acRequest->Username.c_str(), aConnectionId, missing.ModList.size(),
+                             PrettyPrintModList(missing.ModList).c_str());
+                serverResponse.UserMods.ModList = std::move(missing.ModList);
+                sendKick(RT::kModsMismatch);
+                return;
+            }
+        }
 
         if (IsMoPoActive())
         {

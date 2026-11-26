@@ -24,6 +24,7 @@
         "PASSWORD_PLACEHOLDER": "Déjalo vacío para no usar contraseña",
         "INFO": "Inicia un servidor en este equipo y se une a él. Tus amigos se conectan con tu dirección IP, el puerto 10578 y esta contraseña. Por internet, el router suele abrir el puerto solo; si no, redirige el puerto UDP 10578.",
         "HOST_WORLD": "Mis amigos entran en mi mundo (mis misiones, mazmorras despejadas y PNJ muertos)",
+        "REQUIRE_MODS": "Mis amigos necesitan mis mods para unirse (el juego les dice cuáles faltan)",
         "START": "Hospedar",
         "BACK": "Volver"
       },

@@ -24,6 +24,7 @@
         "PASSWORD_PLACEHOLDER": "Laisser vide pour aucun mot de passe",
         "INFO": "Lance un serveur sur cet ordinateur et le rejoint. Vos amis se connectent avec votre adresse IP, le port 10578 et ce mot de passe. Par Internet, le routeur ouvre généralement le port tout seul ; sinon, redirigez le port UDP 10578.",
         "HOST_WORLD": "Mes amis rejoignent mon monde (mes quêtes, donjons nettoyés et PNJ morts)",
+        "REQUIRE_MODS": "Mes amis ont besoin de mes mods pour rejoindre (le jeu leur dit lesquels manquent)",
         "START": "Héberger",
         "BACK": "Retour"
       },

@@ -7,6 +7,10 @@
 
 #include <OverlayApp.hpp>
 #include <World.h>
+#include <Games/TES.h>
+#include <RequiredMods.h>
+
+#include <fstream>
 
 #include <cstring>
 #include <thread>
@@ -61,19 +65,38 @@ bool LocalServerService::IsRunning() const noexcept
     return m_process && WaitForSingleObject(m_process, 0) == WAIT_TIMEOUT;
 }
 
-void LocalServerService::Host(const std::string& acPassword, bool aHostWorld) noexcept
+void LocalServerService::Host(const HostSettings& acSettings) noexcept
 {
     if (IsRunning())
     {
         spdlog::info("[LocalServer]: already hosting on port {}, connecting", m_port);
-        Connect(acPassword);
+        Connect(acSettings.Password);
         return;
     }
 
-    Start(acPassword, aHostWorld);
+    Start(acSettings);
 }
 
-bool LocalServerService::Start(const std::string& acPassword, bool aHostWorld) noexcept
+bool LocalServerService::WriteRequiredMods() const noexcept
+{
+    std::ofstream file(TiltedPhoques::GetPath() / RequiredMods::kFileName, std::ios::trunc);
+    if (!file)
+        return false;
+
+    size_t count = 0;
+    for (auto* pMod : ModManager::Get()->mods)
+    {
+        if (pMod->IsLoaded() && !RequiredMods::IsGamePlugin(pMod->filename))
+        {
+            file << pMod->filename << '\n';
+            ++count;
+        }
+    }
+    spdlog::info("[LocalServer]: friends need the host's {} mods", count);
+    return file.good();
+}
+
+bool LocalServerService::Start(const HostSettings& acSettings) noexcept
 {
     const std::filesystem::path cDir = TiltedPhoques::GetPath();
     const std::filesystem::path cExe = cDir / kServerExe;
@@ -87,10 +110,16 @@ bool LocalServerService::Start(const std::string& acPassword, bool aHostWorld) n
     // The server reads its settings from here; the rest of the file keeps what the player set
     std::filesystem::create_directories(IniPath().parent_path(), ec);
     const std::wstring cIni = IniPath().wstring();
-    if (!WritePrivateProfileStringW(L"GameServer", L"sPassword", Widen(acPassword).c_str(), cIni.c_str()) ||
-        !WritePrivateProfileStringW(L"Gameplay", L"bHostWorld", aHostWorld ? L"true" : L"false", cIni.c_str()))
+    if (!WritePrivateProfileStringW(L"GameServer", L"sPassword", Widen(acSettings.Password).c_str(), cIni.c_str()) ||
+        !WritePrivateProfileStringW(L"Gameplay", L"bHostWorld", acSettings.HostWorld ? L"true" : L"false", cIni.c_str()) ||
+        !WritePrivateProfileStringW(L"ModPolicy", L"bRequireMods", acSettings.RequireMods ? L"true" : L"false", cIni.c_str()))
     {
         Fail("Couldn't write the server settings (" + std::to_string(GetLastError()) + ").");
+        return false;
+    }
+    if (acSettings.RequireMods && !WriteRequiredMods())
+    {
+        Fail("Couldn't write the list of your mods for the server.");
         return false;
     }
     m_port = static_cast<uint16_t>(GetPrivateProfileIntW(L"GameServer", L"uPort", 10578, cIni.c_str()));
@@ -132,12 +161,12 @@ bool LocalServerService::Start(const std::string& acPassword, bool aHostWorld) n
     CloseHandle(process.hThread);
     m_process = process.hProcess;
 
-    spdlog::info("[LocalServer]: started the server on port {}, host world {}", m_port, aHostWorld);
+    spdlog::info("[LocalServer]: started the server on port {}, host world {}, require mods {}", m_port, acSettings.HostWorld, acSettings.RequireMods);
 
     // Reads the server's output for as long as it runs: it would stop when the pipe fills up. Its stdin stays open
     // here (inWrite is never closed), so that it doesn't see the end of its input.
     std::thread(
-        [outRead, password = acPassword, port = m_port]()
+        [outRead, password = acSettings.Password, port = m_port]()
         {
             std::string pending, lastLine;
             bool started = false;

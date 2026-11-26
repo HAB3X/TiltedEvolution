@@ -23,6 +23,7 @@
         "PASSWORD_PLACEHOLDER": "Nech prázdné pro hru bez hesla",
         "INFO": "Spustí server na tomto počítači a připojí se k němu. Přátelé se připojí přes tvou IP adresu, port 10578 a toto heslo. Přes internet router obvykle port otevře sám, jinak přesměruj UDP port 10578.",
         "HOST_WORLD": "Přátelé vstoupí do mého světa (moje úkoly, vyčištěné kobky a mrtvé postavy)",
+        "REQUIRE_MODS": "Přátelé potřebují mé mody, aby se připojili (hra jim řekne, které chybí)",
         "START": "Hostovat",
         "BACK": "Zpět"
       },

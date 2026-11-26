@@ -22,6 +22,14 @@
         }}</label>
       </span>
     </div>
+    <div class="password-options">
+      <span>
+        <input type="checkbox" id="require-mods" [(ngModel)]="requireMods" />
+        <label for="require-mods">{{
+          'COMPONENT.CONNECT.HOST.REQUIRE_MODS' | transloco
+        }}</label>
+      </span>
+    </div>
     <app-action-buttons>
       <button
         [disabled]="connecting"

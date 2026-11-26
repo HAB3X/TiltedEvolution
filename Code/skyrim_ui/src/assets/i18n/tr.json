@@ -25,6 +25,7 @@
         "PASSWORD_PLACEHOLDER": "Şifresiz için boş bırak",
         "INFO": "Bu bilgisayarda bir sunucu başlatır ve ona katılır. Arkadaşların IP adresin, 10578 portu ve bu şifreyle bağlanır. İnternet üzerinden modem genelde portu kendisi açar; açmazsa UDP 10578 portunu yönlendir.",
         "HOST_WORLD": "Arkadaşlarım benim dünyama girsin (görevlerim, temizlenmiş zindanlar ve ölü NPC'ler)",
+        "REQUIRE_MODS": "Arkadaşlarımın katılmak için modlarıma ihtiyacı var (oyun hangilerinin eksik olduğunu söyler)",
         "START": "Kur",
         "BACK": "Geri"
       },

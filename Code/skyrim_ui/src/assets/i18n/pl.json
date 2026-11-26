@@ -24,6 +24,7 @@
         "PASSWORD_PLACEHOLDER": "Zostaw puste, aby nie używać hasła",
         "INFO": "Uruchamia serwer na tym komputerze i dołącza do niego. Znajomi łączą się przez twój adres IP, port 10578 i to hasło. Przez internet router zwykle sam otwiera port; jeśli nie, przekieruj port UDP 10578.",
         "HOST_WORLD": "Znajomi wchodzą do mojego świata (moje zadania, oczyszczone lochy i martwe postacie)",
+        "REQUIRE_MODS": "Znajomi potrzebują moich modów, aby dołączyć (gra powie im, których brakuje)",
         "START": "Hostuj",
         "BACK": "Wróć"
       },

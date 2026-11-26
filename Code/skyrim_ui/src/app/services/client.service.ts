@@ -234,8 +234,12 @@ export class ClientService implements OnDestroy {
   }
 
   /** Start the server next to the game and connect to it once it's up. */
-  public hostServer(password: string, hostWorld: boolean): void {
-    skyrimtogether.hostServer(password, hostWorld);
+  public hostServer(
+    password: string,
+    hostWorld: boolean,
+    requireMods: boolean,
+  ): void {
+    skyrimtogether.hostServer(password, hostWorld, requireMods);
     this.hostingChange.next(true);
     this.isConnectionInProgressChange.next(true);
     this._host = '127.0.0.1';

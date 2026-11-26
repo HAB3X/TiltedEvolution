@@ -47,6 +47,8 @@ struct GameServer final : Server
     void Initialize();
     void Kill();
 
+    void LoadRequiredMods();
+
     bool CheckMoPo();
     void BindMessageHandlers();
     void BindServerCommands();
@@ -123,6 +125,8 @@ private:
     UniquePtr<World> m_pWorld;
     UniquePtr<LanDiscoveryResponder> m_pLanDiscovery;
     UniquePtr<PortMapper> m_pPortMapper;
+    // ModPolicy:bRequireMods: the mods every player needs, from RequiredMods::kFileName
+    Vector<String> m_requiredMods;
 
     bool m_requestStop;
 

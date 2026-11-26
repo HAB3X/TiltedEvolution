@@ -387,8 +387,9 @@ interface SkyrimTogether {
    *
    * @param password Password friends join with.
    * @param hostWorld Whether friends who join take over the host's world.
+   * @param requireMods Whether friends need the host's mods to join.
    */
-  hostServer(password: string, hostWorld: boolean): void;
+  hostServer(password: string, hostWorld: boolean, requireMods: boolean): void;
 
   /**
    * Look for servers on the local network; the answer comes as a lanServers event.

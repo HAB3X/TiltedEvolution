@@ -38,6 +38,7 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
   public hosting = false;
   public hostPassword = '';
   public hostWorld = true;
+  public requireMods = true;
 
   /** Servers on the local network, null while searching. */
   public readonly lanServers$ = this.client.lanServersChange;
@@ -91,6 +92,7 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
     this.savePassword = this.password !== '';
     this.hostPassword = this.storeService.get('host_password', '');
     this.hostWorld = this.storeService.getBool('host_world', true);
+    this.requireMods = this.storeService.getBool('host_require_mods', true);
   }
 
   public searchLan(): void {
@@ -164,8 +166,9 @@ export class ConnectComponent implements OnDestroy, AfterViewInit {
     this.connecting = true;
     this.storeService.set('host_password', this.hostPassword);
     this.storeService.set('host_world', String(this.hostWorld));
+    this.storeService.set('host_require_mods', String(this.requireMods));
     this.sound.play(Sound.Ok);
-    this.client.hostServer(this.hostPassword, this.hostWorld);
+    this.client.hostServer(this.hostPassword, this.hostWorld, this.requireMods);
   }
 
   public cancel(): void {

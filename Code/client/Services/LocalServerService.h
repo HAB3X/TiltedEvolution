@@ -2,6 +2,16 @@
 
 struct World;
 
+// What the host chose in Host a game
+struct HostSettings
+{
+    std::string Password;
+    // Joiners take over the host's world (Gameplay:bHostWorld)
+    bool HostWorld{};
+    // Joiners need the host's mods (ModPolicy:bRequireMods)
+    bool RequireMods{};
+};
+
 /**
  * @brief Hosting from inside the game: runs the Skyrim Together server that sits next to the client and connects to it.
  *
@@ -15,15 +25,17 @@ struct LocalServerService
 
     TP_NOCOPYMOVE(LocalServerService);
 
-    // Starts the server with this password (once per game session), then connects to it when it's up
-    void Host(const std::string& acPassword, bool aHostWorld) noexcept;
+    // Starts the server with these settings (once per game session), then connects to it when it's up
+    void Host(const HostSettings& acSettings) noexcept;
 
     // A [Host] line of the server: shown in chat, and its public address sent to the overlay for the invite
     void OnHostMessage(const std::string& acMessage) noexcept;
 
 private:
     bool IsRunning() const noexcept;
-    bool Start(const std::string& acPassword, bool aHostWorld) noexcept;
+    bool Start(const HostSettings& acSettings) noexcept;
+    // The host's mods, for the server to require: written to its RequiredMods::kFileName
+    bool WriteRequiredMods() const noexcept;
     void Connect(const std::string& acPassword) const noexcept;
     void Fail(const std::string& acReason) const noexcept;
 

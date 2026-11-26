@@ -41,7 +41,7 @@ export class SkyrimtogetherMock extends EventEmitter implements SkyrimTogether {
     }, 500);
   }
 
-  hostServer(password: string, hostWorld: boolean): void {
+  hostServer(password: string, hostWorld: boolean, requireMods: boolean): void {
     this.connect('127.0.0.1', 10578, password);
     setTimeout(() => this.emit('hostAddress', '203.0.113.7:10578'), 1000);
   }

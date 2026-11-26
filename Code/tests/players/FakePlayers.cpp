@@ -80,6 +80,13 @@ struct FakePlayer final : Client
         request.Token = m_password.c_str();
         request.Username = m_name.c_str();
         request.Level = 1;
+        for (const std::string& cMod : PluginNames)
+        {
+            Mods::Entry entry;
+            entry.Filename = cMod.c_str();
+            entry.Id = static_cast<uint16_t>(request.UserMods.ModList.size());
+            request.UserMods.ModList.push_back(entry);
+        }
         Send(request);
     }
 
@@ -104,6 +111,12 @@ struct FakePlayer final : Client
         {
             const auto* pResponse = static_cast<AuthenticationResponse*>(pMessage.get());
             LoggedIn = pResponse->Type == AuthenticationResponse::ResponseType::kAccepted;
+            Refusal = pResponse->Type;
+            for (const auto& cMod : pResponse->UserMods.ModList)
+            {
+                if (!LoggedIn)
+                    RefusedMods.push_back(cMod.Filename.c_str());
+            }
             Settings = pResponse->Settings;
             ServerVersion = pResponse->Version.c_str();
             break;
@@ -120,6 +133,10 @@ struct FakePlayer final : Client
 
     std::string m_name, m_password;
     bool LoggedIn = false, Disconnected = false;
+    // The plugins this player says it has loaded
+    std::vector<std::string> PluginNames;
+    std::optional<AuthenticationResponse::ResponseType> Refusal;
+    std::vector<std::string> RefusedMods;
     ServerSettings Settings{};
     std::string ServerVersion;
     std::vector<std::string> JoinedNames;
@@ -257,7 +274,33 @@ int RunOfficialTalker(const std::string& acEndpoint, const std::string& acPasswo
     return s_failures ? 1 : 0;
 }
 
+// A server requiring the host's mods (ModPolicy:bRequireMods) whose list is SomeMod.esp and a Creation Club plugin: a
+// player without SomeMod.esp is told it's missing, one with it gets in. One player at a time, so one process works.
+int RunRequiredMods(const std::string& acEndpoint, const std::string& acPassword)
+{
+    {
+        FakePlayer without("FakeNoMods", acPassword);
+        without.PluginNames = {"Skyrim.esm"};
+        without.Connect(acEndpoint);
+        Check("a player without the host's mods is refused", RunUntil(without, [&] { return without.Refusal.has_value(); }) &&
+                                                                  without.Refusal == AuthenticationResponse::ResponseType::kModsMismatch);
+        std::string listed;
+        for (const auto& cMod : without.RefusedMods)
+            listed += (listed.empty() ? "" : ", ") + cMod;
+        Check("and told exactly which mod is missing (not Creation Club content)", without.RefusedMods == std::vector<std::string>{"SomeMod.esp"}, listed);
+    }
+    {
+        FakePlayer with("FakeWithMods", acPassword);
+        with.PluginNames = {"Skyrim.esm", "SomeMod.esp", "ExtraMod.esp"};
+        with.Connect(acEndpoint);
+        Check("a player with them (and an extra mod) gets in", RunUntil(with, [&] { return with.LoggedIn; }));
+    }
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
 // FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
+// FakePlayers.exe mods [address:port] [password]: against a server requiring SomeMod.esp
 // FakePlayers.exe listen184|talk184 [address:port] [password]: the same against an official v1.8.4 server
 int main(int argc, char** argv)
 {
@@ -272,11 +315,13 @@ int main(int argc, char** argv)
         return RunHost(cEndpoint, cPassword);
     if (cRole == "join")
         return RunJoiner(cEndpoint, cPassword);
+    if (cRole == "mods")
+        return RunRequiredMods(cEndpoint, cPassword);
     if (cRole == "listen184")
         return RunOfficialListener(cEndpoint, cPassword);
     if (cRole == "talk184")
         return RunOfficialTalker(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join|listen184|talk184 [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|mods|listen184|talk184 [address:port] [password]\n");
     return 2;
 }

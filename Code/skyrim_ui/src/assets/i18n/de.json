@@ -23,6 +23,7 @@
         "PASSWORD_PLACEHOLDER": "Leer lassen für kein Passwort",
         "INFO": "Startet einen Server auf diesem Computer und tritt ihm bei. Freunde verbinden sich mit deiner IP-Adresse, Port 10578 und diesem Passwort. Über das Internet öffnet der Router den Port meist selbst, sonst UDP-Port 10578 weiterleiten.",
         "HOST_WORLD": "Freunde betreten meine Welt (meine Quests, geräumten Dungeons und toten NPCs)",
+        "REQUIRE_MODS": "Freunde brauchen meine Mods zum Beitreten (das Spiel sagt ihnen, welche fehlen)",
         "START": "Hosten",
         "BACK": "Zurück"
       },

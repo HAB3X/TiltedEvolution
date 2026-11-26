@@ -34,6 +34,7 @@
         "PASSWORD_PLACEHOLDER": "Leave empty for no password",
         "INFO": "Start a server on this computer and join it. Friends connect to your IP address with port 10578 and this password. Over the internet, forward UDP port 10578 on your router.",
         "HOST_WORLD": "Friends join my world (my quests, cleared dungeons and dead NPCs)",
+        "REQUIRE_MODS": "Friends need my mods to join (the game tells them which are missing)",
         "START": "Host",
         "BACK": "Back"
       },
@@ -195,7 +196,7 @@
     "ERROR": {
       "ERRORS": {
         "WRONG_VERSION": "This server expects version {{expectedVersion}} but you are on version {{version}}.",
-        "MODS_MISMATCH": "This server has ModPolicy enabled.{{mods}}",
+        "MODS_MISMATCH": "This server needs the same mods as its host.{{mods}}",
         "MODS_MISMATCH_REMOVE": "Please remove the following mods to join:\n{{mods}}",
         "MODS_MISMATCH_INSTALL": "Please install the following mods to join:\n{{mods}}",
         "CLIENT_MODS_DISALLOWED": "This server disallows {{mods}}. Please remove them to join.",
