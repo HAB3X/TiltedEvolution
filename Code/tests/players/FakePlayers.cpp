@@ -16,14 +16,18 @@
 
 #include <BuildInfo.h>
 #include <LanDiscovery.h>
+#include <WireProtocol.h>
 #include <Messages/AuthenticationRequest.h>
 #include <Messages/AuthenticationResponse.h>
 #include <Messages/ClientMessageFactory.h>
 #include <Messages/HostWorldStateRequest.h>
 #include <Messages/NotifyHostWorldRequested.h>
 #include <Messages/NotifyHostWorldState.h>
+#include <Messages/NotifyChatMessageBroadcast.h>
 #include <Messages/NotifyPartyJoined.h>
+#include <Messages/NotifyPlayerJoined.h>
 #include <Messages/RequestHostWorld.h>
+#include <Messages/SendChatMessageRequest.h>
 #include <Messages/ServerMessageFactory.h>
 #include <Messages/TeleportCommandResponse.h>
 
@@ -72,7 +76,7 @@ struct FakePlayer final : Client
     {
         std::printf("%s connected\n", m_name.c_str());
         AuthenticationRequest request;
-        request.Version = BUILD_COMMIT;
+        request.Version = Wire::IsOfficial184() ? Wire::kOfficial184Version : BUILD_COMMIT;
         request.Token = m_password.c_str();
         request.Username = m_name.c_str();
         request.Level = 1;
@@ -96,7 +100,16 @@ struct FakePlayer final : Client
 
         switch (pMessage->GetOpcode())
         {
-        case kAuthenticationResponse: LoggedIn = static_cast<AuthenticationResponse*>(pMessage.get())->Type == AuthenticationResponse::ResponseType::kAccepted; break;
+        case kAuthenticationResponse:
+        {
+            const auto* pResponse = static_cast<AuthenticationResponse*>(pMessage.get());
+            LoggedIn = pResponse->Type == AuthenticationResponse::ResponseType::kAccepted;
+            Settings = pResponse->Settings;
+            ServerVersion = pResponse->Version.c_str();
+            break;
+        }
+        case kNotifyPlayerJoined: JoinedNames.push_back(static_cast<NotifyPlayerJoined*>(pMessage.get())->Username.c_str()); break;
+        case kNotifyChatMessageBroadcast: Chat = *static_cast<NotifyChatMessageBroadcast*>(pMessage.get()); break;
         case kNotifyPartyJoined: Party = *static_cast<NotifyPartyJoined*>(pMessage.get()); break;
         case kNotifyHostWorldRequested: WorldRequest = *static_cast<NotifyHostWorldRequested*>(pMessage.get()); break;
         case kNotifyHostWorldState: World = *static_cast<NotifyHostWorldState*>(pMessage.get()); break;
@@ -107,6 +120,10 @@ struct FakePlayer final : Client
 
     std::string m_name, m_password;
     bool LoggedIn = false, Disconnected = false;
+    ServerSettings Settings{};
+    std::string ServerVersion;
+    std::vector<std::string> JoinedNames;
+    std::optional<NotifyChatMessageBroadcast> Chat;
     std::optional<NotifyPartyJoined> Party;
     std::optional<NotifyHostWorldRequested> WorldRequest;
     std::optional<NotifyHostWorldState> World;
@@ -204,7 +221,44 @@ int RunJoiner(const std::string& acEndpoint, const std::string& acPassword)
     return s_failures ? 1 : 0;
 }
 
-// FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner
+// An official v1.8.4 server (official, or our mac release's): this build speaking its protocol. The listener waits for
+// the talker to join and chat, which crosses the message numbers official v1.8.4 has shifted, both ways.
+constexpr char kOfficialChat[] = "hello in v1.8.4";
+
+int RunOfficialListener(const std::string& acEndpoint, const std::string& acPassword)
+{
+    Wire::Set(WireProtocol::Official184);
+    FakePlayer listener("FakeListener", acPassword);
+    listener.Connect(acEndpoint);
+    Check("logs in to the official server as v1.8.4", RunUntil(listener, [&] { return listener.LoggedIn; }), listener.ServerVersion);
+    Check("reads its settings (console allowed, no voice or host world)", listener.Settings.ConsoleCommandsAllowed && !listener.Settings.VoipEnabled && !listener.Settings.HostWorld);
+    Check("sees the talker join", RunUntil(listener, [&] { return !listener.JoinedNames.empty(); }, 30s), listener.JoinedNames.empty() ? "" : listener.JoinedNames.back());
+    Check("gets the talker's chat", RunUntil(listener, [&] { return listener.Chat.has_value(); }, 15s));
+    Check("chat arrives intact", listener.Chat && listener.Chat->ChatMessage == kOfficialChat && listener.Chat->PlayerName == "FakeTalker",
+          listener.Chat ? std::string(listener.Chat->PlayerName.c_str()) + ": " + listener.Chat->ChatMessage.c_str() : "");
+    return s_failures ? 1 : 0;
+}
+
+int RunOfficialTalker(const std::string& acEndpoint, const std::string& acPassword)
+{
+    Wire::Set(WireProtocol::Official184);
+    FakePlayer talker("FakeTalker", acPassword);
+    talker.Connect(acEndpoint);
+    Check("talker logs in as v1.8.4", RunUntil(talker, [&] { return talker.LoggedIn; }));
+
+    SendChatMessageRequest chat;
+    chat.MessageType = kGlobalChat;
+    chat.ChatMessage = kOfficialChat;
+    talker.Send(chat);
+    Check("talker gets its own chat back", RunUntil(talker, [&] { return talker.Chat.has_value(); }));
+    RunUntil(talker, [] { return false; }, 3s);
+
+    std::printf("%s\n", s_failures ? "SOME CHECKS FAILED" : "ALL CHECKS PASSED");
+    return s_failures ? 1 : 0;
+}
+
+// FakePlayers.exe host|join [address:port] [password]: start the host first, then the joiner (this build's server)
+// FakePlayers.exe listen184|talk184 [address:port] [password]: the same against an official v1.8.4 server
 int main(int argc, char** argv)
 {
     const std::string cRole = argc > 1 ? argv[1] : "";
@@ -218,7 +272,11 @@ int main(int argc, char** argv)
         return RunHost(cEndpoint, cPassword);
     if (cRole == "join")
         return RunJoiner(cEndpoint, cPassword);
+    if (cRole == "listen184")
+        return RunOfficialListener(cEndpoint, cPassword);
+    if (cRole == "talk184")
+        return RunOfficialTalker(cEndpoint, cPassword);
 
-    std::printf("FakePlayers.exe host|join [address:port] [password]\n");
+    std::printf("FakePlayers.exe host|join|listen184|talk184 [address:port] [password]\n");
     return 2;
 }
